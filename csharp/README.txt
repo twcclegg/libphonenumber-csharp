@@ -69,8 +69,40 @@ Known Issues
   buffers one. I could not make it work using protobuf-csharp
   library. On the other hand, it makes one less dependency.
 
+
 Todo
 ----
+
 - Restore the Java logging calls?
 - Find a suitable replace for Java CharSequence in phone numbers parsing API.
 - Migrate geocoder and related files
+
+
+Porting New Versions
+--------------------
+
+This port was first converted from Subversion to Mercurial with
+hgsubversion extension, from the source repository:
+
+  http://libphonenumber.googlecode.com/svn
+
+To update the port:
+
+- Ensure you have a recent Mercurial and hgsubversion setup on your
+system.
+
+- Update the port SVN metadata with:
+
+  $ hg svn rebuildmeta
+
+And possibly add the following to .hg/hgrc:
+
+  [paths]
+  default = http://libphonenumber.googlecode.com/svn
+
+At this point, hg incoming should display new revisions.
+
+- Pull new changes, update to "csharp" branch and merge with
+  "default".
+
+- Fire your favorite diff tool and start porting changes.
