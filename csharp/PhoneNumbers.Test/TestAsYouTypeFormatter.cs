@@ -382,7 +382,7 @@ namespace PhoneNumbers.Test
         [Test]
         public void TestAYTFGBTollFree()
         {
-            AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter("gb");
+            AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter("GB");
             Assert.AreEqual("0", formatter.InputDigit('0'));
             Assert.AreEqual("08", formatter.InputDigit('8'));
             Assert.AreEqual("080", formatter.InputDigit('0'));

@@ -924,7 +924,6 @@ namespace PhoneNumbers.Test
             // This number is valid for the Bahamas, but is not a valid US number.
             Assert.That(phoneUtil.IsValidNumber(BS_NUMBER));
             Assert.That(phoneUtil.IsValidNumberForRegion(BS_NUMBER, RegionCode.BS));
-            Assert.That(phoneUtil.IsValidNumberForRegion(BS_NUMBER, "bs"));
             Assert.False(phoneUtil.IsValidNumberForRegion(BS_NUMBER, RegionCode.US));
             PhoneNumber bsInvalidNumber =
                 new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(2421232345L).Build();
@@ -997,7 +996,6 @@ namespace PhoneNumbers.Test
         {
             Assert.AreEqual(1, phoneUtil.GetCountryCodeForRegion(RegionCode.US));
             Assert.AreEqual(64, phoneUtil.GetCountryCodeForRegion(RegionCode.NZ));
-            Assert.AreEqual(64, phoneUtil.GetCountryCodeForRegion("nz"));
             Assert.AreEqual(0, phoneUtil.GetCountryCodeForRegion(null));
             Assert.AreEqual(0, phoneUtil.GetCountryCodeForRegion(RegionCode.ZZ));
             // CS is already deprecated so the library doesn't support it.
@@ -1027,7 +1025,6 @@ namespace PhoneNumbers.Test
         {
             Assert.That(phoneUtil.IsNANPACountry(RegionCode.US));
             Assert.That(phoneUtil.IsNANPACountry(RegionCode.BS));
-            Assert.That(phoneUtil.IsNANPACountry("bs"));
         }
 
         [Test]
@@ -1046,7 +1043,6 @@ namespace PhoneNumbers.Test
             Assert.That(phoneUtil.IsPossibleNumber("(020) 7031 3000", RegionCode.GB));
             Assert.That(phoneUtil.IsPossibleNumber("7031 3000", RegionCode.GB));
             Assert.That(phoneUtil.IsPossibleNumber("3331 6005", RegionCode.NZ));
-            Assert.That(phoneUtil.IsPossibleNumber("3331 6005", "nz"));
         }
 
         [Test]
@@ -1473,7 +1469,6 @@ namespace PhoneNumbers.Test
         {
             // National prefix attached.
             Assert.AreEqual(NZ_NUMBER, phoneUtil.Parse("033316005", RegionCode.NZ));
-            Assert.AreEqual(NZ_NUMBER, phoneUtil.Parse("033316005", "nz"));
             Assert.AreEqual(NZ_NUMBER, phoneUtil.Parse("33316005", RegionCode.NZ));
             // National prefix attached and some formatting present.
             Assert.AreEqual(NZ_NUMBER, phoneUtil.Parse("03-331 6005", RegionCode.NZ));

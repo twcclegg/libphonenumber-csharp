@@ -18,10 +18,14 @@
 #include "phonenumberutil.h"
 
 #include <algorithm>
+#include <cctype>
+#include <cstddef>
 #include <fstream>
 #include <iostream>
+#include <iterator>
 #include <map>
 #include <sstream>
+#include <utility>
 #include <vector>
 
 #include <google/protobuf/message_lite.h>
@@ -34,11 +38,13 @@
 #include "encoding_utils.h"
 #include "logger_adapter.h"
 #include "metadata.h"
+#include "normalize_utf8.h"
 #include "phonemetadata.pb.h"
 #include "phonenumber.h"
 #include "phonenumber.pb.h"
 #include "regexp_adapter.h"
 #include "regexp_cache.h"
+#include "stl_util.h"
 #include "stringutil.h"
 #include "utf/unicodetext.h"
 #include "utf/utf.h"
@@ -55,6 +61,17 @@ using std::stringstream;
 
 using google::protobuf::RepeatedPtrField;
 
+// static
+const char PhoneNumberUtil::kPlusChars[] = "+＋";
+// To find out the unicode code-point of the characters below in vim, highlight
+// the character and type 'ga'. Note that the - is used to express ranges of
+// full-width punctuation below, as well as being present in the expression
+// itself. In emacs, you can use M-x unicode-what to query information about the
+// unicode character.
+// static
+const char PhoneNumberUtil::kValidPunctuation[] =
+    "-x‐-―−ー－-／  ​⁠　()（）［］.\\[\\]/~⁓∼";
+
 namespace {
 
 scoped_ptr<LoggerAdapter> logger;
@@ -66,8 +83,9 @@ scoped_ptr<RegExpCache> regexp_cache;
 // These mappings map a character (key) to a specific digit that should replace
 // it for normalization purposes.
 scoped_ptr<map<char32, char> > alpha_mappings;
-// For performance reasons, amalgamate both into one map.
-scoped_ptr<map<char32, char> > all_normalization_mappings;
+// For performance reasons, store a map of combining alpha_mappings with ASCII
+// digits.
+scoped_ptr<map<char32, char> > alpha_phone_mappings;
 // Separate map of all symbols that we wish to retain when formatting alpha
 // numbers. This includes digits, ascii letters and number grouping symbols such
 // as "-" and " ".
@@ -76,7 +94,6 @@ scoped_ptr<map<char32, char> > all_plus_number_grouping_symbols;
 // The kPlusSign signifies the international prefix.
 const char kPlusSign[] = "+";
 
-const char kPlusChars[] = "+＋";
 scoped_ptr<const RegExp> plus_chars_pattern;
 
 const char kRfc3966ExtnPrefix[] = ";ext=";
@@ -90,9 +107,8 @@ const char kRfc3966ExtnPrefix[] = ";ext=";
 // Note this regex also includes tilde, which signals waiting for the tone.
 scoped_ptr<const RegExp> unique_international_prefix;
 
-// Digits accepted in phone numbers.
-// Both Arabic-Indic and Eastern Arabic-Indic are supported.
-const char kValidDigits[] = "0-9０-９٠-٩۰-۹";
+const char kDigits[] = "\\p{Nd}";
+scoped_ptr<const RegExp> digits_pattern;
 // We accept alpha characters in phone numbers, ASCII only. We store lower-case
 // here only since our regular expressions are case-insensitive.
 const char kValidAlpha[] = "a-z";
@@ -131,19 +147,8 @@ scoped_ptr<const RegExp> capture_up_to_second_number_start_pattern;
 const char kUnwantedEndChar[] = "[^\\p{N}\\p{L}#]";
 scoped_ptr<const RegExp> unwanted_end_char_pattern;
 
-// Regular expression of acceptable punctuation found in phone numbers. This
-// excludes punctuation found as a leading character only.  This consists of
-// dash characters, white space characters, full stops, slashes, square
-// brackets, parentheses and tildes. It also includes the letter 'x' as that is
-// found as a placeholder for carrier information in some phone numbers.
-// Full-width variants are also present.
-// To find out the unicode code-point of the characters below in vim, highlight
-// the character and type 'ga'. Note that the - is used to express ranges of
-// full-width punctuation below, as well as being present in the expression
-// itself. In emacs, you can use M-x unicode-what to query information about the
-// unicode character.
-const char kValidPunctuation[] =
-    "-x‐-―−ー－-／  ​⁠　()（）［］.\\[\\]/~⁓∼～";
+// Regular expression of groups of valid punctuation characters.
+scoped_ptr<const RegExp> separator_pattern;
 
 // Regular expression of viable phone numbers. This is location independent.
 // Checks we have at least three leading digits, and only valid punctuation,
@@ -434,57 +439,12 @@ char32 ToUnicodeCodepoint(const char* unicode_char) {
   return codepoint;
 }
 
-// Initialisation helper function used to populate the regular expressions in a
-// defined order.
-void CreateRegularExpressions() {
-  unique_international_prefix.reset(RegExp::Create(
-      "[\\d]+(?:[~⁓∼～][\\d]+)?"));
-  // The first_group_capturing_pattern was originally set to $1 but there are
-  // some countries for which the first group is not used in the national
-  // pattern (e.g. Argentina) so the $1 group does not match correctly.
-  // Therefore, we use \d, so that the first group actually used in the pattern
-  // will be matched.
-  first_group_capturing_pattern.reset(RegExp::Create("(\\$\\d)"));
-  carrier_code_pattern.reset(RegExp::Create("\\$CC"));
-  capturing_digit_pattern.reset(RegExp::Create(
-      StrCat("([", kValidDigits, "])")));
-  capturing_ascii_digits_pattern.reset(RegExp::Create("(\\d+)"));
-  valid_start_char.reset(new string(StrCat(
-      "[", kPlusChars, kValidDigits, "]")));
-  valid_start_char_pattern.reset(RegExp::Create(*valid_start_char));
-  capture_up_to_second_number_start_pattern.reset(RegExp::Create(
-      kCaptureUpToSecondNumberStart));
-  unwanted_end_char_pattern.reset(RegExp::Create(kUnwantedEndChar));
-  valid_phone_number.reset(new string(
-      StrCat("[", kPlusChars, "]*(?:[", kValidPunctuation, "]*[", kValidDigits,
-             "]){3,}[", kValidAlpha, kValidPunctuation, kValidDigits, "]*")));
-  // Canonical-equivalence doesn't seem to be an option with RE2, so we allow
-  // two options for representing the ó - the character itself, and one in the
-  // unicode decomposed form with the combining acute accent. Note that there
-  // are currently three capturing groups for the extension itself - if this
-  // number is changed, MaybeStripExtension needs to be updated.
-  const string capturing_extn_digits = StrCat("([", kValidDigits, "]{1,7})");
-  known_extn_patterns.reset(new string(
-      StrCat(kRfc3966ExtnPrefix, capturing_extn_digits, "|"
-             "[  \\t,]*(?:ext(?:ensi(?:ó?|ó))?n?|ｅｘｔｎ?|[,xｘ#＃~～]|"
-             "int|ｉｎｔ|anexo)"
-             "[:\\.．]?[  \\t,-]*", capturing_extn_digits, "#?|"
-             "[- ]+([", kValidDigits, "]{1,5})#")));
-  extn_pattern.reset(RegExp::Create(
-      StrCat("(?i)(?:", *known_extn_patterns, ")$")));
-  valid_phone_number_pattern.reset(RegExp::Create(
-      StrCat("(?i)", *valid_phone_number, "(?:", *known_extn_patterns, ")?")));
-  valid_alpha_phone_pattern.reset(RegExp::Create(
-      StrCat("(?i)(?:.*?[", kValidAlpha, "]){3}")));
-  plus_chars_pattern.reset(RegExp::Create(StrCat("[", kPlusChars, "]+")));
-}
-
 void InitializeStaticMapsAndSets() {
   // Create global objects.
   regexp_cache.reset(new RegExpCache(128));
   all_plus_number_grouping_symbols.reset(new map<char32, char>);
   alpha_mappings.reset(new map<char32, char>);
-  all_normalization_mappings.reset(new map<char32, char>);
+  alpha_phone_mappings.reset(new map<char32, char>);
 
   // Punctuation that we wish to respect in alpha numbers, as they show number
   // groupings are mapped here.
@@ -570,16 +530,15 @@ void InitializeStaticMapsAndSets() {
   // pulling in all of ICU, which we don't want to do if we don't have to.
   alpha_mappings->insert(lower_case_mappings.begin(),
                          lower_case_mappings.end());
-  all_normalization_mappings->insert(alpha_mappings->begin(),
-                                     alpha_mappings->end());
+  alpha_phone_mappings->insert(alpha_mappings->begin(),
+                               alpha_mappings->end());
   all_plus_number_grouping_symbols->insert(alpha_letters.begin(),
                                            alpha_letters.end());
   // Add the ASCII digits so that they don't get deleted by NormalizeHelper().
   for (char c = '0'; c <= '9'; ++c) {
-    all_normalization_mappings->insert(make_pair(c, c));
+    alpha_phone_mappings->insert(make_pair(c, c));
     all_plus_number_grouping_symbols->insert(make_pair(c, c));
   }
-  CreateRegularExpressions();
 }
 
 // Normalizes a string of characters representing a phone number by replacing
@@ -600,6 +559,7 @@ void NormalizeHelper(const map<char32, char>& normalization_replacements,
   UnicodeText number_as_unicode;
   number_as_unicode.PointToUTF8(number->data(), number->size());
   string normalized_number;
+  char unicode_char[5];
   for (UnicodeText::const_iterator it = number_as_unicode.begin();
        it != number_as_unicode.end();
        ++it) {
@@ -608,7 +568,9 @@ void NormalizeHelper(const map<char32, char>& normalization_replacements,
     if (found_glyph_pair != normalization_replacements.end()) {
       normalized_number.push_back(found_glyph_pair->second);
     } else if (!remove_non_matches) {
-      normalized_number.append(it.utf8_data());
+      // Find out how long this unicode char is so we can append it all.
+      int char_len = it.get_utf8(unicode_char);
+      normalized_number.append(unicode_char, char_len);
     }
     // If neither of the above are true, we remove this character.
   }
@@ -709,18 +671,16 @@ PhoneNumberUtil::PhoneNumberUtil()
   // Sort all the pairs in ascending order according to country calling code.
   sort(country_calling_code_to_region_code_map_->begin(),
        country_calling_code_to_region_code_map_->end(),
-       CompareFirst());
+       OrderByFirst());
 
   InitializeStaticMapsAndSets();
+  CreateRegularExpressions();
 }
 
 PhoneNumberUtil::~PhoneNumberUtil() {
-  for (vector<IntRegionsPair>::const_iterator it =
-           country_calling_code_to_region_code_map_->begin();
-       it != country_calling_code_to_region_code_map_->end();
-       ++it) {
-    delete it->second;
-  }
+  STLDeleteContainerPairSecondPointers(
+      country_calling_code_to_region_code_map_->begin(),
+      country_calling_code_to_region_code_map_->end());
 }
 
 // Public wrapper function to get a PhoneNumberUtil instance with the default
@@ -731,6 +691,72 @@ PhoneNumberUtil* PhoneNumberUtil::GetInstance() {
   return Singleton<PhoneNumberUtil>::get();
 }
 #endif
+
+void PhoneNumberUtil::CreateRegularExpressions() const {
+  unique_international_prefix.reset(RegExp::Create(
+      "[\\d]+(?:[~⁓∼～][\\d]+)?"));
+  // The first_group_capturing_pattern was originally set to $1 but there are
+  // some countries for which the first group is not used in the national
+  // pattern (e.g. Argentina) so the $1 group does not match correctly.
+  // Therefore, we use \d, so that the first group actually used in the pattern
+  // will be matched.
+  first_group_capturing_pattern.reset(RegExp::Create("(\\$\\d)"));
+  carrier_code_pattern.reset(RegExp::Create("\\$CC"));
+  digits_pattern.reset(RegExp::Create(StrCat("[", kDigits, "]*")));
+  capturing_digit_pattern.reset(RegExp::Create(StrCat("([", kDigits, "])")));
+  capturing_ascii_digits_pattern.reset(RegExp::Create("(\\d+)"));
+  valid_start_char.reset(new string(StrCat("[", kPlusChars, kDigits, "]")));
+  valid_start_char_pattern.reset(RegExp::Create(*valid_start_char));
+  capture_up_to_second_number_start_pattern.reset(RegExp::Create(
+      kCaptureUpToSecondNumberStart));
+  unwanted_end_char_pattern.reset(RegExp::Create(kUnwantedEndChar));
+  separator_pattern.reset(RegExp::Create(StrCat("[", kValidPunctuation, "]+")));
+  valid_phone_number.reset(new string(
+      StrCat("[", kPlusChars, "]*(?:[", kValidPunctuation, "]*[", kDigits,
+             "]){3,}[", kValidAlpha, kValidPunctuation, kDigits, "]*")));
+  // Canonical-equivalence doesn't seem to be an option with RE2, so we allow
+  // two options for representing the ó - the character itself, and one in the
+  // unicode decomposed form with the combining acute accent. Note that there
+  // are currently three capturing groups for the extension itself - if this
+  // number is changed, MaybeStripExtension needs to be updated.
+  const string capturing_extn_digits = StrCat("([", kDigits, "]{1,7})");
+  known_extn_patterns.reset(new string(
+      StrCat(kRfc3966ExtnPrefix, capturing_extn_digits, "|"
+             "[  \\t,]*(?:ext(?:ensi(?:ó?|ó))?n?|ｅｘｔｎ?|[,xｘ#＃~～]|"
+             "int|ｉｎｔ|anexo)"
+             "[:\\.．]?[  \\t,-]*", capturing_extn_digits, "#?|"
+             "[- ]+([", kDigits, "]{1,5})#")));
+  extn_pattern.reset(RegExp::Create(
+      StrCat("(?i)(?:", *known_extn_patterns, ")$")));
+  valid_phone_number_pattern.reset(RegExp::Create(
+      StrCat("(?i)", *valid_phone_number, "(?:", *known_extn_patterns, ")?")));
+  valid_alpha_phone_pattern.reset(RegExp::Create(
+      StrCat("(?i)(?:.*?[", kValidAlpha, "]){3}")));
+  plus_chars_pattern.reset(RegExp::Create(StrCat("[", kPlusChars, "]+")));
+}
+
+const string& PhoneNumberUtil::GetExtnPatterns() const {
+  return *(known_extn_patterns.get());
+}
+
+void PhoneNumberUtil::TrimUnwantedEndChars(string* number) const {
+  DCHECK(number);
+  UnicodeText number_as_unicode;
+  number_as_unicode.PointToUTF8(number->data(), number->size());
+  char current_char[5];
+  int len;
+  UnicodeText::const_reverse_iterator reverse_it(number_as_unicode.end());
+  for (; reverse_it.base() != number_as_unicode.begin(); ++reverse_it) {
+    len = reverse_it.get_utf8(current_char);
+    current_char[len] = '\0';
+    if (!unwanted_end_char_pattern->FullMatch(current_char)) {
+      break;
+    }
+  }
+
+  number->assign(UnicodeText::UTF8Substring(number_as_unicode.begin(),
+                                            reverse_it.base()));
+}
 
 void PhoneNumberUtil::GetSupportedRegions(set<string>* regions) const {
   DCHECK(regions);
@@ -764,11 +790,13 @@ bool PhoneNumberUtil::IsValidRegionCode(const string& region_code) const {
 }
 
 bool PhoneNumberUtil::HasValidRegionCode(const string& region_code,
-                                         int country_code,
+                                         int country_calling_code,
                                          const string& number) const {
   if (!IsValidRegionCode(region_code)) {
     logger->Info(string("Number ") + number +
-            " has invalid or missing country code (" + country_code + ")");
+            " has invalid or missing country code (" +
+            country_calling_code +
+            ")");
     return false;
   }
   return true;
@@ -1141,8 +1169,6 @@ void PhoneNumberUtil::FormatNationalNumberWithCarrier(
                                       number, carrier_code, formatted_number);
   if (number_format == RFC3966) {
     // Replace all separators with a "-".
-    static const scoped_ptr<const RegExp> separator_pattern(
-        RegExp::Create(StrCat("[", kValidPunctuation, "]+")));
     separator_pattern->GlobalReplace(formatted_number, "-");
   }
 }
@@ -1200,7 +1226,7 @@ void PhoneNumberUtil::GetRegionCodesForCountryCallingCode(
   pair<ConstIterator, ConstIterator> range = equal_range(
       country_calling_code_to_region_code_map_->begin(),
       country_calling_code_to_region_code_map_->end(),
-      target_pair, CompareFirst());
+      target_pair, OrderByFirst());
   if (range.first != range.second) {
     region_codes->insert(region_codes->begin(),
                          range.first->second->begin(),
@@ -1217,7 +1243,7 @@ void PhoneNumberUtil::GetRegionCodeForCountryCode(
   list<string> region_codes;
 
   GetRegionCodesForCountryCallingCode(country_calling_code, &region_codes);
-  *region_code = region_codes.size() != 0 ? region_codes.front() : "ZZ";
+  *region_code = (region_codes.size() > 0) ? region_codes.front() : "ZZ";
 }
 
 void PhoneNumberUtil::GetRegionCodeForNumber(const PhoneNumber& number,
@@ -1254,7 +1280,7 @@ void PhoneNumberUtil::GetRegionCodeForNumberFromRegionList(
       const scoped_ptr<RegExpInput> number(
           RegExpInput::Create(national_number));
       if (regexp_cache->GetRegExp(metadata->leading_digits()).Consume(
-              number.get())) {
+          number.get())) {
         *region_code = *it;
         return;
       }
@@ -1437,9 +1463,8 @@ PhoneNumberUtil::ErrorType PhoneNumberUtil::ParseHelper(
 // second extension here makes this actually two phone numbers, (530) 583-6985
 // x302 and (530) 583-6985 x2303. We remove the second extension so that the
 // first number is parsed correctly.
-// static
 void PhoneNumberUtil::ExtractPossibleNumber(const string& number,
-                                            string* extracted_number) {
+                                            string* extracted_number) const {
   DCHECK(extracted_number);
 
   UnicodeText number_as_unicode;
@@ -1462,21 +1487,12 @@ void PhoneNumberUtil::ExtractPossibleNumber(const string& number,
     return;
   }
 
-  UnicodeText::const_reverse_iterator reverse_it(number_as_unicode.end());
-  for (; reverse_it.base() != it; ++reverse_it) {
-    len = reverse_it.get_utf8(current_char);
-    current_char[len] = '\0';
-    if (!unwanted_end_char_pattern->FullMatch(current_char)) {
-      break;
-    }
-  }
-
-  if (reverse_it.base() == it) {
-    extracted_number->assign("");
+  extracted_number->assign(
+      UnicodeText::UTF8Substring(it, number_as_unicode.end()));
+  TrimUnwantedEndChars(extracted_number);
+  if (extracted_number->length() == 0) {
     return;
   }
-
-  extracted_number->assign(UnicodeText::UTF8Substring(it, reverse_it.base()));
 
   logger->Debug("After stripping starting and trailing characters,"
       " left with: " + *extracted_number);
@@ -1694,29 +1710,12 @@ int PhoneNumberUtil::GetLengthOfNationalDestinationCode(
 // static
 void PhoneNumberUtil::NormalizeDigitsOnly(string* number) {
   DCHECK(number);
+  static const scoped_ptr<const RegExp> non_digits_pattern(RegExp::Create(
+      StrCat("[^", kDigits, "]")));
   // Delete everything that isn't valid digits.
-  static const scoped_ptr<const RegExp> invalid_digits_pattern(
-      RegExp::Create(StrCat("[^", kValidDigits, "]")));
-  invalid_digits_pattern->GlobalReplace(number, "");
+  non_digits_pattern->GlobalReplace(number, "");
   // Normalize all decimal digits to ASCII digits.
-  string normalized;
-  UnicodeText number_as_unicode;
-  number_as_unicode.PointToUTF8(number->data(), number->size());
-  for (UnicodeText::const_iterator it = number_as_unicode.begin();
-       it != number_as_unicode.end();
-       ++it) {
-    int32_t digitValue = u_charDigitValue(*it);
-    if (digitValue == -1) {
-      // Not a decimal digit.
-      char utf8[4];
-      int len = it.get_utf8(utf8);
-      normalized.append(utf8, len);
-    } else {
-      normalized.push_back('0' + digitValue);
-    }
-  }
-
-  *number = normalized;
+  number->assign(NormalizeUTF8::NormalizeDecimalDigits(*number));
 }
 
 bool PhoneNumberUtil::IsAlphaNumber(const string& number) const {
@@ -1733,23 +1732,25 @@ bool PhoneNumberUtil::IsAlphaNumber(const string& number) const {
 
 void PhoneNumberUtil::ConvertAlphaCharactersInNumber(string* number) const {
   DCHECK(number);
-  NormalizeHelper(*all_normalization_mappings, false, number);
+  NormalizeHelper(*alpha_phone_mappings, false, number);
 }
 
 // Normalizes a string of characters representing a phone number. This performs
 // the following conversions:
-//   - Wide-ascii digits are converted to normal ASCII (European) digits.
+//   - Punctuation is stripped.
+//   For ALPHA/VANITY numbers:
 //   - Letters are converted to their numeric representation on a telephone
 //     keypad. The keypad used here is the one defined in ITU Recommendation
 //     E.161. This is only done if there are 3 or more letters in the number, to
-//     lessen the risk that such letters are typos - otherwise alpha characters
-//     are stripped.
-//   - Punctuation is stripped.
+//     lessen the risk that such letters are typos.
+//   For other numbers:
+//   - Wide-ascii digits are converted to normal ASCII (European) digits.
 //   - Arabic-Indic numerals are converted to European numerals.
+//   - Spurious alpha characters are stripped.
 void PhoneNumberUtil::Normalize(string* number) const {
   DCHECK(number);
   if (valid_alpha_phone_pattern->PartialMatch(*number)) {
-    NormalizeHelper(*all_normalization_mappings, true, number);
+    NormalizeHelper(*alpha_phone_mappings, true, number);
   }
   NormalizeDigitsOnly(number);
 }
@@ -1760,8 +1761,7 @@ void PhoneNumberUtil::Normalize(string* number) const {
 // method does not require the number to be normalized in advance - but does
 // assume that leading non-number symbols have been removed, such as by the
 // method ExtractPossibleNumber.
-// static
-bool PhoneNumberUtil::IsViablePhoneNumber(const string& number) {
+bool PhoneNumberUtil::IsViablePhoneNumber(const string& number) const {
   if (number.length() < kMinLengthForNsn) {
     logger->Debug("Number too short to be viable:" + number);
     return false;
@@ -1814,11 +1814,10 @@ PhoneNumberUtil::MaybeStripInternationalPrefixAndNormalize(
 // The number passed in should be the normalized telephone number that we wish
 // to strip any national dialing prefix from. The metadata should be for the
 // region that we think this number is from.
-// static
 void PhoneNumberUtil::MaybeStripNationalPrefixAndCarrierCode(
     const PhoneMetadata& metadata,
     string* number,
-    string* carrier_code) {
+    string* carrier_code) const {
   DCHECK(number);
   string carrier_code_temp;
   const string& possible_national_prefix =
@@ -1884,8 +1883,8 @@ void PhoneNumberUtil::MaybeStripNationalPrefixAndCarrierCode(
 // Strips any extension (as in, the part of the number dialled after the call is
 // connected, usually indicated with extn, ext, x or similar) from the end of
 // the number, and returns it. The number passed in should be non-normalized.
-// static
-bool PhoneNumberUtil::MaybeStripExtension(string* number, string* extension) {
+bool PhoneNumberUtil::MaybeStripExtension(string* number, string* extension)
+    const {
   DCHECK(number);
   DCHECK(extension);
   // There are three extension capturing groups in the regular expression.
@@ -1932,7 +1931,7 @@ bool PhoneNumberUtil::MaybeStripExtension(string* number, string* extension) {
 // characters long.
 int PhoneNumberUtil::ExtractCountryCode(string* national_number) const {
   int potential_country_code;
-  for (int i = 1; i <= 3; ++i) {
+  for (size_t i = 1; i <= kMaxLengthCountryCode; ++i) {
     safe_strto32(national_number->substr(0, i), &potential_country_code);
     string region_code;
     GetRegionCodeForCountryCode(potential_country_code, &region_code);

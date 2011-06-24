@@ -71,6 +71,20 @@ namespace PhoneNumbers
         UNKNOWN
     }
 
+    /**
+    * Utility for international phone numbers. Functionality includes formatting, parsing and
+    * validation.
+    *
+    * <p>If you use this library, and want to be notified about important changes, please sign up to
+    * our <a href="http://groups.google.com/group/libphonenumber-discuss/about">mailing list</a>.
+    *
+    * NOTE: A lot of methods in this class require Region Code strings. These must be provided using
+    * ISO 3166-1 two-letter country-code format. These should be in upper-case. The list of the codes
+    * can be found here: http://www.iso.org/iso/english_country_names_and_code_elements
+    *
+    * @author Shaopeng Jia
+    * @author Lara Rennie
+    */
     public class PhoneNumberUtil
     {
         // Flags to use when compiling regular expressions for phone numbers.
@@ -738,7 +752,7 @@ namespace PhoneNumbers
         */
         private bool IsValidRegionCode(String regionCode)
         {
-            return regionCode != null && supportedRegions_.Contains(regionCode.ToUpper());
+            return regionCode != null && supportedRegions_.Contains(regionCode);
         }
 
         /**
@@ -772,27 +786,29 @@ namespace PhoneNumbers
             return formattedNumber.ToString();
         }
 
-        // Same as format(PhoneNumber, PhoneNumberFormat), but accepts mutable StringBuilder as parameters
-        // to decrease object creation when invoked many times.
+        /**
+        * Same as {@link #format(PhoneNumber, PhoneNumberFormat)}, but accepts a mutable StringBuilder as
+        * a parameter to decrease object creation when invoked many times.
+        */
         public void Format(PhoneNumber number, PhoneNumberFormat numberFormat,
             StringBuilder formattedNumber)
         {
             // Clear the StringBuilder first.
             formattedNumber.Length = 0;
-            var countryCode = number.CountryCode;
+            var countryCallingCode = number.CountryCode;
             var nationalSignificantNumber = GetNationalSignificantNumber(number);
             if (numberFormat == PhoneNumberFormat.E164)
             {
                 // Early exit for E164 case since no formatting of the national number needs to be applied.
                 // Extensions are not formatted.
                 formattedNumber.Append(nationalSignificantNumber);
-                FormatNumberByFormat(countryCode, PhoneNumberFormat.E164, formattedNumber);
+                FormatNumberByFormat(countryCallingCode, PhoneNumberFormat.E164, formattedNumber);
                 return;
             }
             // Note getRegionCodeForCountryCode() is used because formatting information for regions which
             // share a country calling code is contained by only one region for performance reasons. For
             // example, for NANPA regions it will be contained in the metadata for US.
-            var regionCode = GetRegionCodeForCountryCode(countryCode);
+            var regionCode = GetRegionCodeForCountryCode(countryCallingCode);
             if (!IsValidRegionCode(regionCode))
             {
                 formattedNumber.Append(nationalSignificantNumber);
@@ -802,7 +818,7 @@ namespace PhoneNumbers
             formattedNumber.Append(FormatNationalNumber(nationalSignificantNumber,
                 regionCode, numberFormat));
             MaybeGetFormattedExtension(number, regionCode, numberFormat, formattedNumber);
-            FormatNumberByFormat(countryCode, numberFormat, formattedNumber);
+            FormatNumberByFormat(countryCallingCode, numberFormat, formattedNumber);
         }
 
         /**
@@ -937,8 +953,7 @@ namespace PhoneNumbers
         * INTERNATIONAL format will be returned instead.
         *
         * @param number               the phone number to be formatted
-        * @param regionCallingFrom    the ISO 3166-1 two-letter region code that denotes the region
-        *                             where the call is being placed
+        * @param regionCallingFrom    the region where the call is being placed
         * @return  the formatted phone number
         */
         public String FormatOutOfCountryCallingNumber(PhoneNumber number, String regionCallingFrom)
@@ -948,7 +963,7 @@ namespace PhoneNumbers
             int countryCallingCode = number.CountryCode;
             var regionCode = GetRegionCodeForCountryCode(countryCallingCode);
             var nationalSignificantNumber = GetNationalSignificantNumber(number);
-            if (!IsValidRegionCode(regionCode))
+            if (!HasValidRegionCode(regionCode, countryCallingCode, nationalSignificantNumber))
                 return nationalSignificantNumber;
             if (countryCallingCode == NANPA_COUNTRY_CODE)
             {
@@ -1276,8 +1291,7 @@ namespace PhoneNumbers
         /**
         * Gets a valid number for the specified region.
         *
-        * @param regionCode  the ISO 3166-1 two-letter region code that denotes
-        *                    the region for which an example number is needed
+        * @param regionCode  region for which an example number is needed
         * @return  a valid fixed-line number for the specified region. Returns null when the metadata
         *    does not contain such information.
         */
@@ -1289,11 +1303,10 @@ namespace PhoneNumbers
         /**
         * Gets a valid number for the specified region and number type.
         *
-        * @param regionCode  the ISO 3166-1 two-letter region code that denotes
-        *                    the region for which an example number is needed
+        * @param regionCode  region for which an example number is needed
         * @param type  the type of number that is needed
         * @return  a valid number for the specified region and type. Returns null when the metadata
-        *     does not contain such information.
+        *     does not contain such information or if an invalid region was entered.
         */
         public PhoneNumber GetExampleNumberForType(String regionCode, PhoneNumberType type)
         {
@@ -1438,7 +1451,6 @@ namespace PhoneNumbers
         {
             if (!IsValidRegionCode(regionCode))
                 return null;
-            regionCode = regionCode.ToUpper();
             if (!regionToMetadataMap.ContainsKey(regionCode))
                 LoadMetadataForRegionFromFile(currentFilePrefix_, regionCode);
             return regionToMetadataMap.ContainsKey(regionCode)
@@ -1477,8 +1489,7 @@ namespace PhoneNumbers
         * Canada, rather than just a valid NANPA number.
         *
         * @param number       the phone number that we want to validate
-        * @param regionCode   the ISO 3166-1 two-letter region code that denotes the region that we want
-        *                     to validate the phone number for
+        * @param regionCode   the region that we want to validate the phone number for
         * @return  a boolean that indicates whether the number is of a valid pattern
         */
         public bool IsValidNumberForRegion(PhoneNumber number, String regionCode)
@@ -1556,8 +1567,7 @@ namespace PhoneNumbers
         * Returns the country calling code for a specific region. For example, this would be 1 for the
         * United States, and 64 for New Zealand.
         *
-        * @param regionCode  the ISO 3166-1 two-letter region code that denotes
-        *                    the region that we want to get the country calling code for
+        * @param regionCode  region that we want to get the country calling code for
         * @return  the country calling code for the region denoted by regionCode
         */
         public int GetCountryCodeForRegion(String regionCode)
@@ -1578,8 +1588,7 @@ namespace PhoneNumbers
         * national dialling prefix is used only for certain types of numbers. Use the library's
         * formatting functions to prefix the national prefix when required.
         *
-        * @param regionCode  the ISO 3166-1 two-letter region code that denotes
-        *                    the region that we want to get the dialling prefix for
+        * @param regionCode  the region that we want to get the dialling prefix for
         * @param stripNonDigits  true to strip non-digits from the national dialling prefix
         * @return  the dialling prefix for the region denoted by regionCode
         */
@@ -1608,7 +1617,7 @@ namespace PhoneNumbers
         */
         public bool IsNANPACountry(String regionCode)
         {
-            return regionCode != null && nanpaRegions_.Contains(regionCode.ToUpper());
+            return regionCode != null && nanpaRegions_.Contains(regionCode);
         }
 
         /**
@@ -1730,8 +1739,7 @@ namespace PhoneNumbers
         * number)} with the resultant PhoneNumber object.
         *
         * @param number  the number that needs to be checked, in the form of a string
-        * @param regionDialingFrom  the ISO 3166-1 two-letter region code that denotes the region that
-        *     we are expecting the number to be dialed from.
+        * @param regionDialingFrom  region that we are expecting the number to be dialed from.
         *     Note this is different from the region where the number belongs.  For example, the number
         *     +1 650 253 0000 is a number that belongs to US. When written in this form, it can be
         *     dialed from any region. When it is written as 00 1 650 253 0000, it can be dialed from any
@@ -1784,8 +1792,7 @@ namespace PhoneNumbers
         /**
         * Gets an {@link com.google.i18n.phonenumbers.AsYouTypeFormatter} for the specific region.
         *
-        * @param regionCode  the ISO 3166-1 two-letter region code that denotes the region where
-        *     the phone number is being entered
+        * @param regionCode  region where the phone number is being entered
         *
         * @return  an {@link com.google.i18n.phonenumbers.AsYouTypeFormatter} object, which can be used
         *     to format phone numbers in the specific region "as you type"
@@ -2106,9 +2113,8 @@ namespace PhoneNumbers
         *
         * @param numberToParse     number that we are attempting to parse. This can contain formatting
         *                          such as +, ( and -, as well as a phone number extension.
-        * @param defaultRegion     the ISO 3166-1 two-letter region code that denotes the region that we
-        *                          are expecting the number to be from. This is only used if the number
-        *                          being parsed is not written in international format.
+        * @param defaultRegion     region that we are expecting the number to be from. This is only used
+        *                          if the number being parsed is not written in international format.
         *                          The country_code for the number in this case would be stored as that
         *                          of the default region supplied. If the number is guaranteed to
         *                          start with a '+' followed by the country calling code, then "ZZ" or
@@ -2125,8 +2131,10 @@ namespace PhoneNumbers
             return phoneNumber.Build();
         }
 
-        // Same as parse(String, String), but accepts mutable PhoneNumber as a parameter to
-        // decrease object creation when invoked many times.
+        /**
+        * Same as {@link #parse(String, String)}, but accepts mutable PhoneNumber as a parameter to
+        * decrease object creation when invoked many times.
+        */
         public void Parse(String numberToParse, String defaultRegion, PhoneNumber.Builder phoneNumber)
         {
             ParseHelper(numberToParse, defaultRegion, false, true, phoneNumber);
@@ -2139,11 +2147,10 @@ namespace PhoneNumbers
         *
         * @param numberToParse     number that we are attempting to parse. This can contain formatting
         *                          such as +, ( and -, as well as a phone number extension.
-        * @param defaultRegion     the ISO 3166-1 two-letter region code that denotes the region that
-        *                          we are expecting the number to be from. This is only used if the
-        *                          number being parsed is not written in international format. The
-        *                          country calling code for the number in this case would be stored as
-        *                          that of the default region supplied.
+        * @param defaultRegion     region that we are expecting the number to be from. This is only used
+        *                          if the number being parsed is not written in international format.
+        *                          The country calling code for the number in this case would be stored
+        *                          as that of the default region supplied.
         * @return                  a phone number proto buffer filled with the parsed number
         * @throws NumberParseException  if the string is not considered to be a viable phone number or if
         *                               no default region was supplied
@@ -2155,8 +2162,10 @@ namespace PhoneNumbers
             return phoneNumber.Build();
         }
 
-        // Same as parseAndKeepRawInput(String, String), but accepts mutable PhoneNumber as a parameter to
-        // decrease object creation when invoked many times.
+        /**
+        * Same as{@link #parseAndKeepRawInput(String, String)}, but accepts a mutable PhoneNumber as
+        * a parameter to decrease object creation when invoked many times.
+        */
         public void ParseAndKeepRawInput(String numberToParse, String defaultRegion, PhoneNumber.Builder phoneNumber)
         {
             ParseHelper(numberToParse, defaultRegion, true, true, phoneNumber);
@@ -2168,11 +2177,10 @@ namespace PhoneNumbers
         * getMatcher(text, defaultRegion, Leniency.VALID, Long.MAX_VALUE)}.
         *
         * @param text              the text to search for phone numbers, null for no text
-        * @param defaultRegion     the ISO 3166-1 two-letter region code that denotes the region that
-        *                          we are expecting the number to be from. This is only used if the
-        *                          number being parsed is not written in international format. The
-        *                          country calling code for the number in this case would be stored as
-        *                          that of the default region supplied. May be null if only international
+        * @param defaultRegion     region that we are expecting the number to be from. This is only used
+        *                          if the number being parsed is not written in international format. The
+        *                          country_code for the number in this case would be stored as that of
+        *                          the default region supplied. May be null if only international
         *                          numbers are expected.
         */
         public IEnumerable<PhoneNumberMatch> FindNumbers(String text, String defaultRegion)
@@ -2184,11 +2192,10 @@ namespace PhoneNumbers
         * Returns an iterable over all {@link PhoneNumberMatch PhoneNumberMatches} in {@code text}.
         *
         * @param text              the text to search for phone numbers, null for no text
-        * @param defaultRegion    the ISO 3166-1 two-letter region code that denotes the region that
-        *                          we are expecting the number to be from. This is only used if the
-        *                          number being parsed is not written in international format. The
-        *                          country calling code for the number in this case would be stored as
-        *                          that of the default region supplied. May be null if only international
+        * @param defaultRegion     region that we are expecting the number to be from. This is only used
+        *                          if the number being parsed is not written in international format. The
+        *                          country_code for the number in this case would be stored as that of
+        *                          the default region supplied. May be null if only international
         *                          numbers are expected.
         * @param leniency          the leniency to use when evaluating candidate phone numbers
         * @param maxTries          the maximum number of invalid numbers to try before giving up on the
@@ -2389,7 +2396,7 @@ namespace PhoneNumbers
 
         /**
         * Takes two phone numbers as strings and compares them for equality. This is a convenience
-        * wrapper for {@link #isNumberMatch(PhoneNumber, PhoneNumber)}. No default region is known.
+        * wrapper {@link #isNumberMatch(PhoneNumber, PhoneNumber)}. No default region is known.
         *
         * @param firstNumber  first number to compare. Can contain formatting, and can have country
         *     calling code specified with + at the start.
@@ -2508,7 +2515,7 @@ namespace PhoneNumbers
         {
             String regionCode = GetRegionCodeForNumber(number);
             String nationalSignificantNumber = GetNationalSignificantNumber(number);
-            if (!IsValidRegionCode(regionCode))
+            if (!HasValidRegionCode(regionCode, number.CountryCode, nationalSignificantNumber))
                 return true;
             PhoneMetadata metadata = GetMetadataForRegion(regionCode);
             return !IsNumberMatchingDesc(nationalSignificantNumber, metadata.NoInternationalDialling);

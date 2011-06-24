@@ -142,6 +142,9 @@ class RegionCode {
 
 class PhoneNumberUtilTest : public testing::Test {
  protected:
+  PhoneNumberUtilTest() : phone_util_(*PhoneNumberUtil::GetInstance()) {
+  }
+
   // Wrapper functions for private functions that we want to test.
   const PhoneMetadata* GetPhoneMetadata(const string& region_code) const {
     return phone_util_.GetMetadataForRegion(region_code);
@@ -153,11 +156,11 @@ class PhoneNumberUtilTest : public testing::Test {
 
   void ExtractPossibleNumber(const string& number,
                              string* extracted_number) const {
-    PhoneNumberUtil::ExtractPossibleNumber(number, extracted_number);
+    phone_util_.ExtractPossibleNumber(number, extracted_number);
   }
 
   bool IsViablePhoneNumber(const string& number) const {
-    return PhoneNumberUtil::IsViablePhoneNumber(number);
+    return phone_util_.IsViablePhoneNumber(number);
   }
 
   void Normalize(string* number) const {
@@ -179,12 +182,12 @@ class PhoneNumberUtilTest : public testing::Test {
   void MaybeStripNationalPrefixAndCarrierCode(const PhoneMetadata& metadata,
                                               string* number,
                                               string* carrier_code) const {
-    PhoneNumberUtil::MaybeStripNationalPrefixAndCarrierCode(metadata, number,
+    phone_util_.MaybeStripNationalPrefixAndCarrierCode(metadata, number,
                                                             carrier_code);
   }
 
   bool MaybeStripExtension(string* number, string* extension) const {
-    return PhoneNumberUtil::MaybeStripExtension(number, extension);
+    return phone_util_.MaybeStripExtension(number, extension);
   }
 
   PhoneNumberUtil::ErrorType MaybeExtractCountryCode(
@@ -211,7 +214,7 @@ class PhoneNumberUtilTest : public testing::Test {
     return ExactlySameAs(expected_number, actual_number);
   }
 
-  PhoneNumberUtil phone_util_;
+  const PhoneNumberUtil& phone_util_;
 };
 
 // Provides PhoneNumber comparison operators to support the use of EXPECT_EQ and
@@ -248,10 +251,6 @@ ostream& operator<<(ostream& os, const PhoneNumber& number) {
   return os;
 }
 
-TEST_F(PhoneNumberUtilTest, GetInstance) {
-  EXPECT_FALSE(PhoneNumberUtil::GetInstance() == NULL);
-}
-
 TEST_F(PhoneNumberUtilTest, GetSupportedRegions) {
   set<string> regions;
 
@@ -267,8 +266,8 @@ TEST_F(PhoneNumberUtilTest, GetInstanceLoadUSMetadata) {
   EXPECT_TRUE(metadata->has_national_prefix());
   ASSERT_EQ(2, metadata->number_format_size());
   EXPECT_EQ("(\\d{3})(\\d{3})(\\d{4})",
-            metadata->number_format(0).pattern());
-  EXPECT_EQ("$1 $2 $3", metadata->number_format(0).format());
+            metadata->number_format(1).pattern());
+  EXPECT_EQ("$1 $2 $3", metadata->number_format(1).format());
   EXPECT_EQ("[13-9]\\d{9}|2[0-35-9]\\d{8}",
             metadata->general_desc().national_number_pattern());
   EXPECT_EQ("\\d{7}(?:\\d{3})?",
@@ -1681,6 +1680,20 @@ TEST_F(PhoneNumberUtilTest, IsViablePhoneNumber) {
   EXPECT_TRUE(IsViablePhoneNumber("（1）　3456789"));
   // Testing a leading + is okay.
   EXPECT_TRUE(IsViablePhoneNumber("+1）　3456789"));
+}
+
+TEST_F(PhoneNumberUtilTest, ConvertAlphaCharactersInNumber) {
+  string input("1800-ABC-DEF");
+  phone_util_.ConvertAlphaCharactersInNumber(&input);
+  // Alpha chars are converted to digits; everything else is left untouched.
+  static const string kExpectedOutput = "1800-222-333";
+  EXPECT_EQ(kExpectedOutput, input);
+
+  // Try with some non-ASCII characters.
+  input.assign("1　（800) ABC-DEF");
+  static const string kExpectedFullwidthOutput = "1　（800) 222-333";
+  phone_util_.ConvertAlphaCharactersInNumber(&input);
+  EXPECT_EQ(kExpectedFullwidthOutput, input);
 }
 
 TEST_F(PhoneNumberUtilTest, NormaliseRemovePunctuation) {

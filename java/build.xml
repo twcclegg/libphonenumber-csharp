@@ -4,7 +4,6 @@
   <property name="src.dir" value="src"/>
   <property name="test.dir" value="test"/>
   <property name="build.dir" value="build"/>
-  <property name="resources.dir" value="resources"/>
   <property name="classes.dir" value="${build.dir}/classes"/>
   <property name="jar.dir" value="${build.dir}/jar"/>
   <property name="lib.dir" value="lib"/>
@@ -26,7 +25,6 @@
     <mkdir dir="${classes.dir}"/>
     <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath"/>
     <javac srcdir="${test.dir}" destdir="${classes.dir}" classpathref="classpath" debug="on"/>
-    <javac srcdir="${resources.dir}" destdir="${classes.dir}" classpathref="classpath"/>
   </target>
 
   <target name="jar" depends="compile">
@@ -35,12 +33,9 @@
       <fileset dir="${classes.dir}">
         <include name="**/*.class"/>
         <exclude name="**/*Test*"/>
-        <exclude name="**/AreaCodeMap*"/>
         <exclude name="**/BuildMetadata*"/>
-        <exclude name="**/GenerateAreaCodeData*"/>
         <exclude name="**/JSArrayBuilder*"/>
-        <exclude name="**/MappingFileProvider*"/>
-        <exclude name="**/PhoneNumberOfflineGeocoder*"/>
+        <exclude name="**/geocoding/*"/>
       </fileset>
       <fileset dir="${src.dir}">
         <include name="**/PhoneNumberMetadataProto*"/>
@@ -48,19 +43,12 @@
     </jar>
     <jar destfile="${jar.dir}/offline-geocoder.jar">
       <fileset dir="${classes.dir}">
-        <include name="**/*.class"/>
+        <include name="**/geocoding/*.class"/>
         <exclude name="**/*Test*"/>
-        <exclude name="**/AsYouTypeFormatter*"/>
-        <exclude name="**/BuildMetadata*"/>
-        <exclude name="**/GenerateAreaCodeData*"/>
-        <exclude name="**/JSArrayBuilder*"/>
-        <exclude name="**/PhoneNumberMatch*"/>
+        <exclude name="**/geocoding/GenerateAreaCodeData*"/>
       </fileset>
       <fileset dir="${src.dir}">
-        <include name="**/PhoneNumberMetadataProto*"/>
-      </fileset>
-      <fileset dir="${src.dir}">
-        <include name="**/geocoding_data/*"/>
+        <include name="**/geocoding/data/*"/>
       </fileset>
     </jar>
   </target>
@@ -71,9 +59,6 @@
       <fileset dir="${classes.dir}">
         <include name="**/*.class"/>
         <exclude name="**/*Test*"/>
-        <exclude name="**/BuildMetadata*"/>
-        <exclude name="**/JSArrayBuilder*"/>
-        <exclude name="**/GenerateAreaCodeData*"/>
       </fileset>
       <fileset dir="${src.dir}">
         <include name="**/PhoneNumberMetadataProto*"/>
@@ -82,7 +67,7 @@
         <include name="**/PhoneNumberMetadataProtoForTesting*"/>
       </fileset>
       <fileset dir="${test.dir}">
-        <include name="**/geocoding_testing_data/*"/>
+        <include name="**/geocoding/testing_data/*"/>
       </fileset>
     </jar>
   </target>
