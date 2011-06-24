@@ -15,7 +15,8 @@ added in csharp/ root directory. The intent is to keep pulling from
 the main repository and update the C# port accordingly.
 
 lib/
-  NUnit and Google.ProtoBuffersLite binaries
+  NUnit, Google.ProtoBuffersLite binaries and various conversion
+  scripts.
 
 PhoneNumbers/
   Port of libphonenumber Java library
