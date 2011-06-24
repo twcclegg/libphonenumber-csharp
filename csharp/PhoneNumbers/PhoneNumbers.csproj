@@ -72,7 +72,6 @@
     <EmbeddedResource Include="res\31_nl" />
     <EmbeddedResource Include="res\34_es" />
     <EmbeddedResource Include="res\43_de" />
-    <EmbeddedResource Include="res\44_en" />
     <EmbeddedResource Include="res\46_sv" />
     <EmbeddedResource Include="res\49_de" />
     <EmbeddedResource Include="res\54_es" />
