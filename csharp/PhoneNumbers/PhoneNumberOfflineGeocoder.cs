@@ -71,10 +71,10 @@ namespace PhoneNumbers
         {
             this.phoneUtil = phoneUtil;
             this.phonePrefixDataDirectory = phonePrefixDataDirectory;
-            loadMappingFileProvider();
+            LoadMappingFileProvider();
         }
 
-        private void loadMappingFileProvider()
+        private void LoadMappingFileProvider()
         {
             var files = new SortedDictionary<int, HashSet<String>>();
             var asm = Assembly.GetExecutingAssembly();
@@ -95,7 +95,7 @@ namespace PhoneNumbers
             mappingFileProvider.ReadFileConfigs(files);
         }
 
-        private AreaCodeMap getPhonePrefixDescriptions(
+        private AreaCodeMap GetPhonePrefixDescriptions(
             int countryCallingCode, String language, String script, String region)
         {
             String fileName = mappingFileProvider.GetFileName(countryCallingCode, language, script, region);
@@ -105,13 +105,13 @@ namespace PhoneNumbers
             }
             if (!availablePhonePrefixMaps.ContainsKey(fileName))
             {
-                loadAreaCodeMapFromFile(fileName);
+                LoadAreaCodeMapFromFile(fileName);
             }
             AreaCodeMap map;
             return availablePhonePrefixMaps.TryGetValue(fileName, out map) ? map : null;
         }
 
-        private void loadAreaCodeMapFromFile(String fileName)
+        private void LoadAreaCodeMapFromFile(String fileName)
         {
             var asm = Assembly.GetExecutingAssembly();
             var prefix = asm.GetName().Name + "." + phonePrefixDataDirectory;
@@ -132,7 +132,7 @@ namespace PhoneNumbers
          *
          * @return  a {@link PhoneNumberOfflineGeocoder} instance
          */
-        public static PhoneNumberOfflineGeocoder getInstance()
+        public static PhoneNumberOfflineGeocoder GetInstance()
         {
             lock (thisLock)
             {
@@ -153,9 +153,9 @@ namespace PhoneNumbers
          * @param countryCallingCode   specifies the country calling code of phone numbers that are
          *     contained by the file to be loaded
          */
-        public void loadDataFile(Locale locale, int countryCallingCode)
+        public void LoadDataFile(Locale locale, int countryCallingCode)
         {
-            instance.getPhonePrefixDescriptions(countryCallingCode, locale.Language, "",
+            instance.GetPhonePrefixDescriptions(countryCallingCode, locale.Language, "",
                 locale.Country);
         }
 
@@ -163,7 +163,7 @@ namespace PhoneNumbers
          * Returns the customary display name in the given language for the given territory the phone
          * number is from.
          */
-        private String getCountryNameForNumber(PhoneNumber number, Locale language)
+        private String GetCountryNameForNumber(PhoneNumber number, Locale language)
         {
             String regionCode = phoneUtil.GetRegionCodeForNumber(number);
             return (regionCode == null || regionCode.Equals("ZZ"))
@@ -182,11 +182,11 @@ namespace PhoneNumbers
         public String GetDescriptionForNumber(PhoneNumber number, Locale languageCode)
         {
             String areaDescription =
-                getAreaDescriptionForNumber(
+                GetAreaDescriptionForNumber(
                     number, languageCode.Language, "",  // No script is specified.
                     languageCode.Country);
             return (areaDescription.Length > 0)
-                ? areaDescription : getCountryNameForNumber(number, languageCode);
+                ? areaDescription : GetCountryNameForNumber(number, languageCode);
         }
 
         /**
@@ -200,11 +200,11 @@ namespace PhoneNumbers
          * @return  an area-level text description in the given language for the given phone number, or an
          *     empty string if such a description is not available
          */
-        private String getAreaDescriptionForNumber(
+        private String GetAreaDescriptionForNumber(
             PhoneNumber number, String lang, String script, String region)
         {
             AreaCodeMap phonePrefixDescriptions =
-                getPhonePrefixDescriptions(number.CountryCode, lang, script, region);
+                GetPhonePrefixDescriptions(number.CountryCode, lang, script, region);
             return (phonePrefixDescriptions != null) ? phonePrefixDescriptions.Lookup(number) : "";
         }
     }
