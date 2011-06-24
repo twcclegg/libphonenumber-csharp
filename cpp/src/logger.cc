@@ -14,12 +14,14 @@
 
 // Author: Philippe Liard
 
-# include "logger_adapter.h"
+#include "logger.h"
+
+#include <cstddef>
 
 namespace i18n {
 namespace phonenumbers {
 
-LoggerAdapter::~LoggerAdapter() {}
+Logger* Logger::impl_ = NULL;
 
 }  // namespace phonenumbers
 }  // namespace i18n

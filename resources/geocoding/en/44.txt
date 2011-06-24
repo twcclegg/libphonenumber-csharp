@@ -12,7 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Reduction of 4411x, 441x1 and 4429x data to one line per place name.
+# Originally generated from:
+# http://www.ofcom.org.uk/static/numbering/sabc.txt
+# Tidied Ofcom SABC data (with removal of "National Dialling" and "Expansion"
+# wording and reduction of 4411x and 441x1 data to one line per place name).
 
 44113|Leeds
 44114|Sheffield
@@ -190,8 +193,8 @@
 4413877|Dumfries
 4413878|Dumfries
 4413879|Dumfries
-4413880|Bishop Auckland/Stanhope
-4413881|Bishop Auckland/Stanhope
+4413880|Bishop Auckland/Stanhope (Eastgate)
+4413881|Bishop Auckland/Stanhope (Eastgate)
 4413882|Stanhope (Eastgate)
 4413883|Bishop Auckland
 4413884|Bishop Auckland
@@ -327,8 +330,8 @@
 441503|Looe
 441505|Johnstone
 441506|Bathgate
-4415070|Louth/Alford/Spilsby
-4415071|Louth/Alford/Spilsby
+4415070|Louth/Alford/Spilsby (Horncastle)
+4415071|Louth/Alford/Spilsby (Horncastle)
 4415072|Spilsby (Horncastle)
 4415073|Louth
 4415074|Alford (Lincs)
@@ -421,7 +424,7 @@
 441592|Kirkcaldy
 441593|Lybster
 441594|Lydney
-441595|Lerwick,Foula & Fair Isle
+441595|Lerwick, Foula & Fair Isle
 441597|Llandrindod Wells
 441598|Lynton
 441599|Kyle
@@ -770,8 +773,8 @@
 441971|Scourie
 441972|Glenborrodale
 441974|Llanon
-4419750|Alford/Strathdon
-4419751|Alford/Strathdon
+4419750|Alford (Aberdeen)/Strathdon
+4419751|Alford (Aberdeen)/Strathdon
 4419752|Alford (Aberdeen)
 4419753|Strathdon
 4419754|Alford (Aberdeen)
@@ -846,4 +849,5 @@
 442896|Belfast
 442897|Saintfield
 442898|Belfast
-4429|Cardiff
+44291|Cardiff
+44292|Cardiff

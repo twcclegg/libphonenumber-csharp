@@ -20,10 +20,10 @@ package com.google.phonenumbers;
 
 import com.google.i18n.phonenumbers.AsYouTypeFormatter;
 import com.google.i18n.phonenumbers.NumberParseException;
-import com.google.i18n.phonenumbers.PhoneNumberOfflineGeocoder;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
+import com.google.i18n.phonenumbers.geocoding.PhoneNumberOfflineGeocoder;
 
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
@@ -70,7 +70,10 @@ public class PhoneNumberParserServlet extends HttpServlet {
           } else if (fieldName.equals("defaultCountry")) {
             defaultCountry = Streams.asString(in);
           } else if (fieldName.equals("languageCode")) {
-            languageCode = Streams.asString(in);
+            String languageEntered = Streams.asString(in);
+            if (languageEntered.length() > 0) {
+              languageCode = languageEntered;
+            }
           } else if (fieldName.equals("regionCode")) {
             regionCode = Streams.asString(in);
           }
@@ -105,7 +108,7 @@ public class PhoneNumberParserServlet extends HttpServlet {
 
   private StringBuilder getOutputForFile(String defaultCountry, String fileContents) {
     StringBuilder output = new StringBuilder();
-    output.append("<HTML><HEAD><TITLE>Results generated from phone numbers in the file provided:" 
+    output.append("<HTML><HEAD><TITLE>Results generated from phone numbers in the file provided:"
         + "</TITLE></HEAD><BODY>");
     output.append("<TABLE align=center border=1>");
     output.append("<TH align=center>ID</TH>");
@@ -157,7 +160,7 @@ public class PhoneNumberParserServlet extends HttpServlet {
       output.append("\nnational_number: ").append(number.getNationalNumber());
       output.append("\nextension:").append(number.getExtension());
       output.append("\ncountry_code_source: ").append(number.getCountryCodeSource());
-      output.append("\nitalian_leading_zero: ").append(number.getItalianLeadingZero());
+      output.append("\nitalian_leading_zero: ").append(number.isItalianLeadingZero());
       output.append("\nraw_input: ").append(number.getRawInput());
 
       output.append("\n\n****Validation Results:****");

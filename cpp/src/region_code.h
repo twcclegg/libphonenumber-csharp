@@ -12,37 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Author: Philippe Liard
-
-#ifndef I18N_PHONENUMBERS_LOGGER_ADAPTER_H_
-#define I18N_PHONENUMBERS_LOGGER_ADAPTER_H_
+#ifndef I18N_PHONENUMBERS_REGION_CODE_H_
+#define I18N_PHONENUMBERS_REGION_CODE_H_
 
 #include <string>
-
-using std::string;
 
 namespace i18n {
 namespace phonenumbers {
 
-// Implement this 'interface' to override the way logging is handled
-// in the library.
-class LoggerAdapter {
+using std::string;
+
+class RegionCode {
  public:
-  virtual ~LoggerAdapter();
-
-  // Logging methods
-  virtual void Fatal(const string& msg) const = 0;
-
-  virtual void Error(const string& msg) const = 0;
-
-  virtual void Warning(const string& msg) const = 0;
-
-  virtual void Info(const string& msg) const = 0;
-
-  virtual void Debug(const string& msg) const = 0;
+  // Returns a region code string representing the "unknown" region.
+  static const string& GetUnknown() {
+    static const string s = "ZZ";
+    return s;
+  }
 };
 
 }  // namespace phonenumbers
 }  // namespace i18n
 
-#endif  // I18N_PHONENUMBERS_LOGGER_ADAPTER_H_
+#endif  // I18N_PHONENUMBERS_REGION_CODE_H_
