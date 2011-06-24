@@ -57,6 +57,31 @@ namespace PhoneNumbers.Test
         }
 
         [Test]
+        public void TestTooLongNumberMatchingMultipleLeadingDigits()
+        {
+            // See http://code.google.com/p/libphonenumber/issues/detail?id=36
+            // The bug occurred last time for countries which have two formatting rules with exactly the
+            // same leading digits pattern but differ in length.
+            AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter("ZZ");
+            Assert.AreEqual("+", formatter.InputDigit('+'));
+            Assert.AreEqual("+8", formatter.InputDigit('8'));
+            Assert.AreEqual("+81 ", formatter.InputDigit('1'));
+            Assert.AreEqual("+81 9", formatter.InputDigit('9'));
+            Assert.AreEqual("+81 90", formatter.InputDigit('0'));
+            Assert.AreEqual("+81 90 1", formatter.InputDigit('1'));
+            Assert.AreEqual("+81 90 12", formatter.InputDigit('2'));
+            Assert.AreEqual("+81 90 123", formatter.InputDigit('3'));
+            Assert.AreEqual("+81 90 1234", formatter.InputDigit('4'));
+            Assert.AreEqual("+81 90 1234 5", formatter.InputDigit('5'));
+            Assert.AreEqual("+81 90 1234 56", formatter.InputDigit('6'));
+            Assert.AreEqual("+81 90 1234 567", formatter.InputDigit('7'));
+            Assert.AreEqual("+81 90 1234 5678", formatter.InputDigit('8'));
+            Assert.AreEqual("+81 90 12 345 6789", formatter.InputDigit('9'));
+            Assert.AreEqual("+81901234567890", formatter.InputDigit('0'));
+        }
+
+
+        [Test]
         public void TestAYTFUS()
         {
             AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter("US");

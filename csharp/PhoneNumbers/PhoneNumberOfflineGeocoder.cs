@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2009 Google Inc.
+ * Copyright (C) 2011 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,113 @@
  * limitations under the License.
  */
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace PhoneNumbers
 {
+
+    public class Locale
+    {
+        public static readonly Locale ENGLISH = new Locale("en", "GB");
+        public static readonly Locale ITALIAN = new Locale("it", "IT");
+        public static readonly Locale KOREAN = new Locale("ko", "KR");
+        public static readonly Locale SIMPLIFIED_CHINESE = new Locale("zh", "CN");
+
+        public readonly String Language;
+        public readonly String Country;
+
+        public Locale(String language, String countryCode)
+        {
+            Language = language;
+            Country = countryCode;
+        }
+    }
+    /**
+     * An offline geocoder which provides geographical information related to a phone number.
+     *
+     * @author Shaopeng Jia
+     */
     public class PhoneNumberOfflineGeocoder
     {
-        private static Object lock_ = new Object();
         private static PhoneNumberOfflineGeocoder instance = null;
-        private PhoneNumberUtil phoneUtil;
+        private const String MAPPING_DATA_DIRECTORY = "res.";
+        private static Object thisLock = new Object();
+
+        private readonly PhoneNumberUtil phoneUtil;
+        private readonly String phonePrefixDataDirectory;
+
+        // The mappingFileProvider knows for which combination of countryCallingCode and language a phone
+        // prefix mapping file is available in the file system, so that a file can be loaded when needed.
+        private MappingFileProvider mappingFileProvider = new MappingFileProvider();
+
+        // A mapping from countryCallingCode_lang to the corresponding phone prefix map that has been
+        // loaded.
+        private Dictionary<String, AreaCodeMap> availablePhonePrefixMaps = new Dictionary<String, AreaCodeMap>();
 
         /**
          * For testing purposes, we allow the phone number util variable to be injected.
+         *
+         * @VisibleForTesting
          */
-        public PhoneNumberOfflineGeocoder(PhoneNumberUtil phoneUtil)
+        public PhoneNumberOfflineGeocoder(String phonePrefixDataDirectory, PhoneNumberUtil phoneUtil)
         {
             this.phoneUtil = phoneUtil;
+            this.phonePrefixDataDirectory = phonePrefixDataDirectory;
+            loadMappingFileProvider();
+        }
+
+        private void loadMappingFileProvider()
+        {
+            var files = new SortedDictionary<int, HashSet<String>>();
+            var asm = Assembly.GetExecutingAssembly();
+            var allNames = asm.GetManifestResourceNames();
+            var prefix = asm.GetName().Name + "." + phonePrefixDataDirectory;
+            var names = allNames.Where(n => n.StartsWith(prefix));
+            foreach (var n in names)
+            {
+                var name = n.Substring(prefix.Length);
+                var pos = name.IndexOf("_");
+                var country = int.Parse(name.Substring(0, pos));
+                var language = name.Substring(pos + 1);
+                if (!files.ContainsKey(country))
+                    files[country] = new HashSet<String>();
+                files[country].Add(language);
+            }
+            mappingFileProvider = new MappingFileProvider();
+            mappingFileProvider.ReadFileConfigs(files);
+        }
+
+        private AreaCodeMap getPhonePrefixDescriptions(
+            int countryCallingCode, String language, String script, String region)
+        {
+            String fileName = mappingFileProvider.GetFileName(countryCallingCode, language, script, region);
+            if (fileName.Length == 0)
+            {
+                return null;
+            }
+            if (!availablePhonePrefixMaps.ContainsKey(fileName))
+            {
+                loadAreaCodeMapFromFile(fileName);
+            }
+            AreaCodeMap map;
+            return availablePhonePrefixMaps.TryGetValue(fileName, out map) ? map : null;
+        }
+
+        private void loadAreaCodeMapFromFile(String fileName)
+        {
+            var asm = Assembly.GetExecutingAssembly();
+            var prefix = asm.GetName().Name + "." + phonePrefixDataDirectory;
+            var resName = prefix + fileName;
+            using(var fp = asm.GetManifestResourceStream(resName))
+            {
+                var areaCodeMap = AreaCodeParser.ParseAreaCodeMap(fp);
+                availablePhonePrefixMaps[fileName] = areaCodeMap;
+            }
         }
 
         /**
@@ -41,26 +129,41 @@ namespace PhoneNumbers
          *
          * <p> The {@link PhoneNumberOfflineGeocoder} is implemented as a singleton. Therefore, calling
          * this method multiple times will only result in one instance being created.
-         * 
+         *
          * @return  a {@link PhoneNumberOfflineGeocoder} instance
          */
-        public static PhoneNumberOfflineGeocoder GetInstance()
+        public static PhoneNumberOfflineGeocoder getInstance()
         {
-            lock (lock_)
+            lock (thisLock)
             {
                 if (instance == null)
                 {
-                    instance = new PhoneNumberOfflineGeocoder(PhoneNumberUtil.GetInstance());
+                    instance =
+                        new PhoneNumberOfflineGeocoder(MAPPING_DATA_DIRECTORY, PhoneNumberUtil.GetInstance());
                 }
                 return instance;
             }
         }
 
         /**
+         * Preload the data file for the given language and country calling code, so that a future lookup
+         * for this language and country calling code will not incur any file loading.
+         *
+         * @param locale  specifies the language of the data file to load
+         * @param countryCallingCode   specifies the country calling code of phone numbers that are
+         *     contained by the file to be loaded
+         */
+        public void loadDataFile(Locale locale, int countryCallingCode)
+        {
+            instance.getPhonePrefixDescriptions(countryCallingCode, locale.Language, "",
+                locale.Country);
+        }
+
+        /**
          * Returns the customary display name in the given language for the given territory the phone
          * number is from.
          */
-        private String GetCountryNameForNumber(PhoneNumber number)
+        private String getCountryNameForNumber(PhoneNumber number, Locale language)
         {
             String regionCode = phoneUtil.GetRegionCodeForNumber(number);
             return (regionCode == null || regionCode.Equals("ZZ"))
@@ -68,19 +171,41 @@ namespace PhoneNumbers
         }
 
         /**
-         * Returns a text description in the given language for the given phone number. The
+         * Returns a text description for the given language code for the given phone number. The
          * description might consist of the name of the country where the phone number is from and/or the
          * name of the geographical area the phone number is from.
          *
          * @param number  the phone number for which we want to get a text description
-         * @param language  the language in which the description should be written
-         * @return  a text description in the given language for the given phone number
+         * @param languageCode  the language code for which the description should be written
+         * @return  a text description for the given language code for the given phone number
          */
-        public String GetDescriptionForNumber(PhoneNumber number)
+        public String GetDescriptionForNumber(PhoneNumber number, Locale languageCode)
         {
-            // TODO: Implement logic to figure out fine-grained geographical information based
-            // on area code here.
-            return GetCountryNameForNumber(number);
+            String areaDescription =
+                getAreaDescriptionForNumber(
+                    number, languageCode.Language, "",  // No script is specified.
+                    languageCode.Country);
+            return (areaDescription.Length > 0)
+                ? areaDescription : getCountryNameForNumber(number, languageCode);
+        }
+
+        /**
+         * Returns an area-level text description in the given language for the given phone number.
+         *
+         * @param number  the phone number for which we want to get a text description
+         * @param lang  two-letter lowercase ISO language codes as defined by ISO 639-1
+         * @param script  four-letter titlecase (the first letter is uppercase and the rest of the letters
+         *     are lowercase) ISO script codes as defined in ISO 15924
+         * @param region  two-letter uppercase ISO country codes as defined by ISO 3166-1
+         * @return  an area-level text description in the given language for the given phone number, or an
+         *     empty string if such a description is not available
+         */
+        private String getAreaDescriptionForNumber(
+            PhoneNumber number, String lang, String script, String region)
+        {
+            AreaCodeMap phonePrefixDescriptions =
+                getPhonePrefixDescriptions(number.CountryCode, lang, script, region);
+            return (phonePrefixDescriptions != null) ? phonePrefixDescriptions.Lookup(number) : "";
         }
     }
 }

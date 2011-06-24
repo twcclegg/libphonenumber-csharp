@@ -23,19 +23,18 @@ namespace PhoneNumbers
     public class PhoneNumberMatch
     {
         public int Start { get; private set; }
-        public int Length { get { return Match.Length; } }
-        public String Match { get; private set; }
-        public String RawString { get { return Match; } }
+        public int Length { get { return RawString.Length; } }
+        public String RawString { get; private set; }
         public PhoneNumber Number { get; private set; }
 
-        public PhoneNumberMatch(int start, String match, PhoneNumber number)
+        public PhoneNumberMatch(int start, String rawString, PhoneNumber number)
         {
             if (start < 0)
                 throw new ArgumentException("Start index must be >= 0.");
-            if (match == null || number == null)
+            if (rawString == null || number == null)
                 throw new ArgumentNullException();
             Start = start;
-            Match = match;
+            RawString = rawString;
             Number = number;
         }
 
@@ -44,21 +43,21 @@ namespace PhoneNumbers
             if (this == obj)
                 return true;
             var p = (obj as PhoneNumberMatch);
-            return p != null && Match == p.Match && Start == p.Start && Number.Equals(p.Number);
+            return p != null && RawString == p.RawString && Start == p.Start && Number.Equals(p.Number);
         }
 
         public override int GetHashCode()
         {
             int hash = GetType().GetHashCode();
             hash ^= Start.GetHashCode();
-            hash ^= Match.GetHashCode();
+            hash ^= RawString.GetHashCode();
             hash ^= Number.GetHashCode();
             return hash;
         }
 
         public override String ToString()
         {
-            return "PhoneNumberMatch [" + Start + "," + Length + ") " + Match;
+            return "PhoneNumberMatch [" + Start + "," + Length + ") " + RawString;
         }
     }
 }

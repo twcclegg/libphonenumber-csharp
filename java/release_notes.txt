@@ -1,3 +1,26 @@
+June 14th, 2011
+* Code changes
+ - Added PhoneNumberOfflineGeocoder, supporting classes and their unittests.
+ - Added GenerateAreaCodeData to transform phone number area mapping files from text files to binary
+   files.
+ - Modified PhoneNumberParserServlet.java and phonenumberparser.jsp to incorporate
+   PhoneNumberOfflineGeocoding in the appengine demo.
+
+* Metadata changes
+ - Added phone number area mapping files for NANPA countries and GB in English, NL in Dutch, AR, CL
+   and ES in Spanish, AT and DE in German, SE in Swedish, BR in Portuguese, KR in English, Korean,
+   Simplified and Traditional Chinese, and CN in Simplified Chinese.
+
+June 10th, 2011
+* Code changes:
+ - Fixes for PhoneNumberMatcher to be more restrictive in valid mode and not match numbers
+   surrounded by Latin characters. This ensures, for example, the string abc123456789acg will not be
+   marked as a phone numbers.
+ - Enable PhoneNumberUtil to handle all digits, rather than a subset
+ - Fix for AYTF issue36 and improvement for US AYTF behaviour.
+* Metadata changes:
+ - Updates: BG, EG, ES, GH, PF, SC, SY, VA
+
 May 24th, 2011
 * Code changes:
  - Phonenumber now implements Serializable.

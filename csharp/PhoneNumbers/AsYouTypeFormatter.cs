@@ -125,8 +125,9 @@ namespace PhoneNumbers
         {
             // When there are multiple available formats, the formatter uses the first format where a
             // formatting template could be created.
-            foreach (var numberFormat in possibleFormats)
+            while (possibleFormats.Count > 0)
             {
+                NumberFormat numberFormat = possibleFormats[0];
                 String pattern = numberFormat.Pattern;
                 if (currentFormattingPattern.Equals(pattern))
                     return false;
@@ -134,6 +135,10 @@ namespace PhoneNumbers
                 {
                     currentFormattingPattern = pattern;
                     return true;
+                }
+                else
+                {
+                    possibleFormats.RemoveAt(0);
                 }
             }
             ableToFormat = false;
@@ -203,7 +208,7 @@ namespace PhoneNumbers
             numberPattern = STANDALONE_DIGIT_PATTERN.Replace(numberPattern, "\\d");
             formattingTemplate.Length = 0;
             String tempTemplate = GetFormattingTemplate(numberPattern, format.Format);
-            if (tempTemplate.Length > nationalNumber.Length)
+            if (tempTemplate.Length > 0)
             {
                 formattingTemplate.Append(tempTemplate);
                 return true;
@@ -220,6 +225,10 @@ namespace PhoneNumbers
             String longestPhoneNumber = "999999999999999";
             var m = regexCache.GetPatternForRegex(numberPattern).Match(longestPhoneNumber);
             String aPhoneNumber = m.Groups[0].Value;
+            // No formatting template can be created if the number of digits entered so far is longer than
+            // the maximum the current formatting rule can accommodate.
+            if (aPhoneNumber.Length < nationalNumber.Length)
+                return "";
             // Formats the number according to numberFormat
             String template = Regex.Replace(aPhoneNumber, numberPattern, numberFormat);
             // Replaces each digit with character digitPlaceholder
@@ -536,21 +545,23 @@ namespace PhoneNumbers
         // digit or the plus sign.
         private char NormalizeAndAccrueDigitsAndPlusSign(char nextChar, bool rememberPosition)
         {
+            char normalizedChar;
             if (nextChar == PhoneNumberUtil.PLUS_SIGN)
             {
+                normalizedChar = nextChar;
                 accruedInputWithoutFormatting.Append(nextChar);
             }
             else
             {
-                nextChar = PhoneNumberUtil.DIGIT_MAPPINGS[nextChar];
-                accruedInputWithoutFormatting.Append(nextChar);
-                nationalNumber.Append(nextChar);
+                normalizedChar = ((int)char.GetNumericValue(nextChar)).ToString()[0];
+                accruedInputWithoutFormatting.Append(normalizedChar);
+                nationalNumber.Append(normalizedChar);
             }
             if (rememberPosition)
             {
                 positionToRemember = accruedInputWithoutFormatting.Length;
             }
-            return nextChar;
+            return normalizedChar;
         }
 
         private String InputDigitHelper(char nextChar)

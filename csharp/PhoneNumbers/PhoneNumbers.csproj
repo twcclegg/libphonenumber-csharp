@@ -45,8 +45,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AreaCodeMap.cs" />
+    <Compile Include="AreaCodeParser.cs" />
     <Compile Include="AsYouTypeFormatter.cs" />
     <Compile Include="CountryCodeToRegionCodeMap.cs" />
+    <Compile Include="MappingFileProvider.cs" />
     <Compile Include="NumberParseException.cs" />
     <Compile Include="Phonemetadata.cs" />
     <Compile Include="Phonenumber.cs" />
@@ -63,6 +66,26 @@
   <ItemGroup>
     <EmbeddedResource Include="PhoneNumberMetaData.xml" />
     <EmbeddedResource Include="PhoneNumberMetaDataForTesting.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="res\1_en" />
+    <EmbeddedResource Include="res\31_nl" />
+    <EmbeddedResource Include="res\34_es" />
+    <EmbeddedResource Include="res\43_de" />
+    <EmbeddedResource Include="res\44_en" />
+    <EmbeddedResource Include="res\46_sv" />
+    <EmbeddedResource Include="res\49_de" />
+    <EmbeddedResource Include="res\54_es" />
+    <EmbeddedResource Include="res\55_pt" />
+    <EmbeddedResource Include="res\56_es" />
+    <EmbeddedResource Include="res\82_en" />
+    <EmbeddedResource Include="res\82_ko" />
+    <EmbeddedResource Include="res\82_zh" />
+    <EmbeddedResource Include="res\82_zh_Hant" />
+    <EmbeddedResource Include="res\86_zh" />
+    <EmbeddedResource Include="res\test_1_en" />
+    <EmbeddedResource Include="res\test_82_en" />
+    <EmbeddedResource Include="res\test_82_ko" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

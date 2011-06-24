@@ -23,7 +23,7 @@ using System.Text.RegularExpressions;
 
 namespace PhoneNumbers
 {
-    class PhoneNumberMatcher : IEnumerator<PhoneNumberMatch>
+    public class PhoneNumberMatcher : IEnumerator<PhoneNumberMatch>
     {
         /**
         * The phone number pattern used by {@link #find}, similar to
@@ -66,6 +66,11 @@ namespace PhoneNumbers
         private static readonly PhoneRegex MATCHING_BRACKETS;
 
         /**
+        * Punctuation that may be at the start of a phone number - brackets and plus signs.
+        */
+        private static readonly PhoneRegex LEAD_CLASS;
+
+        /**
         * Matches white-space, which may indicate the end of a phone number and the start of something
         * else (such as a neighbouring zip-code).
         */
@@ -102,7 +107,7 @@ namespace PhoneNumbers
             * country code. */
             int digitBlockLimit =
                 PhoneNumberUtil.MAX_LENGTH_FOR_NSN + PhoneNumberUtil.MAX_LENGTH_COUNTRY_CODE;
-            /* Limit on the number of blocks separated by punctuation. Use digitBlockLimit since in some
+            /* Limit on the number of blocks separated by punctuation. Uses digitBlockLimit since some
             * formats use spaces to separate each digit. */
             String blockLimit = Limit(0, digitBlockLimit);
 
@@ -112,6 +117,7 @@ namespace PhoneNumbers
             String digitSequence = "\\p{Nd}" + Limit(1, digitBlockLimit);
             /* Punctuation that may be at the start of a phone number - brackets and plus signs. */
             String leadClass = "[" + openingParens + PhoneNumberUtil.PLUS_CHARS + "]";
+            LEAD_CLASS = new PhoneRegex(leadClass, RegexOptions.Compiled);
 
             /* Phone number pattern allowing optional punctuation. */
             PATTERN = new Regex(
@@ -130,7 +136,7 @@ namespace PhoneNumbers
         }
 
         /** The phone number utility. */
-        private readonly PhoneNumberUtil util;
+        private readonly PhoneNumberUtil phoneUtil;
         /** The text searched for phone numbers. */
         private readonly String text;
         /**
@@ -172,7 +178,7 @@ namespace PhoneNumbers
             if (maxTries < 0)
                 throw new ArgumentOutOfRangeException();
 
-            this.util = util;
+            this.phoneUtil = util;
             this.text = (text != null) ? text : "";
             this.preferredRegion = country;
             this.leniency = leniency;
@@ -249,6 +255,26 @@ namespace PhoneNumbers
             return candidate;
         }
 
+        /**
+        * Helper method to determine if a character is a Latin-script letter or not. For our purposes,
+        * combining marks should also return true since we assume they have been added to a preceding
+        * Latin character.
+        */
+        public static bool IsLatinLetter(char letter)
+        {
+            // Combining marks are a subset of non-spacing-mark.
+            if (!char.IsLetter(letter) && char.GetUnicodeCategory(letter) != UnicodeCategory.NonSpacingMark)
+                return false;
+            return
+                letter >= 0x0000 && letter <= 0x007F        // BASIC_LATIN
+                || letter >= 0x0080 && letter <= 0x00FF     // LATIN_1_SUPPLEMENT
+                || letter >= 0x0100 && letter <= 0x017F     // LATIN_EXTENDED_A
+                || letter >= 0x1E00 && letter <= 0x1EFF     // LATIN_EXTENDED_ADDITIONAL
+                || letter >= 0x0180 && letter <= 0x024F     // LATIN_EXTENDED_B
+                || letter >= 0x0300 && letter <= 0x036F     // COMBINING_DIACRITICAL_MARKS
+                ;
+        }
+
         public static String TrimAfterUnwantedChars(String s)
         {
             int found = -1;
@@ -293,7 +319,19 @@ namespace PhoneNumbers
             // Skip a match that is more likely a publication page reference or a date.
             if (PUB_PAGES.Match(candidate).Success || SLASH_SEPARATED_DATES.Match(candidate).Success)
                 return null;
-
+            // If leniency is set to VALID only, we also want to skip numbers that are surrounded by Latin
+            // alphabetic characters, to skip cases like abc8005001234 or 8005001234def.
+            if (leniency == PhoneNumberUtil.Leniency.VALID)
+            {
+                // If the candidate is not at the start of the text, and does not start with punctuation and
+                // the previous character is not a Latin letter, return null.
+                if (offset > 0 &&
+                (!LEAD_CLASS.MatchBeginning(candidate).Success && IsLatinLetter(text[offset - 1])))
+                    return null;
+                int lastCharIndex = offset + candidate.Length;
+                if (lastCharIndex < text.Length && IsLatinLetter(text[lastCharIndex]))
+                    return null;
+            }
             // Try to come up with a valid match given the entire candidate.
             String rawString = candidate;
             PhoneNumberMatch match = ParseAndVerify(rawString, offset);
@@ -366,8 +404,8 @@ namespace PhoneNumbers
                 if (!MATCHING_BRACKETS.MatchAll(candidate).Success)
                     return null;
 
-                PhoneNumber number = util.Parse(candidate, preferredRegion);
-                if (util.Verify(leniency, number, util))
+                PhoneNumber number = phoneUtil.Parse(candidate, preferredRegion);
+                if (phoneUtil.Verify(leniency, number, phoneUtil))
                     return new PhoneNumberMatch(offset, candidate, number);
             }
             catch (NumberParseException)

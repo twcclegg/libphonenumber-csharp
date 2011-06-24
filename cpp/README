@@ -55,19 +55,26 @@ Requirements:
     $ make testinstall
 
   - ICU
-    Version 4.6 or more recent is required.
+    Version 4.4 or more recent is required.
     It can be built from sources. You need to download the source tarball at
     this location:
-    http://site.icu-project.org/download/46#ICU4C-Download
+    http://site.icu-project.org/download
     Then you can extract, build and install it this way:
-    $ tar xzf icu4c-4_6_1-src.tgz
+    $ tar xzf icu4c-4_4_2-src.tgz
     $ cd icu/source
     $ ./configure && make && sudo make install
 
-    If you have a Debian-based distribution provinding an up-to-date version of
+    If you have a Debian-based distribution providing an up-to-date version of
     ICU, you can install it using apt-get:
     $ sudo apt-get install libicu-dev
 
+  - Boost
+    Version 1.40 or more recent is required.
+
+    You can install it very easily on a Debian-based GNU/Linux distribution:
+    $ sudo apt-get install libboost1.40-dev libboost-thread1.40-dev
+
+    Note: Boost Thread is the only library needed at link time.
 
 How to build libphonenumber C++:
   $ cd libphonenumber

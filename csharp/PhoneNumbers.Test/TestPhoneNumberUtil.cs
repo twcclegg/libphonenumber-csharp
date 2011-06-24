@@ -29,7 +29,7 @@ namespace PhoneNumbers.Test
     {
         private PhoneNumberUtil phoneUtil;
         // This is used by BuildMetadataProtoFromXml.
-        const String TEST_META_DATA_FILE_PREFIX = "PhoneNumberMetaDataForTesting.xml";
+        public const String TEST_META_DATA_FILE_PREFIX = "PhoneNumberMetaDataForTesting.xml";
 
         // Set up some test numbers to re-use.
         private static readonly PhoneNumber ALPHA_NUMERIC_NUMBER =
@@ -165,8 +165,8 @@ namespace PhoneNumbers.Test
             Assert.That(metadata.HasNationalPrefix);
             Assert.AreEqual(2, metadata.NumberFormatCount);
             Assert.AreEqual("(\\d{3})(\\d{3})(\\d{4})",
-                metadata.NumberFormatList[0].Pattern);
-            Assert.AreEqual("$1 $2 $3", metadata.NumberFormatList[0].Format);
+                metadata.NumberFormatList[1].Pattern);
+            Assert.AreEqual("$1 $2 $3", metadata.NumberFormatList[1].Format);
             Assert.AreEqual("[13-9]\\d{9}|2[0-35-9]\\d{8}",
                 metadata.GeneralDesc.NationalNumberPattern);
             Assert.AreEqual("\\d{7}(?:\\d{3})?", metadata.GeneralDesc.PossibleNumberPattern);
@@ -321,6 +321,16 @@ namespace PhoneNumbers.Test
             Assert.IsNull(phoneUtil.GetExampleNumberForType(RegionCode.CS,
                 PhoneNumberType.MOBILE));
         }
+
+        [Test]
+        public void TestConvertAlphaCharactersInNumber()
+        {
+            String input = "1800-ABC-DEF";
+            // Alpha chars are converted to digits; everything else is left untouched.
+            String expectedOutput = "1800-222-333";
+            Assert.AreEqual(expectedOutput, PhoneNumberUtil.ConvertAlphaCharactersInNumber(input));
+        }
+
 
         [Test]
         public void TestNormaliseRemovePunctuation()
@@ -1158,6 +1168,11 @@ namespace PhoneNumbers.Test
             // Alpha numbers.
             Assert.That(PhoneNumberUtil.IsViablePhoneNumber("0800-4-pizza"));
             Assert.That(PhoneNumberUtil.IsViablePhoneNumber("0800-4-PIZZA"));
+        }
+
+        [Test]
+        public void TestIsViablePhoneNumberNonAscii()
+        {
             // Only one or two digits before possible punctuation followed by more digits.
             Assert.That(PhoneNumberUtil.IsViablePhoneNumber("1\u300034"));
             Assert.False(PhoneNumberUtil.IsViablePhoneNumber("1\u30003+4"));
@@ -1520,6 +1535,15 @@ namespace PhoneNumbers.Test
             Assert.AreEqual(US_NUMBER, phoneUtil.Parse("0~01-650-253-0000", RegionCode.PL));
             // Using "++" at the start.
             Assert.AreEqual(US_NUMBER, phoneUtil.Parse("++1 (650) 253-0000", RegionCode.PL));
+            // Using a very strange decimal digit range (Mongolian digits).
+            Assert.AreEqual(US_NUMBER, phoneUtil.Parse("\u1811 \u1816\u1815\u1810 " +
+                "\u1812\u1815\u1813 \u1810\u1810\u1810\u1810",
+                RegionCode.US));
+        }
+
+        [Test]
+        public void TestParseNonAscii()
+        {
             // Using a full-width plus sign.
             Assert.AreEqual(US_NUMBER, phoneUtil.Parse("\uFF0B1 (650) 253-0000", RegionCode.SG));
             // The whole number, including punctuation, is here represented in full-width form.
@@ -1955,7 +1979,7 @@ namespace PhoneNumbers.Test
                 phoneUtil.ParseAndKeepRawInput("123 456 7890", RegionCode.CS);
                 Assert.Fail("Deprecated region code not allowed: should fail.");
             }
-            catch(NumberParseException e)
+            catch (NumberParseException e)
             {
                 // Expected this exception.
                 Assert.AreEqual(
@@ -2115,7 +2139,7 @@ namespace PhoneNumbers.Test
                 phoneUtil.IsNumberMatch(randomNumber, "1-650-253-0000"));
         }
 
-        
+
         [Test]
         public void TestIsNumberMatchShortNsnMatches()
         {

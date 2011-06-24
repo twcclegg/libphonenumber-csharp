@@ -73,3 +73,4 @@ Todo
 ----
 - Restore the Java logging calls?
 - Find a suitable replace for Java CharSequence in phone numbers parsing API.
+- Migrate geocoder and related files

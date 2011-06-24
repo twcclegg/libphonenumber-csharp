@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2009 Google Inc.
+ * Copyright (C) 2011 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,15 +22,31 @@ using NUnit.Framework;
 
 namespace PhoneNumbers.Test
 {
+    /**
+    * Unit tests for PhoneNumberOfflineGeocoder.java
+    *
+    * @author Shaopeng Jia
+    */
     [TestFixture]
     class TestPhoneNumberOfflineGeocoder
     {
         private PhoneNumberOfflineGeocoder geocoder;
         const String TEST_META_DATA_FILE_PREFIX = "PhoneNumberMetaDataForTesting.xml";
+        const String TEST_MAPPING_DATA_DIRECTORY = "res.test_";
 
         // Set up some test numbers to re-use.
+        private static readonly PhoneNumber KO_NUMBER1 =
+            new PhoneNumber.Builder().SetCountryCode(82).SetNationalNumber(22123456L).Build();
+        private static readonly PhoneNumber KO_NUMBER2 =
+            new PhoneNumber.Builder().SetCountryCode(82).SetNationalNumber(322123456L).Build();
+        private static readonly PhoneNumber KO_NUMBER3 =
+            new PhoneNumber.Builder().SetCountryCode(82).SetNationalNumber(6421234567L).Build();
         private static readonly PhoneNumber US_NUMBER1 =
             new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(6502530000L).Build();
+        private static readonly PhoneNumber US_NUMBER2 =
+            new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(6509600000L).Build();
+        private static readonly PhoneNumber US_NUMBER3 =
+            new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(2128120000L).Build();
         private static readonly PhoneNumber BS_NUMBER1 =
             new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(2423651234L).Build();
         private static readonly PhoneNumber AU_NUMBER =
@@ -45,20 +61,55 @@ namespace PhoneNumbers.Test
             PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance(
                 TEST_META_DATA_FILE_PREFIX,
                 CountryCodeToRegionCodeMapForTesting.GetCountryCodeToRegionCodeMap());
-            geocoder = new PhoneNumberOfflineGeocoder(phoneUtil);
+            geocoder = new PhoneNumberOfflineGeocoder(TEST_MAPPING_DATA_DIRECTORY, phoneUtil);
+        }
+
+        /* This test is disabled as we do not have localized country names by
+         * default on .NET. Also, Bahamas RegionInfo does not exist.
+        [Test]
+        public void testGetDescriptionForNumberWithNoDataFile()
+        {
+            // No data file containing mappings for US numbers is available in Chinese for the unittests. As
+            // a result, the country name of United States in simplified Chinese is returned.
+            Assert.AreEqual("\u7F8E\u56FD",
+                geocoder.GetDescriptionForNumber(US_NUMBER1, Locale.SIMPLIFIED_CHINESE));
+            Assert.AreEqual("Stati Uniti",
+                geocoder.GetDescriptionForNumber(US_NUMBER1, Locale.ITALIAN));
+            Assert.AreEqual("Bahamas",
+                geocoder.GetDescriptionForNumber(BS_NUMBER1, new Locale("en", "US")));
+            Assert.AreEqual("Australia",
+                geocoder.GetDescriptionForNumber(AU_NUMBER, new Locale("en", "US")));
+            Assert.AreEqual("", geocoder.GetDescriptionForNumber(NUMBER_WITH_INVALID_COUNTRY_CODE,
+                                                              new Locale("en", "US")));
+        }
+        */
+
+        [Test]
+        public void testGetDescriptionForNumber_en_US()
+        {
+            Assert.AreEqual("CA",
+                geocoder.GetDescriptionForNumber(US_NUMBER1, new Locale("en", "US")));
+            Assert.AreEqual("Mountain View, CA",
+                geocoder.GetDescriptionForNumber(US_NUMBER2, new Locale("en", "US")));
+            Assert.AreEqual("New York, NY",
+                geocoder.GetDescriptionForNumber(US_NUMBER3, new Locale("en", "US")));
         }
 
         [Test]
-        public void TestGetCompactDescriptionForNumber()
+        public void testGetDescriptionForKoreanNumber()
         {
-            Assert.AreEqual("United States",
-                geocoder.GetDescriptionForNumber(US_NUMBER1));
-            // XXX: No RegionInfo for Bahamas, skipping for now...
-            //Assert.AreEqual("Bahamas",
-            //    geocoder.GetDescriptionForNumber(BS_NUMBER1));
-            Assert.AreEqual("Australia",
-                geocoder.GetDescriptionForNumber(AU_NUMBER));
-            Assert.AreEqual("", geocoder.GetDescriptionForNumber(NUMBER_WITH_INVALID_COUNTRY_CODE));
+            Assert.AreEqual("Seoul",
+                geocoder.GetDescriptionForNumber(KO_NUMBER1, Locale.ENGLISH));
+            Assert.AreEqual("Incheon",
+                geocoder.GetDescriptionForNumber(KO_NUMBER2, Locale.ENGLISH));
+            Assert.AreEqual("Jeju",
+                geocoder.GetDescriptionForNumber(KO_NUMBER3, Locale.ENGLISH));
+            Assert.AreEqual("\uC11C\uC6B8",
+                geocoder.GetDescriptionForNumber(KO_NUMBER1, Locale.KOREAN));
+            Assert.AreEqual("\uC778\uCC9C",
+                geocoder.GetDescriptionForNumber(KO_NUMBER2, Locale.KOREAN));
+            Assert.AreEqual("\uC81C\uC8FC",
+                geocoder.GetDescriptionForNumber(KO_NUMBER3, Locale.KOREAN));
         }
     }
 }

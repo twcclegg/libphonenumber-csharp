@@ -27,6 +27,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/basictypes.h"
 #include "base/scoped_ptr.h"
 #include "base/singleton.h"
 #include "phonenumber.pb.h"
@@ -56,10 +57,17 @@ class PhoneNumber;
 // codes can be found here:
 // http://www.iso.org/iso/english_country_names_and_code_elements
 
+#ifdef USE_GOOGLE_BASE
 class PhoneNumberUtil {
   friend struct DefaultSingletonTraits<PhoneNumberUtil>;
+#else
+class PhoneNumberUtil : public Singleton<PhoneNumberUtil> {
+  friend class Singleton<PhoneNumberUtil>;
+#endif
   friend class PhoneNumberUtilTest;
  public:
+  ~PhoneNumberUtil();
+
   // INTERNATIONAL and NATIONAL formats are consistent with the definition
   // in ITU-T Recommendation E. 123. For example, the number of the Google
   // Zürich office will be written as "+41 44 668 1800" in INTERNATIONAL
@@ -139,7 +147,9 @@ class PhoneNumberUtil {
   //
   // The PhoneNumberUtil is implemented as a singleton. Therefore, calling
   // getInstance multiple times will only result in one instance being created.
+#ifdef USE_GOOGLE_BASE
   static PhoneNumberUtil* GetInstance();
+#endif
 
   // Returns true if the number is a valid vanity (alpha) number such as 800
   // MICROSOFT. A valid vanity number will start with at least 3 digits and will
@@ -526,7 +536,6 @@ class PhoneNumberUtil {
   scoped_ptr<map<string, PhoneMetadata> > region_to_metadata_map_;
 
   PhoneNumberUtil();
-  ~PhoneNumberUtil();
 
   // Gets all the supported regions.
   void GetSupportedRegions(set<string>* regions) const;

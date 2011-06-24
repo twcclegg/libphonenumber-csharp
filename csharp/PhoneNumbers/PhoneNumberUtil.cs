@@ -25,7 +25,7 @@ using CountryCodeSource = PhoneNumbers.PhoneNumber.Types.CountryCodeSource;
 namespace PhoneNumbers
 {
     // INTERNATIONAL and NATIONAL formats are consistent with the definition in ITU-T Recommendation
-    // E. 123. For example, the number of the Google Zurich office will be written as
+    // E. 123. For example, the number of the Google Switzerland office will be written as
     // "+41 44 668 1800" in INTERNATIONAL format, and as "044 668 1800" in NATIONAL format.
     // E164 format is as per INTERNATIONAL format but with no formatting applied, e.g. +41446681800.
     // RFC3966 is as per INTERNATIONAL format, but with all spaces and other separating symbols
@@ -94,7 +94,7 @@ namespace PhoneNumbers
         // The set of regions the library supports.
         private HashSet<String> supportedRegions_ = new HashSet<String>();
 
-        // The set of regions that share country code 1.
+        // The set of regions that share country calling code 1.
         private HashSet<String> nanpaRegions_ = new HashSet<String>();
         private const int NANPA_COUNTRY_CODE = 1;
 
@@ -103,16 +103,11 @@ namespace PhoneNumbers
 
         const String RFC3966_EXTN_PREFIX = ";ext=";
 
-        // These mappings map a character (key) to a specific digit that should replace it for
-        // normalization purposes. Non-European digits that may be used in phone numbers are mapped to a
-        // European equivalent.
-        public static readonly Dictionary<char, char> DIGIT_MAPPINGS;
-
         // Only upper-case variants of alpha characters are stored.
         private static readonly Dictionary<char, char> ALPHA_MAPPINGS;
 
         // For performance reasons, amalgamate both into one map.
-        private static readonly Dictionary<char, char> ALL_NORMALIZATION_MAPPINGS;
+        private static readonly Dictionary<char, char> ALPHA_PHONE_MAPPINGS;
 
         // Separate map of all symbols that we wish to retain when formatting alpha numbers. This
         // includes digits, ASCII letters and number grouping symbols such as "-" and " ".
@@ -133,12 +128,13 @@ namespace PhoneNumbers
         // found as a leading character only.
         // This consists of dash characters, white space characters, full stops, slashes,
         // square brackets, parentheses and tildes. It also includes the letter 'x' as that is found as a
-        // placeholder for carrier information in some phone numbers.
+        // placeholder for carrier information in some phone numbers. Full-width variants are also
+        // present.
         internal const String VALID_PUNCTUATION = "-x\u2010-\u2015\u2212\u30FC\uFF0D-\uFF0F " +
             "\u00A0\u200B\u2060\u3000()\uFF08\uFF09\uFF3B\uFF3D.\\[\\]/~\u2053\u223C\uFF5E";
 
-        // Digits accepted in phone numbers that we understand.
-        private static readonly String VALID_DIGITS;
+        private const String DIGITS = "\\p{Nd}";
+
         // We accept alpha characters in phone numbers, ASCII only, upper and lower case.
         private static readonly String VALID_ALPHA;
 
@@ -224,7 +220,7 @@ namespace PhoneNumbers
         {
             thisLock = new Object();
 
-            // Simple ASCII digits map used to populate DIGIT_MAPPINGS and
+            // Simple ASCII digits map used to populate ALPHA_PHONE_MAPPINGS and
             // ALL_PLUS_NUMBER_GROUPING_SYMBOLS.
             var asciiDigitMappings = new Dictionary<char, char>
             {
@@ -239,39 +235,6 @@ namespace PhoneNumbers
                 {'8', '8'},
                 {'9', '9'},
             };
-
-            var digitMap = new Dictionary<char, char>(asciiDigitMappings);
-            digitMap['\uFF10'] = '0';  // Fullwidth digit 0
-            digitMap['\u0660'] = '0';  // Arabic-indic digit 0
-            digitMap['\u06F0'] = '0';  // Eastern-Arabic digit 0
-            digitMap['\uFF11'] = '1';  // Fullwidth digit 1
-            digitMap['\u0661'] = '1';  // Arabic-indic digit 1
-            digitMap['\u06F1'] = '1';  // Eastern-Arabic digit 1
-            digitMap['\uFF12'] = '2';  // Fullwidth digit 2
-            digitMap['\u0662'] = '2';  // Arabic-indic digit 2
-            digitMap['\u06F2'] = '2';  // Eastern-Arabic digit 2
-            digitMap['\uFF13'] = '3';  // Fullwidth digit 3
-            digitMap['\u0663'] = '3';  // Arabic-indic digit 3
-            digitMap['\u06F3'] = '3';  // Eastern-Arabic digit 3
-            digitMap['\uFF14'] = '4';  // Fullwidth digit 4
-            digitMap['\u0664'] = '4';  // Arabic-indic digit 4
-            digitMap['\u06F4'] = '4';  // Eastern-Arabic digit 4
-            digitMap['\uFF15'] = '5';  // Fullwidth digit 5
-            digitMap['\u0665'] = '5';  // Arabic-indic digit 5
-            digitMap['\u06F5'] = '5';  // Eastern-Arabic digit 5
-            digitMap['\uFF16'] = '6';  // Fullwidth digit 6
-            digitMap['\u0666'] = '6';  // Arabic-indic digit 6
-            digitMap['\u06F6'] = '6';  // Eastern-Arabic digit 6
-            digitMap['\uFF17'] = '7';  // Fullwidth digit 7
-            digitMap['\u0667'] = '7';  // Arabic-indic digit 7
-            digitMap['\u06F7'] = '7';  // Eastern-Arabic digit 7
-            digitMap['\uFF18'] = '8';  // Fullwidth digit 8
-            digitMap['\u0668'] = '8';  // Arabic-indic digit 8
-            digitMap['\u06F8'] = '8';  // Eastern-Arabic digit 8
-            digitMap['\uFF19'] = '9';  // Fullwidth digit 9
-            digitMap['\u0669'] = '9';  // Arabic-indic digit 9
-            digitMap['\u06F9'] = '9';  // Eastern-Arabic digit 9
-            DIGIT_MAPPINGS = digitMap;
 
             var alphaMap = new Dictionary<char, char>();
             alphaMap['A'] = '2';
@@ -302,10 +265,10 @@ namespace PhoneNumbers
             alphaMap['Z'] = '9';
             ALPHA_MAPPINGS = alphaMap;
 
-            var combinedMap = new Dictionary<char, char>(alphaMap);
-            foreach (var k in digitMap)
+            var combinedMap = new Dictionary<char, char>(ALPHA_MAPPINGS);
+            foreach (var k in asciiDigitMappings)
                 combinedMap[k.Key] = k.Value;
-            ALL_NORMALIZATION_MAPPINGS = combinedMap;
+            ALPHA_PHONE_MAPPINGS = combinedMap;
 
             var allPlusNumberGroupings = new Dictionary<char, char>();
             // Put (lower letter -> upper letter) and (upper letter -> upper letter) mappings.
@@ -336,30 +299,28 @@ namespace PhoneNumbers
             allPlusNumberGroupings['\uFF0E'] = '.';
             ALL_PLUS_NUMBER_GROUPING_SYMBOLS = allPlusNumberGroupings;
 
-            // Digits accepted in phone numbers that we understand.
-            VALID_DIGITS = String.Join("", DIGIT_MAPPINGS.Keys.Where(c => !"[, \\[\\]]".Contains(c)).ToList().ConvertAll(c => c.ToString()).ToArray());
             // We accept alpha characters in phone numbers, ASCII only, upper and lower case.
             VALID_ALPHA =
                 String.Join("", ALPHA_MAPPINGS.Keys.Where(c => !"[, \\[\\]]".Contains(c)).ToList().ConvertAll(c => c.ToString()).ToArray()) +
                 String.Join("", ALPHA_MAPPINGS.Keys.Where(c => !"[, \\[\\]]".Contains(c)).ToList().ConvertAll(c => c.ToString()).ToArray()).ToLower();
 
-            CAPTURING_DIGIT_PATTERN = new Regex("([" + VALID_DIGITS + "])", RegexOptions.Compiled);
-            VALID_START_CHAR = "[" + PLUS_CHARS + VALID_DIGITS + "]";
+            CAPTURING_DIGIT_PATTERN = new Regex("(" + DIGITS + ")", RegexOptions.Compiled);
+            VALID_START_CHAR = "[" + PLUS_CHARS + DIGITS + "]";
             VALID_START_CHAR_PATTERN = new PhoneRegex(VALID_START_CHAR, RegexOptions.Compiled);
 
-            CAPTURING_EXTN_DIGITS = "([" + VALID_DIGITS + "]{1,7})";
+            CAPTURING_EXTN_DIGITS = "(" + DIGITS + "{1,7})";
             KNOWN_EXTN_PATTERNS =
                 RFC3966_EXTN_PREFIX + CAPTURING_EXTN_DIGITS + "|" +
                 "[ \u00A0\\t,]*(?:ext(?:ensi(?:o\u0301?|\u00F3))?n?|" +
                 "\uFF45\uFF58\uFF54\uFF4E?|[,x\uFF58#\uFF03~\uFF5E]|int|anexo|\uFF49\uFF4E\uFF54)" +
                 "[:\\.\uFF0E]?[ \u00A0\\t,-]*" + CAPTURING_EXTN_DIGITS + "#?|" +
-                "[- ]+([" + VALID_DIGITS + "]{1,5})#";
+                "[- ]+(" + DIGITS + "{1,5})#";
 
             EXTN_PATTERN = new Regex("(?:" + KNOWN_EXTN_PATTERNS + ")$", REGEX_FLAGS);
 
             VALID_PHONE_NUMBER =
-                "[" + PLUS_CHARS + "]*(?:[" + VALID_PUNCTUATION + "]*[" + VALID_DIGITS + "]){3,}[" +
-                VALID_PUNCTUATION + VALID_ALPHA + VALID_DIGITS + "]*";
+                "[" + PLUS_CHARS + "]*(?:[" + VALID_PUNCTUATION + "]*" + DIGITS + "){3,}[" +
+                VALID_PUNCTUATION + VALID_ALPHA + DIGITS + "]*";
             VALID_PHONE_NUMBER_PATTERN =
                 new PhoneRegex(VALID_PHONE_NUMBER + "(?:" + KNOWN_EXTN_PATTERNS + ")?", REGEX_FLAGS);
         }
@@ -505,12 +466,15 @@ namespace PhoneNumbers
         /**
         * Normalizes a string of characters representing a phone number. This performs the following
         * conversions:
-        *   Wide-ascii digits are converted to normal ASCII (European) digits.
+        *   Punctuation is stripped.
+        *   For ALPHA/VANITY numbers:
         *   Letters are converted to their numeric representation on a telephone keypad. The keypad
         *       used here is the one defined in ITU Recommendation E.161. This is only done if there are
-        *       3 or more letters in the number, to lessen the risk that such letters are typos -
-        *       otherwise alpha characters are stripped.
-        *   Punctuation is stripped.
+        *       3 or more letters in the number, to lessen the risk that such letters are typos.
+        *   For other numbers:
+        *   Wide-ascii digits are converted to normal ASCII (European) digits.
+        *   Arabic-Indic numerals are converted to European numerals.
+        *   Spurious alpha characters are stripped.
         *   Arabic-Indic numerals are converted to European numerals.
         *
         * @param number  a string of characters representing a phone number
@@ -518,9 +482,10 @@ namespace PhoneNumbers
         */
         public static String Normalize(String number)
         {
-            var m = VALID_ALPHA_PHONE_PATTERN.MatchAll(number);
-            var mapping = m.Success ? ALL_NORMALIZATION_MAPPINGS : DIGIT_MAPPINGS;
-            return NormalizeHelper(number, mapping, true);
+            if(VALID_ALPHA_PHONE_PATTERN.MatchAll(number).Success)
+                return NormalizeHelper(number, ALPHA_PHONE_MAPPINGS, true);
+            else
+                return NormalizeDigitsOnly(number);
         }
 
         static void Normalize(StringBuilder number)
@@ -539,17 +504,26 @@ namespace PhoneNumbers
         */
         public static String NormalizeDigitsOnly(String number)
         {
-            return NormalizeHelper(number, DIGIT_MAPPINGS, true);
+            int numberLength = number.Length;
+            StringBuilder normalizedDigits = new StringBuilder(numberLength);
+            for (int i = 0; i < numberLength; i++)
+            {
+                int d = (int)char.GetNumericValue(number, i);
+                if (d != -1)
+                {
+                    normalizedDigits.Append(d);
+                }
+            }
+            return normalizedDigits.ToString();
         }
 
         /**
         * Converts all alpha characters in a number to their respective digits on a keypad, but retains
-        * existing formatting. This Java implementation of this function also converts wide-ascii digits
-        * to normal ascii digits, and converts Arabic-Indic numerals to European numerals.
+        * existing formatting.
         */
         public static String ConvertAlphaCharactersInNumber(String number)
         {
-            return NormalizeHelper(number, ALL_NORMALIZATION_MAPPINGS, false);
+            return NormalizeHelper(number, ALPHA_PHONE_MAPPINGS, false);
         }
 
         /**
@@ -577,14 +551,16 @@ namespace PhoneNumbers
         * </pre>
         *
         * N.B.: area code is a very ambiguous concept, so the I18N team generally recommends against
-        * using it for most purposes. Read the following carefully before deciding to use this method:
-        *
-        *  - geographical area codes change over time, and this method honors those changes; therefore,
-        *    it doesn't guarantee the stability of the result it produces.
-        *  - subscriber numbers may not be diallable from all devices (notably mobile devices, which
-        *    typically requires the full national_number to be dialled in most countries).
-        *  - most non-geographical numbers have no area codes.
-        *  - some geographical numbers have no area codes.
+        * using it for most purposes, but recommends using the more general {@code national_number}
+        * instead. Read the following carefully before deciding to use this method:
+        * <ul>
+        *  <li> geographical area codes change over time, and this method honors those changes;
+        *    therefore, it doesn't guarantee the stability of the result it produces.
+        *  <li> subscriber numbers may not be diallable from all devices (notably mobile devices, which
+        *    typically requires the full national_number to be dialled in most regions).
+        *  <li> most non-geographical numbers have no area codes.
+        *  <li> some geographical numbers have no area codes.
+        * </ul>
         *
         * @param number  the PhoneNumber object for which clients want to know the length of the area
         *     code.
@@ -632,7 +608,7 @@ namespace PhoneNumbers
         * </pre>
         *
         * Refer to the unittests to see the difference between this function and
-        * {@link #getLengthOfGeographicalAreaCode()}.
+        * {@link #getLengthOfGeographicalAreaCode}.
         *
         * @param number  the PhoneNumber object for which clients want to know the length of the NDC.
         * @return  the length of NDC of the PhoneNumber object passed in.
@@ -950,7 +926,7 @@ namespace PhoneNumbers
         /**
         * Formats a phone number for out-of-country dialing purposes. If no regionCallingFrom is
         * supplied, we format the number in its INTERNATIONAL format. If the country calling code is the
-        * same as the region where the number is from, then NATIONAL formatting will be applied.
+        * same as that of the region where the number is from, then NATIONAL formatting will be applied.
         *
         * <p>If the number itself has a country calling code of zero or an otherwise invalid country
         * calling code, then we return the number with no formatting applied.
@@ -1963,7 +1939,7 @@ namespace PhoneNumbers
                 var digitMatcher = CAPTURING_DIGIT_PATTERN.Match(number.ToString().Substring(matchEnd)); //XXX: ToString
                 if (digitMatcher.Success)
                 {
-                    String normalizedGroup = NormalizeHelper(digitMatcher.Groups[1].Value, DIGIT_MAPPINGS, true);
+                    String normalizedGroup = NormalizeDigitsOnly(digitMatcher.Groups[1].Value);
                     if (normalizedGroup == "0")
                         return false;
                 }
