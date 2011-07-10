@@ -51,7 +51,7 @@ namespace PhoneNumbers
         private const String MAPPING_DATA_DIRECTORY = "res.";
         private static Object thisLock = new Object();
 
-        private readonly PhoneNumberUtil phoneUtil;
+        private readonly PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
         private readonly String phonePrefixDataDirectory;
 
         // The mappingFileProvider knows for which combination of countryCallingCode and language a phone
@@ -67,9 +67,8 @@ namespace PhoneNumbers
          *
          * @VisibleForTesting
          */
-        public PhoneNumberOfflineGeocoder(String phonePrefixDataDirectory, PhoneNumberUtil phoneUtil)
+        public PhoneNumberOfflineGeocoder(String phonePrefixDataDirectory)
         {
-            this.phoneUtil = phoneUtil;
             this.phonePrefixDataDirectory = phonePrefixDataDirectory;
             LoadMappingFileProvider();
         }
@@ -138,8 +137,7 @@ namespace PhoneNumbers
             {
                 if (instance == null)
                 {
-                    instance =
-                        new PhoneNumberOfflineGeocoder(MAPPING_DATA_DIRECTORY, PhoneNumberUtil.GetInstance());
+                    instance = new PhoneNumberOfflineGeocoder(MAPPING_DATA_DIRECTORY);
                 }
                 return instance;
             }

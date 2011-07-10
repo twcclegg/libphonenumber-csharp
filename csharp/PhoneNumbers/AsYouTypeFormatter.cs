@@ -110,9 +110,13 @@ namespace PhoneNumbers
             defaultMetaData = currentMetaData;
         }
 
+        // The metadata needed by this class is the same for all regions sharing the same country calling
+        // code. Therefore, we return the metadata for "main" region for this country calling code.
         private PhoneMetadata GetMetadataForRegion(String regionCode)
         {
-            PhoneMetadata metadata = phoneUtil.GetMetadataForRegion(regionCode);
+            int countryCallingCode = phoneUtil.GetCountryCodeForRegion(regionCode);
+            String mainCountry = phoneUtil.GetRegionCodeForCountryCode(countryCallingCode);
+            PhoneMetadata metadata = phoneUtil.GetMetadataForRegion(mainCountry);
             if (metadata != null)
                 return metadata;
             // Set to a default instance of the metadata. This allows us to function with an incorrect

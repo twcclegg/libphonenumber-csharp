@@ -30,8 +30,8 @@ namespace PhoneNumbers.Test
     [TestFixture]
     class TestPhoneNumberOfflineGeocoder
     {
-        private PhoneNumberOfflineGeocoder geocoder;
-        const String TEST_META_DATA_FILE_PREFIX = "PhoneNumberMetaDataForTesting.xml";
+        private PhoneNumberOfflineGeocoder geocoder
+             = new PhoneNumberOfflineGeocoder(TEST_MAPPING_DATA_DIRECTORY);
         const String TEST_MAPPING_DATA_DIRECTORY = "res.test_";
 
         // Set up some test numbers to re-use.
@@ -53,16 +53,6 @@ namespace PhoneNumbers.Test
             new PhoneNumber.Builder().SetCountryCode(61).SetNationalNumber(236618300L).Build();
         private static readonly PhoneNumber NUMBER_WITH_INVALID_COUNTRY_CODE =
             new PhoneNumber.Builder().SetCountryCode(999).SetNationalNumber(2423651234L).Build();
-
-        [TestFixtureSetUp]
-        public void SetupFixture()
-        {
-            PhoneNumberUtil.ResetInstance();
-            PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance(
-                TEST_META_DATA_FILE_PREFIX,
-                CountryCodeToRegionCodeMapForTesting.GetCountryCodeToRegionCodeMap());
-            geocoder = new PhoneNumberOfflineGeocoder(TEST_MAPPING_DATA_DIRECTORY, phoneUtil);
-        }
 
         /* This test is disabled as we do not have localized country names by
          * default on .NET. Also, Bahamas RegionInfo does not exist.

@@ -89,6 +89,23 @@
   <ItemGroup>
     <EmbeddedResource Include="res\44_en" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="res\33_fr" />
+    <EmbeddedResource Include="res\351_pt" />
+    <EmbeddedResource Include="res\39_en" />
+    <EmbeddedResource Include="res\39_it" />
+    <EmbeddedResource Include="res\41_de" />
+    <EmbeddedResource Include="res\41_en" />
+    <EmbeddedResource Include="res\41_fr" />
+    <EmbeddedResource Include="res\41_it" />
+    <EmbeddedResource Include="res\7_en" />
+    <EmbeddedResource Include="res\81_ja" />
+    <EmbeddedResource Include="res\886_en" />
+    <EmbeddedResource Include="res\886_zh" />
+    <EmbeddedResource Include="res\886_zh_Hant" />
+    <EmbeddedResource Include="res\90_en" />
+    <EmbeddedResource Include="res\90_tr" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

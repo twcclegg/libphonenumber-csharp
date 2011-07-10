@@ -1025,6 +1025,9 @@ namespace PhoneNumbers.Test
         {
             Assert.That(phoneUtil.IsNANPACountry(RegionCode.US));
             Assert.That(phoneUtil.IsNANPACountry(RegionCode.BS));
+            Assert.False(phoneUtil.IsNANPACountry(RegionCode.DE));
+            Assert.False(phoneUtil.IsNANPACountry(RegionCode.ZZ));
+            Assert.False(phoneUtil.IsNANPACountry(null));
         }
 
         [Test]
