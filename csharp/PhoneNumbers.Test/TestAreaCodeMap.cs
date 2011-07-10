@@ -22,24 +22,19 @@ using NUnit.Framework;
 namespace PhoneNumbers.Test
 {
     /**
- * Unittests for AreaCodeMap.java
- *
- * @author Shaopeng Jia
- */
+    * Unittests for AreaCodeMap.java
+    *
+    * @author Shaopeng Jia
+    */
     [TestFixture]
     class TestAreaCodeMap
     {
-        private AreaCodeMap areaCodeMap;
+        private readonly AreaCodeMap areaCodeMapForUS = new AreaCodeMap(1);
+        private readonly AreaCodeMap areaCodeMapForIT = new AreaCodeMap(39);
 
         [TestFixtureSetUp]
         public void SetupFixture()
         {
-            PhoneNumberUtil.ResetInstance();
-            PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance(
-                TestPhoneNumberUtil.TEST_META_DATA_FILE_PREFIX,
-                CountryCodeToRegionCodeMapForTesting.GetCountryCodeToRegionCodeMap());
-            areaCodeMap = new AreaCodeMap(phoneUtil);
-
             SortedDictionary<int, String> sortedMap = new SortedDictionary<int, String>();
             sortedMap[1212] = "New York";
             sortedMap[1480] = "Arizona";
@@ -52,7 +47,51 @@ namespace PhoneNumbers.Test
             sortedMap[1650345] = "San Mateo, CA";
             sortedMap[1867993] = "Dawson, YT";
             sortedMap[1972480] = "Richardson, TX";
-            areaCodeMap.ReadAreaCodeMap(sortedMap);
+            areaCodeMapForUS.readAreaCodeMap(sortedMap);
+
+            sortedMap = new SortedDictionary<int, String>();
+            sortedMap[3902] = "Milan";
+            sortedMap[3906] = "Rome";
+            sortedMap[39010] = "Genoa";
+            sortedMap[390131] = "Alessandria";
+            sortedMap[390321] = "Novara";
+            sortedMap[390975] = "Potenza";
+            areaCodeMapForIT.readAreaCodeMap(sortedMap);
+        }
+
+        private static SortedDictionary<int, String> createDefaultStorageMapCandidate()
+        {
+            var sortedMap = new SortedDictionary<int, String>();
+            // Make the area codes bigger to store them using integer.
+            sortedMap[121212345] = "New York";
+            sortedMap[148034434] = "Arizona";
+            return sortedMap;
+        }
+
+        private static SortedDictionary<int, String> createFlyweightStorageMapCandidate()
+        {
+            var sortedMap = new SortedDictionary<int, String>();
+            sortedMap[1212] = "New York";
+            sortedMap[1213] = "New York";
+            sortedMap[1214] = "New York";
+            sortedMap[1480] = "Arizona";
+            return sortedMap;
+        }
+
+        [Test]
+        public void TestGetSmallerMapStorageChoosesDefaultImpl()
+        {
+            AreaCodeMapStorageStrategy mapStorage =
+                new AreaCodeMap(1).getSmallerMapStorage(createDefaultStorageMapCandidate());
+            Assert.False(mapStorage.isFlyweight());
+        }
+
+        [Test]
+        public void TestGetSmallerMapStorageChoosesFlyweightImpl()
+        {
+            AreaCodeMapStorageStrategy mapStorage =
+                new AreaCodeMap(1).getSmallerMapStorage(createFlyweightStorageMapCandidate());
+            Assert.True(mapStorage.isFlyweight());
         }
 
         [Test]
@@ -60,56 +99,82 @@ namespace PhoneNumbers.Test
         {
             // central office code cannot start with 1.
             var number = new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(2121234567L).Build();
-            Assert.AreEqual("New York", areaCodeMap.Lookup(number));
+            Assert.AreEqual("New York", areaCodeMapForUS.Lookup(number));
         }
 
         [Test]
         public void TestLookupNumber_NJ()
         {
             var number = new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(2016641234L).Build();
-            Assert.AreEqual("Westwood, NJ", areaCodeMap.Lookup(number));
+            Assert.AreEqual("Westwood, NJ", areaCodeMapForUS.Lookup(number));
         }
 
         [Test]
         public void TestLookupNumber_NY()
         {
             var number = new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(2126641234L).Build();
-            Assert.AreEqual("New York", areaCodeMap.Lookup(number));
+            Assert.AreEqual("New York", areaCodeMapForUS.Lookup(number));
         }
 
         [Test]
         public void TestLookupNumber_CA_1()
         {
             var number = new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(6503451234L).Build();
-            Assert.AreEqual("San Mateo, CA", areaCodeMap.Lookup(number));
+            Assert.AreEqual("San Mateo, CA", areaCodeMapForUS.Lookup(number));
         }
 
         [Test]
         public void TestLookupNumber_CA_2()
         {
             var number = new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(6502531234L).Build();
-            Assert.AreEqual("California", areaCodeMap.Lookup(number));
+            Assert.AreEqual("California", areaCodeMapForUS.Lookup(number));
         }
 
         [Test]
         public void TestLookupNumberFound_TX()
         {
             var number = new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(9724801234L).Build();
-            Assert.AreEqual("Richardson, TX", areaCodeMap.Lookup(number));
+            Assert.AreEqual("Richardson, TX", areaCodeMapForUS.Lookup(number));
         }
 
         [Test]
         public void TestLookupNumberNotFound_TX()
         {
             var number = new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(9724811234L).Build();
-            Assert.AreEqual("", areaCodeMap.Lookup(number));
+            Assert.AreEqual("", areaCodeMapForUS.Lookup(number));
         }
 
         [Test]
         public void TestLookupNumber_CH()
         {
-            var number = new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(446681300L).Build();
-            Assert.AreEqual("", areaCodeMap.Lookup(number));
+            var number = new PhoneNumber.Builder().SetCountryCode(41).SetNationalNumber(446681300L).Build();
+            Assert.AreEqual("", areaCodeMapForUS.Lookup(number));
+        }
+
+        [Test]
+        public void TestLookupNumber_IT()
+        {
+            var number = new PhoneNumber.Builder().SetCountryCode(39).SetNationalNumber(212345678L).SetItalianLeadingZero(true)
+                .Build();
+            Assert.AreEqual("Milan", areaCodeMapForIT.Lookup(number));
+
+            number = new PhoneNumber.Builder().SetCountryCode(39).SetNationalNumber(612345678L).SetItalianLeadingZero(true)
+                .Build();
+            Assert.AreEqual("Rome", areaCodeMapForIT.Lookup(number));
+
+            number = new PhoneNumber.Builder().SetCountryCode(39).SetNationalNumber(3211234L).SetItalianLeadingZero(true)
+                .Build();
+            Assert.AreEqual("Novara", areaCodeMapForIT.Lookup(number));
+
+            // A mobile number
+            number = new PhoneNumber.Builder().SetCountryCode(39).SetNationalNumber(321123456L).SetItalianLeadingZero(false)
+                .Build();
+            Assert.AreEqual("", areaCodeMapForIT.Lookup(number));
+
+            // An invalid number (too short)
+            number = new PhoneNumber.Builder().SetCountryCode(39).SetNationalNumber(321123L).SetItalianLeadingZero(true)
+                .Build();
+            Assert.AreEqual("Novara", areaCodeMapForIT.Lookup(number));
         }
     }
 }

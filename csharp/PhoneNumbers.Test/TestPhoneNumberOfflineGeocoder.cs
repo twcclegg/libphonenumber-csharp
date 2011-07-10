@@ -30,8 +30,7 @@ namespace PhoneNumbers.Test
     [TestFixture]
     class TestPhoneNumberOfflineGeocoder
     {
-        private PhoneNumberOfflineGeocoder geocoder
-             = new PhoneNumberOfflineGeocoder(TEST_MAPPING_DATA_DIRECTORY);
+        private PhoneNumberOfflineGeocoder geocoder;
         const String TEST_MAPPING_DATA_DIRECTORY = "res.test_";
 
         // Set up some test numbers to re-use.
@@ -41,18 +40,29 @@ namespace PhoneNumbers.Test
             new PhoneNumber.Builder().SetCountryCode(82).SetNationalNumber(322123456L).Build();
         private static readonly PhoneNumber KO_NUMBER3 =
             new PhoneNumber.Builder().SetCountryCode(82).SetNationalNumber(6421234567L).Build();
+         private static readonly PhoneNumber KO_INVALID_NUMBER =
+            new PhoneNumber.Builder().SetCountryCode(82).SetNationalNumber(1234L).Build();
         private static readonly PhoneNumber US_NUMBER1 =
             new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(6502530000L).Build();
         private static readonly PhoneNumber US_NUMBER2 =
             new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(6509600000L).Build();
         private static readonly PhoneNumber US_NUMBER3 =
             new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(2128120000L).Build();
+        private static readonly PhoneNumber US_INVALID_NUMBER =
+            new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(1234567890L).Build();
         private static readonly PhoneNumber BS_NUMBER1 =
             new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(2423651234L).Build();
         private static readonly PhoneNumber AU_NUMBER =
             new PhoneNumber.Builder().SetCountryCode(61).SetNationalNumber(236618300L).Build();
         private static readonly PhoneNumber NUMBER_WITH_INVALID_COUNTRY_CODE =
             new PhoneNumber.Builder().SetCountryCode(999).SetNationalNumber(2423651234L).Build();
+
+        [TestFixtureSetUp]
+        public void SetupFixture()
+        {
+            PhoneNumberUtil.ResetInstance();
+            geocoder = new PhoneNumberOfflineGeocoder(TEST_MAPPING_DATA_DIRECTORY);
+        }
 
         /* This test is disabled as we do not have localized country names by
          * default on .NET. Also, Bahamas RegionInfo does not exist.
@@ -100,6 +110,13 @@ namespace PhoneNumbers.Test
                 geocoder.GetDescriptionForNumber(KO_NUMBER2, Locale.KOREAN));
             Assert.AreEqual("\uC81C\uC8FC",
                 geocoder.GetDescriptionForNumber(KO_NUMBER3, Locale.KOREAN));
+        }
+
+        [Test]
+        public void TestGetDescritionForInvaildNumber()
+        {
+            Assert.AreEqual("", geocoder.GetDescriptionForNumber(KO_INVALID_NUMBER, Locale.ENGLISH));
+            Assert.AreEqual("", geocoder.GetDescriptionForNumber(US_INVALID_NUMBER, Locale.ENGLISH));
         }
     }
 }

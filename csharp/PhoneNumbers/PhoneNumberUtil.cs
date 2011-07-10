@@ -1621,9 +1621,9 @@ namespace PhoneNumbers
         }
 
         /**
-        * Checks whether countryCode represents the country calling code from a region whose national
-        * significant number could contain a leading zero. An example of such a region is Italy. Returns
-        * false if no metadata for the country is found.
+        * Checks whether the country calling code is from a region whose national significant number
+        * could contain a leading zero. An example of such a region is Italy. Returns false if no
+        * metadata for the country is found.
         */
         public bool IsLeadingZeroPossible(int countryCallingCode)
         {

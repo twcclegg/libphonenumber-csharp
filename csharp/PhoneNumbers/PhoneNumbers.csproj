@@ -46,9 +46,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AreaCodeMap.cs" />
+    <Compile Include="AreaCodeMapStorageStrategy.cs" />
     <Compile Include="AreaCodeParser.cs" />
     <Compile Include="AsYouTypeFormatter.cs" />
     <Compile Include="CountryCodeToRegionCodeMap.cs" />
+    <Compile Include="DefaultMapStorage.cs" />
+    <Compile Include="FlyweightMapStorage.cs" />
     <Compile Include="MappingFileProvider.cs" />
     <Compile Include="NumberParseException.cs" />
     <Compile Include="Phonemetadata.cs" />

@@ -28,48 +28,81 @@ namespace PhoneNumbers
     */
     public class AreaCodeMap
     {
-        private int numOfEntries = 0;
-        private List<int> possibleLengths = new List<int>();
-        private int[] phoneNumberPrefixes;
-        private String[] descriptions;
-        private PhoneNumberUtil phoneUtil;
+        private readonly int countryCallingCode;
+        private readonly bool isLeadingZeroPossible;
+        private readonly PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
+
+        private AreaCodeMapStorageStrategy areaCodeMapStorage;
+
+        public AreaCodeMapStorageStrategy getAreaCodeMapStorage()
+        {
+            return areaCodeMapStorage;
+        }
 
         /**
          * Creates an empty {@link AreaCodeMap}. The default constructor is necessary for implementing
          * {@link Externalizable}. The empty map could later populated by
          * {@link #readAreaCodeMap(java.util.SortedMap)} or {@link #readExternal(java.io.ObjectInput)}.
+         *
+         * @param countryCallingCode  the country calling code for the region that the area code map
+         *     belongs to.
          */
-        public AreaCodeMap()
+        public AreaCodeMap(int countryCallingCode)
         {
-            phoneUtil = PhoneNumberUtil.GetInstance();
-        }
-
-        // @VisibleForTesting
-        public AreaCodeMap(PhoneNumberUtil phoneUtil)
-        {
-            this.phoneUtil = phoneUtil;
+            this.countryCallingCode = countryCallingCode;
+            isLeadingZeroPossible = phoneUtil.IsLeadingZeroPossible(countryCallingCode);
         }
 
         /**
-         * Creates an {@link AreaCodeMap} initialized with {@code sortedAreaCodeMap}.
+         * Gets the size of the provided area code map storage. The map storage passed-in will be filled
+         * as a result.
+         */
+        private static int getSizeOfAreaCodeMapStorage(AreaCodeMapStorageStrategy mapStorage,
+            SortedDictionary<int, String> areaCodeMap)
+        {
+            mapStorage.readFromSortedMap(areaCodeMap);
+            return mapStorage.getStorageSize();
+        }
+
+        private AreaCodeMapStorageStrategy createDefaultMapStorage()
+        {
+            return new DefaultMapStorage(countryCallingCode, isLeadingZeroPossible);
+        }
+
+        private AreaCodeMapStorageStrategy createFlyweightMapStorage()
+        {
+            return new FlyweightMapStorage(countryCallingCode, isLeadingZeroPossible);
+        }
+
+        /**
+         * Gets the smaller area code map storage strategy according to the provided area code map. It
+         * actually uses (outputs the data to a stream) both strategies and retains the best one which
+         * make this method quite expensive.
+         */
+        // @VisibleForTesting
+        public AreaCodeMapStorageStrategy getSmallerMapStorage(SortedDictionary<int, String> areaCodeMap)
+        {
+            AreaCodeMapStorageStrategy flyweightMapStorage = createFlyweightMapStorage();
+            int sizeOfFlyweightMapStorage = getSizeOfAreaCodeMapStorage(flyweightMapStorage, areaCodeMap);
+
+            AreaCodeMapStorageStrategy defaultMapStorage = createDefaultMapStorage();
+            int sizeOfDefaultMapStorage = getSizeOfAreaCodeMapStorage(defaultMapStorage, areaCodeMap);
+
+            return sizeOfFlyweightMapStorage < sizeOfDefaultMapStorage
+                ? flyweightMapStorage : defaultMapStorage;
+        }
+
+        /**
+         * Creates an {@link AreaCodeMap} initialized with {@code sortedAreaCodeMap}.  Note that the
+         * underlying implementation of this method is expensive thus should not be called by
+         * time-critical applications.
          *
          * @param sortedAreaCodeMap  a map from phone number prefixes to descriptions of corresponding
          *     geographical areas, sorted in ascending order of the phone number prefixes as integers.
          */
-        public void ReadAreaCodeMap(SortedDictionary<int, String> sortedAreaCodeMap)
+        public void readAreaCodeMap(SortedDictionary<int, String> sortedAreaCodeMap)
         {
-            numOfEntries = sortedAreaCodeMap.Count;
-            phoneNumberPrefixes = new int[numOfEntries];
-            descriptions = new String[numOfEntries];
-            int index = 0;
-            foreach (int prefix in sortedAreaCodeMap.Keys)
-            {
-                phoneNumberPrefixes[index++] = prefix;
-                possibleLengths.Add((int)Math.Log10(prefix) + 1);
-            }
-            possibleLengths = possibleLengths.Distinct().OrderBy(a => a).ToList();
-
-            sortedAreaCodeMap.Values.CopyTo(descriptions, 0);
+            areaCodeMapStorage = getSmallerMapStorage(sortedAreaCodeMap);
         }
 
         /**
@@ -80,58 +113,59 @@ namespace PhoneNumbers
          */
         public String Lookup(PhoneNumber number)
         {
+            int numOfEntries = areaCodeMapStorage.getNumOfEntries();
             if (numOfEntries == 0)
             {
                 return "";
             }
-            long phonePrefix =
-                long.Parse(number.CountryCode + phoneUtil.GetNationalSignificantNumber(number));
+            long phonePrefix = isLeadingZeroPossible
+                ? long.Parse(number.CountryCode + phoneUtil.GetNationalSignificantNumber(number))
+                : long.Parse(phoneUtil.GetNationalSignificantNumber(number));
             int currentIndex = numOfEntries - 1;
-            List<int> currentSetOfLengths = possibleLengths;
-            int maxIndex = currentSetOfLengths.Count();
-
-            while (maxIndex > 0)
+            List<int> currentSetOfLengths = areaCodeMapStorage.getPossibleLengths();
+            var length = currentSetOfLengths.Count;
+            while (length > 0)
             {
-                var possibleLength = currentSetOfLengths[maxIndex - 1];
+                int possibleLength = currentSetOfLengths[length - 1];
                 String phonePrefixStr = phonePrefix.ToString();
                 if (phonePrefixStr.Length > possibleLength)
                 {
                     phonePrefix = long.Parse(phonePrefixStr.Substring(0, possibleLength));
                 }
-                currentIndex = BinarySearch(0, currentIndex, phonePrefix);
+                currentIndex = binarySearch(0, currentIndex, phonePrefix);
                 if (currentIndex < 0)
                 {
                     return "";
                 }
-                if (phonePrefix == phoneNumberPrefixes[currentIndex])
+                int currentPrefix = areaCodeMapStorage.getPrefix(currentIndex);
+                if (phonePrefix == currentPrefix)
                 {
-                    return descriptions[currentIndex];
+                    return areaCodeMapStorage.getDescription(currentIndex);
                 }
-                while (maxIndex > 0 && currentSetOfLengths[maxIndex - 1] >= possibleLength)
-                {
-                    maxIndex--;
-                }
+                while (length > 0 && currentSetOfLengths[length - 1] >= possibleLength)
+                    length--;
             }
             return "";
         }
 
         /**
-         * Does a binary search for {@code value} in the phoneNumberPrefixes array from {@code start} to
-         * {@code end} (inclusive). Returns the position if {@code value} is found; otherwise, returns the
+         * Does a binary search for {@code value} in the provided array from {@code start} to {@code end}
+         * (inclusive). Returns the position if {@code value} is found; otherwise, returns the
          * position which has the largest value that is less than {@code value}. This means if
          * {@code value} is the smallest, -1 will be returned.
          */
-        private int BinarySearch(int start, int end, long value)
+        private int binarySearch(int start, int end, long value)
         {
             int current = 0;
             while (start <= end)
             {
                 current = (start + end) / 2;
-                if (phoneNumberPrefixes[current] == value)
+                int currentValue = areaCodeMapStorage.getPrefix(current);
+                if (currentValue == value)
                 {
                     return current;
                 }
-                else if (phoneNumberPrefixes[current] > value)
+                else if (currentValue > value)
                 {
                     current--;
                     end = current;
@@ -150,11 +184,17 @@ namespace PhoneNumbers
         public override String ToString()
         {
             StringBuilder output = new StringBuilder();
+            int numOfEntries = areaCodeMapStorage.getNumOfEntries();
+
             for (int i = 0; i < numOfEntries; i++)
             {
-                output.Append(phoneNumberPrefixes[i]);
+                if (!isLeadingZeroPossible)
+                {
+                    output.Append(countryCallingCode);
+                }
+                output.Append(areaCodeMapStorage.getPrefix(i));
                 output.Append("|");
-                output.Append(descriptions[i]);
+                output.Append(areaCodeMapStorage.getDescription(i));
                 output.Append("\n");
             }
             return output.ToString();

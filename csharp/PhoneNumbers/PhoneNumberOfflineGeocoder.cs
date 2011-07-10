@@ -104,20 +104,20 @@ namespace PhoneNumbers
             }
             if (!availablePhonePrefixMaps.ContainsKey(fileName))
             {
-                LoadAreaCodeMapFromFile(fileName);
+                LoadAreaCodeMapFromFile(fileName, countryCallingCode);
             }
             AreaCodeMap map;
             return availablePhonePrefixMaps.TryGetValue(fileName, out map) ? map : null;
         }
 
-        private void LoadAreaCodeMapFromFile(String fileName)
+        private void LoadAreaCodeMapFromFile(String fileName, int countryCallingCode)
         {
             var asm = Assembly.GetExecutingAssembly();
             var prefix = asm.GetName().Name + "." + phonePrefixDataDirectory;
             var resName = prefix + fileName;
-            using(var fp = asm.GetManifestResourceStream(resName))
+            using (var fp = asm.GetManifestResourceStream(resName))
             {
-                var areaCodeMap = AreaCodeParser.ParseAreaCodeMap(fp);
+                var areaCodeMap = AreaCodeParser.ParseAreaCodeMap(fp, countryCallingCode);
                 availablePhonePrefixMaps[fileName] = areaCodeMap;
             }
         }
@@ -179,6 +179,10 @@ namespace PhoneNumbers
          */
         public String GetDescriptionForNumber(PhoneNumber number, Locale languageCode)
         {
+            if (!phoneUtil.IsValidNumber(number))
+            {
+                return "";
+            }
             String areaDescription =
                 GetAreaDescriptionForNumber(
                     number, languageCode.Language, "",  // No script is specified.
