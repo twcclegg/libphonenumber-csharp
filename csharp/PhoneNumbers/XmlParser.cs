@@ -24,14 +24,46 @@ using System.Xml.XPath;
 
 namespace PhoneNumbers
 {
-    class BuildMetadataFromXml
+    public class BuildMetadataFromXml
     {
-        private static bool liteBuild;
+        // String constants used to fetch the XML nodes and attributes.
+        private static readonly String CARRIER_CODE_FORMATTING_RULE = "carrierCodeFormattingRule";
+        private static readonly String COUNTRY_CODE = "countryCode";
+        private static readonly String EXAMPLE_NUMBER = "exampleNumber";
+        private static readonly String FIXED_LINE = "fixedLine";
+        private static readonly String FORMAT = "format";
+        private static readonly String GENERAL_DESC = "generalDesc";
+        private static readonly String INTERNATIONAL_PREFIX = "internationalPrefix";
+        private static readonly String INTL_FORMAT = "intlFormat";
+        private static readonly String LEADING_DIGITS = "leadingDigits";
+        private static readonly String LEADING_ZERO_POSSIBLE = "leadingZeroPossible";
+        private static readonly String MAIN_COUNTRY_FOR_CODE = "mainCountryForCode";
+        private static readonly String MOBILE = "mobile";
+        private static readonly String NATIONAL_NUMBER_PATTERN = "nationalNumberPattern";
+        private static readonly String NATIONAL_PREFIX = "nationalPrefix";
+        private static readonly String NATIONAL_PREFIX_FORMATTING_RULE = "nationalPrefixFormattingRule";
+        private static readonly String NATIONAL_PREFIX_FOR_PARSING = "nationalPrefixForParsing";
+        private static readonly String NATIONAL_PREFIX_TRANSFORM_RULE = "nationalPrefixTransformRule";
+        private static readonly String NO_INTERNATIONAL_DIALLING = "noInternationalDialling";
+        private static readonly String NUMBER_FORMAT = "numberFormat";
+        private static readonly String PAGER = "pager";
+        private static readonly String PATTERN = "pattern";
+        private static readonly String PERSONAL_NUMBER = "personalNumber";
+        private static readonly String POSSIBLE_NUMBER_PATTERN = "possibleNumberPattern";
+        private static readonly String PREFERRED_EXTN_PREFIX = "preferredExtnPrefix";
+        private static readonly String PREFERRED_INTERNATIONAL_PREFIX = "preferredInternationalPrefix";
+        private static readonly String PREMIUM_RATE = "premiumRate";
+        private static readonly String SHARED_COST = "sharedCost";
+        private static readonly String TOLL_FREE = "tollFree";
+        private static readonly String UAN = "uan";
+        private static readonly String VOIP = "voip";
+
+        static public bool LiteBuild { get; set; }
 
         // Build the PhoneMetadataCollection from the input XML file.
         public static PhoneMetadataCollection BuildPhoneMetadataCollection(Stream input, bool liteBuild)
         {
-            BuildMetadataFromXml.liteBuild = liteBuild;
+            BuildMetadataFromXml.LiteBuild = liteBuild;
             var document = new XmlDocument();
             document.Load(input);
             document.Normalize();
@@ -76,12 +108,12 @@ namespace PhoneNumbers
             return countryCodeToRegionCodeMap;
         }
 
-        private static String ValidateRE(String regex)
+        public static String ValidateRE(String regex)
         {
             return ValidateRE(regex, false);
         }
 
-        private static String ValidateRE(String regex, bool removeWhitespace)
+        public static String ValidateRE(String regex, bool removeWhitespace)
         {
             // Removes all the whitespace and newline from the regexp. Not using pattern compile options to
             // make it work across programming languages.
@@ -93,56 +125,151 @@ namespace PhoneNumbers
             return regex;
         }
 
-        private static PhoneMetadata LoadCountryMetadata(String regionCode, XmlElement element)
+        /**
+        * Returns the national prefix of the provided country element.
+        */
+        // @VisibleForTesting
+        public static String GetNationalPrefix(XmlElement element)
+        {
+            return element.HasAttribute(NATIONAL_PREFIX) ? element.GetAttribute(NATIONAL_PREFIX) : "";
+        }
+
+        public static PhoneMetadata.Builder LoadTerritoryTagMetadata(String regionCode, XmlElement element,
+                                                        String nationalPrefix,
+                                                        String nationalPrefixFormattingRule)
         {
             var metadata = new PhoneMetadata.Builder();
             metadata.SetId(regionCode);
-            metadata.SetCountryCode(int.Parse(element.GetAttribute("countryCode")));
-            if (element.HasAttribute("leadingDigits"))
-                metadata.SetLeadingDigits(ValidateRE(element.GetAttribute("leadingDigits")));
-            metadata.SetInternationalPrefix(ValidateRE(element.GetAttribute("internationalPrefix")));
-            if (element.HasAttribute("preferredInternationalPrefix"))
+            metadata.SetCountryCode(int.Parse(element.GetAttribute(COUNTRY_CODE)));
+            if (element.HasAttribute(LEADING_DIGITS))
+                metadata.SetLeadingDigits(ValidateRE(element.GetAttribute(LEADING_DIGITS)));
+            metadata.SetInternationalPrefix(ValidateRE(element.GetAttribute(INTERNATIONAL_PREFIX)));
+            if (element.HasAttribute(PREFERRED_INTERNATIONAL_PREFIX))
             {
-                String preferredInternationalPrefix = element.GetAttribute("preferredInternationalPrefix");
+                String preferredInternationalPrefix = element.GetAttribute(PREFERRED_INTERNATIONAL_PREFIX);
                 metadata.SetPreferredInternationalPrefix(preferredInternationalPrefix);
             }
-            if (element.HasAttribute("nationalPrefixForParsing"))
+            if (element.HasAttribute(NATIONAL_PREFIX_FOR_PARSING))
             {
                 metadata.SetNationalPrefixForParsing(
-                    ValidateRE(element.GetAttribute("nationalPrefixForParsing")));
-                if (element.HasAttribute("nationalPrefixTransformRule"))
+                    ValidateRE(element.GetAttribute(NATIONAL_PREFIX_FOR_PARSING)));
+                if (element.HasAttribute(NATIONAL_PREFIX_TRANSFORM_RULE))
                 {
                     metadata.SetNationalPrefixTransformRule(
-                    ValidateRE(element.GetAttribute("nationalPrefixTransformRule")));
+                    ValidateRE(element.GetAttribute(NATIONAL_PREFIX_TRANSFORM_RULE)));
                 }
             }
-            String nationalPrefix = "";
-            String nationalPrefixFormattingRule = "";
-            if (element.HasAttribute("nationalPrefix"))
+            if (!String.IsNullOrEmpty(nationalPrefix))
             {
-                nationalPrefix = element.GetAttribute("nationalPrefix");
                 metadata.SetNationalPrefix(nationalPrefix);
-                nationalPrefixFormattingRule =
-                    GetNationalPrefixFormattingRuleFromElement(element, nationalPrefix);
-
                 if (!metadata.HasNationalPrefixForParsing)
                     metadata.SetNationalPrefixForParsing(nationalPrefix);
             }
+            if (element.HasAttribute(PREFERRED_EXTN_PREFIX))
+            {
+                metadata.SetPreferredExtnPrefix(element.GetAttribute(PREFERRED_EXTN_PREFIX));
+            }
+            if (element.HasAttribute(MAIN_COUNTRY_FOR_CODE))
+            {
+                metadata.SetMainCountryForCode(true);
+            }
+            if (element.HasAttribute(LEADING_ZERO_POSSIBLE))
+            {
+                metadata.SetLeadingZeroPossible(true);
+            }
+            return metadata;
+        }
+
+        /**
+        * Extracts the pattern for international format. If there is no intlFormat, default to using the
+        * national format. If the intlFormat is set to "NA" the intlFormat should be ignored.
+        *
+        * @throws  RuntimeException if multiple intlFormats have been encountered.
+        * @return  whether an international number format is defined.
+        */
+        // @VisibleForTesting
+        public static bool LoadInternationalFormat(PhoneMetadata.Builder metadata,
+            XmlElement numberFormatElement,
+            String nationalFormat)
+        {
+            NumberFormat.Builder intlFormat = new NumberFormat.Builder();
+            SetLeadingDigitsPatterns(numberFormatElement, intlFormat);
+            intlFormat.SetPattern(numberFormatElement.GetAttribute(PATTERN));
+            var intlFormatPattern = numberFormatElement.GetElementsByTagName(INTL_FORMAT);
+            bool hasExplicitIntlFormatDefined = false;
+
+            if (intlFormatPattern.Count > 1)
+            {
+                //LOGGER.log(Level.SEVERE,
+                //          "A maximum of one intlFormat pattern for a numberFormat element should be " +
+                //           "defined.");
+                throw new Exception("Invalid number of intlFormat patterns for country: " +
+                                    metadata.Id);
+            }
+            else if (intlFormatPattern.Count == 0)
+            {
+                // Default to use the same as the national pattern if none is defined.
+                intlFormat.SetFormat(nationalFormat);
+            }
+            else
+            {
+                String intlFormatPatternValue = intlFormatPattern[0].InnerText;
+                if (!intlFormatPatternValue.Equals("NA"))
+                {
+                    intlFormat.SetFormat(intlFormatPatternValue);
+                }
+                hasExplicitIntlFormatDefined = true;
+            }
+
+            if (intlFormat.HasFormat)
+            {
+                metadata.AddIntlNumberFormat(intlFormat);
+            }
+            return hasExplicitIntlFormatDefined;
+        }
+
+        /**
+         * Extracts the pattern for the national format.
+         *
+         * @throws  RuntimeException if multiple or no formats have been encountered.
+         * @return  the national format string.
+         */
+        // @VisibleForTesting
+        public static String LoadNationalFormat(PhoneMetadata.Builder metadata, XmlElement numberFormatElement,
+                                         NumberFormat.Builder format)
+        {
+            SetLeadingDigitsPatterns(numberFormatElement, format);
+            format.SetPattern(ValidateRE(numberFormatElement.GetAttribute(PATTERN)));
+
+            var formatPattern = numberFormatElement.GetElementsByTagName(FORMAT);
+            if (formatPattern.Count != 1)
+            {
+                //LOGGER.log(Level.SEVERE,
+                //           "Only one format pattern for a numberFormat element should be defined.");
+                throw new Exception("Invalid number of format patterns for country: " +
+                                    metadata.Id);
+            }
+            String nationalFormat = formatPattern[0].InnerText;
+            format.SetFormat(nationalFormat);
+            return nationalFormat;
+        }
+
+        /**
+          *  Extracts the available formats from the provided DOM element. If it does not contain any
+          *  nationalPrefixFormattingRule, the one passed-in is retained.
+          */
+        // @VisibleForTesting
+        public static void LoadAvailableFormats(PhoneMetadata.Builder metadata, String regionCode,
+                                         XmlElement element, String nationalPrefix,
+                                         String nationalPrefixFormattingRule)
+        {
             String carrierCodeFormattingRule = "";
-            if (element.HasAttribute("carrierCodeFormattingRule"))
+            if (element.HasAttribute(CARRIER_CODE_FORMATTING_RULE))
             {
                 carrierCodeFormattingRule = ValidateRE(
                     GetDomesticCarrierCodeFormattingRuleFromElement(element, nationalPrefix));
             }
-            if (element.HasAttribute("preferredExtnPrefix"))
-                metadata.SetPreferredExtnPrefix(element.GetAttribute("preferredExtnPrefix"));
-            if (element.HasAttribute("mainCountryForCode"))
-                metadata.SetMainCountryForCode(true);
-            if (element.HasAttribute("leadingZeroPossible"))
-                metadata.SetLeadingZeroPossible(true);
-
-            // Extract availableFormats
-            var numberFormatElements = element.GetElementsByTagName("numberFormat");
+            var numberFormatElements = element.GetElementsByTagName(NUMBER_FORMAT);
             bool hasExplicitIntlFormatDefined = false;
 
             int numOfFormatElements = numberFormatElements.Count;
@@ -152,7 +279,7 @@ namespace PhoneNumbers
                 {
                     var format = new NumberFormat.Builder();
 
-                    if (numberFormatElement.HasAttribute("nationalPrefixFormattingRule"))
+                    if (numberFormatElement.HasAttribute(NATIONAL_PREFIX_FORMATTING_RULE))
                     {
                         format.SetNationalPrefixFormattingRule(
                             GetNationalPrefixFormattingRuleFromElement(numberFormatElement, nationalPrefix));
@@ -173,41 +300,14 @@ namespace PhoneNumbers
                     }
 
                     // Extract the pattern for the national format.
-                    setLeadingDigitsPatterns(numberFormatElement, format);
-                    format.SetPattern(ValidateRE(numberFormatElement.GetAttribute("pattern")));
-
-                    var formatPattern = numberFormatElement.GetElementsByTagName("format");
-                    if (formatPattern.Count != 1)
-                        throw new Exception("Invalid number of format patterns for country: " + regionCode);
-                    String nationalFormat = formatPattern[0].InnerText;
-                    format.SetFormat(nationalFormat);
+                    String nationalFormat =
+                        LoadNationalFormat(metadata, numberFormatElement, format);
                     metadata.AddNumberFormat(format);
 
-                    // Extract the pattern for international format. If there is no intlFormat, default to
-                    // using the national format. If the intlFormat is set to "NA" the intlFormat should be
-                    // ignored.
-                    var intlFormat = new NumberFormat.Builder();
-                    setLeadingDigitsPatterns(numberFormatElement, intlFormat);
-                    intlFormat.SetPattern(numberFormatElement.GetAttribute("pattern"));
-                    var intlFormatPattern = numberFormatElement.GetElementsByTagName("intlFormat");
-
-                    if (intlFormatPattern.Count > 1)
-                        throw new Exception("Invalid number of intlFormat patterns for country: " + regionCode);
-                    if (intlFormatPattern.Count == 0)
+                    if (LoadInternationalFormat(metadata, numberFormatElement, nationalFormat))
                     {
-                        // Default to use the same as the national pattern if none is defined.
-                        intlFormat.SetFormat(nationalFormat);
-                    }
-                    else
-                    {
-                        String intlFormatPatternValue = intlFormatPattern[0].InnerText;
-                        if (!intlFormatPatternValue.Equals("NA"))
-                            intlFormat.SetFormat(intlFormatPatternValue);
                         hasExplicitIntlFormatDefined = true;
                     }
-
-                    if (intlFormat.HasFormat)
-                        metadata.AddIntlNumberFormat(intlFormat);
                 }
                 // Only a small number of regions need to specify the intlFormats in the xml. For the majority
                 // of countries the intlNumberFormat metadata is an exact copy of the national NumberFormat
@@ -218,55 +318,41 @@ namespace PhoneNumbers
                     metadata.ClearIntlNumberFormat();
                 }
             }
-
-            PhoneNumberDesc generalDesc = new PhoneNumberDesc();
-            generalDesc = ProcessPhoneNumberDescElement(generalDesc, element, "generalDesc");
-            metadata.SetGeneralDesc(generalDesc);
-            metadata.SetFixedLine(ProcessPhoneNumberDescElement(generalDesc, element, "fixedLine"));
-            metadata.SetMobile(ProcessPhoneNumberDescElement(generalDesc, element, "mobile"));
-            metadata.SetTollFree(ProcessPhoneNumberDescElement(generalDesc, element, "tollFree"));
-            metadata.SetPremiumRate(ProcessPhoneNumberDescElement(generalDesc, element, "premiumRate"));
-            metadata.SetSharedCost(ProcessPhoneNumberDescElement(generalDesc, element, "sharedCost"));
-            metadata.SetVoip(ProcessPhoneNumberDescElement(generalDesc, element, "voip"));
-            metadata.SetPersonalNumber(ProcessPhoneNumberDescElement(generalDesc, element,
-                                                             "personalNumber"));
-            metadata.SetPager(ProcessPhoneNumberDescElement(generalDesc, element, "pager"));
-            metadata.SetUan(ProcessPhoneNumberDescElement(generalDesc, element, "uan"));
-            metadata.SetNoInternationalDialling(ProcessPhoneNumberDescElement(generalDesc, element,
-                                                                      "noInternationalDialling"));
-
-            if (metadata.Mobile.NationalNumberPattern.Equals(
-                metadata.FixedLine.NationalNumberPattern))
-                metadata.SetSameMobileAndFixedLinePattern(true);
-            return metadata.Build();
         }
 
-        private static void setLeadingDigitsPatterns(XmlElement numberFormatElement, NumberFormat.Builder format)
+        public static void SetLeadingDigitsPatterns(XmlElement numberFormatElement, NumberFormat.Builder format)
         {
-            foreach (XmlElement e in numberFormatElement.GetElementsByTagName("leadingDigits"))
+            foreach (XmlElement e in numberFormatElement.GetElementsByTagName(LEADING_DIGITS))
             {
                 format.AddLeadingDigitsPattern(ValidateRE(e.InnerText, true));
             }
         }
 
-        private static String GetNationalPrefixFormattingRuleFromElement(XmlElement element,
+        public static String GetNationalPrefixFormattingRuleFromElement(XmlElement element,
             String nationalPrefix)
         {
-            String nationalPrefixFormattingRule = element.GetAttribute("nationalPrefixFormattingRule");
+            String nationalPrefixFormattingRule = element.GetAttribute(NATIONAL_PREFIX_FORMATTING_RULE);
             // Replace $NP with national prefix and $FG with the first group ($1).
             nationalPrefixFormattingRule = ReplaceFirst(nationalPrefixFormattingRule, "$NP", nationalPrefix);
             nationalPrefixFormattingRule = ReplaceFirst(nationalPrefixFormattingRule, "$FG", "${1}");
             return nationalPrefixFormattingRule;
         }
 
-        private static String GetDomesticCarrierCodeFormattingRuleFromElement(XmlElement element,
+        public static String GetDomesticCarrierCodeFormattingRuleFromElement(XmlElement element,
             String nationalPrefix)
         {
-            String carrierCodeFormattingRule = element.GetAttribute("carrierCodeFormattingRule");
+            String carrierCodeFormattingRule = element.GetAttribute(CARRIER_CODE_FORMATTING_RULE);
             // Replace $FG with the first group ($1) and $NP with the national prefix.
             carrierCodeFormattingRule = ReplaceFirst(carrierCodeFormattingRule, "$FG", "${1}");
             carrierCodeFormattingRule = ReplaceFirst(carrierCodeFormattingRule, "$NP", nationalPrefix);
             return carrierCodeFormattingRule;
+        }
+
+        // @VisibleForTesting
+        public static bool IsValidNumberType(String numberType)
+        {
+            return numberType.Equals(FIXED_LINE) || numberType.Equals(MOBILE) ||
+                 numberType.Equals(GENERAL_DESC);
         }
 
         /**
@@ -285,14 +371,14 @@ namespace PhoneNumbers
         *                    file with information about that type
         * @return  complete description of that phone number type
         */
-        private static PhoneNumberDesc ProcessPhoneNumberDescElement(PhoneNumberDesc generalDesc,
+        public static PhoneNumberDesc ProcessPhoneNumberDescElement(PhoneNumberDesc generalDesc,
             XmlElement countryElement, String numberType)
         {
+            if(generalDesc == null)
+                generalDesc = new PhoneNumberDesc.Builder().Build();
             var phoneNumberDescList = countryElement.GetElementsByTagName(numberType);
             var numberDesc = new PhoneNumberDesc.Builder();
-            if (phoneNumberDescList.Count == 0 &&
-                (!numberType.Equals("fixedLine") && !numberType.Equals("mobile") &&
-                !numberType.Equals("generalDesc")))
+            if (phoneNumberDescList.Count == 0 && !IsValidNumberType(numberType))
             {
                 numberDesc.SetNationalNumberPattern("NA");
                 numberDesc.SetPossibleNumberPattern("NA");
@@ -302,17 +388,17 @@ namespace PhoneNumbers
             if (phoneNumberDescList.Count > 0)
             {
                 XmlElement element = (XmlElement)phoneNumberDescList[0];
-                var possiblePattern = element.GetElementsByTagName("possibleNumberPattern");
+                var possiblePattern = element.GetElementsByTagName(POSSIBLE_NUMBER_PATTERN);
                 if (possiblePattern.Count > 0)
                     numberDesc.SetPossibleNumberPattern(ValidateRE(possiblePattern[0].InnerText, true));
 
-                var validPattern = element.GetElementsByTagName("nationalNumberPattern");
+                var validPattern = element.GetElementsByTagName(NATIONAL_NUMBER_PATTERN);
                 if (validPattern.Count > 0)
                     numberDesc.SetNationalNumberPattern(ValidateRE(validPattern[0].InnerText, true));
 
-                if (!liteBuild)
+                if (!LiteBuild)
                 {
-                    var exampleNumber = element.GetElementsByTagName("exampleNumber");
+                    var exampleNumber = element.GetElementsByTagName(EXAMPLE_NUMBER);
                     if (exampleNumber.Count > 0)
                         numberDesc.SetExampleNumber(exampleNumber[0].InnerText);
                 }
@@ -326,6 +412,44 @@ namespace PhoneNumbers
             if (p >= 0)
                 input = input.Substring(0, p) + replacement + input.Substring(p + value.Length);
             return input;
+        }
+
+        // @VisibleForTesting
+        public static void LoadGeneralDesc(PhoneMetadata.Builder metadata, XmlElement element)
+        {
+            var generalDesc = ProcessPhoneNumberDescElement(null,
+                element, GENERAL_DESC);
+            metadata.SetGeneralDesc(generalDesc);
+
+            metadata.SetFixedLine(ProcessPhoneNumberDescElement(generalDesc, element, FIXED_LINE));
+            metadata.SetMobile(ProcessPhoneNumberDescElement(generalDesc, element, MOBILE));
+            metadata.SetTollFree(ProcessPhoneNumberDescElement(generalDesc, element, TOLL_FREE));
+            metadata.SetPremiumRate(ProcessPhoneNumberDescElement(generalDesc, element, PREMIUM_RATE));
+            metadata.SetSharedCost(ProcessPhoneNumberDescElement(generalDesc, element, SHARED_COST));
+            metadata.SetVoip(ProcessPhoneNumberDescElement(generalDesc, element, VOIP));
+            metadata.SetPersonalNumber(ProcessPhoneNumberDescElement(generalDesc, element,
+                                                                     PERSONAL_NUMBER));
+            metadata.SetPager(ProcessPhoneNumberDescElement(generalDesc, element, PAGER));
+            metadata.SetUan(ProcessPhoneNumberDescElement(generalDesc, element, UAN));
+            metadata.SetNoInternationalDialling(ProcessPhoneNumberDescElement(generalDesc, element,
+                                                                              NO_INTERNATIONAL_DIALLING));
+            metadata.SetSameMobileAndFixedLinePattern(
+                metadata.Mobile.NationalNumberPattern.Equals(
+                metadata.FixedLine.NationalNumberPattern));
+        }
+
+        public static PhoneMetadata LoadCountryMetadata(String regionCode, XmlElement element)
+        {
+            String nationalPrefix = GetNationalPrefix(element);
+            String nationalPrefixFormattingRule =
+                GetNationalPrefixFormattingRuleFromElement(element, nationalPrefix);
+            PhoneMetadata.Builder metadata =
+                LoadTerritoryTagMetadata(regionCode, element, nationalPrefix, nationalPrefixFormattingRule);
+
+            LoadAvailableFormats(metadata, regionCode, element, nationalPrefix.ToString(),
+                                 nationalPrefixFormattingRule.ToString());
+            LoadGeneralDesc(metadata, element);
+            return metadata.Build();
         }
     }
 }

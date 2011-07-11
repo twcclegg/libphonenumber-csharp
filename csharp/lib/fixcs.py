@@ -10,6 +10,11 @@ replacements = [
     ('assertFalse(', 'Assert.False('),
     ('assertTrue(', 'Assert.True('),
     ('.getDescriptionForNumber(', '.GetDescriptionForNumber('),
+    ('.hasAttribute(', '.HasAttribute('),
+    ('.getAttribute(', '.GetAttribute('),
+    ('.equals(', '.Equals('),
+    ('.getNationalPrefixForParsing()', '.NationalPrefixForParsing'),
+    ('.getFormat()', '.Format'),
 ]
 
 regexps = [

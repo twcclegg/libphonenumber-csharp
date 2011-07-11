@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="CountryCodeToRegionCodeMapForTesting.cs" />
     <Compile Include="TestAreaCodeMap.cs" />
+    <Compile Include="TestBuildMetadataFromXml.cs" />
     <Compile Include="TestMappingFileProvider.cs" />
     <Compile Include="TestAsYouTypeFormatter.cs" />
     <Compile Include="TestExampleNumbers.cs" />
