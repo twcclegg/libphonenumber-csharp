@@ -145,8 +145,7 @@ namespace PhoneNumbers.Test
             String xmlInput = "<territory countryCode='33' internationalPrefix='00'/>";
             XmlElement territoryElement = parseXmlString(xmlInput);
             // Should not throw any exception.
-            PhoneMetadata.Builder phoneMetadata =
-                BuildMetadataFromXml.LoadTerritoryTagMetadata("33", territoryElement, "", "");
+            BuildMetadataFromXml.LoadTerritoryTagMetadata("33", territoryElement, "", "");
         }
 
         // Tests loadInternationalFormat().

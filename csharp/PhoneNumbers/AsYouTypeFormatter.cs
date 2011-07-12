@@ -533,7 +533,7 @@ namespace PhoneNumbers
             nationalNumber.Length = 0;
             nationalNumber.Append(numberWithoutCountryCallingCode);
             String newRegionCode = phoneUtil.GetRegionCodeForCountryCode(countryCode);
-            if (newRegionCode != defaultCountry)
+            if (!newRegionCode.Equals(defaultCountry))
             {
                 currentMetaData = GetMetadataForRegion(newRegionCode);
             }

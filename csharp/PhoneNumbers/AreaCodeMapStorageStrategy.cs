@@ -38,7 +38,7 @@ namespace PhoneNumbers
         *
         * @param countryCallingCode  the country calling code of the number prefixes contained in the map
         * @param isLeadingZeroPossible  whether the phone number prefixes belong to a region which
-        *    {@link PhoneNumberUtil#isLeadingZeroPossible isLeadingZeroPossible}
+        *    {@link com.google.i18n.phonenumbers.PhoneNumberUtil#isLeadingZeroPossible}
         */
         public AreaCodeMapStorageStrategy(int countryCallingCode, bool isLeadingZeroPossible)
         {
