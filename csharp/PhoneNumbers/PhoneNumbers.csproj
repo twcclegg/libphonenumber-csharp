@@ -109,6 +109,33 @@
     <EmbeddedResource Include="res\90_en" />
     <EmbeddedResource Include="res\90_tr" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="res\213_en" />
+    <EmbeddedResource Include="res\216_en" />
+    <EmbeddedResource Include="res\221_en" />
+    <EmbeddedResource Include="res\224_en" />
+    <EmbeddedResource Include="res\225_en" />
+    <EmbeddedResource Include="res\226_en" />
+    <EmbeddedResource Include="res\229_en" />
+    <EmbeddedResource Include="res\233_en" />
+    <EmbeddedResource Include="res\261_en" />
+    <EmbeddedResource Include="res\264_en" />
+    <EmbeddedResource Include="res\266_en" />
+    <EmbeddedResource Include="res\267_en" />
+    <EmbeddedResource Include="res\268_en" />
+    <EmbeddedResource Include="res\354_en" />
+    <EmbeddedResource Include="res\355_en" />
+    <EmbeddedResource Include="res\370_en" />
+    <EmbeddedResource Include="res\371_en" />
+    <EmbeddedResource Include="res\372_en" />
+    <EmbeddedResource Include="res\420_en" />
+    <EmbeddedResource Include="res\421_en" />
+    <EmbeddedResource Include="res\48_pl" />
+    <EmbeddedResource Include="res\51_en" />
+    <EmbeddedResource Include="res\84_en" />
+    <EmbeddedResource Include="res\84_vi" />
+    <EmbeddedResource Include="res\94_en" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
