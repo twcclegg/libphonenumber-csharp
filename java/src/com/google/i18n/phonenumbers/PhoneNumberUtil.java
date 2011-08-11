@@ -2176,7 +2176,7 @@ public class PhoneNumberUtil {
       int numOfGroups = prefixMatcher.groupCount();
       String transformRule = metadata.getNationalPrefixTransformRule();
       if (transformRule == null || transformRule.length() == 0 ||
-          prefixMatcher.group(numOfGroups) == null) {
+          prefixMatcher.group(numOfGroups - 1) == null) {
         // If the original number was viable, and the resultant number is not, we return.
         if (isViableOriginalNumber &&
             !nationalNumberRule.matcher(number.substring(prefixMatcher.end())).matches()) {

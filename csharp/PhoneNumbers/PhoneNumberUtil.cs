@@ -2249,7 +2249,7 @@ namespace PhoneNumbers
                     if (isViableOriginalNumber &&
                         !nationalNumberRule.MatchAll(number.ToString().Substring(prefixMatch.Index + prefixMatch.Length)).Success)
                         return "";
-                    if (numOfGroups > 0 && prefixMatch.Groups[numOfGroups - 1].Success)
+                    if (numOfGroups > 1 && prefixMatch.Groups[numOfGroups - 1].Success)
                         carrierCode = prefixMatch.Groups[1].Value;
                     number.Remove(0, prefixMatch.Index + prefixMatch.Length);
                 }
@@ -2262,7 +2262,7 @@ namespace PhoneNumbers
                     if (isViableOriginalNumber &&
                         !nationalNumberRule.MatchAll(transformedNumber.ToString()).Success)
                         return "";
-                    if (numOfGroups > 0)
+                    if (numOfGroups > 2)
                         carrierCode = prefixMatcher.Match(number.ToString()).Groups[1].Value;
                     number.Length = 0;
                     number.Append(transformedNumber.ToString());
