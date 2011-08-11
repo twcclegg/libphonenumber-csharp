@@ -57,6 +57,25 @@ namespace PhoneNumbers.Test
         }
 
         [Test]
+        public void TestInvalidPlusSign()
+        {
+            AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter("ZZ");
+            Assert.AreEqual("+", formatter.InputDigit('+'));
+            Assert.AreEqual("+4", formatter.InputDigit('4'));
+            Assert.AreEqual("+48 ", formatter.InputDigit('8'));
+            Assert.AreEqual("+48 8", formatter.InputDigit('8'));
+            Assert.AreEqual("+48 88", formatter.InputDigit('8'));
+            Assert.AreEqual("+48 88 1", formatter.InputDigit('1'));
+            Assert.AreEqual("+48 88 12", formatter.InputDigit('2'));
+            Assert.AreEqual("+48 88 123", formatter.InputDigit('3'));
+            Assert.AreEqual("+48 88 123 1", formatter.InputDigit('1'));
+            // A plus sign can only appear at the beginning of the number; otherwise, no formatting is
+            // applied. 
+            Assert.AreEqual("+48881231+", formatter.InputDigit('+'));
+            Assert.AreEqual("+48881231+2", formatter.InputDigit('2'));
+        }
+
+        [Test]
         public void TestTooLongNumberMatchingMultipleLeadingDigits()
         {
             // See http://code.google.com/p/libphonenumber/issues/detail?id=36

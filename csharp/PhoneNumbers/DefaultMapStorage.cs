@@ -29,8 +29,7 @@ namespace PhoneNumbers
     */
     public class DefaultMapStorage : AreaCodeMapStorageStrategy
     {
-        public DefaultMapStorage(int countryCallingCode, bool isLeadingZeroPossible)
-            : base(countryCallingCode, isLeadingZeroPossible)
+        public DefaultMapStorage()
         {
         }
 
@@ -67,13 +66,13 @@ namespace PhoneNumbers
             var possibleLengthsSet = new HashSet<int>();
             foreach (int prefix in sortedAreaCodeMap.Keys)
             {
-                var lengthOfPrefixRef = new Reference<int>();
-                int strippedPrefix = stripPrefix(prefix, lengthOfPrefixRef);
-                phoneNumberPrefixes[index++] = strippedPrefix;
-                if (!possibleLengthsSet.Contains(lengthOfPrefixRef.data))
+                phoneNumberPrefixes[index++] = prefix;
+                var lengthOfPrefix = (int)Math.Log10(prefix) + 1;
+                possibleLengths.Add(lengthOfPrefix);
+                if (!possibleLengthsSet.Contains(lengthOfPrefix))
                 {
-                    possibleLengthsSet.Add(lengthOfPrefixRef.data);
-                    possibleLengths.Add(lengthOfPrefixRef.data);
+                    possibleLengthsSet.Add(lengthOfPrefix);
+                    possibleLengths.Add(lengthOfPrefix);
                 }
             }
             sortedAreaCodeMap.Values.CopyTo(descriptions, 0);

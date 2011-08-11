@@ -28,8 +28,6 @@ namespace PhoneNumbers
     */
     public class AreaCodeMap
     {
-        private readonly int countryCallingCode;
-        private readonly bool isLeadingZeroPossible;
         private readonly PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
 
         private AreaCodeMapStorageStrategy areaCodeMapStorage;
@@ -41,17 +39,10 @@ namespace PhoneNumbers
 
         /**
          * Creates an empty {@link AreaCodeMap}. The default constructor is necessary for implementing
-         * {@link Externalizable}. The empty map could later populated by
+         * {@link Externalizable}. The empty map could later be populated by
          * {@link #readAreaCodeMap(java.util.SortedMap)} or {@link #readExternal(java.io.ObjectInput)}.
-         *
-         * @param countryCallingCode  the country calling code for the region that the area code map
-         *     belongs to.
          */
-        public AreaCodeMap(int countryCallingCode)
-        {
-            this.countryCallingCode = countryCallingCode;
-            isLeadingZeroPossible = phoneUtil.IsLeadingZeroPossible(countryCallingCode);
-        }
+        public AreaCodeMap() {}
 
         /**
          * Gets the size of the provided area code map storage. The map storage passed-in will be filled
@@ -66,12 +57,12 @@ namespace PhoneNumbers
 
         private AreaCodeMapStorageStrategy createDefaultMapStorage()
         {
-            return new DefaultMapStorage(countryCallingCode, isLeadingZeroPossible);
+            return new DefaultMapStorage();
         }
 
         private AreaCodeMapStorageStrategy createFlyweightMapStorage()
         {
-            return new FlyweightMapStorage(countryCallingCode, isLeadingZeroPossible);
+            return new FlyweightMapStorage();
         }
 
         /**
@@ -118,9 +109,8 @@ namespace PhoneNumbers
             {
                 return "";
             }
-            long phonePrefix = isLeadingZeroPossible
-                ? long.Parse(number.CountryCode + phoneUtil.GetNationalSignificantNumber(number))
-                : long.Parse(phoneUtil.GetNationalSignificantNumber(number));
+            long phonePrefix =
+                long.Parse(number.CountryCode + phoneUtil.GetNationalSignificantNumber(number));
             int currentIndex = numOfEntries - 1;
             List<int> currentSetOfLengths = areaCodeMapStorage.getPossibleLengths();
             var length = currentSetOfLengths.Count;
@@ -183,21 +173,7 @@ namespace PhoneNumbers
          */
         public override String ToString()
         {
-            StringBuilder output = new StringBuilder();
-            int numOfEntries = areaCodeMapStorage.getNumOfEntries();
-
-            for (int i = 0; i < numOfEntries; i++)
-            {
-                if (!isLeadingZeroPossible)
-                {
-                    output.Append(countryCallingCode);
-                }
-                output.Append(areaCodeMapStorage.getPrefix(i));
-                output.Append("|");
-                output.Append(areaCodeMapStorage.getDescription(i));
-                output.Append("\n");
-            }
-            return output.ToString();
+            return areaCodeMapStorage.ToString();
         }
     }
 }

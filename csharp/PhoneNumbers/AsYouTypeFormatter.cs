@@ -299,9 +299,9 @@ namespace PhoneNumbers
             {
                 originalPosition = accruedInput.Length;
             }
-            // We do formatting on-the-fly only when each character entered is either a plus sign or a
-            // digit.
-            if (!PhoneNumberUtil.VALID_START_CHAR_PATTERN.MatchAll(nextChar.ToString()).Success)
+            // We do formatting on-the-fly only when each character entered is either a digit, or a plus
+            // sign (accepted at the start of the number only).
+            if (!IsDigitOrLeadingPlusSign(nextChar))
             {
                 ableToFormat = false;
             }
@@ -376,6 +376,13 @@ namespace PhoneNumbers
                         return AttemptToChooseFormattingPattern();
                     }
             }
+        }
+
+        private bool IsDigitOrLeadingPlusSign(char nextChar)
+        {
+            return char.IsDigit(nextChar) ||
+                (accruedInput.Length == 1 &&
+                 PhoneNumberUtil.PLUS_CHARS_PATTERN.MatchAll(char.ToString(nextChar)).Success);
         }
 
         String AttemptToFormatAccruedDigits()

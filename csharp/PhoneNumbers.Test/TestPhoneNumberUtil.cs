@@ -167,7 +167,7 @@ namespace PhoneNumbers.Test
             Assert.AreEqual("(\\d{3})(\\d{3})(\\d{4})",
                 metadata.NumberFormatList[1].Pattern);
             Assert.AreEqual("$1 $2 $3", metadata.NumberFormatList[1].Format);
-            Assert.AreEqual("[13-9]\\d{9}|2[0-35-9]\\d{8}",
+            Assert.AreEqual("[13-689]\\d{9}|2[0-35-9]\\d{8}",
                 metadata.GeneralDesc.NationalNumberPattern);
             Assert.AreEqual("\\d{7}(?:\\d{3})?", metadata.GeneralDesc.PossibleNumberPattern);
             Assert.That(metadata.GeneralDesc.Equals(metadata.FixedLine));
@@ -192,7 +192,7 @@ namespace PhoneNumbers.Test
             Assert.AreEqual("(\\d{3})(\\d{3,4})(\\d{4})",
                      metadata.NumberFormatList[5].Pattern);
             Assert.AreEqual("$1 $2 $3", metadata.NumberFormatList[5].Format);
-            Assert.AreEqual("(?:[24-6]\\d{2}|3[03-9]\\d|[789](?:[1-9]\\d|0[2-9]))\\d{3,8}",
+            Assert.AreEqual("(?:[24-6]\\d{2}|3[03-9]\\d|[789](?:[1-9]\\d|0[2-9]))\\d{1,8}",
                      metadata.FixedLine.NationalNumberPattern);
             Assert.AreEqual("\\d{2,14}", metadata.FixedLine.PossibleNumberPattern);
             Assert.AreEqual("30123456", metadata.FixedLine.ExampleNumber);
@@ -2106,8 +2106,6 @@ namespace PhoneNumbers.Test
             Assert.AreEqual(PhoneNumberUtil.MatchType.NSN_MATCH,
                 phoneUtil.IsNumberMatch("+64 3 331-6005", "03 331 6005"));
             Assert.AreEqual(PhoneNumberUtil.MatchType.NSN_MATCH,
-                phoneUtil.IsNumberMatch("3 331-6005", "03 331 6005"));
-            Assert.AreEqual(PhoneNumberUtil.MatchType.NSN_MATCH,
                 phoneUtil.IsNumberMatch(NZ_NUMBER, "03 331 6005"));
             // Here the second number possibly starts with the country calling code for New Zealand,
             // although we are unsure.
@@ -2144,6 +2142,10 @@ namespace PhoneNumbers.Test
             // Short NSN matches with the country not specified for either one or both numbers.
             Assert.AreEqual(PhoneNumberUtil.MatchType.SHORT_NSN_MATCH,
                 phoneUtil.IsNumberMatch("+64 3 331-6005", "331 6005"));
+            // We did not know that the "0" was a national prefix since neither number has a country code,
+            // so this is considered a SHORT_NSN_MATCH.
+            Assert.AreEqual(PhoneNumberUtil.MatchType.SHORT_NSN_MATCH,
+                phoneUtil.IsNumberMatch("3 331-6005", "03 331 6005"));
             Assert.AreEqual(PhoneNumberUtil.MatchType.SHORT_NSN_MATCH,
                 phoneUtil.IsNumberMatch("3 331-6005", "331 6005"));
             Assert.AreEqual(PhoneNumberUtil.MatchType.SHORT_NSN_MATCH,

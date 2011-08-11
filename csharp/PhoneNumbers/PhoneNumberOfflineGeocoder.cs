@@ -62,11 +62,7 @@ namespace PhoneNumbers
         // loaded.
         private Dictionary<String, AreaCodeMap> availablePhonePrefixMaps = new Dictionary<String, AreaCodeMap>();
 
-        /**
-         * For testing purposes, we allow the phone number util variable to be injected.
-         *
-         * @VisibleForTesting
-         */
+        // @VisibleForTesting
         public PhoneNumberOfflineGeocoder(String phonePrefixDataDirectory)
         {
             this.phonePrefixDataDirectory = phonePrefixDataDirectory;
@@ -104,20 +100,20 @@ namespace PhoneNumbers
             }
             if (!availablePhonePrefixMaps.ContainsKey(fileName))
             {
-                LoadAreaCodeMapFromFile(fileName, countryCallingCode);
+                LoadAreaCodeMapFromFile(fileName);
             }
             AreaCodeMap map;
             return availablePhonePrefixMaps.TryGetValue(fileName, out map) ? map : null;
         }
 
-        private void LoadAreaCodeMapFromFile(String fileName, int countryCallingCode)
+        private void LoadAreaCodeMapFromFile(String fileName)
         {
             var asm = Assembly.GetExecutingAssembly();
             var prefix = asm.GetName().Name + "." + phonePrefixDataDirectory;
             var resName = prefix + fileName;
             using (var fp = asm.GetManifestResourceStream(resName))
             {
-                var areaCodeMap = AreaCodeParser.ParseAreaCodeMap(fp, countryCallingCode);
+                var areaCodeMap = AreaCodeParser.ParseAreaCodeMap(fp);
                 availablePhonePrefixMaps[fileName] = areaCodeMap;
             }
         }
@@ -169,26 +165,43 @@ namespace PhoneNumbers
         }
 
         /**
-         * Returns a text description for the given language code for the given phone number. The
-         * description might consist of the name of the country where the phone number is from and/or the
-         * name of the geographical area the phone number is from.
-         *
-         * @param number  the phone number for which we want to get a text description
-         * @param languageCode  the language code for which the description should be written
-         * @return  a text description for the given language code for the given phone number
-         */
+        * Returns a text description for the given language code for the given phone number. The
+        * description might consist of the name of the country where the phone number is from and/or the
+        * name of the geographical area the phone number is from. This method assumes the validity of the
+        * number passed in has already been checked.
+        *
+        * @param number  a valid phone number for which we want to get a text description
+        * @param languageCode  the language code for which the description should be written
+        * @return  a text description for the given language code for the given phone number
+        */
+        public String GetDescriptionForValidNumber(PhoneNumber number, Locale languageCode)
+        {
+            String langStr = languageCode.Language;
+            String scriptStr = "";  // No script is specified
+            String regionStr = languageCode.Country;
+
+            String areaDescription =
+                GetAreaDescriptionForNumber(number, langStr, scriptStr, regionStr);
+            return (areaDescription.Length > 0)
+                ? areaDescription : GetCountryNameForNumber(number, languageCode);
+        }
+
+        /**
+        * Returns a text description for the given language code for the given phone number. The
+        * description might consist of the name of the country where the phone number is from and/or the
+        * name of the geographical area the phone number is from. This method explictly checkes the
+        * validity of the number passed in.
+        *
+        * @param number  the phone number for which we want to get a text description
+        * @param languageCode  the language code for which the description should be written
+        * @return  a text description for the given language code for the given phone number, or empty
+        *     string if the number passed in is invalid
+        */
         public String GetDescriptionForNumber(PhoneNumber number, Locale languageCode)
         {
             if (!phoneUtil.IsValidNumber(number))
-            {
                 return "";
-            }
-            String areaDescription =
-                GetAreaDescriptionForNumber(
-                    number, languageCode.Language, "",  // No script is specified.
-                    languageCode.Country);
-            return (areaDescription.Length > 0)
-                ? areaDescription : GetCountryNameForNumber(number, languageCode);
+            return GetDescriptionForValidNumber(number, languageCode);
         }
 
         /**

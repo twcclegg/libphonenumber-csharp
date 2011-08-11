@@ -34,7 +34,7 @@ namespace PhoneNumbers
 {
     class AreaCodeParser
     {
-        public static AreaCodeMap ParseAreaCodeMap(Stream stream, int countryCallingCode)
+        public static AreaCodeMap ParseAreaCodeMap(Stream stream)
         {
             SortedDictionary<int, String> areaCodeMapTemp = new SortedDictionary<int, String>();
             using (var lines = new StreamReader(stream, Encoding.UTF8))
@@ -59,7 +59,7 @@ namespace PhoneNumbers
                     areaCodeMapTemp[int.Parse(areaCode)] = location;
                 }
                 // Build the corresponding area code map and serialize it to the binary format.
-                AreaCodeMap areaCodeMap = new AreaCodeMap(countryCallingCode);
+                AreaCodeMap areaCodeMap = new AreaCodeMap();
                 areaCodeMap.readAreaCodeMap(areaCodeMapTemp);
                 return areaCodeMap;
             }

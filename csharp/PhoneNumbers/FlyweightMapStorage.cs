@@ -24,7 +24,7 @@ namespace PhoneNumbers
     /**
     * Flyweight area code map storage strategy that uses a table to store unique strings and shorts to
     * store the prefix and description indexes when possible. It is particularly space-efficient when
-    * the provided area code map contains a lot of description duplicates.
+    * the provided area code map contains a lot of description redundant descriptions.
     *
     * @author Philippe Liard
     */
@@ -83,18 +83,14 @@ namespace PhoneNumbers
         // description pool containing all the strings.
         private int descIndexSizeInBytes;
 
-        // Byte buffer of stripped phone number prefixes. A stripped phone number prefix is a phone number
-        // prefix omitting the country code.
         private ByteBuffer phoneNumberPrefixes;
         private ByteBuffer descriptionIndexes;
 
         // Sorted string array of unique description strings.
         private String[] descriptionPool;
 
-        public FlyweightMapStorage(int countryCallingCode, bool isLeadingZeroPossible)
-            : base(countryCallingCode, isLeadingZeroPossible)
+        public FlyweightMapStorage()
         {
-
         }
 
         public override bool isFlyweight()
@@ -117,7 +113,7 @@ namespace PhoneNumbers
          *
          * @param buffer  the byte buffer to which the value is stored
          * @param wordSize  the number of bytes used to store the provided value
-         * @param index  the index in bytes to which the value is stored
+         * @param index  the index to which the value is stored
          * @param value  the value that is stored assuming it does not require more than the specified
          *    number of bytes.
          */
@@ -140,7 +136,7 @@ namespace PhoneNumbers
          *
          * @param buffer  the byte buffer from which the value is read
          * @param wordSize  the number of bytes used to store the value
-         * @param index  the index in bytes where the value is read from
+         * @param index  the index where the value is read from
          *
          * @return  the value read from the buffer
          */
@@ -171,9 +167,8 @@ namespace PhoneNumbers
             var descriptionsSet = new HashSet<String>();
             var descriptionsList = new List<String>();
             numOfEntries = sortedAreaCodeMap.Count;
-            prefixSizeInBytes = getOptimalNumberOfBytesForValue(stripPrefix(sortedAreaCodeMap.Keys.Last()));
+            prefixSizeInBytes = getOptimalNumberOfBytesForValue(sortedAreaCodeMap.Keys.Last());
             phoneNumberPrefixes = new ByteBuffer(numOfEntries * prefixSizeInBytes);
-            var strippedToUnstrippedPrefixes = new Dictionary<int, int>();
 
             // Fill the phone number prefixes byte buffer, the set of possible lengths of prefixes and the
             // description set.
@@ -182,14 +177,12 @@ namespace PhoneNumbers
             foreach (var entry in sortedAreaCodeMap)
             {
                 int prefix = entry.Key;
-                var lengthOfPrefixRef = new Reference<int>();
-                int strippedPrefix = stripPrefix(prefix, lengthOfPrefixRef);
-                strippedToUnstrippedPrefixes[strippedPrefix] = prefix;
-                storeWordInBuffer(phoneNumberPrefixes, prefixSizeInBytes, index++, strippedPrefix);
-                if (!possibleLengthsSet.Contains(lengthOfPrefixRef.data))
+                storeWordInBuffer(phoneNumberPrefixes, prefixSizeInBytes, index++, prefix);
+                var lengthOfPrefixRef = (int)Math.Log10(prefix) + 1;
+                if (!possibleLengthsSet.Contains(lengthOfPrefixRef))
                 {
-                    possibleLengthsSet.Add(lengthOfPrefixRef.data);
-                    possibleLengths.Add(lengthOfPrefixRef.data);
+                    possibleLengthsSet.Add(lengthOfPrefixRef);
+                    possibleLengths.Add(lengthOfPrefixRef);
                 }
                 if (!descriptionsSet.Contains(entry.Value))
                 {
@@ -207,12 +200,11 @@ namespace PhoneNumbers
             index = 0;
             for (int i = 0; i < numOfEntries; i++)
             {
-                int strippedPrefix = readWordFromBuffer(phoneNumberPrefixes, prefixSizeInBytes, i);
-                int prefix = strippedToUnstrippedPrefixes[strippedPrefix];
+                int prefix = readWordFromBuffer(phoneNumberPrefixes, prefixSizeInBytes, i);
                 String description = sortedAreaCodeMap[prefix];
-                int positionIndescriptionPool = Array.BinarySearch(descriptionPool, description);
+                int positionInDescriptionPool = Array.BinarySearch(descriptionPool, description);
                 storeWordInBuffer(descriptionIndexes, descIndexSizeInBytes, index++,
-                                  positionIndescriptionPool);
+                                  positionInDescriptionPool);
             }
         }
     }

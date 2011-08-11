@@ -72,9 +72,10 @@ namespace PhoneNumbers
 
         /**
         * Matches white-space, which may indicate the end of a phone number and the start of something
-        * else (such as a neighbouring zip-code).
+        * else (such as a neighbouring zip-code). If white-space is found, continues to match all
+        * characters that are not typically used to start a phone number.
         */
-        private static readonly Regex GROUP_SEPARATOR = new Regex("\\p{Z}+", RegexOptions.Compiled);
+        private static readonly PhoneRegex GROUP_SEPARATOR;
 
         static PhoneNumberMatcher()
         {
@@ -115,15 +116,16 @@ namespace PhoneNumbers
             String punctuation = "[" + PhoneNumberUtil.VALID_PUNCTUATION + "]" + punctuationLimit;
             /* A digits block without punctuation. */
             String digitSequence = "\\p{Nd}" + Limit(1, digitBlockLimit);
-            /* Punctuation that may be at the start of a phone number - brackets and plus signs. */
-            String leadClass = "[" + openingParens + PhoneNumberUtil.PLUS_CHARS + "]";
+            String leadClassChars = openingParens + PhoneNumberUtil.PLUS_CHARS;
+            String leadClass = "[" + leadClassChars + "]";
             LEAD_CLASS = new PhoneRegex(leadClass, RegexOptions.Compiled);
+            GROUP_SEPARATOR = new PhoneRegex("\\p{Z}" + "[^" + leadClassChars + "\\p{Nd}]*");
 
             /* Phone number pattern allowing optional punctuation. */
             PATTERN = new Regex(
                 "(?:" + leadClass + punctuation + ")" + leadLimit +
                 digitSequence + "(?:" + punctuation + digitSequence + ")" + blockLimit +
-                "(?:" + PhoneNumberUtil.KNOWN_EXTN_PATTERNS + ")?",
+                "(?:" + PhoneNumberUtil.EXTN_PATTERNS_FOR_MATCHING + ")?",
                 PhoneNumberUtil.REGEX_FLAGS);
         }
 
@@ -160,10 +162,10 @@ namespace PhoneNumbers
         *
         * @param util      the phone number util to use
         * @param text      the character sequence that we will search, null for no text
-        * @param country   the ISO 3166-1 two-letter country code indicating the country to assume for
-        *                  phone numbers not written in international format (with a leading plus, or
-        *                  with the international dialing prefix of the specified region). May be null or
-        *                  "ZZ" if only numbers with a leading plus should be considered.
+        * @param country   the country to assume for phone numbers not written in international format
+        *                  (with a leading plus, or with the international dialing prefix of the
+        *                  specified region). May be null or "ZZ" if only numbers with a
+        *                  leading plus should be considered.
         * @param leniency  the leniency to use when evaluating candidate phone numbers
         * @param maxTries  the maximum number of invalid numbers to try before giving up on the text.
         *                  This is to cover degenerate cases where the text has a lot of false positives
@@ -275,6 +277,11 @@ namespace PhoneNumbers
                 ;
         }
 
+        private static bool IsCurrencySymbol(char character)
+        {
+            return char.GetUnicodeCategory(character) == UnicodeCategory.CurrencySymbol;
+        }
+
         public static String TrimAfterUnwantedChars(String s)
         {
             int found = -1;
@@ -319,19 +326,6 @@ namespace PhoneNumbers
             // Skip a match that is more likely a publication page reference or a date.
             if (PUB_PAGES.Match(candidate).Success || SLASH_SEPARATED_DATES.Match(candidate).Success)
                 return null;
-            // If leniency is set to VALID only, we also want to skip numbers that are surrounded by Latin
-            // alphabetic characters, to skip cases like abc8005001234 or 8005001234def.
-            if (leniency == PhoneNumberUtil.Leniency.VALID)
-            {
-                // If the candidate is not at the start of the text, and does not start with punctuation and
-                // the previous character is not a Latin letter, return null.
-                if (offset > 0 &&
-                (!LEAD_CLASS.MatchBeginning(candidate).Success && IsLatinLetter(text[offset - 1])))
-                    return null;
-                int lastCharIndex = offset + candidate.Length;
-                if (lastCharIndex < text.Length && IsLatinLetter(text[lastCharIndex]))
-                    return null;
-            }
             // Try to come up with a valid match given the entire candidate.
             String rawString = candidate;
             PhoneNumberMatch match = ParseAndVerify(rawString, offset);
@@ -358,18 +352,26 @@ namespace PhoneNumbers
             var groupMatcher = GROUP_SEPARATOR.Match(candidate);
             if (groupMatcher.Success)
             {
-                int groupStartIndex = groupMatcher.Index + groupMatcher.Length;
-                // Remove the first group.
-                String withoutFirstGroup = candidate.Substring(groupStartIndex);
+                // Try the first group by itself.
+                String firstGroupOnly = candidate.Substring(0, groupMatcher.Index);
+                firstGroupOnly = TrimAfterUnwantedChars(firstGroupOnly);
+                PhoneNumberMatch match = ParseAndVerify(firstGroupOnly, offset);
+                if (match != null)
+                    return match;
+                maxTries--;
+
+                int withoutFirstGroupStart = groupMatcher.Index + groupMatcher.Length;
+                // Try the rest of the candidate without the first group.
+                String withoutFirstGroup = candidate.Substring(withoutFirstGroupStart);
                 withoutFirstGroup = TrimAfterUnwantedChars(withoutFirstGroup);
-                PhoneNumberMatch match = ParseAndVerify(withoutFirstGroup, offset + groupStartIndex);
+                match = ParseAndVerify(withoutFirstGroup, offset + withoutFirstGroupStart);
                 if (match != null)
                     return match;
                 maxTries--;
 
                 if (maxTries > 0)
                 {
-                    int lastGroupStart = groupStartIndex;
+                    int lastGroupStart = withoutFirstGroupStart;
                     while ((groupMatcher = groupMatcher.NextMatch()).Success)
                     {
                         // Find the last group.
@@ -377,6 +379,13 @@ namespace PhoneNumbers
                     }
                     String withoutLastGroup = candidate.Substring(0, lastGroupStart);
                     withoutLastGroup = TrimAfterUnwantedChars(withoutLastGroup);
+                    if (withoutLastGroup.Equals(firstGroupOnly))
+                    {
+                        // If there are only two groups, then the group "without the last group" is the same as
+                        // the first group. In these cases, we don't want to re-check the number group, so we exit
+                        // already.
+                        return null;
+                    }
                     match = ParseAndVerify(withoutLastGroup, offset);
                     if (match != null)
                         return match;
@@ -404,8 +413,34 @@ namespace PhoneNumbers
                 if (!MATCHING_BRACKETS.MatchAll(candidate).Success)
                     return null;
 
+                // If leniency is set to VALID or stricter, we also want to skip numbers that are surrounded
+                // by Latin alphabetic characters, to skip cases like abc8005001234 or 8005001234def.
+                if (leniency >= PhoneNumberUtil.Leniency.VALID)
+                {
+                    // If the candidate is not at the start of the text, and does not start with phone-number
+                    // punctuation, check the previous character.
+                    if (offset > 0 && !LEAD_CLASS.MatchBeginning(candidate).Success)
+                    {
+                        char previousChar = text[offset - 1];
+                        // We return null if it is a latin letter or a currency symbol.
+                        if (IsCurrencySymbol(previousChar) || IsLatinLetter(previousChar))
+                        {
+                            return null;
+                        }
+                    }
+                    int lastCharIndex = offset + candidate.Length;
+                    if (lastCharIndex < text.Length)
+                    {
+                        char nextChar = text[lastCharIndex];
+                        if (IsCurrencySymbol(nextChar) || IsLatinLetter(nextChar))
+                        {
+                            return null;
+                        }
+                    }
+                }
+
                 PhoneNumber number = phoneUtil.Parse(candidate, preferredRegion);
-                if (phoneUtil.Verify(leniency, number, phoneUtil))
+                if (phoneUtil.Verify(leniency, number, candidate, phoneUtil))
                     return new PhoneNumberMatch(offset, candidate, number);
             }
             catch (NumberParseException)

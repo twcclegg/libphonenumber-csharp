@@ -29,8 +29,8 @@ namespace PhoneNumbers.Test
     [TestFixture]
     class TestAreaCodeMap
     {
-        private readonly AreaCodeMap areaCodeMapForUS = new AreaCodeMap(1);
-        private readonly AreaCodeMap areaCodeMapForIT = new AreaCodeMap(39);
+        private readonly AreaCodeMap areaCodeMapForUS = new AreaCodeMap();
+        private readonly AreaCodeMap areaCodeMapForIT = new AreaCodeMap();
 
         [TestFixtureSetUp]
         public void SetupFixture()
@@ -82,7 +82,7 @@ namespace PhoneNumbers.Test
         public void TestGetSmallerMapStorageChoosesDefaultImpl()
         {
             AreaCodeMapStorageStrategy mapStorage =
-                new AreaCodeMap(1).getSmallerMapStorage(createDefaultStorageMapCandidate());
+                new AreaCodeMap().getSmallerMapStorage(createDefaultStorageMapCandidate());
             Assert.False(mapStorage.isFlyweight());
         }
 
@@ -90,7 +90,7 @@ namespace PhoneNumbers.Test
         public void TestGetSmallerMapStorageChoosesFlyweightImpl()
         {
             AreaCodeMapStorageStrategy mapStorage =
-                new AreaCodeMap(1).getSmallerMapStorage(createFlyweightStorageMapCandidate());
+                new AreaCodeMap().getSmallerMapStorage(createFlyweightStorageMapCandidate());
             Assert.True(mapStorage.isFlyweight());
         }
 

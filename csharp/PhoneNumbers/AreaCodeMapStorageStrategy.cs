@@ -21,29 +21,19 @@ using System.Text;
 namespace PhoneNumbers
 {
     /**
-    * Abstracts the way area code data is stored into memory and serialized to a stream.
+    * Abstracts the way area code data is stored into memory and serialized to a stream. It is used by
+    * {@link AreaCodeMap} to support the most space-efficient storage strategy according to the
+    * provided data.
     *
     * @author Philippe Liard
     */
     public abstract class AreaCodeMapStorageStrategy
     {
-        protected readonly int countryCallingCode;
-        protected readonly bool isLeadingZeroPossible;
         protected int numOfEntries = 0;
         protected readonly List<int> possibleLengths = new List<int>();
 
-        /**
-        * Constructs a new area code map storage strategy from the provided country calling code and
-        * boolean parameter.
-        *
-        * @param countryCallingCode  the country calling code of the number prefixes contained in the map
-        * @param isLeadingZeroPossible  whether the phone number prefixes belong to a region which
-        *    {@link com.google.i18n.phonenumbers.PhoneNumberUtil#isLeadingZeroPossible}
-        */
-        public AreaCodeMapStorageStrategy(int countryCallingCode, bool isLeadingZeroPossible)
+        public AreaCodeMapStorageStrategy()
         {
-            this.countryCallingCode = countryCallingCode;
-            this.isLeadingZeroPossible = isLeadingZeroPossible;
         }
 
         /**
@@ -98,50 +88,19 @@ namespace PhoneNumbers
          */
         public abstract void readFromSortedMap(SortedDictionary<int, String> sortedAreaCodeMap);
 
-        /**
-         * Utility class used to pass arguments by "reference".
-         */
-        protected class Reference<T>
+        public override String ToString()
         {
-            public T data;
+            StringBuilder output = new StringBuilder();
+            int numOfEntries = getNumOfEntries();
+            for (int i = 0; i < numOfEntries; i++)
+            {
+                output.Append(getPrefix(i));
+                output.Append("|");
+                output.Append(getDescription(i));
+                output.Append("\n");
+            }
+            return output.ToString();
         }
 
-        /**
-         * Removes the country calling code from the provided {@code prefix} if the country can't have any
-         * leading zero; otherwise it is left as it is. Sets the provided {@code lengthOfPrefixRef}
-         * parameter to the length of the resulting prefix.
-         *
-         * @param prefix  a phone number prefix containing a leading country calling code
-         * @param lengthOfPrefixRef  a "reference" to an integer set to the length of the resulting
-         *    prefix. This parameter is ignored when set to null.
-         * @return  the resulting prefix which may have been stripped
-         */
-        protected int stripPrefix(int prefix, Reference<int> lengthOfPrefixRef)
-        {
-            int lengthOfCountryCode = (int)Math.Log10(countryCallingCode) + 1;
-            int lengthOfPrefix = (int)Math.Log10(prefix) + 1;
-            if (!isLeadingZeroPossible)
-            {
-                lengthOfPrefix -= lengthOfCountryCode;
-                prefix -= countryCallingCode * (int)Math.Pow(10, lengthOfPrefix);
-            }
-            if (lengthOfPrefixRef != null)
-            {
-                lengthOfPrefixRef.data = lengthOfPrefix;
-            }
-            return prefix;
-        }
-
-        /**
-         * Removes the country calling code from the provided {@code prefix} if the country can't have any
-         * leading zero; otherwise it is left as it is.
-         *
-         * @param prefix  a phone number prefix containing a leading country calling code
-         * @return  the resulting prefix which may have been stripped
-         */
-        protected int stripPrefix(int prefix)
-        {
-            return stripPrefix(prefix, null);
-        }
     }
 }
