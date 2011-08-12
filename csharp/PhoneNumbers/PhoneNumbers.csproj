@@ -137,11 +137,25 @@
     <EmbeddedResource Include="res\94_en" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="res\220_en" />
+    <None Include="res\222_fr" />
+    <None Include="res\243_fr" />
+    <None Include="res\244_pt" />
+    <None Include="res\245_pt" />
+    <None Include="res\249_en" />
+    <None Include="res\254_en" />
+    <None Include="res\263_en" />
     <None Include="res\27_en" />
     <None Include="res\30_el" />
     <None Include="res\352_de" />
     <None Include="res\352_en" />
     <None Include="res\36_hu" />
+    <None Include="res\373_en" />
+    <None Include="res\373_ro" />
+    <None Include="res\373_ru" />
+    <None Include="res\374_en" />
+    <None Include="res\58_en" />
+    <None Include="res\58_es" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
