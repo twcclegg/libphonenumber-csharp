@@ -426,9 +426,8 @@ namespace PhoneNumbers
             listWithRegionCode.Add("MG");
             countryCodeToRegionCodeMap[261] = listWithRegionCode;
 
-            listWithRegionCode = new List<String>(3);
+            listWithRegionCode = new List<String>(2);
             listWithRegionCode.Add("RE");
-            listWithRegionCode.Add("TF");
             listWithRegionCode.Add("YT");
             countryCodeToRegionCodeMap[262] = listWithRegionCode;
 
