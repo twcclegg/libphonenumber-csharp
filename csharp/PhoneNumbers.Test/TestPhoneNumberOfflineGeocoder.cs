@@ -49,7 +49,7 @@ namespace PhoneNumbers.Test
         private static readonly PhoneNumber US_NUMBER3 =
             new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(2128120000L).Build();
         private static readonly PhoneNumber US_INVALID_NUMBER =
-            new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(1234567890L).Build();
+            new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(123456789L).Build();
         private static readonly PhoneNumber BS_NUMBER1 =
             new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(2423651234L).Build();
         private static readonly PhoneNumber AU_NUMBER =
