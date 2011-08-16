@@ -13,12 +13,12 @@
 # limitations under the License.
 
 # Generated from:
-# http://www.itu.int/oth/T02020000AF/en [2011-03-17]
-# http://fr.wikipedia.org/wiki/Sainte-Hélène,_Ascension_et_Tristan_da_Cunha [439804774]
+# http://www.itu.int/oth/T02020000D1/en [2011-05-12]
+# http://en.wikipedia.org/wiki/+228 [444252687]
 
-2902|Jamestown
-2903|Sainte-Hélène
-2904|Sainte-Hélène
-2906|Sainte-Hélène
-2907|Sainte-Hélène
-2908|Tristan da Cunha
+22822|Lome
+22823|Maritime region
+22824|Plateaux region
+22825|Central region
+22826|Kara region
+22827|Savannah region
