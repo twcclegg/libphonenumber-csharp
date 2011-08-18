@@ -50,7 +50,7 @@ endfunction (find_required_library)
 find_package (PkgConfig)
 function (check_library_version VARNAME LIBRARY_WITH_VERSION)
   if (PKG_CONFIG_FOUND)
-    pkg_check_modules (${VARNAME} REQUIRED ${LIBRARY_WITH_VERSION})
+    pkg_check_modules (${VARNAME} ${LIBRARY_WITH_VERSION})
   endif ()
 endfunction ()
 
@@ -313,10 +313,12 @@ install (FILES
 
 install (FILES
   "src/base/basictypes.h"
-  "src/base/memory/singleton.h"
   "src/base/scoped_ptr.h"
   DESTINATION include/base/
 )
+install (FILES src/base/memory/singleton.h
+         DESTINATION include/base/memory)
+
 install (FILES src/base/synchronization/lock.h
          DESTINATION include/base/synchronization)
 
