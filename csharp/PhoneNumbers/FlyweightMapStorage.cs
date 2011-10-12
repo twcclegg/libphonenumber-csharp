@@ -28,7 +28,7 @@ namespace PhoneNumbers
     *
     * @author Philippe Liard
     */
-    class FlyweightMapStorage : AreaCodeMapStorageStrategy
+    public class FlyweightMapStorage : AreaCodeMapStorageStrategy
     {
         class ByteBuffer
         {
@@ -74,8 +74,8 @@ namespace PhoneNumbers
         }
 
         // Size of short and integer types in bytes.
-        private static readonly int SHORT_SIZE = sizeof(short);
-        private static readonly int INT_SIZE = sizeof(int);
+        private static readonly int SHORT_NUM_BYTES = sizeof(short);
+        private static readonly int INT_NUM_BYTES = sizeof(int);
 
         // The number of bytes used to store a phone number prefix.
         private int prefixSizeInBytes;
@@ -93,9 +93,82 @@ namespace PhoneNumbers
         {
         }
 
-        public override bool isFlyweight()
+        public override int getPrefix(int index)
         {
-            return true;
+            return readWordFromBuffer(phoneNumberPrefixes, prefixSizeInBytes, index);
+        }
+
+        public override int getStorageSize()
+        {
+            return phoneNumberPrefixes.getCapacity() + descriptionIndexes.getCapacity()
+                + descriptionPool.Sum(d => d.Length);
+        }
+
+        /**
+        * This implementation returns the same string (same identity) when called for multiple indexes
+        * corresponding to prefixes that have the same description.
+        */
+        public override String getDescription(int index)
+        {
+            int indexInDescriptionPool =
+                readWordFromBuffer(descriptionIndexes, descIndexSizeInBytes, index);
+            return descriptionPool[indexInDescriptionPool];
+        }
+
+        public override void readFromSortedMap(SortedDictionary<int, String> areaCodeMap)
+        {
+            var descriptionsSet = new HashSet<String>();
+            var descriptionsList = new List<String>();
+            numOfEntries = areaCodeMap.Count;
+            prefixSizeInBytes = getOptimalNumberOfBytesForValue(areaCodeMap.Keys.Last());
+            phoneNumberPrefixes = new ByteBuffer(numOfEntries * prefixSizeInBytes);
+
+            // Fill the phone number prefixes byte buffer, the set of possible lengths of prefixes and the
+            // description set.
+            int index = 0;
+            var possibleLengthsSet = new HashSet<int>();
+            foreach (var entry in areaCodeMap)
+            {
+                int prefix = entry.Key;
+                storeWordInBuffer(phoneNumberPrefixes, prefixSizeInBytes, index, prefix);
+                var lengthOfPrefixRef = (int)Math.Log10(prefix) + 1;
+                if (!possibleLengthsSet.Contains(lengthOfPrefixRef))
+                {
+                    possibleLengthsSet.Add(lengthOfPrefixRef);
+                    possibleLengths.Add(lengthOfPrefixRef);
+                }
+                if (!descriptionsSet.Contains(entry.Value))
+                {
+                    descriptionsSet.Add(entry.Value);
+                    descriptionsList.Add(entry.Value);
+                }
+                index++;
+            }
+            createDescriptionPool(descriptionsSet, descriptionsList, areaCodeMap);
+        }
+
+        /**
+        * Creates the description pool from the provided set of string descriptions and area code map.
+        */
+        private void createDescriptionPool(HashSet<String> descriptionsSet, List<String> descriptionsList,
+            SortedDictionary<int, String> areaCodeMap)
+        {
+            // Create the description pool.
+            descIndexSizeInBytes = getOptimalNumberOfBytesForValue(descriptionsList.Count - 1);
+            descriptionIndexes = new ByteBuffer(numOfEntries * descIndexSizeInBytes);
+            descriptionPool = descriptionsList.ToArray();
+
+            // Map the phone number prefixes to the descriptions.
+            int index = 0;
+            for (int i = 0; i < numOfEntries; i++)
+            {
+                int prefix = readWordFromBuffer(phoneNumberPrefixes, prefixSizeInBytes, i);
+                String description = areaCodeMap[prefix];
+                int positionInDescriptionPool = Array.BinarySearch(descriptionPool, description);
+                storeWordInBuffer(descriptionIndexes, descIndexSizeInBytes, index,
+                                  positionInDescriptionPool);
+                index++;
+            }
         }
 
         /**
@@ -103,7 +176,7 @@ namespace PhoneNumbers
          */
         private static int getOptimalNumberOfBytesForValue(int value)
         {
-            return value <= short.MaxValue ? SHORT_SIZE : INT_SIZE;
+            return value <= short.MaxValue ? SHORT_NUM_BYTES : INT_NUM_BYTES;
         }
 
         /**
@@ -120,7 +193,7 @@ namespace PhoneNumbers
         private static void storeWordInBuffer(ByteBuffer buffer, int wordSize, int index, int value)
         {
             index *= wordSize;
-            if (wordSize == SHORT_SIZE)
+            if (wordSize == SHORT_NUM_BYTES)
             {
                 buffer.putShort(index, (short)value);
             }
@@ -143,69 +216,7 @@ namespace PhoneNumbers
         private static int readWordFromBuffer(ByteBuffer buffer, int wordSize, int index)
         {
             index *= wordSize;
-            return wordSize == SHORT_SIZE ? buffer.getShort(index) : buffer.getInt(index);
-        }
-
-        public override int getPrefix(int index)
-        {
-            return readWordFromBuffer(phoneNumberPrefixes, prefixSizeInBytes, index);
-        }
-
-        public override int getStorageSize()
-        {
-            return phoneNumberPrefixes.getCapacity() + descriptionIndexes.getCapacity()
-                + descriptionPool.Sum(d => d.Length);
-        }
-
-        public override String getDescription(int index)
-        {
-            return descriptionPool[readWordFromBuffer(descriptionIndexes, descIndexSizeInBytes, index)];
-        }
-
-        public override void readFromSortedMap(SortedDictionary<int, String> sortedAreaCodeMap)
-        {
-            var descriptionsSet = new HashSet<String>();
-            var descriptionsList = new List<String>();
-            numOfEntries = sortedAreaCodeMap.Count;
-            prefixSizeInBytes = getOptimalNumberOfBytesForValue(sortedAreaCodeMap.Keys.Last());
-            phoneNumberPrefixes = new ByteBuffer(numOfEntries * prefixSizeInBytes);
-
-            // Fill the phone number prefixes byte buffer, the set of possible lengths of prefixes and the
-            // description set.
-            int index = 0;
-            var possibleLengthsSet = new HashSet<int>();
-            foreach (var entry in sortedAreaCodeMap)
-            {
-                int prefix = entry.Key;
-                storeWordInBuffer(phoneNumberPrefixes, prefixSizeInBytes, index++, prefix);
-                var lengthOfPrefixRef = (int)Math.Log10(prefix) + 1;
-                if (!possibleLengthsSet.Contains(lengthOfPrefixRef))
-                {
-                    possibleLengthsSet.Add(lengthOfPrefixRef);
-                    possibleLengths.Add(lengthOfPrefixRef);
-                }
-                if (!descriptionsSet.Contains(entry.Value))
-                {
-                    descriptionsSet.Add(entry.Value);
-                    descriptionsList.Add(entry.Value);
-                }
-            }
-
-            // Create the description pool.
-            descIndexSizeInBytes = getOptimalNumberOfBytesForValue(descriptionsList.Count - 1);
-            descriptionIndexes = new ByteBuffer(numOfEntries * descIndexSizeInBytes);
-            descriptionPool = descriptionsList.ToArray();
-
-            // Map the phone number prefixes to the descriptions.
-            index = 0;
-            for (int i = 0; i < numOfEntries; i++)
-            {
-                int prefix = readWordFromBuffer(phoneNumberPrefixes, prefixSizeInBytes, i);
-                String description = sortedAreaCodeMap[prefix];
-                int positionInDescriptionPool = Array.BinarySearch(descriptionPool, description);
-                storeWordInBuffer(descriptionIndexes, descIndexSizeInBytes, index++,
-                                  positionInDescriptionPool);
-            }
+            return wordSize == SHORT_NUM_BYTES ? buffer.getShort(index) : buffer.getInt(index);
         }
     }
 }

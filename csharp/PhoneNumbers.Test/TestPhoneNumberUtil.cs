@@ -85,6 +85,11 @@ namespace PhoneNumbers.Test
             new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(650253000L).Build();
         private static readonly PhoneNumber US_TOLLFREE =
             new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(8002530000L).Build();
+        private static readonly PhoneNumber US_SPOOF =
+            new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(0L).Build();
+        private static readonly PhoneNumber US_SPOOF_WITH_RAW_INPUT =
+            new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(0L)
+                .SetRawInput("000-000-0000").Build();
 
         private static PhoneNumber.Builder Update(PhoneNumber p)
         {
@@ -366,6 +371,12 @@ namespace PhoneNumbers.Test
             Assert.AreEqual("900 253 0000", phoneUtil.Format(US_PREMIUM, PhoneNumberFormat.NATIONAL));
             Assert.AreEqual("+1 900 253 0000", phoneUtil.Format(US_PREMIUM, PhoneNumberFormat.INTERNATIONAL));
             Assert.AreEqual("+1-900-253-0000", phoneUtil.Format(US_PREMIUM, PhoneNumberFormat.RFC3966));
+
+            // Numbers with all zeros in the national number part will be formatted by using the raw_input
+            // if that is available no matter which format is specified.
+            Assert.AreEqual("000-000-0000",
+                phoneUtil.Format(US_SPOOF_WITH_RAW_INPUT, PhoneNumberFormat.NATIONAL));
+            Assert.AreEqual("0", phoneUtil.Format(US_SPOOF, PhoneNumberFormat.NATIONAL));
         }
 
         [Test]
@@ -1461,6 +1472,12 @@ namespace PhoneNumbers.Test
             Assert.AreEqual(NZ_NUMBER, phoneUtil.Parse("01164 3 331 6005", RegionCode.US));
             Assert.AreEqual(NZ_NUMBER, phoneUtil.Parse("+64 3 331 6005", RegionCode.US));
 
+            // We should ignore the leading plus here, since it is not followed by a valid country code but
+            // instead is followed by the IDD for the US.
+            Assert.AreEqual(NZ_NUMBER, phoneUtil.Parse("+01164 3 331 6005", RegionCode.US));
+            Assert.AreEqual(NZ_NUMBER, phoneUtil.Parse("+0064 3 331 6005", RegionCode.NZ));
+            Assert.AreEqual(NZ_NUMBER, phoneUtil.Parse("+ 00 64 3 331 6005", RegionCode.NZ));
+
             PhoneNumber nzNumber = new PhoneNumber.Builder()
                 .SetCountryCode(64).SetNationalNumber(64123456L).Build();
             Assert.AreEqual(nzNumber, phoneUtil.Parse("64(0)64123456", RegionCode.NZ));
@@ -1673,6 +1690,20 @@ namespace PhoneNumbers.Test
             catch (NumberParseException e)
             {
                 // Expected this exception.
+                Assert.AreEqual(
+                    ErrorType.INVALID_COUNTRY_CODE,
+                   e.ErrorType,
+                   "Wrong error type stored in exception.");
+            }
+            try
+            {
+                String plusAndIddAndInvalidCountryCode = "+ 00 210 3 331 6005";
+                phoneUtil.Parse(plusAndIddAndInvalidCountryCode, RegionCode.NZ);
+                Assert.Fail("This should not parse without throwing an exception.");
+            }
+            catch (NumberParseException e)
+            {
+                // Expected this exception. 00 is a correct IDD, but 210 is not a valid country code.
                 Assert.AreEqual(
                              ErrorType.INVALID_COUNTRY_CODE,
                              e.ErrorType,

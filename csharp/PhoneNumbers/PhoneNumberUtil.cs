@@ -992,6 +992,14 @@ namespace PhoneNumbers
         */
         public String Format(PhoneNumber number, PhoneNumberFormat numberFormat)
         {
+            if(number.NationalNumber == 0 && number.HasRawInput)
+            {
+                String rawInput = number.RawInput;
+                if (rawInput.Length > 0)
+                {
+                    return rawInput;
+                }
+            }
             var formattedNumber = new StringBuilder(20);
             Format(number, numberFormat, formattedNumber);
             return formattedNumber.ToString();
@@ -2020,6 +2028,11 @@ namespace PhoneNumbers
         // unmodified.
         internal int ExtractCountryCode(StringBuilder fullNumber, StringBuilder nationalNumber)
         {
+            if ((fullNumber.Length == 0) || (fullNumber[0] == '0'))
+            {
+                // Country codes do not begin with a '0'.
+                return 0;
+            }
             int potentialCountryCode;
             int numberLength = fullNumber.Length;
             for (int i = 1; i <= MAX_LENGTH_COUNTRY_CODE && i <= numberLength; i++)
@@ -2463,8 +2476,37 @@ namespace PhoneNumbers
             // Check to see if the number is given in international format so we know whether this number is
             // from the default region or not.
             StringBuilder normalizedNationalNumber = new StringBuilder();
-            int countryCode = MaybeExtractCountryCode(nationalNumber.ToString(), regionMetadata,
-                normalizedNationalNumber, keepRawInput, phoneNumber);
+            int countryCode = 0;
+            try
+            {
+                // TODO: This method should really just take in the string buffer that has already
+                // been created, and just remove the prefix, rather than taking in a string and then
+                // outputting a string buffer.
+                countryCode = MaybeExtractCountryCode(nationalNumber.ToString(), regionMetadata,
+                    normalizedNationalNumber, keepRawInput, phoneNumber);
+            }
+            catch (NumberParseException e)
+            {
+                var m = PLUS_CHARS_PATTERN.MatchBeginning(nationalNumber.ToString());
+                if (e.ErrorType == ErrorType.INVALID_COUNTRY_CODE &&
+                    m.Success)
+                {
+                    // Strip the plus-char, and try again.
+                    countryCode = MaybeExtractCountryCode(
+                        nationalNumber.ToString().Substring(m.Index + m.Length),
+                        regionMetadata, normalizedNationalNumber,
+                        keepRawInput, phoneNumber);
+                    if (countryCode == 0)
+                    {
+                        throw new NumberParseException(ErrorType.INVALID_COUNTRY_CODE,
+                            "Could not interpret numbers after plus-sign.");
+                    }
+                }
+                else
+                {
+                    throw new NumberParseException(e.ErrorType, e.Message);
+                }
+            }
             if (countryCode != 0)
             {
                 String phoneNumberRegion = GetRegionCodeForCountryCode(countryCode);

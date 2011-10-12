@@ -51,10 +51,6 @@ namespace PhoneNumbers
                         continue;
                     }
                     String areaCode = line.Substring(0, indexOfPipe);
-                    if (indexOfPipe == line.Length - 1)
-                    {
-                        continue;
-                    }
                     String location = line.Substring(indexOfPipe + 1);
                     areaCodeMapTemp[int.Parse(areaCode)] = location;
                 }

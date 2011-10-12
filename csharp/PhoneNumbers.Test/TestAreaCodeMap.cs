@@ -83,7 +83,7 @@ namespace PhoneNumbers.Test
         {
             AreaCodeMapStorageStrategy mapStorage =
                 new AreaCodeMap().getSmallerMapStorage(createDefaultStorageMapCandidate());
-            Assert.False(mapStorage.isFlyweight());
+            Assert.False(mapStorage.GetType() == typeof(FlyweightMapStorage));
         }
 
         [Test]
@@ -91,7 +91,7 @@ namespace PhoneNumbers.Test
         {
             AreaCodeMapStorageStrategy mapStorage =
                 new AreaCodeMap().getSmallerMapStorage(createFlyweightStorageMapCandidate());
-            Assert.True(mapStorage.isFlyweight());
+            Assert.True(mapStorage.GetType() == typeof(FlyweightMapStorage));
         }
 
         [Test]
@@ -141,14 +141,14 @@ namespace PhoneNumbers.Test
         public void TestLookupNumberNotFound_TX()
         {
             var number = new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(9724811234L).Build();
-            Assert.AreEqual("", areaCodeMapForUS.Lookup(number));
+            Assert.IsNull(areaCodeMapForUS.Lookup(number));
         }
 
         [Test]
         public void TestLookupNumber_CH()
         {
             var number = new PhoneNumber.Builder().SetCountryCode(41).SetNationalNumber(446681300L).Build();
-            Assert.AreEqual("", areaCodeMapForUS.Lookup(number));
+            Assert.IsNull(areaCodeMapForUS.Lookup(number));
         }
 
         [Test]
@@ -169,7 +169,7 @@ namespace PhoneNumbers.Test
             // A mobile number
             number = new PhoneNumber.Builder().SetCountryCode(39).SetNationalNumber(321123456L).SetItalianLeadingZero(false)
                 .Build();
-            Assert.AreEqual("", areaCodeMapForIT.Lookup(number));
+            Assert.IsNull(areaCodeMapForIT.Lookup(number));
 
             // An invalid number (too short)
             number = new PhoneNumber.Builder().SetCountryCode(39).SetNationalNumber(321123L).SetItalianLeadingZero(true)

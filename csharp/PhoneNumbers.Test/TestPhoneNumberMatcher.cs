@@ -392,6 +392,8 @@ namespace PhoneNumbers.Test
     new NumberTest("31/8/2011", "US"),
     new NumberTest("1/12/2011", "US"),
     new NumberTest("10/12/82", "DE"),
+    new NumberTest("\uFF14\uFF11\uFF15\uFF16\uFF16\uFF16\uFF16-\uFF17\uFF17\uFF17\uFF17",
+        RegionCode.US)
   };
 
         /**
@@ -474,6 +476,7 @@ namespace PhoneNumbers.Test
         public void TestNonMatchesWithStrictGroupLeniency()
         {
             List<NumberTest> testCases = new List<NumberTest>();
+            testCases.AddRange(IMPOSSIBLE_CASES);
             testCases.AddRange(POSSIBLE_ONLY_CASES);
             testCases.AddRange(VALID_CASES);
             doTestNumberNonMatchesForLeniency(testCases, PhoneNumberUtil.Leniency.STRICT_GROUPING);
@@ -491,6 +494,7 @@ namespace PhoneNumbers.Test
         public void TestNonMatchesExactGroupLeniency()
         {
             List<NumberTest> testCases = new List<NumberTest>();
+            testCases.AddRange(IMPOSSIBLE_CASES);
             testCases.AddRange(POSSIBLE_ONLY_CASES);
             testCases.AddRange(VALID_CASES);
             testCases.AddRange(STRICT_GROUPING_CASES);

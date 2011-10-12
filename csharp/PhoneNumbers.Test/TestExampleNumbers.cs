@@ -188,5 +188,15 @@ namespace PhoneNumbers.Test
             }
             Assert.AreEqual(0, wrongTypeCases.Count);
         }
+
+        [Test]
+        public void TestEveryRegionHasAnExampleNumber()
+        {
+            foreach(var regionCode in phoneNumberUtil.GetSupportedRegions())
+            {
+                PhoneNumber exampleNumber = phoneNumberUtil.GetExampleNumber(regionCode);
+                Assert.IsNotNull(exampleNumber, "None found for region " + regionCode);
+            }
+        }
     }
 }

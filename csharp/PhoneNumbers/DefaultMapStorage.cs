@@ -36,11 +36,6 @@ namespace PhoneNumbers
         private int[] phoneNumberPrefixes;
         private String[] descriptions;
 
-        public override bool isFlyweight()
-        {
-            return false;
-        }
-
         public override int getPrefix(int index)
         {
             return phoneNumberPrefixes[index];

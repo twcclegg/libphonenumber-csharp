@@ -766,5 +766,146 @@ namespace PhoneNumbers.Test
             Assert.AreEqual("+81 3332 2 567", formatter.InputDigit('7'));
             Assert.AreEqual("+81 3332 2 5678", formatter.InputDigit('8'));
         }
+
+        [Test]
+        public void TestAYTFLongIDD_AU()
+        {
+            AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter("AU");
+            // 0011 1 650 253 2250
+            Assert.AreEqual("0", formatter.InputDigit('0'));
+            Assert.AreEqual("00", formatter.InputDigit('0'));
+            Assert.AreEqual("001", formatter.InputDigit('1'));
+            Assert.AreEqual("0011", formatter.InputDigit('1'));
+            Assert.AreEqual("0011 1 ", formatter.InputDigit('1'));
+            Assert.AreEqual("0011 1 6", formatter.InputDigit('6'));
+            Assert.AreEqual("0011 1 65", formatter.InputDigit('5'));
+            Assert.AreEqual("0011 1 650", formatter.InputDigit('0'));
+            Assert.AreEqual("0011 1 650 2", formatter.InputDigit('2'));
+            Assert.AreEqual("0011 1 650 25", formatter.InputDigit('5'));
+            Assert.AreEqual("0011 1 650 253", formatter.InputDigit('3'));
+            Assert.AreEqual("0011 1 650 253 2", formatter.InputDigit('2'));
+            Assert.AreEqual("0011 1 650 253 22", formatter.InputDigit('2'));
+            Assert.AreEqual("0011 1 650 253 222", formatter.InputDigit('2'));
+            Assert.AreEqual("0011 1 650 253 2222", formatter.InputDigit('2'));
+
+            // 0011 81 3332 2 5678
+            formatter.Clear();
+            Assert.AreEqual("0", formatter.InputDigit('0'));
+            Assert.AreEqual("00", formatter.InputDigit('0'));
+            Assert.AreEqual("001", formatter.InputDigit('1'));
+            Assert.AreEqual("0011", formatter.InputDigit('1'));
+            Assert.AreEqual("00118", formatter.InputDigit('8'));
+            Assert.AreEqual("0011 81 ", formatter.InputDigit('1'));
+            Assert.AreEqual("0011 81 3", formatter.InputDigit('3'));
+            Assert.AreEqual("0011 81 33", formatter.InputDigit('3'));
+            Assert.AreEqual("0011 81 33 3", formatter.InputDigit('3'));
+            Assert.AreEqual("0011 81 3332", formatter.InputDigit('2'));
+            Assert.AreEqual("0011 81 3332 2", formatter.InputDigit('2'));
+            Assert.AreEqual("0011 81 3332 2 5", formatter.InputDigit('5'));
+            Assert.AreEqual("0011 81 3332 2 56", formatter.InputDigit('6'));
+            Assert.AreEqual("0011 81 3332 2 567", formatter.InputDigit('7'));
+            Assert.AreEqual("0011 81 3332 2 5678", formatter.InputDigit('8'));
+
+            // 0011 244 250 253 222
+            formatter.Clear();
+            Assert.AreEqual("0", formatter.InputDigit('0'));
+            Assert.AreEqual("00", formatter.InputDigit('0'));
+            Assert.AreEqual("001", formatter.InputDigit('1'));
+            Assert.AreEqual("0011", formatter.InputDigit('1'));
+            Assert.AreEqual("00112", formatter.InputDigit('2'));
+            Assert.AreEqual("001124", formatter.InputDigit('4'));
+            Assert.AreEqual("0011 244 ", formatter.InputDigit('4'));
+            Assert.AreEqual("0011 244 2", formatter.InputDigit('2'));
+            Assert.AreEqual("0011 244 25", formatter.InputDigit('5'));
+            Assert.AreEqual("0011 244 250", formatter.InputDigit('0'));
+            Assert.AreEqual("0011 244 250 2", formatter.InputDigit('2'));
+            Assert.AreEqual("0011 244 250 25", formatter.InputDigit('5'));
+            Assert.AreEqual("0011 244 250 253", formatter.InputDigit('3'));
+            Assert.AreEqual("0011 244 250 253 2", formatter.InputDigit('2'));
+            Assert.AreEqual("0011 244 250 253 22", formatter.InputDigit('2'));
+            Assert.AreEqual("0011 244 250 253 222", formatter.InputDigit('2'));
+        }
+
+        [Test]
+        public void testAYTFLongIDD_KR()
+        {
+            AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter("KR");
+            // 00300 1 650 253 2222
+            Assert.AreEqual("0", formatter.InputDigit('0'));
+            Assert.AreEqual("00", formatter.InputDigit('0'));
+            Assert.AreEqual("003", formatter.InputDigit('3'));
+            Assert.AreEqual("0030", formatter.InputDigit('0'));
+            Assert.AreEqual("00300", formatter.InputDigit('0'));
+            Assert.AreEqual("00300 1 ", formatter.InputDigit('1'));
+            Assert.AreEqual("00300 1 6", formatter.InputDigit('6'));
+            Assert.AreEqual("00300 1 65", formatter.InputDigit('5'));
+            Assert.AreEqual("00300 1 650", formatter.InputDigit('0'));
+            Assert.AreEqual("00300 1 650 2", formatter.InputDigit('2'));
+            Assert.AreEqual("00300 1 650 25", formatter.InputDigit('5'));
+            Assert.AreEqual("00300 1 650 253", formatter.InputDigit('3'));
+            Assert.AreEqual("00300 1 650 253 2", formatter.InputDigit('2'));
+            Assert.AreEqual("00300 1 650 253 22", formatter.InputDigit('2'));
+            Assert.AreEqual("00300 1 650 253 222", formatter.InputDigit('2'));
+            Assert.AreEqual("00300 1 650 253 2222", formatter.InputDigit('2'));
+        }
+
+        [Test]
+        public void testAYTFLongNDD_KR()
+        {
+            AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter("KR");
+            // 08811-9876-7890
+            Assert.AreEqual("0", formatter.InputDigit('0'));
+            Assert.AreEqual("08", formatter.InputDigit('8'));
+            Assert.AreEqual("088", formatter.InputDigit('8'));
+            Assert.AreEqual("0881", formatter.InputDigit('1'));
+            Assert.AreEqual("08811", formatter.InputDigit('1'));
+            Assert.AreEqual("08811-9", formatter.InputDigit('9'));
+            Assert.AreEqual("08811-98", formatter.InputDigit('8'));
+            Assert.AreEqual("08811-987", formatter.InputDigit('7'));
+            Assert.AreEqual("08811-9876", formatter.InputDigit('6'));
+            Assert.AreEqual("08811-9876-7", formatter.InputDigit('7'));
+            Assert.AreEqual("08811-9876-78", formatter.InputDigit('8'));
+            Assert.AreEqual("08811-9876-789", formatter.InputDigit('9'));
+            Assert.AreEqual("08811-9876-7890", formatter.InputDigit('0'));
+
+            // 08500 11-9876-7890
+            formatter.Clear();
+            Assert.AreEqual("0", formatter.InputDigit('0'));
+            Assert.AreEqual("08", formatter.InputDigit('8'));
+            Assert.AreEqual("085", formatter.InputDigit('5'));
+            Assert.AreEqual("0850", formatter.InputDigit('0'));
+            Assert.AreEqual("08500 ", formatter.InputDigit('0'));
+            Assert.AreEqual("08500 1", formatter.InputDigit('1'));
+            Assert.AreEqual("08500 11", formatter.InputDigit('1'));
+            Assert.AreEqual("08500 11-9", formatter.InputDigit('9'));
+            Assert.AreEqual("08500 11-98", formatter.InputDigit('8'));
+            Assert.AreEqual("08500 11-987", formatter.InputDigit('7'));
+            Assert.AreEqual("08500 11-9876", formatter.InputDigit('6'));
+            Assert.AreEqual("08500 11-9876-7", formatter.InputDigit('7'));
+            Assert.AreEqual("08500 11-9876-78", formatter.InputDigit('8'));
+            Assert.AreEqual("08500 11-9876-789", formatter.InputDigit('9'));
+            Assert.AreEqual("08500 11-9876-7890", formatter.InputDigit('0'));
+        }
+
+        [Test]
+        public void testAYTFLongNDD_SG()
+        {
+            AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter("SG");
+            // 777777 9876 7890
+            Assert.AreEqual("7", formatter.InputDigit('7'));
+            Assert.AreEqual("77", formatter.InputDigit('7'));
+            Assert.AreEqual("777", formatter.InputDigit('7'));
+            Assert.AreEqual("7777", formatter.InputDigit('7'));
+            Assert.AreEqual("77777", formatter.InputDigit('7'));
+            Assert.AreEqual("777777 ", formatter.InputDigit('7'));
+            Assert.AreEqual("777777 9", formatter.InputDigit('9'));
+            Assert.AreEqual("777777 98", formatter.InputDigit('8'));
+            Assert.AreEqual("777777 987", formatter.InputDigit('7'));
+            Assert.AreEqual("777777 9876", formatter.InputDigit('6'));
+            Assert.AreEqual("777777 9876 7", formatter.InputDigit('7'));
+            Assert.AreEqual("777777 9876 78", formatter.InputDigit('8'));
+            Assert.AreEqual("777777 9876 789", formatter.InputDigit('9'));
+            Assert.AreEqual("777777 9876 7890", formatter.InputDigit('0'));
+        }
     }
 }

@@ -32,17 +32,34 @@ namespace PhoneNumbers
         protected int numOfEntries = 0;
         protected readonly List<int> possibleLengths = new List<int>();
 
-        public AreaCodeMapStorageStrategy()
-        {
-        }
+        /**
+         * Gets the phone number prefix located at the provided {@code index}.
+         *
+         * @param index  the index of the prefix that needs to be returned
+         * @return  the phone number prefix at the provided index
+         */
+        public abstract int getPrefix(int index);
+
+        public abstract int getStorageSize();
 
         /**
-         * Returns whether the underlying implementation of this abstract class is flyweight.
-         * It is expected to be flyweight if it implements the {@code FlyweightMapStorage} class.
+         * Gets the description corresponding to the phone number prefix located at the provided {@code
+         * index}. If the description is not available in the current language an empty string is
+         * returned.
          *
-         * @return  whether the underlying implementation of this abstract class is flyweight
+         * @param index  the index of the phone number prefix that needs to be returned
+         * @return  the description corresponding to the phone number prefix at the provided index
          */
-        public abstract bool isFlyweight();
+        public abstract String getDescription(int index);
+
+        /**
+         * Sets the internal state of the underlying storage implementation from the provided {@code
+         * sortedAreaCodeMap} that maps phone number prefixes to description strings.
+         *
+         * @param sortedAreaCodeMap  a sorted map that maps phone number prefixes including country
+         *    calling code to description strings
+         */
+        public abstract void readFromSortedMap(SortedDictionary<int, String> sortedAreaCodeMap);
 
         /**
          * @return  the number of entries contained in the area code map
@@ -60,44 +77,16 @@ namespace PhoneNumbers
             return possibleLengths;
         }
 
-        /**
-         * Gets the phone number prefix located at the provided {@code index}.
-         *
-         * @param index  the index of the prefix that needs to be returned
-         * @return  the phone number prefix at the provided index
-         */
-        public abstract int getPrefix(int index);
-
-        public abstract int getStorageSize();
-
-        /**
-         * Gets the description corresponding to the phone number prefix located at the provided {@code
-         * index}.
-         *
-         * @param index  the index of the phone number prefix that needs to be returned
-         * @return  the description corresponding to the phone number prefix at the provided index
-         */
-        public abstract String getDescription(int index);
-
-        /**
-         * Sets the internal state of the underlying storage implementation from the provided {@code
-         * sortedAreaCodeMap} that maps phone number prefixes to description strings.
-         *
-         * @param sortedAreaCodeMap  a sorted map that maps phone number prefixes including country
-         *    calling code to description strings
-         */
-        public abstract void readFromSortedMap(SortedDictionary<int, String> sortedAreaCodeMap);
-
         public override String ToString()
         {
             StringBuilder output = new StringBuilder();
             int numOfEntries = getNumOfEntries();
             for (int i = 0; i < numOfEntries; i++)
             {
-                output.Append(getPrefix(i));
-                output.Append("|");
-                output.Append(getDescription(i));
-                output.Append("\n");
+                output.Append(getPrefix(i))
+                    .Append("|")
+                    .Append(getDescription(i))
+                    .Append("\n");
             }
             return output.ToString();
         }
