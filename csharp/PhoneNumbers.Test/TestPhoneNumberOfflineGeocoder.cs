@@ -48,6 +48,8 @@ namespace PhoneNumbers.Test
             new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(6509600000L).Build();
         private static readonly PhoneNumber US_NUMBER3 =
             new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(2128120000L).Build();
+        private static readonly PhoneNumber US_NUMBER4 =
+            new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(6174240000L).Build();
         private static readonly PhoneNumber US_INVALID_NUMBER =
             new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(123456789L).Build();
         private static readonly PhoneNumber BS_NUMBER1 =
@@ -83,6 +85,15 @@ namespace PhoneNumbers.Test
                                                               new Locale("en", "US")));
         }
         */
+
+        [Test]
+        public void testGetDescriptionForNumberWithMissingPrefix()
+        {
+            // Test that the name of the country is returned when the number passed in is valid but not
+            // covered by the geocoding data file.
+            Assert.AreEqual("United States",
+                geocoder.GetDescriptionForNumber(US_NUMBER4, new Locale("en", "US")));
+        }
 
         [Test]
         public void testGetDescriptionForNumber_en_US()

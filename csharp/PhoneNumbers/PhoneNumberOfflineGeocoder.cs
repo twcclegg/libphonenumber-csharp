@@ -220,7 +220,10 @@ namespace PhoneNumbers
         {
             AreaCodeMap phonePrefixDescriptions =
                 GetPhonePrefixDescriptions(number.CountryCode, lang, script, region);
-            return (phonePrefixDescriptions != null) ? phonePrefixDescriptions.Lookup(number) : "";
+            String description = phonePrefixDescriptions != null
+                ? phonePrefixDescriptions.Lookup(number)
+                : "";
+            return description == null ? "" : description;
         }
     }
 }
