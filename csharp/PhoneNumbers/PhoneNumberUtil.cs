@@ -1671,8 +1671,11 @@ namespace PhoneNumbers
         {
             if (!IsValidRegionCode(regionCode))
                 return null;
-            if (!regionToMetadataMap.ContainsKey(regionCode))
-                LoadMetadataForRegionFromFile(currentFilePrefix_, regionCode);
+            lock(regionToMetadataMap)
+            {
+                if (!regionToMetadataMap.ContainsKey(regionCode))
+                    LoadMetadataForRegionFromFile(currentFilePrefix_, regionCode);
+            }
             return regionToMetadataMap.ContainsKey(regionCode)
                 ? regionToMetadataMap[regionCode]
                 : null;

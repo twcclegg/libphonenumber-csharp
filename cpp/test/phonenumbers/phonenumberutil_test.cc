@@ -26,6 +26,7 @@
 #include "phonenumbers/phonenumber.h"
 #include "phonenumbers/phonenumber.pb.h"
 #include "phonenumbers/phonenumberutil.h"
+#include "phonenumbers/test_util.h"
 
 namespace i18n {
 namespace phonenumbers {
@@ -35,112 +36,6 @@ using std::make_pair;
 using std::ostream;
 
 using google::protobuf::RepeatedPtrField;
-
-namespace {
-
-// Class containing string constants of region codes for easier testing. This is
-// intended to replace region_code.h for testing in this file, with more
-// constants defined.
-class RegionCode {
- public:
-  static const string& AD() {
-    static const string s = "AD";
-    return s;
-  }
-
-  static const string& AO() {
-    static const string s = "AO";
-    return s;
-  }
-
-  static const string& AR() {
-    static const string s = "AR";
-    return s;
-  }
-
-  static const string& AU() {
-    static const string s = "AU";
-    return s;
-  }
-
-  static const string& BS() {
-    static const string s = "BS";
-    return s;
-  }
-
-  static const string& CN() {
-    static const string s = "CN";
-    return s;
-  }
-
-  static const string& CS() {
-    static const string s = "CS";
-    return s;
-  }
-
-  static const string& DE() {
-    static const string s = "DE";
-    return s;
-  }
-
-  static const string& GB() {
-    static const string s = "GB";
-    return s;
-  }
-
-  static const string& IT() {
-    static const string s = "IT";
-    return s;
-  }
-
-  static const string& KR() {
-    static const string s = "KR";
-    return s;
-  }
-
-  static const string& MX() {
-    static const string s = "MX";
-    return s;
-  }
-
-  static const string& NZ() {
-    static const string s = "NZ";
-    return s;
-  }
-
-  static const string& PL() {
-    static const string s = "PL";
-    return s;
-  }
-
-  static const string& RE() {
-    static const string s = "RE";
-    return s;
-  }
-
-  static const string& SG() {
-    static const string s = "SG";
-    return s;
-  }
-
-  static const string& US() {
-    static const string s = "US";
-    return s;
-  }
-
-  static const string& YT() {
-    static const string s = "YT";
-    return s;
-  }
-
-  // Returns a region code string representing the "unknown" region.
-  static const string& GetUnknown() {
-    static const string s = "ZZ";
-    return s;
-  }
-};
-
-}  // namespace
 
 class PhoneNumberUtilTest : public testing::Test {
  protected:
@@ -203,6 +98,11 @@ class PhoneNumberUtilTest : public testing::Test {
                                                phone_number);
   }
 
+  static bool Equals(const PhoneNumberDesc& expected_number,
+                     const PhoneNumberDesc& actual_number) {
+    return ExactlySameAs(expected_number, actual_number);
+  }
+
   void GetNddPrefixForRegion(const string& region,
                              bool strip_non_digits,
                              string* ndd_prefix) const {
@@ -211,47 +111,8 @@ class PhoneNumberUtilTest : public testing::Test {
     phone_util_.GetNddPrefixForRegion(region, strip_non_digits, ndd_prefix);
   }
 
-  static bool Equals(const PhoneNumberDesc& expected_number,
-                     const PhoneNumberDesc& actual_number) {
-    return ExactlySameAs(expected_number, actual_number);
-  }
-
   const PhoneNumberUtil& phone_util_;
 };
-
-// Provides PhoneNumber comparison operators to support the use of EXPECT_EQ and
-// EXPECT_NE in the unittests.
-bool operator==(const PhoneNumber& number1, const PhoneNumber& number2) {
-  return ExactlySameAs(number1, number2);
-}
-
-bool operator!=(const PhoneNumber& number1, const PhoneNumber& number2) {
-  return !(number1 == number2);
-}
-
-// Needed by Google Test to display errors.
-ostream& operator<<(ostream& os, const PhoneNumber& number) {
-  os << endl
-     << "country_code: " << number.country_code() << endl
-     << "national_number: " << number.national_number() << endl;
-  if (number.has_extension()) {
-     os << "extension: " << number.extension() << endl;
-  }
-  if (number.has_italian_leading_zero()) {
-     os << "italian_leading_zero: " << number.italian_leading_zero() << endl;
-  }
-  if (number.has_raw_input()) {
-     os << "raw_input: " << number.raw_input() << endl;
-  }
-  if (number.has_country_code_source()) {
-     os << "country_code_source: " << number.country_code_source() << endl;
-  }
-  if (number.has_preferred_domestic_carrier_code()) {
-     os << "preferred_domestic_carrier_code: "
-        << number.preferred_domestic_carrier_code() << endl;
-  }
-  return os;
-}
 
 TEST_F(PhoneNumberUtilTest, GetSupportedRegions) {
   set<string> regions;
@@ -420,6 +281,15 @@ TEST_F(PhoneNumberUtilTest, FormatUSNumber) {
   EXPECT_EQ("+1 900 253 0000", formatted_number);
   phone_util_.Format(test_number, PhoneNumberUtil::RFC3966, &formatted_number);
   EXPECT_EQ("+1-900-253-0000", formatted_number);
+  test_number.set_national_number(0ULL);
+  phone_util_.Format(test_number, PhoneNumberUtil::NATIONAL, &formatted_number);
+  EXPECT_EQ("0", formatted_number);
+  // Numbers with all zeros in the national number part will be formatted by
+  // using the raw_input if that is available no matter which format is
+  // specified.
+  test_number.set_raw_input("000-000-0000");
+  phone_util_.Format(test_number, PhoneNumberUtil::NATIONAL, &formatted_number);
+  EXPECT_EQ("000-000-0000", formatted_number);
 }
 
 TEST_F(PhoneNumberUtilTest, FormatBSNumber) {
@@ -1685,7 +1555,7 @@ TEST_F(PhoneNumberUtilTest, IsViablePhoneNumber) {
   // Unicode variants of possible starting character and other allowed
   // punctuation/digits.
   EXPECT_TRUE(IsViablePhoneNumber("\xEF\xBC\x88" "1\xEF\xBC\x89\xE3\x80\x80"
-                                  "3456789" /* "（1）　3456789" */ ));
+                                  "3456789" /* "（1）　3456789" */));
   // Testing a leading + is okay.
   EXPECT_TRUE(IsViablePhoneNumber("+1\xEF\xBC\x89\xE3\x80\x80"
                                   "3456789" /* "+1）　3456789" */));
@@ -2265,6 +2135,23 @@ TEST_F(PhoneNumberUtilTest, ParseNationalNumber) {
             phone_util_.Parse("+64 3 331 6005",
                               RegionCode::US(), &test_number));
   EXPECT_EQ(nz_number, test_number);
+  // We should ignore the leading plus here, since it is not followed by a valid
+  // country code but instead is followed by the IDD for the US.
+  test_number.Clear();
+  EXPECT_EQ(PhoneNumberUtil::NO_PARSING_ERROR,
+            phone_util_.Parse("+01164 3 331 6005",
+                              RegionCode::US(), &test_number));
+  EXPECT_EQ(nz_number, test_number);
+  test_number.Clear();
+  EXPECT_EQ(PhoneNumberUtil::NO_PARSING_ERROR,
+            phone_util_.Parse("+0064 3 331 6005",
+                              RegionCode::NZ(), &test_number));
+  EXPECT_EQ(nz_number, test_number);
+  test_number.Clear();
+  EXPECT_EQ(PhoneNumberUtil::NO_PARSING_ERROR,
+            phone_util_.Parse("+ 00 64 3 331 6005",
+                              RegionCode::NZ(), &test_number));
+  EXPECT_EQ(nz_number, test_number);
 
   // Test for http://b/issue?id=2247493
   nz_number.Clear();
@@ -2611,6 +2498,12 @@ TEST_F(PhoneNumberUtilTest, FailedParseOnInvalidNumbers) {
                               &test_number));
   EXPECT_EQ(PhoneNumber::default_instance(), test_number);
 
+  // 00 is a correct IDD, but 210 is not a valid country code.
+  EXPECT_EQ(PhoneNumberUtil::INVALID_COUNTRY_CODE_ERROR,
+            phone_util_.Parse("+ 00 210 3 331 6005", RegionCode::NZ(),
+                              &test_number));
+  EXPECT_EQ(PhoneNumber::default_instance(), test_number);
+
   EXPECT_EQ(PhoneNumberUtil::INVALID_COUNTRY_CODE_ERROR,
             phone_util_.Parse("123 456 7890", RegionCode::GetUnknown(),
                               &test_number));
@@ -2644,8 +2537,8 @@ TEST_F(PhoneNumberUtilTest, ParseNumbersWithPlusWithNoRegion) {
   PhoneNumber nz_number;
   nz_number.set_country_code(64);
   nz_number.set_national_number(33316005ULL);
-  // "ZZ" is allowed only if the number starts with a '+' - then the country
-  // code can be calculated.
+  // RegionCode::GetUnknown() is allowed only if the number starts with a '+' -
+  // then the country code can be calculated.
   PhoneNumber result_proto;
   EXPECT_EQ(PhoneNumberUtil::NO_PARSING_ERROR,
             phone_util_.Parse("+64 3 331 6005", RegionCode::GetUnknown(),
