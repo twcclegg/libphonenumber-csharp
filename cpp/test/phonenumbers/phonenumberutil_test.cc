@@ -56,6 +56,10 @@ class PhoneNumberUtilTest : public testing::Test {
     phone_util_.ExtractPossibleNumber(number, extracted_number);
   }
 
+  bool CanBeInternationallyDialled(const PhoneNumber& number) const {
+    return phone_util_.CanBeInternationallyDialled(number);
+  }
+
   bool IsViablePhoneNumber(const string& number) const {
     return phone_util_.IsViablePhoneNumber(number);
   }
@@ -103,6 +107,10 @@ class PhoneNumberUtilTest : public testing::Test {
     return ExactlySameAs(expected_number, actual_number);
   }
 
+  bool ContainsOnlyValidDigits(const string& s) const {
+    return phone_util_.ContainsOnlyValidDigits(s);
+  }
+
   void GetNddPrefixForRegion(const string& region,
                              bool strip_non_digits,
                              string* ndd_prefix) const {
@@ -113,6 +121,15 @@ class PhoneNumberUtilTest : public testing::Test {
 
   const PhoneNumberUtil& phone_util_;
 };
+
+TEST_F(PhoneNumberUtilTest, ContainsOnlyValidDigits) {
+  EXPECT_TRUE(ContainsOnlyValidDigits(""));
+  EXPECT_TRUE(ContainsOnlyValidDigits("2"));
+  EXPECT_TRUE(ContainsOnlyValidDigits("25"));
+  EXPECT_TRUE(ContainsOnlyValidDigits("\xEF\xBC\x96" /* "６" */));
+  EXPECT_FALSE(ContainsOnlyValidDigits("a"));
+  EXPECT_FALSE(ContainsOnlyValidDigits("2a"));
+}
 
 TEST_F(PhoneNumberUtilTest, GetSupportedRegions) {
   set<string> regions;
@@ -785,6 +802,44 @@ TEST_F(PhoneNumberUtilTest, FormatWithPreferredCarrierCode) {
   phone_util_.FormatNationalNumberWithPreferredCarrierCode(us_number, "15",
                                                            &formatted_number);
   EXPECT_EQ("424 123 1234", formatted_number);
+}
+
+TEST_F(PhoneNumberUtilTest, FormatNumberForMobileDialing) {
+  PhoneNumber test_number;
+  string formatted_number;
+  test_number.set_country_code(1);
+
+  // US toll free numbers are marked as noInternationalDialling in the test
+  // metadata for testing purposes.
+  test_number.set_national_number(8002530000ULL);
+  phone_util_.FormatNumberForMobileDialing(
+      test_number, RegionCode::US(), true, &formatted_number);
+  EXPECT_EQ("800 253 0000", formatted_number);
+  phone_util_.FormatNumberForMobileDialing(
+      test_number, RegionCode::CN(), true, &formatted_number);
+  EXPECT_EQ("", formatted_number);
+  phone_util_.FormatNumberForMobileDialing(
+      test_number, RegionCode::US(), false, &formatted_number);
+  EXPECT_EQ("8002530000", formatted_number);
+  phone_util_.FormatNumberForMobileDialing(
+      test_number, RegionCode::CN(), false, &formatted_number);
+  EXPECT_EQ("", formatted_number);
+
+  test_number.set_national_number(6502530000ULL);
+  phone_util_.FormatNumberForMobileDialing(
+      test_number, RegionCode::US(), true, &formatted_number);
+  EXPECT_EQ("+1 650 253 0000", formatted_number);
+  phone_util_.FormatNumberForMobileDialing(
+      test_number, RegionCode::US(), false, &formatted_number);
+  EXPECT_EQ("+16502530000", formatted_number);
+
+  test_number.set_extension("1234");
+  phone_util_.FormatNumberForMobileDialing(
+      test_number, RegionCode::US(), true, &formatted_number);
+  EXPECT_EQ("+1 650 253 0000", formatted_number);
+  phone_util_.FormatNumberForMobileDialing(
+      test_number, RegionCode::US(), false, &formatted_number);
+  EXPECT_EQ("+16502530000", formatted_number);
 }
 
 TEST_F(PhoneNumberUtilTest, FormatByPattern) {
@@ -2825,6 +2880,29 @@ TEST_F(PhoneNumberUtilTest, ParseAndKeepRaw) {
                                              RegionCode::KR(),
                                              &test_number));
   EXPECT_EQ(korean_number, test_number);
+}
+
+TEST_F(PhoneNumberUtilTest, CanBeInternationallyDialled) {
+  PhoneNumber test_number;
+  test_number.set_country_code(1);
+
+  // We have no-international-dialling rules for the US in our test metadata
+  // that say that toll-free numbers cannot be dialled internationally.
+  test_number.set_national_number(8002530000ULL);
+  EXPECT_FALSE(CanBeInternationallyDialled(test_number));
+
+  // Normal US numbers can be internationally dialled.
+  test_number.set_national_number(6502530000ULL);
+  EXPECT_TRUE(CanBeInternationallyDialled(test_number));
+
+  // Invalid number.
+  test_number.set_national_number(2530000ULL);
+  EXPECT_TRUE(CanBeInternationallyDialled(test_number));
+
+  // We have no data for NZ - should return true.
+  test_number.set_country_code(64);
+  test_number.set_national_number(33316005ULL);
+  EXPECT_TRUE(CanBeInternationallyDialled(test_number));
 }
 
 TEST_F(PhoneNumberUtilTest, IsAlphaNumber) {
