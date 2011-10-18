@@ -29,6 +29,7 @@ namespace PhoneNumbers
         // String constants used to fetch the XML nodes and attributes.
         private static readonly String CARRIER_CODE_FORMATTING_RULE = "carrierCodeFormattingRule";
         private static readonly String COUNTRY_CODE = "countryCode";
+        private static readonly String EMERGENCY = "emergency";
         private static readonly String EXAMPLE_NUMBER = "exampleNumber";
         private static readonly String FIXED_LINE = "fixedLine";
         private static readonly String FORMAT = "format";
@@ -431,6 +432,7 @@ namespace PhoneNumbers
                                                                      PERSONAL_NUMBER));
             metadata.SetPager(ProcessPhoneNumberDescElement(generalDesc, element, PAGER));
             metadata.SetUan(ProcessPhoneNumberDescElement(generalDesc, element, UAN));
+            metadata.SetEmergency(ProcessPhoneNumberDescElement(generalDesc, element, EMERGENCY));
             metadata.SetNoInternationalDialling(ProcessPhoneNumberDescElement(generalDesc, element,
                                                                               NO_INTERNATIONAL_DIALLING));
             metadata.SetSameMobileAndFixedLinePattern(

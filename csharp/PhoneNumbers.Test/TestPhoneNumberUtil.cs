@@ -684,6 +684,29 @@ namespace PhoneNumbers.Test
         }
 
         [Test]
+        public void TestFormatNumberForMobileDialing()
+        {
+            // US toll free numbers are marked as noInternationalDialling in the test metadata for testing
+            // purposes.
+            Assert.AreEqual("800 253 0000",
+                phoneUtil.FormatNumberForMobileDialing(US_TOLLFREE, RegionCode.US, true));
+            Assert.AreEqual("", phoneUtil.FormatNumberForMobileDialing(US_TOLLFREE, RegionCode.CN, true));
+            Assert.AreEqual("+1 650 253 0000",
+                phoneUtil.FormatNumberForMobileDialing(US_NUMBER, RegionCode.US, true));
+            PhoneNumber usNumberWithExtn = new PhoneNumber.Builder().MergeFrom(US_NUMBER).SetExtension("1234").Build();
+            Assert.AreEqual("+1 650 253 0000",
+                phoneUtil.FormatNumberForMobileDialing(usNumberWithExtn, RegionCode.US, true));
+
+            Assert.AreEqual("8002530000",
+                phoneUtil.FormatNumberForMobileDialing(US_TOLLFREE, RegionCode.US, false));
+            Assert.AreEqual("", phoneUtil.FormatNumberForMobileDialing(US_TOLLFREE, RegionCode.CN, false));
+            Assert.AreEqual("+16502530000",
+                phoneUtil.FormatNumberForMobileDialing(US_NUMBER, RegionCode.US, false));
+            Assert.AreEqual("+16502530000",
+                phoneUtil.FormatNumberForMobileDialing(usNumberWithExtn, RegionCode.US, false));
+        }
+
+        [Test]
         public void TestFormatByPattern()
         {
             NumberFormat newNumFormat = new NumberFormat.Builder()

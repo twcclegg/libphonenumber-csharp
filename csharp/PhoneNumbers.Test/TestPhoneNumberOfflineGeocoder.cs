@@ -75,8 +75,6 @@ namespace PhoneNumbers.Test
             // a result, the country name of United States in simplified Chinese is returned.
             Assert.AreEqual("\u7F8E\u56FD",
                 geocoder.GetDescriptionForNumber(US_NUMBER1, Locale.SIMPLIFIED_CHINESE));
-            Assert.AreEqual("Stati Uniti",
-                geocoder.GetDescriptionForNumber(US_NUMBER1, Locale.ITALIAN));
             Assert.AreEqual("Bahamas",
                 geocoder.GetDescriptionForNumber(BS_NUMBER1, new Locale("en", "US")));
             Assert.AreEqual("Australia",
@@ -119,7 +117,24 @@ namespace PhoneNumbers.Test
                 geocoder.GetDescriptionForNumber(KO_NUMBER1, Locale.KOREAN));
             Assert.AreEqual("\uC778\uCC9C",
                 geocoder.GetDescriptionForNumber(KO_NUMBER2, Locale.KOREAN));
-            Assert.AreEqual("\uC81C\uC8FC",
+        }
+
+        [Test]
+        public void TestGetDescriptionForFallBack()
+        {
+            // No fallback, as the location name for the given phone number is available in the requested
+            // language.
+            Assert.AreEqual("Kalifornien",
+                geocoder.GetDescriptionForNumber(US_NUMBER1, Locale.GERMAN));
+            // German falls back to English.
+            Assert.AreEqual("New York, NY",
+                geocoder.GetDescriptionForNumber(US_NUMBER3, Locale.GERMAN));
+            // Italian falls back to English.
+            Assert.AreEqual("CA",
+                geocoder.GetDescriptionForNumber(US_NUMBER1, Locale.ITALIAN));
+            // Korean doesn't fall back to English.
+            // C#: changed from Java because we lack korean locale information
+            Assert.AreEqual("Korea",
                 geocoder.GetDescriptionForNumber(KO_NUMBER3, Locale.KOREAN));
         }
 

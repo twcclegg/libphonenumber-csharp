@@ -626,6 +626,16 @@ namespace PhoneNumbers {
       get { return uan_; }
     }
     
+    public const int EmergencyFieldNumber = 27;
+    private bool hasEmergency;
+    private global::PhoneNumbers.PhoneNumberDesc emergency_ = global::PhoneNumbers.PhoneNumberDesc.DefaultInstance;
+    public bool HasEmergency {
+      get { return hasEmergency; }
+    }
+    public global::PhoneNumbers.PhoneNumberDesc Emergency {
+      get { return emergency_; }
+    }
+    
     public const int NoInternationalDiallingFieldNumber = 24;
     private bool hasNoInternationalDialling;
     private global::PhoneNumbers.PhoneNumberDesc noInternationalDialling_ = global::PhoneNumbers.PhoneNumberDesc.DefaultInstance;
@@ -792,6 +802,7 @@ namespace PhoneNumbers {
         if (!hasVoip) return false;
         if (!hasPager) return false;
         if (!hasUan) return false;
+        if (!hasEmergency) return false;
         if (!hasNoInternationalDialling) return false;
         if (!hasId) return false;
         if (!hasCountryCode) return false;
@@ -822,6 +833,7 @@ namespace PhoneNumbers {
       if (hasVoip) hash ^= voip_.GetHashCode();
       if (hasPager) hash ^= pager_.GetHashCode();
       if (hasUan) hash ^= uan_.GetHashCode();
+      if (hasEmergency) hash ^= emergency_.GetHashCode();
       if (hasNoInternationalDialling) hash ^= noInternationalDialling_.GetHashCode();
       if (hasId) hash ^= id_.GetHashCode();
       if (hasCountryCode) hash ^= countryCode_.GetHashCode();
@@ -855,6 +867,7 @@ namespace PhoneNumbers {
       if (hasVoip != other.hasVoip || (hasVoip && !voip_.Equals(other.voip_))) return false;
       if (hasPager != other.hasPager || (hasPager && !pager_.Equals(other.pager_))) return false;
       if (hasUan != other.hasUan || (hasUan && !uan_.Equals(other.uan_))) return false;
+      if (hasEmergency != other.hasEmergency || (hasEmergency && !emergency_.Equals(other.emergency_))) return false;
       if (hasNoInternationalDialling != other.hasNoInternationalDialling || (hasNoInternationalDialling && !noInternationalDialling_.Equals(other.noInternationalDialling_))) return false;
       if (hasId != other.hasId || (hasId && !id_.Equals(other.id_))) return false;
       if (hasCountryCode != other.hasCountryCode || (hasCountryCode && !countryCode_.Equals(other.countryCode_))) return false;
@@ -959,6 +972,9 @@ namespace PhoneNumbers {
         }
         if (other.HasUan) {
           MergeUan(other.Uan);
+        }
+        if (other.HasEmergency) {
+          MergeEmergency(other.Emergency);
         }
         if (other.HasNoInternationalDialling) {
           MergeNoInternationalDialling(other.NoInternationalDialling);
@@ -1368,6 +1384,42 @@ namespace PhoneNumbers {
       public Builder ClearUan() {
         result.hasUan = false;
         result.uan_ = global::PhoneNumbers.PhoneNumberDesc.DefaultInstance;
+        return this;
+      }
+      
+      public bool HasEmergency {
+       get { return result.HasEmergency; }
+      }
+      public global::PhoneNumbers.PhoneNumberDesc Emergency {
+        get { return result.Emergency; }
+        set { SetEmergency(value); }
+      }
+      public Builder SetEmergency(global::PhoneNumbers.PhoneNumberDesc value) {
+        if(value == null) throw new global::System.ArgumentNullException("value");
+        result.hasEmergency = true;
+        result.emergency_ = value;
+        return this;
+      }
+      public Builder SetEmergency(global::PhoneNumbers.PhoneNumberDesc.Builder builderForValue) {
+        if(builderForValue == null) throw new global::System.ArgumentNullException("builderForValue");
+        result.hasEmergency = true;
+        result.emergency_ = builderForValue.Build();
+        return this;
+      }
+      public Builder MergeEmergency(global::PhoneNumbers.PhoneNumberDesc value) {
+        if(value == null) throw new global::System.ArgumentNullException("value");
+        if (result.HasEmergency &&
+            result.emergency_ != global::PhoneNumbers.PhoneNumberDesc.DefaultInstance) {
+            result.emergency_ = global::PhoneNumbers.PhoneNumberDesc.CreateBuilder(result.emergency_).MergeFrom(value).BuildPartial();
+        } else {
+          result.emergency_ = value;
+        }
+        result.hasEmergency = true;
+        return this;
+      }
+      public Builder ClearEmergency() {
+        result.hasEmergency = false;
+        result.emergency_ = global::PhoneNumbers.PhoneNumberDesc.DefaultInstance;
         return this;
       }
       

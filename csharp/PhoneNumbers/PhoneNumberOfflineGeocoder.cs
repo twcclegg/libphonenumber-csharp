@@ -27,6 +27,7 @@ namespace PhoneNumbers
     public class Locale
     {
         public static readonly Locale ENGLISH = new Locale("en", "GB");
+        public static readonly Locale GERMAN = new Locale("de", "DE");
         public static readonly Locale ITALIAN = new Locale("it", "IT");
         public static readonly Locale KOREAN = new Locale("ko", "KR");
         public static readonly Locale SIMPLIFIED_CHINESE = new Locale("zh", "CN");
@@ -91,9 +92,9 @@ namespace PhoneNumbers
         }
 
         private AreaCodeMap GetPhonePrefixDescriptions(
-            int countryCallingCode, String language, String script, String region)
+            int prefixMapKey, String language, String script, String region)
         {
-            String fileName = mappingFileProvider.GetFileName(countryCallingCode, language, script, region);
+            String fileName = mappingFileProvider.GetFileName(prefixMapKey, language, script, region);
             if (fileName.Length == 0)
             {
                 return null;
@@ -204,26 +205,42 @@ namespace PhoneNumbers
             return GetDescriptionForValidNumber(number, languageCode);
         }
 
-        /**
-         * Returns an area-level text description in the given language for the given phone number.
-         *
-         * @param number  the phone number for which we want to get a text description
-         * @param lang  two-letter lowercase ISO language codes as defined by ISO 639-1
-         * @param script  four-letter titlecase (the first letter is uppercase and the rest of the letters
-         *     are lowercase) ISO script codes as defined in ISO 15924
-         * @param region  two-letter uppercase ISO country codes as defined by ISO 3166-1
-         * @return  an area-level text description in the given language for the given phone number, or an
-         *     empty string if such a description is not available
-         */
         private String GetAreaDescriptionForNumber(
             PhoneNumber number, String lang, String script, String region)
         {
+            int countryCallingCode = number.CountryCode;
+            // As the NANPA data is split into multiple files covering 3-digit areas, use a phone number
+            // prefix of 4 digits for NANPA instead, e.g. 1650.
+            //int phonePrefix = (countryCallingCode != 1) ?
+            //    countryCallingCode : (1000 + (int) (number.NationalNumber / 10000000));
+            int phonePrefix = countryCallingCode;
+
             AreaCodeMap phonePrefixDescriptions =
-                GetPhonePrefixDescriptions(number.CountryCode, lang, script, region);
-            String description = phonePrefixDescriptions != null
+                GetPhonePrefixDescriptions(phonePrefix, lang, script, region);
+            String description = (phonePrefixDescriptions != null)
                 ? phonePrefixDescriptions.Lookup(number)
-                : "";
-            return description == null ? "" : description;
+                : null;
+            // When a location is not available in the requested language, fall back to English.
+            if ((description == null || description.Length == 0) && MayFallBackToEnglish(lang))
+            {
+                AreaCodeMap defaultMap = GetPhonePrefixDescriptions(phonePrefix, "en", "", "");
+                if (defaultMap == null)
+                {
+                    return "";
+                }
+                description = defaultMap.Lookup(number);
+            }
+            return description != null ? description : "";
         }
+
+        private bool MayFallBackToEnglish(String lang)
+        {
+            // Don't fall back to English if the requested language is among the following:
+            // - Chinese
+            // - Japanese
+            // - Korean
+            return !lang.Equals("zh") && !lang.Equals("ja") && !lang.Equals("ko");
+        }
+
     }
 }

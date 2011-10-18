@@ -112,6 +112,10 @@ namespace PhoneNumbers
         private HashSet<String> nanpaRegions_ = new HashSet<String>();
         private const int NANPA_COUNTRY_CODE = 1;
 
+        // The prefix that needs to be inserted in front of a Colombian landline number when dialed from
+        // a mobile phone in Colombia.
+        private const String COLOMBIA_MOBILE_TO_FIXED_LINE_PREFIX = "3";
+
         // The PLUS_SIGN signifies the international prefix.
         internal const char PLUS_SIGN = '+';
 
@@ -930,7 +934,7 @@ namespace PhoneNumbers
         }
 
         /**
-        * Convenience method to enable tests to get a list of what regions the library has metadata for.
+        * Convenience method to get a list of what regions the library has metadata for.
         */
         public HashSet<String> GetSupportedRegions()
         {
@@ -1160,6 +1164,61 @@ namespace PhoneNumbers
         }
 
         /**
+        * Returns a number formatted in such a way that it can be dialed from a mobile phone in a
+        * specific region. If the number cannot be reached from the region (e.g. some countries block
+        * toll-free numbers from being called outside of the country), the method returns an empty
+        * string.
+        *
+        * @param number  the phone number to be formatted
+        * @param regionCallingFrom  the region where the call is being placed
+        * @param withFormatting  whether the number should be returned with formatting symbols, such as
+        *     spaces and dashes.
+        * @return  the formatted phone number
+        */
+        public String FormatNumberForMobileDialing(PhoneNumber number, String regionCallingFrom,
+            bool withFormatting)
+        {
+            String regionCode = GetRegionCodeForNumber(number);
+            if (!IsValidRegionCode(regionCode))
+            {
+                return number.HasRawInput ? number.RawInput : "";
+            }
+
+            String formattedNumber;
+            // Clear the extension, as that part cannot normally be dialed together with the main number.
+            number = number.ToBuilder().ClearExtension().Build();
+            PhoneNumberType numberType = GetNumberType(number);
+            if ((regionCode == "CO") && (regionCallingFrom == "CO") &&
+                (numberType == PhoneNumberType.FIXED_LINE))
+            {
+                formattedNumber =
+                  FormatNationalNumberWithCarrierCode(number, COLOMBIA_MOBILE_TO_FIXED_LINE_PREFIX);
+            }
+            else if ((regionCode == "BR") && (regionCallingFrom == "BR") &&
+                ((numberType == PhoneNumberType.FIXED_LINE) || (numberType == PhoneNumberType.MOBILE) ||
+                (numberType == PhoneNumberType.FIXED_LINE_OR_MOBILE)))
+            {
+                formattedNumber = number.HasPreferredDomesticCarrierCode
+                    ? FormatNationalNumberWithPreferredCarrierCode(number, "")
+                    // Brazilian fixed line and mobile numbers need to be dialed with a carrier code when
+                    // called within Brazil. Without that, most of the carriers won't connect the call.
+                    // Because of that, we return an empty string here.
+                    : "";
+            }
+            else if (CanBeInternationallyDialled(number))
+            {
+                return withFormatting ? Format(number, PhoneNumberFormat.INTERNATIONAL)
+                    : Format(number, PhoneNumberFormat.E164);
+            }
+            else
+            {
+                formattedNumber = (regionCallingFrom == regionCode)
+                    ? Format(number, PhoneNumberFormat.NATIONAL) : "";
+            }
+            return withFormatting ? formattedNumber : NormalizeDigitsOnly(formattedNumber);
+        }
+
+        /**
         * Formats a phone number for out-of-country dialing purposes. If no regionCallingFrom is
         * supplied, we format the number in its INTERNATIONAL format. If the country calling code is the
         * same as that of the region where the number is from, then NATIONAL formatting will be applied.
@@ -1380,17 +1439,8 @@ namespace PhoneNumbers
         */
         public String GetNationalSignificantNumber(PhoneNumber number)
         {
-            // The leading zero in the national (significant) number of an Italian phone number has a
-            // special meaning. Unlike the rest of the world, it indicates the number is a landline
-            // number. There have been plans to migrate landline numbers to start with the digit two since
-            // December 2000, but it has not yet happened.
-            // See http://en.wikipedia.org/wiki/%2B39 for more details.
-            // Other regions such as Cote d'Ivoire and Gabon use this for their mobile numbers.
-            var nationalNumber = new StringBuilder(
-                (number.HasItalianLeadingZero &&
-                 number.ItalianLeadingZero &&
-                 IsLeadingZeroPossible(number.CountryCode))
-                ? "0" : "");
+             // If a leading zero has been set, we prefix this now. Note this is not a national prefix.
+            StringBuilder nationalNumber = new StringBuilder(number.ItalianLeadingZero ? "0" : "");
             nationalNumber.Append(number.NationalNumber);
             return nationalNumber.ToString();
         }

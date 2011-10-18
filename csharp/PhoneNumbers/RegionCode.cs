@@ -13,10 +13,13 @@ namespace PhoneNumbers
         public const String AR = "AR";
         public const String AU = "AU";
         public const String BS = "BS";
+        public const String CA = "CA";
+        public const String CN = "CN";
         public const String CS = "CS";
         public const String DE = "DE";
         public const String GB = "GB";
         public const String IT = "IT";
+        public const String JP = "JP";
         public const String KR = "KR";
         public const String MX = "MX";
         public const String NZ = "NZ";
