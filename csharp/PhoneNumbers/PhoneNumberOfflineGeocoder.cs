@@ -16,9 +16,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Text;
 
 namespace PhoneNumbers
@@ -39,6 +39,41 @@ namespace PhoneNumbers
         {
             Language = language;
             Country = countryCode;
+        }
+
+        public String GetDisplayCountry(String language)
+        {
+            if(String.IsNullOrEmpty(Country))
+                return "";
+            var name = GetCountryName(Country, language);
+            if(name != null)
+                return name;
+            var lang = Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName;
+            if(lang != language)
+            {
+                name = GetCountryName(Country, lang);
+                if(name != null)
+                    return name;
+            }
+            if(language != "en" && lang != "en")
+            {
+                name = GetCountryName(Country, "en");
+                if(name != null)
+                    return name;
+            }
+            name = GetCountryName(Country, Language);
+            return name ?? "";
+        }
+
+        private String GetCountryName(String country, String language)
+        {
+            var names = LocaleData.Data[Country];
+            String name;
+            if(!names.TryGetValue(language, out name))
+                return null;
+            if(name.Length > 0 && name[0] == '*')
+                return names[name.Substring(1)];
+            return name;
         }
     }
     /**
@@ -162,7 +197,7 @@ namespace PhoneNumbers
         {
             String regionCode = phoneUtil.GetRegionCodeForNumber(number);
             return (regionCode == null || regionCode.Equals("ZZ"))
-                ? "" : new RegionInfo(regionCode).EnglishName;
+                ? "" : new Locale("", regionCode).GetDisplayCountry(language.Language);
         }
 
         /**

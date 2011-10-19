@@ -52,6 +52,7 @@
     <Compile Include="CountryCodeToRegionCodeMap.cs" />
     <Compile Include="DefaultMapStorage.cs" />
     <Compile Include="FlyweightMapStorage.cs" />
+    <Compile Include="LocaleData.cs" />
     <Compile Include="MappingFileProvider.cs" />
     <Compile Include="NumberParseException.cs" />
     <Compile Include="Phonemetadata.cs" />

@@ -7,3 +7,4 @@
 ~$
 csharp/lib/Phonenumber.cs
 csharp/lib/Phonemetadata.cs
+csharp/lib/DumpLocale.class

@@ -66,8 +66,6 @@ namespace PhoneNumbers.Test
             geocoder = new PhoneNumberOfflineGeocoder(TEST_MAPPING_DATA_DIRECTORY);
         }
 
-        /* This test is disabled as we do not have localized country names by
-         * default on .NET. Also, Bahamas RegionInfo does not exist.
         [Test]
         public void testGetDescriptionForNumberWithNoDataFile()
         {
@@ -82,7 +80,6 @@ namespace PhoneNumbers.Test
             Assert.AreEqual("", geocoder.GetDescriptionForNumber(NUMBER_WITH_INVALID_COUNTRY_CODE,
                                                               new Locale("en", "US")));
         }
-        */
 
         [Test]
         public void testGetDescriptionForNumberWithMissingPrefix()
@@ -133,8 +130,7 @@ namespace PhoneNumbers.Test
             Assert.AreEqual("CA",
                 geocoder.GetDescriptionForNumber(US_NUMBER1, Locale.ITALIAN));
             // Korean doesn't fall back to English.
-            // C#: changed from Java because we lack korean locale information
-            Assert.AreEqual("Korea",
+            Assert.AreEqual("\uB300\uD55C\uBBFC\uAD6D",
                 geocoder.GetDescriptionForNumber(KO_NUMBER3, Locale.KOREAN));
         }
 
