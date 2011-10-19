@@ -37,7 +37,6 @@ namespace PhoneNumbers.Test
             Assert.AreEqual(numberA.GetHashCode(), numberB.GetHashCode());
         }
 
-        /*
         [Test]
         public void TestEqualWithItalianLeadingZeroSetToDefault()
         {
@@ -51,7 +50,6 @@ namespace PhoneNumbers.Test
             Assert.AreEqual(numberA, numberB);
             Assert.AreEqual(numberA.GetHashCode(), numberB.GetHashCode());
         }
-        */
 
         [Test]
         public void TestEqualWithCountryCodeSourceSet()

@@ -52,12 +52,6 @@ the tests run.
 Known Issues
 ------------
 
-- TestEqualWithItalianLeadingZeroSetToDefault is currently disabled as
-  generated classes Equals() method does not exist on their related
-  Builder.
-
-- Check all Equals call sites
-
 - Phone numbers metadata is read from XML files and not protocol
   buffers one. I could not make it work using protobuf-csharp
   library. On the other hand, it makes one less dependency.

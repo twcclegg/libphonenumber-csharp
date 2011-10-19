@@ -141,7 +141,8 @@ namespace PhoneNumbers {
       if (hasCountryCode) hash ^= countryCode_.GetHashCode();
       if (hasNationalNumber) hash ^= nationalNumber_.GetHashCode();
       if (hasExtension) hash ^= extension_.GetHashCode();
-      if (hasItalianLeadingZero) hash ^= italianLeadingZero_.GetHashCode();
+      // Manual fix to behave like the Java version which ignores the hasItalianLeadingZero fields
+      hash ^= italianLeadingZero_.GetHashCode();
       if (hasRawInput) hash ^= rawInput_.GetHashCode();
       if (hasCountryCodeSource) hash ^= countryCodeSource_.GetHashCode();
       if (hasPreferredDomesticCarrierCode) hash ^= preferredDomesticCarrierCode_.GetHashCode();
@@ -154,7 +155,8 @@ namespace PhoneNumbers {
       if (hasCountryCode != other.hasCountryCode || (hasCountryCode && !countryCode_.Equals(other.countryCode_))) return false;
       if (hasNationalNumber != other.hasNationalNumber || (hasNationalNumber && !nationalNumber_.Equals(other.nationalNumber_))) return false;
       if (hasExtension != other.hasExtension || (hasExtension && !extension_.Equals(other.extension_))) return false;
-      if (hasItalianLeadingZero != other.hasItalianLeadingZero || (hasItalianLeadingZero && !italianLeadingZero_.Equals(other.italianLeadingZero_))) return false;
+      // Manual fix to behave like the Java version which ignores the hasItalianLeadingZero fields
+      if (!italianLeadingZero_.Equals(other.italianLeadingZero_)) return false;
       if (hasRawInput != other.hasRawInput || (hasRawInput && !rawInput_.Equals(other.rawInput_))) return false;
       if (hasCountryCodeSource != other.hasCountryCodeSource || (hasCountryCodeSource && !countryCodeSource_.Equals(other.countryCodeSource_))) return false;
       if (hasPreferredDomesticCarrierCode != other.hasPreferredDomesticCarrierCode || (hasPreferredDomesticCarrierCode && !preferredDomesticCarrierCode_.Equals(other.preferredDomesticCarrierCode_))) return false;
