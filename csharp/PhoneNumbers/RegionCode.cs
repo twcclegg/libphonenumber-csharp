@@ -12,6 +12,7 @@ namespace PhoneNumbers
         public const String AO = "AO";
         public const String AR = "AR";
         public const String AU = "AU";
+        public const String BR = "BR";
         public const String BS = "BS";
         public const String CA = "CA";
         public const String CN = "CN";

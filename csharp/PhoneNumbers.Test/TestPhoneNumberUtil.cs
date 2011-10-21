@@ -498,7 +498,7 @@ namespace PhoneNumbers.Test
             Assert.AreEqual("1 650 253 0000",
             phoneUtil.FormatOutOfCountryCallingNumber(US_NUMBER, RegionCode.BS));
 
-            Assert.AreEqual("0~0 1 650 253 0000",
+            Assert.AreEqual("00 1 650 253 0000",
             phoneUtil.FormatOutOfCountryCallingNumber(US_NUMBER, RegionCode.PL));
 
             Assert.AreEqual("011 44 7912 345 678",
@@ -805,6 +805,15 @@ namespace PhoneNumbers.Test
 
             PhoneNumber number5 = phoneUtil.Parse("+442087654321", RegionCode.GB);
             Assert.AreEqual("(020) 8765 4321", phoneUtil.FormatInOriginalFormat(number5, RegionCode.GB));
+
+            // Invalid numbers should be formatted using its raw input when that is available. Note area
+            // codes starting with 7 are intentionally excluded in the test metadata for testing purposes.
+            PhoneNumber number6 = phoneUtil.ParseAndKeepRawInput("7345678901", RegionCode.US);
+            Assert.AreEqual("7345678901", phoneUtil.FormatInOriginalFormat(number6, RegionCode.US));
+
+            // When the raw input is unavailable, format as usual.
+            PhoneNumber number7 = phoneUtil.Parse("7345678901", RegionCode.US);
+            Assert.AreEqual("734 567 8901", phoneUtil.FormatInOriginalFormat(number7, RegionCode.US));
         }
 
         [Test]
@@ -1090,7 +1099,7 @@ namespace PhoneNumbers.Test
             adNumber = Update(adNumber).SetCountryCode(376).SetNationalNumber(13L).Build();
             Assert.AreEqual(PhoneNumberUtil.ValidationResult.TOO_SHORT,
             phoneUtil.IsPossibleNumberWithReason(adNumber));
-            adNumber = Update(adNumber).SetCountryCode(376).SetNationalNumber(1234567890123456L).Build();
+            adNumber = Update(adNumber).SetCountryCode(376).SetNationalNumber(12345678901234567L).Build();
             Assert.AreEqual(PhoneNumberUtil.ValidationResult.TOO_LONG,
             phoneUtil.IsPossibleNumberWithReason(adNumber));
         }

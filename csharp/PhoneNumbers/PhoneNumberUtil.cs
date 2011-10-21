@@ -91,7 +91,8 @@ namespace PhoneNumbers
         internal static readonly RegexOptions REGEX_FLAGS = RegexOptions.IgnoreCase | RegexOptions.CultureInvariant;
         // The minimum and maximum length of the national significant number.
         internal const int MIN_LENGTH_FOR_NSN = 3;
-        internal const int MAX_LENGTH_FOR_NSN = 15;
+        // The ITU says the maximum length should be 15, but we have found longer numbers in Germany.
+        internal const int MAX_LENGTH_FOR_NSN = 16;
         // The maximum length of the country calling code.
         internal const int MAX_LENGTH_COUNTRY_CODE = 3;
         internal const String META_DATA_FILE_PREFIX = "PhoneNumberMetaData.xml";
@@ -1300,7 +1301,8 @@ namespace PhoneNumbers
         * Formats a phone number using the original phone number format that the number is parsed from.
         * The original format is embedded in the country_code_source field of the PhoneNumber object
         * passed in. If such information is missing, the number will be formatted into the NATIONAL
-        * format by default.
+        * format by default. When the number is an invalid number, the method returns the raw input when
+        * it is available.
         *
         * @param number  the phone number that needs to be formatted in its original number format
         * @param regionCallingFrom  the region whose IDD needs to be prefixed if the original number
@@ -1309,6 +1311,8 @@ namespace PhoneNumbers
         */
         public String FormatInOriginalFormat(PhoneNumber number, String regionCallingFrom)
         {
+            if (number.HasRawInput && !IsValidNumber(number))
+                return number.RawInput;
             if (!number.HasCountryCodeSource)
                 return Format(number, PhoneNumberFormat.NATIONAL);
 
@@ -2262,14 +2266,6 @@ namespace PhoneNumbers
             }
             // Attempt to parse the first digits as an international prefix.
             var iddPattern = regexCache.GetPatternForRegex(possibleIddPrefix);
-            if (ParsePrefixAsIdd(iddPattern, number))
-            {
-                Normalize(number);
-                return CountryCodeSource.FROM_NUMBER_WITH_IDD;
-            }
-            // If still not found, then try and normalize the number and then try again. This shouldn't be
-            // done before, since non-numeric characters (+ and ~) may legally be in the international
-            // prefix.
             Normalize(number);
             return ParsePrefixAsIdd(iddPattern, number)
                 ? CountryCodeSource.FROM_NUMBER_WITH_IDD
