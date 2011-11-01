@@ -1187,34 +1187,34 @@ namespace PhoneNumbers
 
             String formattedNumber;
             // Clear the extension, as that part cannot normally be dialed together with the main number.
-            number = number.ToBuilder().ClearExtension().Build();
-            PhoneNumberType numberType = GetNumberType(number);
+            PhoneNumber numberNoExt = new PhoneNumber.Builder().MergeFrom(number).ClearExtension().Build();
+            PhoneNumberType numberType = GetNumberType(numberNoExt);
             if ((regionCode == "CO") && (regionCallingFrom == "CO") &&
                 (numberType == PhoneNumberType.FIXED_LINE))
             {
                 formattedNumber =
-                  FormatNationalNumberWithCarrierCode(number, COLOMBIA_MOBILE_TO_FIXED_LINE_PREFIX);
+                  FormatNationalNumberWithCarrierCode(numberNoExt, COLOMBIA_MOBILE_TO_FIXED_LINE_PREFIX);
             }
             else if ((regionCode == "BR") && (regionCallingFrom == "BR") &&
                 ((numberType == PhoneNumberType.FIXED_LINE) || (numberType == PhoneNumberType.MOBILE) ||
                 (numberType == PhoneNumberType.FIXED_LINE_OR_MOBILE)))
             {
-                formattedNumber = number.HasPreferredDomesticCarrierCode
-                    ? FormatNationalNumberWithPreferredCarrierCode(number, "")
+                formattedNumber = numberNoExt.HasPreferredDomesticCarrierCode
+                    ? FormatNationalNumberWithPreferredCarrierCode(numberNoExt, "")
                     // Brazilian fixed line and mobile numbers need to be dialed with a carrier code when
                     // called within Brazil. Without that, most of the carriers won't connect the call.
                     // Because of that, we return an empty string here.
                     : "";
             }
-            else if (CanBeInternationallyDialled(number))
+            else if (CanBeInternationallyDialled(numberNoExt))
             {
-                return withFormatting ? Format(number, PhoneNumberFormat.INTERNATIONAL)
-                    : Format(number, PhoneNumberFormat.E164);
+                return withFormatting ? Format(numberNoExt, PhoneNumberFormat.INTERNATIONAL)
+                    : Format(numberNoExt, PhoneNumberFormat.E164);
             }
             else
             {
                 formattedNumber = (regionCallingFrom == regionCode)
-                    ? Format(number, PhoneNumberFormat.NATIONAL) : "";
+                    ? Format(numberNoExt, PhoneNumberFormat.NATIONAL) : "";
             }
             return withFormatting ? formattedNumber : NormalizeDigitsOnly(formattedNumber);
         }
