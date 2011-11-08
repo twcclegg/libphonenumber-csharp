@@ -32,6 +32,7 @@ namespace PhoneNumbers.Test
 
         public ShortNumberUtilTest()
         {
+            PhoneNumberUtil.ResetInstance();
             PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance(
                 TEST_META_DATA_FILE_PREFIX,
                 CountryCodeToRegionCodeMapForTesting.GetCountryCodeToRegionCodeMap());
