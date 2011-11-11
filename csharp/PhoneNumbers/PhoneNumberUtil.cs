@@ -923,7 +923,7 @@ namespace PhoneNumbers
             if (numberGroups.Length <= 3)
                 return 0;
 
-            if (GetRegionCodeForNumber(number) == "AR" && GetNumberType(number) == PhoneNumberType.MOBILE)
+            if (GetRegionCodeForCountryCode(number.CountryCode) == "AR" && GetNumberType(number) == PhoneNumberType.MOBILE)
                 // Argentinian mobile numbers, when formatted in the international format, are in the form of
                 // +54 9 NDC XXXX.... As a result, we take the length of the third group (NDC) and add 1 for
                 // the digit 9, which also forms part of the national significant number.
