@@ -32,7 +32,7 @@ namespace PhoneNumbers
             // and this offers a load factor of roughly 0.75.
             var countryCodeToRegionCodeMap = new Dictionary<int, List<String>>(273);
 
-            List<String> listWithRegionCode = new List<String>(24);
+            List<String> listWithRegionCode = new List<String>(25);
             listWithRegionCode.Add("US");
             listWithRegionCode.Add("AG");
             listWithRegionCode.Add("AI");
@@ -52,6 +52,7 @@ namespace PhoneNumbers
             listWithRegionCode.Add("MP");
             listWithRegionCode.Add("MS");
             listWithRegionCode.Add("PR");
+            listWithRegionCode.Add("SX");
             listWithRegionCode.Add("TC");
             listWithRegionCode.Add("TT");
             listWithRegionCode.Add("VC");

@@ -534,6 +534,15 @@ namespace PhoneNumbers.Test
         }
 
         [Test]
+        public void TestFormatOutOfCountryWithInvalidRegion()
+        {
+            // AQ/Antarctica isn't a valid region code for phone number formatting,
+            // so this falls back to intl formatting.
+            Assert.AreEqual("+1 650 253 0000",
+                phoneUtil.FormatOutOfCountryCallingNumber(US_NUMBER, "AQ"));
+        }
+
+        [Test]
         public void TestFormatOutOfCountryWithPreferredIntlPrefix()
         {
             // This should use 0011, since that is the preferred international prefix (both 0011 and 0012
@@ -1235,24 +1244,24 @@ namespace PhoneNumbers.Test
                 .BuildPartial();
             StringBuilder numberToStrip = new StringBuilder("34356778");
             String strippedNumber = "356778";
-            phoneUtil.MaybeStripNationalPrefixAndCarrierCode(numberToStrip, metadata);
+            Assert.True(phoneUtil.MaybeStripNationalPrefixAndCarrierCode(numberToStrip, metadata, null));
             Assert.AreEqual(strippedNumber, numberToStrip.ToString(),
                 "Should have had national prefix stripped.");
             // Retry stripping - now the number should not start with the national prefix, so no more
             // stripping should occur.
-            phoneUtil.MaybeStripNationalPrefixAndCarrierCode(numberToStrip, metadata);
+            Assert.False(phoneUtil.MaybeStripNationalPrefixAndCarrierCode(numberToStrip, metadata, null));
             Assert.AreEqual(strippedNumber, numberToStrip.ToString(),
                 "Should have had no change - no national prefix present.");
             // Some countries have no national prefix. Repeat test with none specified.
             metadata = Update(metadata).SetNationalPrefixForParsing("").BuildPartial();
-            phoneUtil.MaybeStripNationalPrefixAndCarrierCode(numberToStrip, metadata);
+            Assert.False(phoneUtil.MaybeStripNationalPrefixAndCarrierCode(numberToStrip, metadata, null));
             Assert.AreEqual(strippedNumber, numberToStrip.ToString(),
                 "Should not strip anything with empty national prefix.");
             // If the resultant number doesn't match the national rule, it shouldn't be stripped.
             metadata = Update(metadata).SetNationalPrefixForParsing("3").BuildPartial();
             numberToStrip = new StringBuilder("3123");
             strippedNumber = "3123";
-            phoneUtil.MaybeStripNationalPrefixAndCarrierCode(numberToStrip, metadata);
+            Assert.False(phoneUtil.MaybeStripNationalPrefixAndCarrierCode(numberToStrip, metadata, null));
             Assert.AreEqual(strippedNumber, numberToStrip.ToString(),
                 "Should have had no change - after stripping, it wouldn't have matched " +
                 "the national rule.");
@@ -1260,7 +1269,10 @@ namespace PhoneNumbers.Test
             metadata = Update(metadata).SetNationalPrefixForParsing("0(81)?").BuildPartial();
             numberToStrip = new StringBuilder("08122123456");
             strippedNumber = "22123456";
-            Assert.AreEqual("81", phoneUtil.MaybeStripNationalPrefixAndCarrierCode(numberToStrip, metadata));
+            StringBuilder carrierCode = new StringBuilder();
+            Assert.True(phoneUtil.MaybeStripNationalPrefixAndCarrierCode(
+                numberToStrip, metadata, carrierCode));
+            Assert.AreEqual("81", carrierCode.ToString());
             Assert.AreEqual(strippedNumber, numberToStrip.ToString(),
                 "Should have had national prefix and carrier code stripped.");
             // If there was a transform rule, check it was applied.
@@ -1269,7 +1281,7 @@ namespace PhoneNumbers.Test
                 .SetNationalPrefixForParsing("0(\\d{2})").BuildPartial();
             numberToStrip = new StringBuilder("031123");
             String transformedNumber = "5315123";
-            phoneUtil.MaybeStripNationalPrefixAndCarrierCode(numberToStrip, metadata);
+            Assert.True(phoneUtil.MaybeStripNationalPrefixAndCarrierCode(numberToStrip, metadata, null));
             Assert.AreEqual(transformedNumber, numberToStrip.ToString(),
                 "Should transform the 031 to a 5315.");
         }

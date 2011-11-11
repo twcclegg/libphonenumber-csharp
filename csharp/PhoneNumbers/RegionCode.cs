@@ -29,6 +29,7 @@ namespace PhoneNumbers
         public const String SG = "SG";
         public const String US = "US";
         public const String YT = "YT";
+        public const String ZW = "ZW";
         // Official code for the unknown region.
         public const String ZZ = "ZZ";
     }

@@ -54,6 +54,27 @@ namespace PhoneNumbers
         */
         public bool ConnectsToEmergencyNumber(String number, String regionCode)
         {
+            return MatchesEmergencyNumberHelper(number, regionCode, true /* allows prefix match */);
+        }
+
+        /**
+        * Returns true if the number exactly matches an emergency service number in the given region.
+        *
+        * This method takes into account cases where the number might contain formatting, but doesn't
+        * allow additional digits to be appended.
+        *
+        * @param number  the phone number to test
+        * @param regionCode  the region where the phone number is being dialed
+        * @return  if the number exactly matches an emergency services number in the given region.
+        */
+        public bool isEmergencyNumber(String number, String regionCode)
+        {
+            return MatchesEmergencyNumberHelper(number, regionCode, false /* doesn't allow prefix match */);
+        }
+
+        private bool MatchesEmergencyNumberHelper(String number, String regionCode,
+            bool allowPrefixMatch)
+        {
             number = PhoneNumberUtil.ExtractPossibleNumber(number);
             if (PhoneNumberUtil.PLUS_CHARS_PATTERN.MatchBeginning(number).Success)
             {
@@ -62,23 +83,20 @@ namespace PhoneNumbers
                 // add additional logic here to handle it.
                 return false;
             }
-            String normalizedNumber = PhoneNumberUtil.NormalizeDigitsOnly(number);
-            PhoneNumberDesc emergencyNumberDesc = phoneUtil.GetMetadataForRegion(regionCode).Emergency;
-            var emergencyNumberPattern =
-                new PhoneRegex(emergencyNumberDesc.NationalNumberPattern);
-            if (regionCode == "BR")
+            PhoneMetadata metadata = phoneUtil.GetMetadataForRegion(regionCode);
+            if (metadata == null || !metadata.HasEmergency)
             {
-                // This is to prevent Brazilian local numbers which start with 911 being incorrectly
-                // classified as emergency numbers. In Brazil, it is impossible to append additional digits to
-                // an emergency number to dial the number.
-                if (!emergencyNumberPattern.MatchAll(normalizedNumber).Success)
-                {
-                    return false;
-                }
+                return false;
             }
+            var emergencyNumberPattern =
+                new PhoneRegex(metadata.Emergency.NationalNumberPattern);
+            String normalizedNumber = PhoneNumberUtil.NormalizeDigitsOnly(number);
+            // In Brazil, it is impossible to append additional digits to an emergency number to dial the
+            // number.
+            return (!allowPrefixMatch || regionCode.Equals("BR"))
+                ? emergencyNumberPattern.MatchAll(normalizedNumber).Success
+                : emergencyNumberPattern.MatchBeginning(normalizedNumber).Success;
 
-            // Check the prefix against possible emergency numbers for this region.
-            return emergencyNumberPattern.MatchBeginning(normalizedNumber).Success;
         }
     }
 }

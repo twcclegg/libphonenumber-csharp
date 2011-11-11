@@ -408,7 +408,9 @@ namespace PhoneNumbers
             /**
             * Phone numbers accepted are
             * {@linkplain PhoneNumberUtil#isPossibleNumber(Phonenumber.PhoneNumber) possible} and
-            * {@linkplain PhoneNumberUtil#isValidNumber(Phonenumber.PhoneNumber) valid}.
+            * {@linkplain PhoneNumberUtil#isValidNumber(Phonenumber.PhoneNumber) valid}. Numbers written
+            * in national format must have their national-prefix present if it is usually written for a
+            * number of this type.
             */
             VALID,
             /**
@@ -445,15 +447,17 @@ namespace PhoneNumbers
                     return IsPossibleNumber(number);
                 case Leniency.VALID:
                     {
-                        if (!util.IsValidNumber(number))
+                        if (!util.IsValidNumber(number) ||
+                            !PhoneNumberUtil.ContainsOnlyValidXChars(number, candidate, util))
                             return false;
-                        return PhoneNumberUtil.ContainsOnlyValidXChars(number, candidate, util);
+                        return PhoneNumberUtil.IsNationalPrefixPresentIfRequired(number, util);
                     }
                 case Leniency.STRICT_GROUPING:
                     {
                         if (!util.IsValidNumber(number) ||
                            !PhoneNumberUtil.ContainsOnlyValidXChars(number, candidate, util) ||
-                           PhoneNumberUtil.ContainsMoreThanOneSlash(candidate))
+                           PhoneNumberUtil.ContainsMoreThanOneSlash(candidate) ||
+                           !PhoneNumberUtil.IsNationalPrefixPresentIfRequired(number, util))
                         {
                             return false;
                         }
@@ -500,7 +504,8 @@ namespace PhoneNumbers
                     {
                         if (!util.IsValidNumber(number) ||
                                 !ContainsOnlyValidXChars(number, candidate, util) ||
-                                ContainsMoreThanOneSlash(candidate))
+                                ContainsMoreThanOneSlash(candidate) ||
+                                !IsNationalPrefixPresentIfRequired(number, util))
                         {
                             return false;
                         }
@@ -601,6 +606,57 @@ namespace PhoneNumbers
                         return false;
                     }
                 }
+            }
+            return true;
+        }
+
+        internal static bool IsNationalPrefixPresentIfRequired(
+            PhoneNumber number, PhoneNumberUtil util)
+        {
+            // First, check how we deduced the country code. If it was written in international format,
+            // then the national prefix is not required.
+            if (number.CountryCodeSource != CountryCodeSource.FROM_DEFAULT_COUNTRY)
+            {
+                return true;
+            }
+            String phoneNumberRegion =
+                util.GetRegionCodeForCountryCode(number.CountryCode);
+            PhoneMetadata metadata = util.GetMetadataForRegion(phoneNumberRegion);
+            if (metadata == null)
+            {
+                return true;
+            }
+            // Check if a national prefix should be present when formatting this number.
+            String nationalNumber = util.GetNationalSignificantNumber(number);
+            NumberFormat formatRule =
+                util.ChooseFormattingPatternForNumber(metadata.NumberFormatList, nationalNumber);
+            // To do this, we check that a national prefix formatting rule was present and that it wasn't
+            // just the first-group symbol ($1) with punctuation.
+            if ((formatRule != null) && formatRule.NationalPrefixFormattingRule.Length > 0)
+            {
+                if (formatRule.NationalPrefixOptionalWhenFormatting)
+                {
+                    // The national-prefix is optional in these cases, so we don't need to check if it was
+                    // present.
+                    return true;
+                }
+                // Remove the first-group symbol.
+                String candidateNationalPrefixRule = formatRule.NationalPrefixFormattingRule;
+                // We assume that the first-group symbol will never be _before_ the national prefix.
+                candidateNationalPrefixRule =
+                    candidateNationalPrefixRule.Substring(0, candidateNationalPrefixRule.IndexOf("${1}"));
+                candidateNationalPrefixRule = PhoneNumberUtil.NormalizeDigitsOnly(candidateNationalPrefixRule);
+                if (candidateNationalPrefixRule.Length == 0)
+                {
+                    // National Prefix not needed for this number.
+                    return true;
+                }
+                // Normalize the remainder.
+                String rawInputCopy = PhoneNumberUtil.NormalizeDigitsOnly(number.RawInput);
+                StringBuilder rawInput = new StringBuilder(rawInputCopy);
+                // Check if we found a national prefix and/or carrier code at the start of the raw input,
+                // and return the result.
+                return util.MaybeStripNationalPrefixAndCarrierCode(rawInput, metadata, null);
             }
             return true;
         }
@@ -997,7 +1053,7 @@ namespace PhoneNumbers
         */
         public String Format(PhoneNumber number, PhoneNumberFormat numberFormat)
         {
-            if(number.NationalNumber == 0 && number.HasRawInput)
+            if (number.NationalNumber == 0 && number.HasRawInput)
             {
                 String rawInput = number.RawInput;
                 if (rawInput.Length > 0)
@@ -1443,7 +1499,7 @@ namespace PhoneNumbers
         */
         public String GetNationalSignificantNumber(PhoneNumber number)
         {
-             // If a leading zero has been set, we prefix this now. Note this is not a national prefix.
+            // If a leading zero has been set, we prefix this now. Note this is not a national prefix.
             StringBuilder nationalNumber = new StringBuilder(number.ItalianLeadingZero ? "0" : "");
             nationalNumber.Append(number.NationalNumber);
             return nationalNumber.ToString();
@@ -1501,6 +1557,24 @@ namespace PhoneNumbers
             return formattedNationalNumber;
         }
 
+        private NumberFormat ChooseFormattingPatternForNumber(IList<NumberFormat> availableFormats,
+            String nationalNumber)
+        {
+            foreach (NumberFormat numFormat in availableFormats)
+            {
+                int size = numFormat.LeadingDigitsPatternCount;
+                if (size == 0 || regexCache.GetPatternForRegex(
+                    // We always use the last leading_digits_pattern, as it is the most detailed.
+                    numFormat.LeadingDigitsPatternList[size - 1]).MatchBeginning(nationalNumber).Success)
+                {
+                    if (regexCache.GetPatternForRegex(numFormat.Pattern).MatchAll(nationalNumber).Success)
+                        return numFormat;
+                }
+            }
+            return null;
+        }
+
+
         // Simple wrapper of formatAccordingToFormats for the common case of no carrier code.
         private String FormatAccordingToFormats(String nationalNumber,
             List<NumberFormat> availableFormats, PhoneNumberFormat numberFormat)
@@ -1513,53 +1587,44 @@ namespace PhoneNumbers
         private String FormatAccordingToFormats(String nationalNumber, IList<NumberFormat> availableFormats,
             PhoneNumberFormat numberFormat, String carrierCode)
         {
-            foreach (var numFormat in availableFormats)
+            NumberFormat numFormat = ChooseFormattingPatternForNumber(availableFormats, nationalNumber);
+            if (numFormat == null)
             {
-                int size = numFormat.LeadingDigitsPatternCount;
-                if (size == 0 || regexCache.GetPatternForRegex(
-                    // We always use the last leading_digits_pattern, as it is the most detailed.
-                      numFormat.LeadingDigitsPatternList[size - 1]).MatchBeginning(nationalNumber).Success)
+                // If no pattern above is matched, we format the number as a whole.
+                return nationalNumber;
+            }
+            var matcher = regexCache.GetPatternForRegex(numFormat.Pattern);
+            var numberFormatRule = numFormat.Format;
+            if (numberFormat == PhoneNumberFormat.NATIONAL &&
+                carrierCode != null && carrierCode.Length > 0 &&
+                numFormat.DomesticCarrierCodeFormattingRule.Length > 0)
+            {
+                // Replace the $CC in the formatting rule with the desired carrier code.
+                var carrierCodeFormattingRule = numFormat.DomesticCarrierCodeFormattingRule;
+                carrierCodeFormattingRule =
+                    CC_PATTERN.Replace(carrierCodeFormattingRule, carrierCode, 1);
+                // Now replace the $FG in the formatting rule with the first group and the carrier code
+                // combined in the appropriate way.
+                numberFormatRule = FIRST_GROUP_PATTERN.Replace(numberFormatRule, carrierCodeFormattingRule, 1);
+                return matcher.Replace(nationalNumber, numberFormatRule);
+            }
+            else
+            {
+                // Use the national prefix formatting rule instead.
+                var nationalPrefixFormattingRule = numFormat.NationalPrefixFormattingRule;
+                if (numberFormat == PhoneNumberFormat.NATIONAL &&
+                    nationalPrefixFormattingRule != null &&
+                    nationalPrefixFormattingRule.Length > 0)
                 {
-                    var matcher = regexCache.GetPatternForRegex(numFormat.Pattern);
-                    if (matcher.MatchAll(nationalNumber).Success)
-                    {
-                        var numberFormatRule = numFormat.Format;
-                        if (numberFormat == PhoneNumberFormat.NATIONAL &&
-                            carrierCode != null && carrierCode.Length > 0 &&
-                            numFormat.DomesticCarrierCodeFormattingRule.Length > 0)
-                        {
-                            // Replace the $CC in the formatting rule with the desired carrier code.
-                            var carrierCodeFormattingRule = numFormat.DomesticCarrierCodeFormattingRule;
-                            carrierCodeFormattingRule =
-                                CC_PATTERN.Replace(carrierCodeFormattingRule, carrierCode, 1);
-                            // Now replace the $FG in the formatting rule with the first group and the carrier code
-                            // combined in the appropriate way.
-                            numberFormatRule = FIRST_GROUP_PATTERN.Replace(numberFormatRule, carrierCodeFormattingRule, 1);
-                            return matcher.Replace(nationalNumber, numberFormatRule);
-                        }
-                        else
-                        {
-                            // Use the national prefix formatting rule instead.
-                            var nationalPrefixFormattingRule = numFormat.NationalPrefixFormattingRule;
-                            if (numberFormat == PhoneNumberFormat.NATIONAL &&
-                                nationalPrefixFormattingRule != null &&
-                                nationalPrefixFormattingRule.Length > 0)
-                            {
-                                numberFormatRule = FIRST_GROUP_PATTERN.Replace(numberFormatRule,
-                                    nationalPrefixFormattingRule, 1);
-                                return matcher.Replace(nationalNumber, numberFormatRule);
-                            }
-                            else
-                            {
-                                return matcher.Replace(nationalNumber, numberFormatRule);
-                            }
-                        }
-                    }
+                    numberFormatRule = FIRST_GROUP_PATTERN.Replace(numberFormatRule,
+                        nationalPrefixFormattingRule, 1);
+                    return matcher.Replace(nationalNumber, numberFormatRule);
+                }
+                else
+                {
+                    return matcher.Replace(nationalNumber, numberFormatRule);
                 }
             }
-
-            // If no pattern above is matched, we format the number as a whole.
-            return nationalNumber;
         }
 
         /**
@@ -1725,7 +1790,7 @@ namespace PhoneNumbers
         {
             if (!IsValidRegionCode(regionCode))
                 return null;
-            lock(regionToMetadataMap)
+            lock (regionToMetadataMap)
             {
                 if (!regionToMetadataMap.ContainsKey(regionCode))
                     LoadMetadataForRegionFromFile(currentFilePrefix_, regionCode);
@@ -2189,7 +2254,8 @@ namespace PhoneNumbers
                     PhoneNumberDesc generalDesc = defaultRegionMetadata.GeneralDesc;
                     var validNumberPattern =
                         regexCache.GetPatternForRegex(generalDesc.NationalNumberPattern);
-                    MaybeStripNationalPrefixAndCarrierCode(potentialNationalNumber, defaultRegionMetadata);
+                    MaybeStripNationalPrefixAndCarrierCode(
+                        potentialNationalNumber, defaultRegionMetadata, null /* Don't need the carrier code */);
                     var possibleNumberPattern =
                         regexCache.GetPatternForRegex(generalDesc.PossibleNumberPattern);
                     // If the number was not valid before but is valid now, or if it was too long before, we
@@ -2278,17 +2344,18 @@ namespace PhoneNumbers
         * @param number  the normalized telephone number that we wish to strip any national
         *     dialing prefix from
         * @param metadata  the metadata for the region that we think this number is from
-        * @return the carrier code extracted if it is present, otherwise return an empty string.
+        * @param carrierCode  a place to insert the carrier code if one is extracted
+        * @return true if a national prefix or carrier code (or both) could be extracted.
         */
-        public String MaybeStripNationalPrefixAndCarrierCode(StringBuilder number, PhoneMetadata metadata)
+        public bool MaybeStripNationalPrefixAndCarrierCode(
+            StringBuilder number, PhoneMetadata metadata, StringBuilder carrierCode)
         {
-            String carrierCode = "";
             int numberLength = number.Length;
             String possibleNationalPrefix = metadata.NationalPrefixForParsing;
             if (numberLength == 0 || possibleNationalPrefix.Length == 0)
             {
                 // Early return for numbers of zero length.
-                return "";
+                return false;
             }
             // Attempt to parse the first digits as a national prefix.
             var prefixMatcher = regexCache.GetPatternForRegex(possibleNationalPrefix);
@@ -2310,10 +2377,11 @@ namespace PhoneNumbers
                     // If the original number was viable, and the resultant number is not, we return.
                     if (isViableOriginalNumber &&
                         !nationalNumberRule.MatchAll(number.ToString().Substring(prefixMatch.Index + prefixMatch.Length)).Success)
-                        return "";
-                    if (numOfGroups > 1 && prefixMatch.Groups[numOfGroups - 1].Success)
-                        carrierCode = prefixMatch.Groups[1].Value;
+                        return false;
+                    if (carrierCode != null && numOfGroups > 1 && prefixMatch.Groups[numOfGroups - 1].Success)
+                        carrierCode.Append(prefixMatch.Groups[1].Value);
                     number.Remove(0, prefixMatch.Index + prefixMatch.Length);
+                    return true;
                 }
                 else
                 {
@@ -2323,14 +2391,15 @@ namespace PhoneNumbers
                         prefixMatcher.Replace(number.ToString(), transformRule, 1)); //XXX: ToString
                     if (isViableOriginalNumber &&
                         !nationalNumberRule.MatchAll(transformedNumber.ToString()).Success)
-                        return "";
-                    if (numOfGroups > 2)
-                        carrierCode = prefixMatcher.Match(number.ToString()).Groups[1].Value;
+                        return false;
+                    if (carrierCode != null && numOfGroups > 2)
+                        carrierCode.Append(prefixMatcher.Match(number.ToString()).Groups[1].Value);
                     number.Length = 0;
                     number.Append(transformedNumber.ToString());
+                    return true;
                 }
             }
-            return carrierCode;
+            return false;
         }
 
         /**
@@ -2584,10 +2653,10 @@ namespace PhoneNumbers
 
             if (regionMetadata != null)
             {
-                String carrierCode =
-                    MaybeStripNationalPrefixAndCarrierCode(normalizedNationalNumber, regionMetadata);
+                StringBuilder carrierCode = new StringBuilder();
+                MaybeStripNationalPrefixAndCarrierCode(normalizedNationalNumber, regionMetadata, carrierCode);
                 if (keepRawInput)
-                    phoneNumber.SetPreferredDomesticCarrierCode(carrierCode);
+                    phoneNumber.SetPreferredDomesticCarrierCode(carrierCode.ToString());
             }
             int lengthOfNationalNumber = normalizedNationalNumber.Length;
             if (lengthOfNationalNumber < MIN_LENGTH_FOR_NSN)

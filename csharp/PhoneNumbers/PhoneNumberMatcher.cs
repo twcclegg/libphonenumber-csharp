@@ -439,9 +439,18 @@ namespace PhoneNumbers
                     }
                 }
 
-                PhoneNumber number = phoneUtil.Parse(candidate, preferredRegion);
+                PhoneNumber number = phoneUtil.ParseAndKeepRawInput(candidate, preferredRegion);
                 if (phoneUtil.Verify(leniency, number, candidate, phoneUtil))
-                    return new PhoneNumberMatch(offset, candidate, number);
+                {
+                    // We used parseAndKeepRawInput to create this number, but for now we don't return the extra
+                    // values parsed. TODO: stop clearing all values here and switch all users over
+                    // to using rawInput() rather than the rawString() of PhoneNumberMatch.
+                    var bnumber = number.ToBuilder();
+                    bnumber.ClearCountryCodeSource();
+                    bnumber.ClearRawInput();
+                    bnumber.ClearPreferredDomesticCarrierCode();
+                    return new PhoneNumberMatch(offset, candidate, bnumber.Build());
+                }
             }
             catch (NumberParseException)
             {

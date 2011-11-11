@@ -278,7 +278,8 @@ namespace PhoneNumbers.Test
                 "</territory>";
             XmlElement element = parseXmlString(xmlInput);
             PhoneMetadata.Builder metadata = new PhoneMetadata.Builder();
-            BuildMetadataFromXml.LoadAvailableFormats(metadata, "AE", element, "0", "");
+            BuildMetadataFromXml.LoadAvailableFormats(
+                metadata, "AE", element, "0", "", false /* NP not optional */);
             Assert.AreEqual("(${1})", metadata.NumberFormatList[0].NationalPrefixFormattingRule);
             Assert.AreEqual("0 $CC (${1})", metadata.NumberFormatList[0].DomesticCarrierCodeFormattingRule);
             Assert.AreEqual("$1 $2 $3", metadata.NumberFormatList[0].Format);
@@ -297,7 +298,8 @@ namespace PhoneNumbers.Test
                 "</territory>";
             XmlElement element = parseXmlString(xmlInput);
             PhoneMetadata.Builder metadata = new PhoneMetadata.Builder();
-            BuildMetadataFromXml.LoadAvailableFormats(metadata, "AE", element, "0", "");
+            BuildMetadataFromXml.LoadAvailableFormats(
+                metadata, "AE", element, "0", "", false /* NP not optional */);
             Assert.AreEqual("(${1})", metadata.NumberFormatList[0].NationalPrefixFormattingRule);
             Assert.AreEqual("0 $CC (${1})", metadata.NumberFormatList[0].DomesticCarrierCodeFormattingRule);
             Assert.AreEqual("$1 $2 $3", metadata.NumberFormatList[0].Format);
@@ -314,7 +316,8 @@ namespace PhoneNumbers.Test
                 "</territory>";
             XmlElement element = parseXmlString(xmlInput);
             PhoneMetadata.Builder metadata = new PhoneMetadata.Builder();
-            BuildMetadataFromXml.LoadAvailableFormats(metadata, "AE", element, "", "($1)");
+            BuildMetadataFromXml.LoadAvailableFormats(
+                metadata, "AE", element, "0", "($1)", false /* NP not optional */);
             Assert.AreEqual("($1)", metadata.NumberFormatList[0].NationalPrefixFormattingRule);
         }
 
@@ -329,7 +332,8 @@ namespace PhoneNumbers.Test
                 "</territory>";
             XmlElement element = parseXmlString(xmlInput);
             PhoneMetadata.Builder metadata = new PhoneMetadata.Builder();
-            BuildMetadataFromXml.LoadAvailableFormats(metadata, "AE", element, "0", "($1)");
+            BuildMetadataFromXml.LoadAvailableFormats(
+                metadata, "AE", element, "0", "($1)", false /* NP not optional */);
             Assert.AreEqual(0, metadata.IntlNumberFormatCount);
         }
 
@@ -345,7 +349,8 @@ namespace PhoneNumbers.Test
                 "</territory>";
             XmlElement element = parseXmlString(xmlInput);
             PhoneMetadata.Builder metadata = new PhoneMetadata.Builder();
-            BuildMetadataFromXml.LoadAvailableFormats(metadata, "AE", element, "0", "($1)");
+            BuildMetadataFromXml.LoadAvailableFormats(
+                metadata, "AE", element, "0", "($1)", false /* NP not optional */);
             Assert.AreEqual("$1 $2 $3", metadata.NumberFormatList[0].Format);
             Assert.AreEqual("$1-$2", metadata.NumberFormatList[1].Format);
         }

@@ -79,6 +79,16 @@ namespace PhoneNumbers {
       get { return nationalPrefixFormattingRule_; }
     }
     
+    public const int NationalPrefixOptionalWhenFormattingFieldNumber = 6;
+    private bool hasNationalPrefixOptionalWhenFormatting;
+    private bool nationalPrefixOptionalWhenFormatting_ = false;
+    public bool HasNationalPrefixOptionalWhenFormatting {
+      get { return hasNationalPrefixOptionalWhenFormatting; }
+    }
+    public bool NationalPrefixOptionalWhenFormatting {
+      get { return nationalPrefixOptionalWhenFormatting_; }
+    }
+    
     public const int DomesticCarrierCodeFormattingRuleFieldNumber = 5;
     private bool hasDomesticCarrierCodeFormattingRule;
     private string domesticCarrierCodeFormattingRule_ = "";
@@ -108,6 +118,7 @@ namespace PhoneNumbers {
       foreach(string i in leadingDigitsPattern_)
         hash ^= i.GetHashCode();
       if (hasNationalPrefixFormattingRule) hash ^= nationalPrefixFormattingRule_.GetHashCode();
+      if (hasNationalPrefixOptionalWhenFormatting) hash ^= nationalPrefixOptionalWhenFormatting_.GetHashCode();
       if (hasDomesticCarrierCodeFormattingRule) hash ^= domesticCarrierCodeFormattingRule_.GetHashCode();
       return hash;
     }
@@ -121,6 +132,7 @@ namespace PhoneNumbers {
       for(int ix=0; ix < leadingDigitsPattern_.Count; ix++)
         if(!leadingDigitsPattern_[ix].Equals(other.leadingDigitsPattern_[ix])) return false;
       if (hasNationalPrefixFormattingRule != other.hasNationalPrefixFormattingRule || (hasNationalPrefixFormattingRule && !nationalPrefixFormattingRule_.Equals(other.nationalPrefixFormattingRule_))) return false;
+      if (hasNationalPrefixOptionalWhenFormatting != other.hasNationalPrefixOptionalWhenFormatting || (hasNationalPrefixOptionalWhenFormatting && !nationalPrefixOptionalWhenFormatting_.Equals(other.nationalPrefixOptionalWhenFormatting_))) return false;
       if (hasDomesticCarrierCodeFormattingRule != other.hasDomesticCarrierCodeFormattingRule || (hasDomesticCarrierCodeFormattingRule && !domesticCarrierCodeFormattingRule_.Equals(other.domesticCarrierCodeFormattingRule_))) return false;
       return true;
     }
@@ -188,6 +200,9 @@ namespace PhoneNumbers {
         }
         if (other.HasNationalPrefixFormattingRule) {
           NationalPrefixFormattingRule = other.NationalPrefixFormattingRule;
+        }
+        if (other.HasNationalPrefixOptionalWhenFormatting) {
+          NationalPrefixOptionalWhenFormatting = other.NationalPrefixOptionalWhenFormatting;
         }
         if (other.HasDomesticCarrierCodeFormattingRule) {
           DomesticCarrierCodeFormattingRule = other.DomesticCarrierCodeFormattingRule;
@@ -280,6 +295,24 @@ namespace PhoneNumbers {
       public Builder ClearNationalPrefixFormattingRule() {
         result.hasNationalPrefixFormattingRule = false;
         result.nationalPrefixFormattingRule_ = "";
+        return this;
+      }
+      
+      public bool HasNationalPrefixOptionalWhenFormatting {
+        get { return result.HasNationalPrefixOptionalWhenFormatting; }
+      }
+      public bool NationalPrefixOptionalWhenFormatting {
+        get { return result.NationalPrefixOptionalWhenFormatting; }
+        set { SetNationalPrefixOptionalWhenFormatting(value); }
+      }
+      public Builder SetNationalPrefixOptionalWhenFormatting(bool value) {
+        result.hasNationalPrefixOptionalWhenFormatting = true;
+        result.nationalPrefixOptionalWhenFormatting_ = value;
+        return this;
+      }
+      public Builder ClearNationalPrefixOptionalWhenFormatting() {
+        result.hasNationalPrefixOptionalWhenFormatting = false;
+        result.nationalPrefixOptionalWhenFormatting_ = false;
         return this;
       }
       
