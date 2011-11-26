@@ -137,13 +137,13 @@ namespace PhoneNumbers.Test
         [Test]
         public void TestGetDescriptionForNumberWithUserRegion()
         {
-            // User in Italy, American number. We should just show United States, in German, and not more
+            // User in Italy, American number. We should just show United States, in Spanish, and not more
             // detailed information.
-            Assert.AreEqual("Vereinigte Staaten von Amerika",
-                geocoder.GetDescriptionForNumber(US_NUMBER1, Locale.GERMAN, "IT"));
+            Assert.AreEqual("Estados Unidos",
+                geocoder.GetDescriptionForNumber(US_NUMBER1, new Locale("es", "ES"), "IT"));
             // Unknown region - should just show country name.
-            Assert.AreEqual("Vereinigte Staaten von Amerika",
-                geocoder.GetDescriptionForNumber(US_NUMBER1, Locale.GERMAN, "ZZ"));
+            Assert.AreEqual("Estados Unidos",
+                geocoder.GetDescriptionForNumber(US_NUMBER1, new Locale("es", "ES"), "ZZ"));
             // User in the States, language German, should show detailed data.
             Assert.AreEqual("Kalifornien",
                 geocoder.GetDescriptionForNumber(US_NUMBER1, Locale.GERMAN, "US"));

@@ -197,6 +197,14 @@ namespace PhoneNumbers
         private String GetCountryNameForNumber(PhoneNumber number, Locale language)
         {
             String regionCode = phoneUtil.GetRegionCodeForNumber(number);
+            return GetRegionDisplayName(regionCode, language);
+        }
+
+        /**
+        * Returns the customary display name in the given language for the given region.
+        */
+        private String GetRegionDisplayName(String regionCode, Locale language)
+        {
             return (regionCode == null || regionCode.Equals("ZZ"))
                 ? "" : new Locale("", regionCode).GetDisplayCountry(language.Language);
         }
@@ -258,7 +266,7 @@ namespace PhoneNumbers
                 return GetDescriptionForValidNumber(number, languageCode);
             }
             // Otherwise, we just show the region(country) name for now.
-            return GetCountryNameForNumber(number, languageCode);
+            return GetRegionDisplayName(regionCode, languageCode);
             // TODO: Concatenate the lower-level and country-name information in an appropriate
             // way for each language.
         }

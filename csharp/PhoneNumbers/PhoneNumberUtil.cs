@@ -312,10 +312,10 @@ namespace PhoneNumbers
             ALPHA_PHONE_MAPPINGS = combinedMap;
 
             var diallableCharMap = new Dictionary<char, char>();
-            diallableCharMap['+'] = '+';
-            diallableCharMap['*'] = '*';
             foreach (var k in asciiDigitMappings)
                 diallableCharMap[k.Key] = k.Value;
+            diallableCharMap['+'] = '+';
+            diallableCharMap['*'] = '*';
             DIALLABLE_CHAR_MAPPINGS = diallableCharMap;
 
             var allPlusNumberGroupings = new Dictionary<char, char>();
