@@ -58,6 +58,8 @@ namespace PhoneNumbers.Test
         private static readonly PhoneNumber IT_NUMBER =
             new PhoneNumber.Builder().SetCountryCode(39).SetNationalNumber(236618300L).
             SetItalianLeadingZero(true).Build();
+        private static readonly PhoneNumber JP_STAR_NUMBER =
+            new PhoneNumber.Builder().SetCountryCode(81).SetNationalNumber(2345).Build();
         // Numbers to test the formatting rules from Mexico.
         private static readonly PhoneNumber MX_MOBILE1 =
             new PhoneNumber.Builder().SetCountryCode(52).SetNationalNumber(12345678900L).Build();
@@ -698,7 +700,8 @@ namespace PhoneNumbers.Test
             // US toll free numbers are marked as noInternationalDialling in the test metadata for testing
             // purposes.
             Assert.AreEqual("800 253 0000",
-                phoneUtil.FormatNumberForMobileDialing(US_TOLLFREE, RegionCode.US, true));
+                phoneUtil.FormatNumberForMobileDialing(US_TOLLFREE, RegionCode.US,
+                    true /*  keep formatting */));
             Assert.AreEqual("", phoneUtil.FormatNumberForMobileDialing(US_TOLLFREE, RegionCode.CN, true));
             Assert.AreEqual("+1 650 253 0000",
                 phoneUtil.FormatNumberForMobileDialing(US_NUMBER, RegionCode.US, true));
@@ -707,12 +710,26 @@ namespace PhoneNumbers.Test
                 phoneUtil.FormatNumberForMobileDialing(usNumberWithExtn, RegionCode.US, true));
 
             Assert.AreEqual("8002530000",
-                phoneUtil.FormatNumberForMobileDialing(US_TOLLFREE, RegionCode.US, false));
+                phoneUtil.FormatNumberForMobileDialing(US_TOLLFREE, RegionCode.US,
+                    false /* remove formatting */));
             Assert.AreEqual("", phoneUtil.FormatNumberForMobileDialing(US_TOLLFREE, RegionCode.CN, false));
             Assert.AreEqual("+16502530000",
                 phoneUtil.FormatNumberForMobileDialing(US_NUMBER, RegionCode.US, false));
             Assert.AreEqual("+16502530000",
                 phoneUtil.FormatNumberForMobileDialing(usNumberWithExtn, RegionCode.US, false));
+
+            // An invalid US number, which is one digit too long.
+            Assert.AreEqual("+165025300001",
+                phoneUtil.FormatNumberForMobileDialing(US_LONG_NUMBER, RegionCode.US, false));
+            Assert.AreEqual("+1 65025300001",
+                phoneUtil.FormatNumberForMobileDialing(US_LONG_NUMBER, RegionCode.US, true));
+
+            // Star numbers. In real life they appear in Israel, but we have them in JP in our test
+            // metadata.
+            Assert.AreEqual("*2345",
+                phoneUtil.FormatNumberForMobileDialing(JP_STAR_NUMBER, RegionCode.JP, false));
+            Assert.AreEqual("*2345",
+                phoneUtil.FormatNumberForMobileDialing(JP_STAR_NUMBER, RegionCode.JP, true));
         }
 
         [Test]
@@ -823,6 +840,11 @@ namespace PhoneNumbers.Test
             // When the raw input is unavailable, format as usual.
             PhoneNumber number7 = phoneUtil.Parse("7345678901", RegionCode.US);
             Assert.AreEqual("734 567 8901", phoneUtil.FormatInOriginalFormat(number7, RegionCode.US));
+
+            // This number is valid, but we don't have a formatting pattern for it. Fall back to the raw
+            // input.
+            PhoneNumber number8 = phoneUtil.ParseAndKeepRawInput("02-4567-8900", RegionCode.KR);
+            Assert.AreEqual("02-4567-8900", phoneUtil.FormatInOriginalFormat(number8, RegionCode.KR));
         }
 
         [Test]

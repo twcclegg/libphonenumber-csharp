@@ -122,6 +122,11 @@ namespace PhoneNumbers
 
         const String RFC3966_EXTN_PREFIX = ";ext=";
 
+        // A map that contains characters that are essential when dialling. That means any of the
+        // characters in this map must not be removed from a number when dialing, otherwise the call will
+        // not reach the intended destination.
+        private static readonly Dictionary<char, char> DIALLABLE_CHAR_MAPPINGS;
+
         // Only upper-case variants of alpha characters are stored.
         private static readonly Dictionary<char, char> ALPHA_MAPPINGS;
 
@@ -306,6 +311,13 @@ namespace PhoneNumbers
                 combinedMap[k.Key] = k.Value;
             ALPHA_PHONE_MAPPINGS = combinedMap;
 
+            var diallableCharMap = new Dictionary<char, char>();
+            diallableCharMap['+'] = '+';
+            diallableCharMap['*'] = '*';
+            foreach (var k in asciiDigitMappings)
+                diallableCharMap[k.Key] = k.Value;
+            DIALLABLE_CHAR_MAPPINGS = diallableCharMap;
+
             var allPlusNumberGroupings = new Dictionary<char, char>();
             // Put (lower letter -> upper letter) and (upper letter -> upper letter) mappings.
             foreach (var c in ALPHA_MAPPINGS.Keys)
@@ -406,9 +418,8 @@ namespace PhoneNumbers
             */
             POSSIBLE,
             /**
-            * Phone numbers accepted are
-            * {@linkplain PhoneNumberUtil#isPossibleNumber(Phonenumber.PhoneNumber) possible} and
-            * {@linkplain PhoneNumberUtil#isValidNumber(Phonenumber.PhoneNumber) valid}. Numbers written
+            * Phone numbers accepted are {@linkplain PhoneNumberUtil#isPossibleNumber(PhoneNumber)
+            * possible} and {@linkplain PhoneNumberUtil#isValidNumber(PhoneNumber) valid}. Numbers written
             * in national format must have their national-prefix present if it is usually written for a
             * number of this type.
             */
@@ -1067,9 +1078,8 @@ namespace PhoneNumbers
         }
 
         /**
-        * Same as {@link #format(Phonenumber.PhoneNumber, PhoneNumberUtil.PhoneNumberFormat)}, but
-        * accepts a mutable StringBuilder as a parameter to decrease object creation when invoked many
-        * times.
+        * Same as {@link #format(PhoneNumber, PhoneNumberFormat)}, but accepts a mutable StringBuilder as
+        * a parameter to decrease object creation when invoked many times.
         */
         public void Format(PhoneNumber number, PhoneNumberFormat numberFormat,
             StringBuilder formattedNumber)
@@ -1235,7 +1245,7 @@ namespace PhoneNumbers
         public String FormatNumberForMobileDialing(PhoneNumber number, String regionCallingFrom,
             bool withFormatting)
         {
-            String regionCode = GetRegionCodeForNumber(number);
+            String regionCode = GetRegionCodeForCountryCode(number.CountryCode);
             if (!IsValidRegionCode(regionCode))
             {
                 return number.HasRawInput ? number.RawInput : "";
@@ -1245,13 +1255,26 @@ namespace PhoneNumbers
             // Clear the extension, as that part cannot normally be dialed together with the main number.
             PhoneNumber numberNoExt = new PhoneNumber.Builder().MergeFrom(number).ClearExtension().Build();
             PhoneNumberType numberType = GetNumberType(numberNoExt);
-            if ((regionCode == "CO") && (regionCallingFrom == "CO") &&
-                (numberType == PhoneNumberType.FIXED_LINE))
+            if (regionCode.Equals("CO") && regionCallingFrom.Equals("CO"))
             {
-                formattedNumber =
-                  FormatNationalNumberWithCarrierCode(numberNoExt, COLOMBIA_MOBILE_TO_FIXED_LINE_PREFIX);
+                if (numberType == PhoneNumberType.FIXED_LINE)
+                {
+                    formattedNumber =
+                        FormatNationalNumberWithCarrierCode(numberNoExt, COLOMBIA_MOBILE_TO_FIXED_LINE_PREFIX);
+                }
+                else
+                {
+                    // E164 doesn't work at all when dialing within Colombia.
+                    formattedNumber = Format(numberNoExt, PhoneNumberFormat.NATIONAL);
+                }
             }
-            else if ((regionCode == "BR") && (regionCallingFrom == "BR") &&
+            else if (regionCode.Equals("PE") && regionCallingFrom.Equals("PE"))
+            {
+                // In Peru, numbers cannot be dialled using E164 format from a mobile phone for Movistar.
+                // Instead they must be dialled in national format.
+                formattedNumber = Format(numberNoExt, PhoneNumberFormat.NATIONAL);
+            }
+            else if (regionCode.Equals("BR") && regionCallingFrom.Equals("BR") &&
                 ((numberType == PhoneNumberType.FIXED_LINE) || (numberType == PhoneNumberType.MOBILE) ||
                 (numberType == PhoneNumberType.FIXED_LINE_OR_MOBILE)))
             {
@@ -1272,7 +1295,9 @@ namespace PhoneNumbers
                 formattedNumber = (regionCallingFrom == regionCode)
                     ? Format(numberNoExt, PhoneNumberFormat.NATIONAL) : "";
             }
-            return withFormatting ? formattedNumber : NormalizeDigitsOnly(formattedNumber);
+            return withFormatting ? formattedNumber
+                : NormalizeHelper(formattedNumber, DIALLABLE_CHAR_MAPPINGS,
+                    true /* remove non matches */);
         }
 
         /**
@@ -1367,8 +1392,15 @@ namespace PhoneNumbers
         */
         public String FormatInOriginalFormat(PhoneNumber number, String regionCallingFrom)
         {
-            if (number.HasRawInput && !IsValidNumber(number))
+            if (number.HasRawInput &&
+                (!HasFormattingPatternForNumber(number) || !IsValidNumber(number)))
+            {
+                // We check if we have the formatting pattern because without that, we might format the number
+                // as a group without national prefix. We also want to check the validity of the number
+                // because we don't want to risk formatting the number if we don't really understand it.
                 return number.RawInput;
+            }
+
             if (!number.HasCountryCodeSource)
                 return Format(number, PhoneNumberFormat.NATIONAL);
 
@@ -1384,6 +1416,20 @@ namespace PhoneNumbers
                 default:
                     return Format(number, PhoneNumberFormat.NATIONAL);
             }
+        }
+
+        private bool HasFormattingPatternForNumber(PhoneNumber number)
+        {
+            String phoneNumberRegion = GetRegionCodeForCountryCode(number.CountryCode);
+            PhoneMetadata metadata = GetMetadataForRegion(phoneNumberRegion);
+            if (metadata == null)
+            {
+                return false;
+            }
+            String nationalNumber = GetNationalSignificantNumber(number);
+            NumberFormat formatRule =
+                ChooseFormattingPatternForNumber(metadata.NumberFormatList, nationalNumber);
+            return formatRule != null;
         }
 
         /**
@@ -2075,10 +2121,10 @@ namespace PhoneNumbers
         /**
         * Check whether a phone number is a possible number given a number in the form of a string, and
         * the region where the number could be dialed from. It provides a more lenient check than
-        * {@link #isValidNumber}. See {@link #isPossibleNumber(Phonenumber.PhoneNumber)} for details.
+        * {@link #isValidNumber}. See {@link #isPossibleNumber(PhoneNumber)} for details.
         *
-        * <p>This method first parses the number, then invokes
-        * {@link #isPossibleNumber(Phonenumber.PhoneNumber)} with the resultant PhoneNumber object.
+        * <p>This method first parses the number, then invokes {@link #isPossibleNumber(PhoneNumber)}
+        * with the resultant PhoneNumber object.
         *
         * @param number  the number that needs to be checked, in the form of a string
         * @param regionDialingFrom  the region that we are expecting the number to be dialed from.
@@ -2767,15 +2813,14 @@ namespace PhoneNumbers
 
         /**
         * Takes two phone numbers as strings and compares them for equality. This is a convenience
-        * wrapper for {@link #isNumberMatch(Phonenumber.PhoneNumber, Phonenumber.PhoneNumber)}. No
-        * default region is known.
+        * wrapper for {@link #isNumberMatch(PhoneNumber, PhoneNumber)}. No default region is known.
         *
         * @param firstNumber  first number to compare. Can contain formatting, and can have country
         *     calling code specified with + at the start.
         * @param secondNumber  second number to compare. Can contain formatting, and can have country
         *     calling code specified with + at the start.
         * @return  NOT_A_NUMBER, NO_MATCH, SHORT_NSN_MATCH, NSN_MATCH, EXACT_MATCH. See
-        *     {@link #isNumberMatch(Phonenumber.PhoneNumber, Phonenumber.PhoneNumber)} for more details.
+        *     {@link #isNumberMatch(PhoneNumber, PhoneNumber)} for more details.
         */
         public MatchType IsNumberMatch(String firstNumber, String secondNumber)
         {
@@ -2819,14 +2864,13 @@ namespace PhoneNumbers
 
         /**
         * Takes two phone numbers and compares them for equality. This is a convenience wrapper for
-        * {@link #isNumberMatch(Phonenumber.PhoneNumber, Phonenumber.PhoneNumber)}. No default region is
-        * known.
+        * {@link #isNumberMatch(PhoneNumber, PhoneNumber)}. No default region is known.
         *
         * @param firstNumber  first number to compare in proto buffer format.
         * @param secondNumber  second number to compare. Can contain formatting, and can have country
         *     calling code specified with + at the start.
         * @return  NOT_A_NUMBER, NO_MATCH, SHORT_NSN_MATCH, NSN_MATCH, EXACT_MATCH. See
-        *     {@link #isNumberMatch(Phonenumber.PhoneNumber, Phonenumber.PhoneNumber)} for more details.
+        *     {@link #isNumberMatch(PhoneNumber, PhoneNumber)} for more details.
         */
         public MatchType IsNumberMatch(PhoneNumber firstNumber, String secondNumber)
         {

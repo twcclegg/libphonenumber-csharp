@@ -277,9 +277,9 @@ namespace PhoneNumbers
                 ;
         }
 
-        private static bool IsCurrencySymbol(char character)
+        private static bool IsInvalidPunctuationSymbol(char character)
         {
-            return char.GetUnicodeCategory(character) == UnicodeCategory.CurrencySymbol;
+            return character == '%' || char.GetUnicodeCategory(character) == UnicodeCategory.CurrencySymbol;
         }
 
         public static String TrimAfterUnwantedChars(String s)
@@ -422,8 +422,8 @@ namespace PhoneNumbers
                     if (offset > 0 && !LEAD_CLASS.MatchBeginning(candidate).Success)
                     {
                         char previousChar = text[offset - 1];
-                        // We return null if it is a latin letter or a currency symbol.
-                        if (IsCurrencySymbol(previousChar) || IsLatinLetter(previousChar))
+                        // We return null if it is a latin letter or an invalid punctuation symbol.
+                        if (IsInvalidPunctuationSymbol(previousChar) || IsLatinLetter(previousChar))
                         {
                             return null;
                         }
@@ -432,7 +432,7 @@ namespace PhoneNumbers
                     if (lastCharIndex < text.Length)
                     {
                         char nextChar = text[lastCharIndex];
-                        if (IsCurrencySymbol(nextChar) || IsLatinLetter(nextChar))
+                        if (IsInvalidPunctuationSymbol(nextChar) || IsLatinLetter(nextChar))
                         {
                             return null;
                         }

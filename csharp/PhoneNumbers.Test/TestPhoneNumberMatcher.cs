@@ -282,6 +282,16 @@ namespace PhoneNumbers.Test
         }
 
         [Test]
+        public void TestPercentageNotSeenAsPhoneNumber()
+        {
+            List<NumberContext> possibleOnlyContexts = new List<NumberContext>();
+            possibleOnlyContexts.Add(new NumberContext("", "%"));
+            // Numbers followed by % should be dropped.
+            FindMatchesInContexts(possibleOnlyContexts, false, true);
+        }
+
+
+        [Test]
         public void TestPhoneNumberWithLeadingOrTrailingMoneyMatches()
         {
             // Because of the space after the 20 (or before the 100) these dollar amounts should not stop

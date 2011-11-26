@@ -97,6 +97,7 @@ namespace PhoneNumbers.Test
             Assert.AreEqual("+81 90 1234 5678", formatter.InputDigit('8'));
             Assert.AreEqual("+81 90 12 345 6789", formatter.InputDigit('9'));
             Assert.AreEqual("+81901234567890", formatter.InputDigit('0'));
+            Assert.AreEqual("+819012345678901", formatter.InputDigit('1'));
         }
 
 
@@ -750,6 +751,15 @@ namespace PhoneNumbers.Test
             Assert.AreEqual("+81 222 12 56", formatter.InputDigit('6'));
             Assert.AreEqual("+81 222 12 567", formatter.InputDigit('7'));
             Assert.AreEqual("+81 222 12 5678", formatter.InputDigit('8'));
+
+            // 011113
+            formatter.Clear();
+            Assert.AreEqual("0", formatter.InputDigit('0'));
+            Assert.AreEqual("01", formatter.InputDigit('1'));
+            Assert.AreEqual("011", formatter.InputDigit('1'));
+            Assert.AreEqual("011 1", formatter.InputDigit('1'));
+            Assert.AreEqual("011 11", formatter.InputDigit('1'));
+            Assert.AreEqual("011113", formatter.InputDigit('3'));
 
             // +81 3332 2 5678
             formatter.Clear();

@@ -396,7 +396,7 @@ namespace PhoneNumbers
                         }
                         return ableToFormat
                            ? prefixBeforeNationalNumber + tempNationalNumber
-                           : tempNationalNumber;
+                           : accruedInput.ToString();
                     }
                     else
                     {
@@ -483,8 +483,7 @@ namespace PhoneNumbers
             if (nationalNumber.Length >= MIN_LEADING_DIGITS_LENGTH)
             {
                 GetAvailableFormats(nationalNumber.ToString().Substring(0, MIN_LEADING_DIGITS_LENGTH));
-                MaybeCreateNewTemplate();
-                return InputAccruedNationalNumber();
+                return MaybeCreateNewTemplate() ? InputAccruedNationalNumber() : accruedInput.ToString();
             }
             else
             {
@@ -506,7 +505,7 @@ namespace PhoneNumbers
                 }
                 return ableToFormat
                     ? prefixBeforeNationalNumber + tempNationalNumber
-                    : tempNationalNumber;
+                    : accruedInput.ToString();
             }
             else
             {

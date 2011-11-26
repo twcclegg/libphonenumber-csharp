@@ -135,6 +135,28 @@ namespace PhoneNumbers.Test
         }
 
         [Test]
+        public void TestGetDescriptionForNumberWithUserRegion()
+        {
+            // User in Italy, American number. We should just show United States, in German, and not more
+            // detailed information.
+            Assert.AreEqual("Vereinigte Staaten von Amerika",
+                geocoder.GetDescriptionForNumber(US_NUMBER1, Locale.GERMAN, "IT"));
+            // Unknown region - should just show country name.
+            Assert.AreEqual("Vereinigte Staaten von Amerika",
+                geocoder.GetDescriptionForNumber(US_NUMBER1, Locale.GERMAN, "ZZ"));
+            // User in the States, language German, should show detailed data.
+            Assert.AreEqual("Kalifornien",
+                geocoder.GetDescriptionForNumber(US_NUMBER1, Locale.GERMAN, "US"));
+            // User in the States, language French, no data for French, so we fallback to English detailed
+            // data.
+            Assert.AreEqual("CA",
+                geocoder.GetDescriptionForNumber(US_NUMBER1, Locale.FRENCH, "US"));
+            // Invalid number - return an empty string.
+            Assert.AreEqual("", geocoder.GetDescriptionForNumber(US_INVALID_NUMBER, Locale.ENGLISH,
+                "US"));
+        }
+
+        [Test]
         public void TestGetDescritionForInvaildNumber()
         {
             Assert.AreEqual("", geocoder.GetDescriptionForNumber(KO_INVALID_NUMBER, Locale.ENGLISH));
