@@ -832,19 +832,24 @@ namespace PhoneNumbers.Test
             PhoneNumber number5 = phoneUtil.Parse("+442087654321", RegionCode.GB);
             Assert.AreEqual("(020) 8765 4321", phoneUtil.FormatInOriginalFormat(number5, RegionCode.GB));
 
-            // Invalid numbers should be formatted using its raw input when that is available. Note area
+            // Invalid numbers that we have a formatting pattern for should be formatted properly. Note area
             // codes starting with 7 are intentionally excluded in the test metadata for testing purposes.
             PhoneNumber number6 = phoneUtil.ParseAndKeepRawInput("7345678901", RegionCode.US);
-            Assert.AreEqual("7345678901", phoneUtil.FormatInOriginalFormat(number6, RegionCode.US));
+            Assert.AreEqual("734 567 8901", phoneUtil.FormatInOriginalFormat(number6, RegionCode.US));
 
-            // When the raw input is unavailable, format as usual.
-            PhoneNumber number7 = phoneUtil.Parse("7345678901", RegionCode.US);
-            Assert.AreEqual("734 567 8901", phoneUtil.FormatInOriginalFormat(number7, RegionCode.US));
+            // US is not a leading zero country, and the presence of the leading zero leads us to format the
+            // number using raw_input.
+            PhoneNumber number7 = phoneUtil.ParseAndKeepRawInput("07345678901", RegionCode.US);
+            Assert.AreEqual("07345678901", phoneUtil.FormatInOriginalFormat(number7, RegionCode.US));
 
             // This number is valid, but we don't have a formatting pattern for it. Fall back to the raw
             // input.
             PhoneNumber number8 = phoneUtil.ParseAndKeepRawInput("02-4567-8900", RegionCode.KR);
             Assert.AreEqual("02-4567-8900", phoneUtil.FormatInOriginalFormat(number8, RegionCode.KR));
+
+            // US local numbers are formatted correctly, as we have formatting patterns for them.
+            PhoneNumber localNumberUS = phoneUtil.ParseAndKeepRawInput("2530000", RegionCode.US);
+            Assert.AreEqual("253 0000", phoneUtil.FormatInOriginalFormat(localNumberUS, RegionCode.US));
         }
 
         [Test]
@@ -1981,6 +1986,15 @@ namespace PhoneNumbers.Test
             Assert.AreEqual(ukNumber, phoneUtil.Parse("+44 2034567890 x 456  ", RegionCode.GB));
             Assert.AreEqual(ukNumber, phoneUtil.Parse("+44 2034567890  X 456", RegionCode.GB));
             Assert.AreEqual(ukNumber, phoneUtil.Parse("+44-2034567890;ext=456", RegionCode.GB));
+            // Full-width extension, "extn" only.
+            Assert.AreEqual(ukNumber, phoneUtil.Parse("+442034567890\uFF45\uFF58\uFF54\uFF4E456",
+                RegionCode.GB));
+            // "xtn" only.
+            Assert.AreEqual(ukNumber, phoneUtil.Parse("+442034567890\uFF58\uFF54\uFF4E456",
+                RegionCode.GB));
+            // "xt" only.
+            Assert.AreEqual(ukNumber, phoneUtil.Parse("+442034567890\uFF58\uFF54456",
+                RegionCode.GB));
 
             PhoneNumber usWithExtension = new PhoneNumber.Builder()
                 .SetCountryCode(1).SetNationalNumber(8009013355L).SetExtension("7246433").Build();

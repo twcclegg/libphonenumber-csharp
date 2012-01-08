@@ -59,6 +59,7 @@ namespace PhoneNumbers
         private static readonly String SHARED_COST = "sharedCost";
         private static readonly String TOLL_FREE = "tollFree";
         private static readonly String UAN = "uan";
+        private static readonly String VOICEMAIL = "voicemail";
         private static readonly String VOIP = "voip";
 
         static public bool LiteBuild { get; set; }
@@ -441,6 +442,7 @@ namespace PhoneNumbers
                                                                      PERSONAL_NUMBER));
             metadata.SetPager(ProcessPhoneNumberDescElement(generalDesc, element, PAGER));
             metadata.SetUan(ProcessPhoneNumberDescElement(generalDesc, element, UAN));
+            metadata.SetVoicemail(ProcessPhoneNumberDescElement(generalDesc, element, VOICEMAIL));
             metadata.SetEmergency(ProcessPhoneNumberDescElement(generalDesc, element, EMERGENCY));
             metadata.SetNoInternationalDialling(ProcessPhoneNumberDescElement(generalDesc, element,
                                                                               NO_INTERNATIONAL_DIALLING));

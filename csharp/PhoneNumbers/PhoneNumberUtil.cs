@@ -66,6 +66,8 @@ namespace PhoneNumbers
         // Used for "Universal Access Numbers" or "Company Numbers". They may be further routed to
         // specific offices, but allow one number to be used for a company.
         UAN,
+        // Used for "Voice Mail Access Numbers".
+        VOICEMAIL,
         // A phone number is of type UNKNOWN when it does not fit any of the known patterns for a
         // specific region.
         UNKNOWN
@@ -232,7 +234,7 @@ namespace PhoneNumbers
             // for representing the accented o - the character itself, and one in the unicode decomposed
             // form with the combining acute accent.
             return (RFC3966_EXTN_PREFIX + CAPTURING_EXTN_DIGITS + "|" + "[ \u00A0\\t,]*" +
-            "(?:ext(?:ensi(?:o\u0301?|\u00F3))?n?|\uFF45\uFF58\uFF54\uFF4E?|" +
+            "(?:e?xt(?:ensi(?:o\u0301?|\u00F3))?n?|\uFF45?\uFF58\uFF54\uFF4E?|" +
             "[" + singleExtnSymbols + "]|int|anexo|\uFF49\uFF4E\uFF54)" +
             "[:\\.\uFF0E]?[ \u00A0\\t,-]*" + CAPTURING_EXTN_DIGITS + "#?|" +
             "[- ]+(" + DIGITS + "{1,5})#");
@@ -1106,9 +1108,9 @@ namespace PhoneNumbers
                 return;
             }
 
-            formattedNumber.Append(FormatNationalNumber(nationalSignificantNumber,
-                regionCode, numberFormat));
-            MaybeGetFormattedExtension(number, regionCode, numberFormat, formattedNumber);
+            PhoneMetadata metadata = GetMetadataForRegion(regionCode);
+            formattedNumber.Append(FormatNationalNumber(nationalSignificantNumber, metadata, numberFormat));
+            MaybeGetFormattedExtension(number, metadata, numberFormat, formattedNumber);
             FormatNumberByFormat(countryCallingCode, numberFormat, formattedNumber);
         }
 
@@ -1136,6 +1138,7 @@ namespace PhoneNumbers
                 return nationalSignificantNumber;
 
             var userDefinedFormatsCopy = new List<NumberFormat>(userDefinedFormats.Count);
+            PhoneMetadata metadata = GetMetadataForRegion(regionCode);
             foreach (var numFormat in userDefinedFormats)
             {
                 var nationalPrefixFormattingRule = numFormat.NationalPrefixFormattingRule;
@@ -1146,7 +1149,7 @@ namespace PhoneNumbers
                     // appropriate national prefix.
                     var numFormatCopy = new NumberFormat.Builder();
                     numFormatCopy.MergeFrom(numFormat);
-                    var nationalPrefix = GetMetadataForRegion(regionCode).NationalPrefix;
+                    String nationalPrefix = metadata.NationalPrefix;
                     if (nationalPrefix.Length > 0)
                     {
                         // Replace $NP with national prefix and $FG with the first group ($1).
@@ -1170,7 +1173,7 @@ namespace PhoneNumbers
 
             var formattedNumber = new StringBuilder(FormatAccordingToFormats(nationalSignificantNumber,
                 userDefinedFormatsCopy, numberFormat));
-            MaybeGetFormattedExtension(number, regionCode, numberFormat, formattedNumber);
+            MaybeGetFormattedExtension(number, metadata, numberFormat, formattedNumber);
             FormatNumberByFormat(countryCallingCode, numberFormat, formattedNumber);
             return formattedNumber.ToString();
         }
@@ -1198,9 +1201,10 @@ namespace PhoneNumbers
                 return nationalSignificantNumber;
 
             var formattedNumber = new StringBuilder(20);
+            PhoneMetadata metadata = GetMetadataForRegion(regionCode);
             formattedNumber.Append(FormatNationalNumber(nationalSignificantNumber,
-                regionCode, PhoneNumberFormat.NATIONAL, carrierCode));
-            MaybeGetFormattedExtension(number, regionCode, PhoneNumberFormat.NATIONAL, formattedNumber);
+                metadata, PhoneNumberFormat.NATIONAL, carrierCode));
+            MaybeGetFormattedExtension(number, metadata, PhoneNumberFormat.NATIONAL, formattedNumber);
             FormatNumberByFormat(countryCallingCode, PhoneNumberFormat.NATIONAL, formattedNumber);
             return formattedNumber.ToString();
         }
@@ -1345,10 +1349,8 @@ namespace PhoneNumbers
                 // Details here: http://www.petitfute.com/voyage/225-info-pratiques-reunion
                 return Format(number, PhoneNumberFormat.NATIONAL);
             }
-            var formattedNationalNumber = FormatNationalNumber(nationalSignificantNumber,
-                regionCode, PhoneNumberFormat.INTERNATIONAL);
-            var metadata = GetMetadataForRegion(regionCallingFrom);
-            var internationalPrefix = metadata.InternationalPrefix;
+            PhoneMetadata metadataForRegionCallingFrom = GetMetadataForRegion(regionCallingFrom);
+            String internationalPrefix = metadataForRegionCallingFrom.InternationalPrefix;
 
             // For regions that have multiple international prefixes, the international format of the
             // number is returned, unless there is a preferred international prefix.
@@ -1357,13 +1359,18 @@ namespace PhoneNumbers
             {
                 internationalPrefixForFormatting = internationalPrefix;
             }
-            else if (metadata.HasPreferredInternationalPrefix)
+            else if (metadataForRegionCallingFrom.HasPreferredInternationalPrefix)
             {
-                internationalPrefixForFormatting = metadata.PreferredInternationalPrefix;
+                internationalPrefixForFormatting =
+                    metadataForRegionCallingFrom.PreferredInternationalPrefix;
             }
 
+            PhoneMetadata metadataForRegion = GetMetadataForRegion(regionCode);
+            String formattedNationalNumber =
+                FormatNationalNumber(nationalSignificantNumber,
+                    metadataForRegion, PhoneNumberFormat.INTERNATIONAL);
             var formattedNumber = new StringBuilder(formattedNationalNumber);
-            MaybeGetFormattedExtension(number, regionCode, PhoneNumberFormat.INTERNATIONAL,
+            MaybeGetFormattedExtension(number, metadataForRegion, PhoneNumberFormat.INTERNATIONAL,
                 formattedNumber);
             if (internationalPrefixForFormatting.Length > 0)
             {
@@ -1382,8 +1389,9 @@ namespace PhoneNumbers
         * Formats a phone number using the original phone number format that the number is parsed from.
         * The original format is embedded in the country_code_source field of the PhoneNumber object
         * passed in. If such information is missing, the number will be formatted into the NATIONAL
-        * format by default. When the number is an invalid number, the method returns the raw input when
-        * it is available.
+        * format by default. When the number contains a leading zero and this is unexpected for this
+        * country, or we don't have a formatting pattern for the number, the method returns the raw input
+        * when it is available.
         *
         * @param number  the phone number that needs to be formatted in its original number format
         * @param regionCallingFrom  the region whose IDD needs to be prefixed if the original number
@@ -1393,11 +1401,10 @@ namespace PhoneNumbers
         public String FormatInOriginalFormat(PhoneNumber number, String regionCallingFrom)
         {
             if (number.HasRawInput &&
-                (!HasFormattingPatternForNumber(number) || !IsValidNumber(number)))
+                (HasUnexpectedItalianLeadingZero(number) || !HasFormattingPatternForNumber(number)))
             {
                 // We check if we have the formatting pattern because without that, we might format the number
-                // as a group without national prefix. We also want to check the validity of the number
-                // because we don't want to risk formatting the number if we don't really understand it.
+                // as a group without national prefix.
                 return number.RawInput;
             }
 
@@ -1416,6 +1423,15 @@ namespace PhoneNumbers
                 default:
                     return Format(number, PhoneNumberFormat.NATIONAL);
             }
+        }
+
+        /**
+        * Returns true if a number is from a region whose national significant number couldn't contain a
+        * leading zero, but has the italian_leading_zero field set to true.
+        */
+        private bool HasUnexpectedItalianLeadingZero(PhoneNumber number)
+        {
+            return number.ItalianLeadingZero && !IsLeadingZeroPossible(number.CountryCode);
         }
 
         private bool HasFormattingPatternForNumber(PhoneNumber number)
@@ -1521,8 +1537,8 @@ namespace PhoneNumbers
                     ? internationalPrefix
                     : metadata.PreferredInternationalPrefix;
             var formattedNumber = new StringBuilder(rawInput);
-            MaybeGetFormattedExtension(number, regionCode, PhoneNumberFormat.INTERNATIONAL,
-                formattedNumber);
+            MaybeGetFormattedExtension(number, GetMetadataForRegion(regionCode),
+                PhoneNumberFormat.INTERNATIONAL, formattedNumber);
             if (internationalPrefixForFormatting.Length > 0)
             {
                 formattedNumber.Insert(0, " ").Insert(0, countryCode).Insert(0, " ")
@@ -1575,20 +1591,22 @@ namespace PhoneNumbers
         }
 
         // Simple wrapper of formatNationalNumber for the common case of no carrier code.
-        private String FormatNationalNumber(String number, String regionCode,
+        private String FormatNationalNumber(String number,
+            PhoneMetadata metadata,
             PhoneNumberFormat numberFormat)
         {
-            return FormatNationalNumber(number, regionCode, numberFormat, null);
+            return FormatNationalNumber(number, metadata, numberFormat, null);
         }
 
         // Note in some regions, the national number can be written in two completely different ways
         // depending on whether it forms part of the NATIONAL format or INTERNATIONAL format. The
         // numberFormat parameter here is used to specify which format to use for those cases. If a
         // carrierCode is specified, this will be inserted into the formatted string to replace $CC.
-        private String FormatNationalNumber(String number, String regionCode, PhoneNumberFormat numberFormat,
+        private String FormatNationalNumber(String number,
+            PhoneMetadata metadata,
+            PhoneNumberFormat numberFormat,
             String carrierCode)
         {
-            var metadata = GetMetadataForRegion(regionCode);
             var intlNumberFormats = metadata.IntlNumberFormatList;
             // When the intlNumberFormats exists, we use that to format national number for the
             // INTERNATIONAL format instead of using the numberDesc.numberFormats.
@@ -1714,7 +1732,7 @@ namespace PhoneNumbers
         * Appends the formatted extension of a phone number to formattedNumber, if the phone number had
         * an extension specified.
         */
-        private void MaybeGetFormattedExtension(PhoneNumber number, String regionCode,
+        private void MaybeGetFormattedExtension(PhoneNumber number, PhoneMetadata metadata,
             PhoneNumberFormat numberFormat, StringBuilder formattedNumber)
         {
             if (number.HasExtension && number.Extension.Length > 0)
@@ -1725,7 +1743,7 @@ namespace PhoneNumbers
                 }
                 else
                 {
-                    FormatExtension(number.Extension, regionCode, formattedNumber);
+                    FormatExtension(number.Extension, metadata, formattedNumber);
                 }
             }
         }
@@ -1735,9 +1753,8 @@ namespace PhoneNumbers
         * prefix. This will be the default extension prefix, unless overridden by a preferred
         * extension prefix for this region.
         */
-        private void FormatExtension(String extensionDigits, String regionCode, StringBuilder extension)
+        private void FormatExtension(String extensionDigits, PhoneMetadata metadata, StringBuilder extension)
         {
-            var metadata = GetMetadataForRegion(regionCode);
             if (metadata.HasPreferredExtnPrefix)
                 extension.Append(metadata.PreferredExtnPrefix).Append(extensionDigits);
             else
@@ -1767,6 +1784,8 @@ namespace PhoneNumbers
                     return metadata.Pager;
                 case PhoneNumberType.UAN:
                     return metadata.Uan;
+                case PhoneNumberType.VOICEMAIL:
+                    return metadata.Voicemail;
                 default:
                     return metadata.GeneralDesc;
             }
@@ -1814,6 +1833,9 @@ namespace PhoneNumbers
 
             if (IsNumberMatchingDesc(nationalNumber, metadata.Uan))
                 return PhoneNumberType.UAN;
+
+            if (IsNumberMatchingDesc(nationalNumber, metadata.Voicemail))
+                return PhoneNumberType.VOICEMAIL;
 
             var isFixedLine = IsNumberMatchingDesc(nationalNumber, metadata.FixedLine);
             if (isFixedLine)
