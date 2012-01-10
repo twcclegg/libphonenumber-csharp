@@ -236,4 +236,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <PropertyGroup>
+    <PreBuildEvent>python $(SolutionDir)\lib\version.py</PreBuildEvent>
+  </PropertyGroup>
 </Project>
