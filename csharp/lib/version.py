@@ -1,6 +1,13 @@
 # Update assembly version number based on Java pom.xml file
 import os, re, subprocess
 
+def haschanges(rootdir):
+    p = subprocess.Popen(['hg', '-R', rootdir, 'id', '-n'],
+                         shell=True,
+                         stdout=subprocess.PIPE)
+    stdout = p.communicate()[0]
+    return stdout.strip().endswith('+')
+
 def getjavaver(rootdir):
     # Extract from pom file
     pompath = os.path.join(rootdir, 'java', 'pom.xml')
@@ -41,9 +48,13 @@ def updatecsharpver(rootdir, ver):
 
 if __name__ == '__main__':
     rootdir = os.path.join(os.path.dirname(__file__), '../..')
-    ver = getjavaver(rootdir)
-    build = getcsharpprevbuild(rootdir)
-    ver = ver[:2] + (0, build + 1)
-    updatecsharpver(rootdir, ver)
+    if haschanges(rootdir):
+        # Version number is only updates when merging and building
+        # locally. Do not update it when building against a clean
+        # existing revision.
+        ver = getjavaver(rootdir)
+        build = getcsharpprevbuild(rootdir)
+        ver = ver[:2] + (0, build + 1)
+        updatecsharpver(rootdir, ver)
     
     
