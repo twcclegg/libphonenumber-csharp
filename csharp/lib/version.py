@@ -5,7 +5,7 @@ def getjavaver(rootdir):
     # Extract from pom file
     pompath = os.path.join(rootdir, 'java', 'pom.xml')
     data = file(pompath, 'rb').read()
-    m = re.search(r'<version>(\d+.\d+)-SNAPSHOT</version>', data)
+    m = re.search(r'<version>(\d+.\d+)(?:-SNAPSHOT)?</version>', data)
     if not m:
         raise Exception('cannot extract version number from pom file')
     return tuple(int(p) for p in m.group(1).split('.'))[:2]
