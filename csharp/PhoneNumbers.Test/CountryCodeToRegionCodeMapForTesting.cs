@@ -28,9 +28,9 @@ namespace PhoneNumbers.Test
         // indicated with "isMainCountryForCode" in the metadata should be first.
         internal static Dictionary<int, List<String>> GetCountryCodeToRegionCodeMap()
         {
-            // The capacity is set to 21 as there are 16 different country codes,
+            // The capacity is set to 22 as there are 17 different country codes,
             // and this offers a load factor of roughly 0.75.
-            var countryCodeToRegionCodeMap = new Dictionary<int, List<String>>(21);
+            var countryCodeToRegionCodeMap = new Dictionary<int, List<String>>(22);
 
             List<String> listWithRegionCode;
             listWithRegionCode = new List<String>(2);
@@ -98,6 +98,10 @@ namespace PhoneNumbers.Test
             listWithRegionCode = new List<String>(1);
             listWithRegionCode.Add("AD");
             countryCodeToRegionCodeMap[376] = listWithRegionCode;
+
+            listWithRegionCode = new List<String>(1);
+            listWithRegionCode.Add("001");
+            countryCodeToRegionCodeMap[800] = listWithRegionCode;
 
             return countryCodeToRegionCodeMap;
         }

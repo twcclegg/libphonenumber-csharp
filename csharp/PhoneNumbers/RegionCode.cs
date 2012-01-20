@@ -8,7 +8,10 @@ namespace PhoneNumbers
     // Class containing string constants of region codes for easier testing.
     public class RegionCode
     {
+        // Region code for global networks (e.g. +800 numbers).
+        public const String UN001 = "001";
         public const String AD = "AD";
+        public const String AQ = "AQ";
         public const String AO = "AO";
         public const String AR = "AR";
         public const String AU = "AU";

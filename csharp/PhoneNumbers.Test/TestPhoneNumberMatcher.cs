@@ -403,22 +403,20 @@ namespace PhoneNumbers.Test
     new NumberTest("31/8/2011", "US"),
     new NumberTest("1/12/2011", "US"),
     new NumberTest("10/12/82", "DE"),
-    new NumberTest("\uFF14\uFF11\uFF15\uFF16\uFF16\uFF16\uFF16-\uFF17\uFF17\uFF17\uFF17",
-        RegionCode.US)
+    new NumberTest("650x2531234", RegionCode.US),
   };
 
         /**
          * Strings with number-like things that should only be found under "possible".
          */
         private static readonly NumberTest[] POSSIBLE_ONLY_CASES = {
-    new NumberTest("abc8002345678", "US"),
     // US numbers cannot start with 7 in the test metadata to be valid.
     new NumberTest("7121115678", "US"),
     // 'X' should not be found in numbers at leniencies stricter than POSSIBLE, unless it represents
     // a carrier code or extension.
     new NumberTest("1650 x 253 - 1234", "US"),
     new NumberTest("650 x 253 - 1234", "US"),
-    new NumberTest("650x2531234", "US"),
+    new NumberTest("6502531x234", "US"),
     new NumberTest("(20) 3346 1234", RegionCode.GB),  // Non-optional NP omitted
   };
 
@@ -427,18 +425,17 @@ namespace PhoneNumbers.Test
          * leniency level.
          */
         private static readonly NumberTest[] VALID_CASES = {
-    new NumberTest("65 02 53 00 00.", "US"),
+    new NumberTest("65 02 53 00 00", "US"),
     new NumberTest("6502 538365", "US"),
     new NumberTest("650//253-1234", "US"),  // 2 slashes are illegal at higher levels
     new NumberTest("650/253/1234", "US"),
     new NumberTest("9002309. 158", "US"),
-    new NumberTest("21 7/8 - 14 12/34 - 5", "US"),
+    new NumberTest("12 7/8 - 14 12/34 - 5", "US"),
     new NumberTest("12.1 - 23.71 - 23.45", "US"),
-    new NumberTest("1979-2011 100%", "US"),
     new NumberTest("800 234 1 111x1111", "US"),
+    new NumberTest("1979-2011 100", RegionCode.US),
     new NumberTest("+494949-4-94", "DE"),  // National number in wrong format
-    new NumberTest("\uFF14\uFF11\uFF15\uFF16\uFF16\uFF16\uFF16-\uFF17\uFF17\uFF17\uFF17",
-                   RegionCode.US),
+    new NumberTest("\uFF14\uFF11\uFF15\uFF16\uFF16\uFF16\uFF16-\uFF17\uFF17\uFF17", RegionCode.US),
   };
 
         /**
@@ -457,27 +454,65 @@ namespace PhoneNumbers.Test
          * Strings with number-like things that should found at all levels.
          */
         private static readonly NumberTest[] EXACT_GROUPING_CASES = {
-    new NumberTest("\uFF14\uFF11\uFF15\uFF16\uFF16\uFF16\uFF17\uFF17\uFF17\uFF17", "US"),
-    new NumberTest("\uFF14\uFF11\uFF15-\uFF16\uFF16\uFF16-\uFF17\uFF17\uFF17\uFF17", "US"),
-    new NumberTest("4156667777", "US"),
-    new NumberTest("4156667777 x 123", "US"),
-    new NumberTest("415-666-7777", "US"),
-    new NumberTest("415/666-7777", "US"),
-    new NumberTest("415-666-7777 ext. 503", "US"),
-    new NumberTest("1 415 666 7777 x 123", "US"),
-    new NumberTest("+1 415-666-7777", "US"),
-    new NumberTest("+494949 49", "DE"),
-    new NumberTest("+49-49-34", "DE"),
-    new NumberTest("+49-4931-49", "DE"),
-    new NumberTest("04931-49", "DE"),  // With National Prefix
-    new NumberTest("+49-494949", "DE"),  // One group with country code
-    new NumberTest("+49-494949 ext. 49", "DE"),
-    new NumberTest("+49494949 ext. 49", "DE"),
-    new NumberTest("0494949", "DE"),
-    new NumberTest("0494949 ext. 49", "DE"),
-    new NumberTest("01 (33) 3461 2234", RegionCode.MX),  // Optional NP present
-    new NumberTest("(33) 3461 2234", RegionCode.MX),  // Optional NP omitted
-  };
+            new NumberTest("\uFF14\uFF11\uFF15\uFF16\uFF16\uFF16\uFF17\uFF17\uFF17\uFF17", "US"),
+            new NumberTest("\uFF14\uFF11\uFF15-\uFF16\uFF16\uFF16-\uFF17\uFF17\uFF17\uFF17", "US"),
+            new NumberTest("4156667777", "US"),
+            new NumberTest("4156667777 x 123", "US"),
+            new NumberTest("415-666-7777", "US"),
+            new NumberTest("415/666-7777", "US"),
+            new NumberTest("415-666-7777 ext. 503", "US"),
+            new NumberTest("1 415 666 7777 x 123", "US"),
+            new NumberTest("+1 415-666-7777", "US"),
+            new NumberTest("+494949 49", "DE"),
+            new NumberTest("+49-49-34", "DE"),
+            new NumberTest("+49-4931-49", "DE"),
+            new NumberTest("04931-49", "DE"),  // With National Prefix
+            new NumberTest("+49-494949", "DE"),  // One group with country code
+            new NumberTest("+49-494949 ext. 49", "DE"),
+            new NumberTest("+49494949 ext. 49", "DE"),
+            new NumberTest("0494949", "DE"),
+            new NumberTest("0494949 ext. 49", "DE"),
+            new NumberTest("01 (33) 3461 2234", RegionCode.MX),  // Optional NP present
+            new NumberTest("(33) 3461 2234", RegionCode.MX),  // Optional NP omitted
+        };
+
+        [Test]
+        public void TestMatchesWithPossibleLeniency()
+        {
+            List<NumberTest> testCases = new List<NumberTest>();
+            testCases.AddRange(STRICT_GROUPING_CASES);
+            testCases.AddRange(EXACT_GROUPING_CASES);
+            testCases.AddRange(VALID_CASES);
+            testCases.AddRange(POSSIBLE_ONLY_CASES);
+            doTestNumberMatchesForLeniency(testCases, PhoneNumberUtil.Leniency.POSSIBLE);
+        }
+
+        [Test]
+        public void TestNonMatchesWithPossibleLeniency()
+        {
+            List<NumberTest> testCases = new List<NumberTest>();
+            testCases.AddRange(IMPOSSIBLE_CASES);
+            doTestNumberNonMatchesForLeniency(testCases, PhoneNumberUtil.Leniency.POSSIBLE);
+        }
+
+        [Test]
+        public void TestMatchesWithValidLeniency()
+        {
+            List<NumberTest> testCases = new List<NumberTest>();
+            testCases.AddRange(STRICT_GROUPING_CASES);
+            testCases.AddRange(EXACT_GROUPING_CASES);
+            testCases.AddRange(VALID_CASES);
+            doTestNumberMatchesForLeniency(testCases, PhoneNumberUtil.Leniency.VALID);
+        }
+
+        [Test]
+        public void TestNonMatchesWithValidLeniency()
+        {
+            List<NumberTest> testCases = new List<NumberTest>();
+            testCases.AddRange(IMPOSSIBLE_CASES);
+            testCases.AddRange(POSSIBLE_ONLY_CASES);
+            doTestNumberNonMatchesForLeniency(testCases, PhoneNumberUtil.Leniency.VALID);
+        }
 
         [Test]
         public void TestMatchesWithStrictGroupingLeniency()

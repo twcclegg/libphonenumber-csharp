@@ -595,7 +595,11 @@ namespace PhoneNumbers
             nationalNumber.Length = 0;
             nationalNumber.Append(numberWithoutCountryCallingCode);
             String newRegionCode = phoneUtil.GetRegionCodeForCountryCode(countryCode);
-            if (!newRegionCode.Equals(defaultCountry))
+            if (PhoneNumberUtil.REGION_CODE_FOR_NON_GEO_ENTITY.Equals(newRegionCode))
+            {
+                currentMetaData = phoneUtil.GetMetadataForNonGeographicalRegion(countryCode);
+            }
+            else if (!newRegionCode.Equals(defaultCountry))
             {
                 currentMetaData = GetMetadataForRegion(newRegionCode);
             }

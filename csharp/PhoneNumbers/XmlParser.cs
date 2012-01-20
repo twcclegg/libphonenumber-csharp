@@ -156,7 +156,7 @@ namespace PhoneNumbers
             if (element.HasAttribute(NATIONAL_PREFIX_FOR_PARSING))
             {
                 metadata.SetNationalPrefixForParsing(
-                    ValidateRE(element.GetAttribute(NATIONAL_PREFIX_FOR_PARSING)));
+                    ValidateRE(element.GetAttribute(NATIONAL_PREFIX_FOR_PARSING), true));
                 if (element.HasAttribute(NATIONAL_PREFIX_TRANSFORM_RULE))
                 {
                     metadata.SetNationalPrefixTransformRule(

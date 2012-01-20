@@ -719,6 +719,26 @@ namespace PhoneNumbers.Test
         }
 
         [Test]
+        public void TestAYTF_International_Toll_Free()
+        {
+            AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter(RegionCode.US);
+            // +800 1234 5678
+            Assert.AreEqual("+", formatter.InputDigit('+'));
+            Assert.AreEqual("+8", formatter.InputDigit('8'));
+            Assert.AreEqual("+80", formatter.InputDigit('0'));
+            Assert.AreEqual("+800 ", formatter.InputDigit('0'));
+            Assert.AreEqual("+800 1", formatter.InputDigit('1'));
+            Assert.AreEqual("+800 12", formatter.InputDigit('2'));
+            Assert.AreEqual("+800 123", formatter.InputDigit('3'));
+            Assert.AreEqual("+800 1234", formatter.InputDigit('4'));
+            Assert.AreEqual("+800 1234 5", formatter.InputDigit('5'));
+            Assert.AreEqual("+800 1234 56", formatter.InputDigit('6'));
+            Assert.AreEqual("+800 1234 567", formatter.InputDigit('7'));
+            Assert.AreEqual("+800 1234 5678", formatter.InputDigit('8'));
+            Assert.AreEqual("+800123456789", formatter.InputDigit('9'));
+        }
+
+        [Test]
         public void TestAYTFMultipleLeadingDigitPatterns()
         {
             // +81 50 2345 6789
