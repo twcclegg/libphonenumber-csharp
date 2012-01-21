@@ -40,8 +40,8 @@ namespace PhoneNumbers.Test
             new PhoneNumber.Builder().SetCountryCode(82).SetNationalNumber(322123456L).Build();
         private static readonly PhoneNumber KO_NUMBER3 =
             new PhoneNumber.Builder().SetCountryCode(82).SetNationalNumber(6421234567L).Build();
-         private static readonly PhoneNumber KO_INVALID_NUMBER =
-            new PhoneNumber.Builder().SetCountryCode(82).SetNationalNumber(1234L).Build();
+        private static readonly PhoneNumber KO_INVALID_NUMBER =
+           new PhoneNumber.Builder().SetCountryCode(82).SetNationalNumber(1234L).Build();
         private static readonly PhoneNumber US_NUMBER1 =
             new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(6502530000L).Build();
         private static readonly PhoneNumber US_NUMBER2 =
@@ -58,6 +58,8 @@ namespace PhoneNumbers.Test
             new PhoneNumber.Builder().SetCountryCode(61).SetNationalNumber(236618300L).Build();
         private static readonly PhoneNumber NUMBER_WITH_INVALID_COUNTRY_CODE =
             new PhoneNumber.Builder().SetCountryCode(999).SetNationalNumber(2423651234L).Build();
+        private static readonly PhoneNumber INTERNATIONAL_TOLL_FREE =
+            new PhoneNumber.Builder().SetCountryCode(800).SetNationalNumber(12345678L).Build();
 
         [TestFixtureSetUp]
         public void SetupFixture()
@@ -79,6 +81,8 @@ namespace PhoneNumbers.Test
                 geocoder.GetDescriptionForNumber(AU_NUMBER, new Locale("en", "US")));
             Assert.AreEqual("", geocoder.GetDescriptionForNumber(NUMBER_WITH_INVALID_COUNTRY_CODE,
                                                               new Locale("en", "US")));
+            Assert.AreEqual("", geocoder.GetDescriptionForNumber(INTERNATIONAL_TOLL_FREE,
+                                                            new Locale("en", "US")));
         }
 
         [Test]

@@ -205,7 +205,8 @@ namespace PhoneNumbers
         */
         private String GetRegionDisplayName(String regionCode, Locale language)
         {
-            return (regionCode == null || regionCode.Equals("ZZ"))
+            return (regionCode == null || regionCode.Equals("ZZ") ||
+                regionCode.Equals(PhoneNumberUtil.REGION_CODE_FOR_NON_GEO_ENTITY))
                 ? "" : new Locale("", regionCode).GetDisplayCountry(language.Language);
         }
 
