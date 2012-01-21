@@ -1,5 +1,5 @@
 # Update assembly version number based on Java pom.xml file
-import os, re, subprocess
+import os, sys, re, subprocess
 
 def haschanges(rootdir):
     p = subprocess.Popen(['hg', '-R', rootdir, 'id', '-n'],
@@ -8,25 +8,37 @@ def haschanges(rootdir):
     stdout = p.communicate()[0]
     return stdout.strip().endswith('+')
 
-def getjavaver(rootdir):
-    # Extract from pom file
-    pompath = os.path.join(rootdir, 'java', 'pom.xml')
-    data = file(pompath, 'rb').read()
-    m = re.search(r'<version>(\d+.\d+)(?:-SNAPSHOT)?</version>', data)
-    if not m:
-        raise Exception('cannot extract version number from pom file')
-    return tuple(int(p) for p in m.group(1).split('.'))[:2]
-
-asmfile = 'csharp/PhoneNumbers/Properties/AssemblyInfo.cs'
-
-def getcsharpprevbuild(rootdir):
-    asmpath = os.path.join(rootdir, asmfile)
-    p = subprocess.Popen(['hg', 'cat', '--rev', '.', asmpath],
+def hgcat(rootdir, path, rev):
+    path = os.path.join(rootdir, path)
+    p = subprocess.Popen(['hg', 'cat', '--rev', rev, path],
                          shell=True,
                          stdout=subprocess.PIPE)
     stdout = p.communicate()[0]
     if p.returncode:
         raise Exception('hg cat failed')
+    return stdout
+
+def readjavaver(rootdir, rev):
+    # Extract from pom file
+    data = hgcat(rootdir, 'java/pom.xml', rev)
+    m = re.search(r'<version>(\d+.\d+)(-SNAPSHOT)?</version>', data)
+    if not m:
+        raise Exception('cannot extract version number from pom file')
+    snapshot = bool(m.group(2))
+    return tuple(int(p) for p in m.group(1).split('.'))[:2], snapshot
+
+def getjavaver(rootdir):
+    rev = '.'
+    while True:
+        ver, snapshot = readjavaver(rootdir, rev)
+        if not snapshot:
+            return ver
+        rev = 'p1(%s)' % rev
+
+asmfile = 'csharp/PhoneNumbers/Properties/AssemblyInfo.cs'
+
+def getcsharpprevbuild(rootdir):
+    stdout = hgcat(rootdir, asmfile, '.')
     m = re.search(r'AssemblyVersion\("(\d+\.\d+\.\d+\.\d+)', stdout)
     if not m:
         raise Exception('cannot extract version from AssemblyInfo.cs')
