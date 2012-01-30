@@ -19,7 +19,8 @@ def haschanges(ui):
     return stdout.strip().endswith('+')
 
 def purge(ui):
-    subprocess.check_call(['hg', '-R', ui.rootdir, 'purge', '--all'],
+    subprocess.check_call(['hg', '-R', ui.rootdir, 'purge', '--all',
+                           '-X', 'csharp/PhoneNumbers.Test'],
                           shell=True)
 
 def build(ui):
