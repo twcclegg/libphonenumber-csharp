@@ -919,6 +919,8 @@ namespace PhoneNumbers.Test
             phoneUtil.ParseAndKeepRawInput("2087654321", RegionCode.GB);
             Assert.AreEqual("20 8765 4321",
             phoneUtil.FormatInOriginalFormat(numberWithoutNationalPrefixGB, RegionCode.GB));
+            // Make sure no metadata is modified as a result of the previous function call.
+            Assert.AreEqual("(020) 8765 4321", phoneUtil.FormatInOriginalFormat(number5, RegionCode.GB));
 
             PhoneNumber numberWithNationalPrefixMX =
             phoneUtil.ParseAndKeepRawInput("013312345678", RegionCode.MX);

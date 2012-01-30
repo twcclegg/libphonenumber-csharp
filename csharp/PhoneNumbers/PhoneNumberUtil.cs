@@ -1499,10 +1499,12 @@ namespace PhoneNumbers
                         break;
                     }
                     // Otherwise, we need to remove the national prefix from our output.
-                    formatRule = new NumberFormat.Builder()
-                        .MergeFrom(formatRule).ClearNationalPrefixFormattingRule().Build();
+                    var numFormatCopy = new NumberFormat.Builder()
+                        .MergeFrom(formatRule)
+                        .ClearNationalPrefixFormattingRule()
+                        .Build();
                     List<NumberFormat> numberFormats = new List<NumberFormat>(1);
-                    numberFormats.Add(formatRule);
+                    numberFormats.Add(numFormatCopy);
                     formattedNumber = FormatByPattern(number, PhoneNumberFormat.NATIONAL, numberFormats);
                     break;
             }
