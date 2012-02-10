@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 
 namespace PhoneNumbers.Test
@@ -155,6 +156,15 @@ namespace PhoneNumbers.Test
         }
 
         [Test]
+        public void TestVoicemail()
+        {
+            HashSet<PhoneNumberType> voicemailTypes = MakeSet(PhoneNumberType.VOICEMAIL);
+            checkNumbersValidAndCorrectType(PhoneNumberType.VOICEMAIL, voicemailTypes);
+            Assert.AreEqual(0, invalidCases.Count);
+            Assert.AreEqual(0, wrongTypeCases.Count);
+        }
+
+        [Test]
         public void TestSharedCost()
         {
             HashSet<PhoneNumberType> sharedCostTypes = MakeSet(PhoneNumberType.SHARED_COST);
@@ -184,15 +194,57 @@ namespace PhoneNumbers.Test
                 if (exampleNumber != null && phoneNumberUtil.CanBeInternationallyDialled(exampleNumber))
                 {
                     wrongTypeCases.Add(exampleNumber);
+                    // LOGGER.log(Level.SEVERE, "Number " + exampleNumber.toString()
+                    //   + " should not be internationally diallable");
                 }
             }
             Assert.AreEqual(0, wrongTypeCases.Count);
         }
 
+        // TODO: Update this to use connectsToEmergencyNumber or similar once that is
+        // implemented.
+        [Test]
+        public void TestEmergency()
+        {
+            int wrongTypeCounter = 0;
+            foreach(var regionCode in phoneNumberUtil.GetSupportedRegions())
+            {
+                PhoneNumberDesc desc =
+                    phoneNumberUtil.GetMetadataForRegion(regionCode).Emergency;
+                if (desc.HasExampleNumber)
+                {
+                    String exampleNumber = desc.ExampleNumber;
+                    if (!new PhoneRegex(desc.PossibleNumberPattern).MatchAll(exampleNumber).Success ||
+                        !new PhoneRegex(desc.NationalNumberPattern).MatchAll(exampleNumber).Success)
+                    {
+                        wrongTypeCounter++;
+                    // LOGGER.log(Level.SEVERE, "Emergency example number test failed for " + regionCode);
+                    }
+                }
+            }
+            Assert.AreEqual(0, wrongTypeCounter);
+        }
+
+        [Test]
+        public void TestGlobalNetworkNumbers()
+        {
+            foreach(var callingCode in phoneNumberUtil.GetSupportedGlobalNetworkCallingCodes())
+            {
+                PhoneNumber exampleNumber =
+                    phoneNumberUtil.GetExampleNumberForNonGeoEntity(callingCode);
+                Assert.NotNull(exampleNumber, "No example phone number for calling code " + callingCode);
+                if (!phoneNumberUtil.IsValidNumber(exampleNumber))
+                {
+                    invalidCases.Add(exampleNumber);
+                    // LOGGER.log(Level.SEVERE, "Failed validation for " + exampleNumber.toString());
+                }
+            }
+        }
+
         [Test]
         public void TestEveryRegionHasAnExampleNumber()
         {
-            foreach(var regionCode in phoneNumberUtil.GetSupportedRegions())
+            foreach (var regionCode in phoneNumberUtil.GetSupportedRegions())
             {
                 PhoneNumber exampleNumber = phoneNumberUtil.GetExampleNumber(regionCode);
                 Assert.IsNotNull(exampleNumber, "None found for region " + regionCode);

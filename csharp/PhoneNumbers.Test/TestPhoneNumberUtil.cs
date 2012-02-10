@@ -798,6 +798,9 @@ namespace PhoneNumbers.Test
             Assert.AreEqual("+1 (650) 253-0000", phoneUtil.FormatByPattern(US_NUMBER,
                 PhoneNumberFormat.INTERNATIONAL,
                 newNumberFormats));
+            Assert.AreEqual("+1-650-253-0000", phoneUtil.FormatByPattern(US_NUMBER,
+                PhoneNumberFormat.RFC3966, newNumberFormats));
+
 
             // $NP is set to '1' for the US. Here we check that for other NANPA countries the US rules are
             // followed.
@@ -1138,6 +1141,19 @@ namespace PhoneNumbers.Test
             Assert.That(phoneUtil.IsValidNumberForRegion(reNumber, RegionCode.RE));
             Assert.That(phoneUtil.IsValidNumberForRegion(INTERNATIONAL_TOLL_FREE, RegionCode.UN001));
             Assert.False(phoneUtil.IsValidNumberForRegion(INTERNATIONAL_TOLL_FREE, RegionCode.US));
+
+            Assert.False(phoneUtil.IsValidNumberForRegion(INTERNATIONAL_TOLL_FREE, RegionCode.ZZ));
+
+            PhoneNumber invalidNumber;
+            // Invalid country calling codes.
+            invalidNumber = new PhoneNumber.Builder().SetCountryCode(3923).SetNationalNumber(2366L).Build();
+            Assert.False(phoneUtil.IsValidNumberForRegion(invalidNumber, RegionCode.ZZ));
+            invalidNumber = new PhoneNumber.Builder().SetCountryCode(3923).SetNationalNumber(2366L).Build();
+            Assert.False(phoneUtil.IsValidNumberForRegion(invalidNumber, RegionCode.UN001));
+            invalidNumber = new PhoneNumber.Builder().SetCountryCode(0).SetNationalNumber(2366L).Build();
+            Assert.False(phoneUtil.IsValidNumberForRegion(invalidNumber, RegionCode.UN001));
+            invalidNumber = new PhoneNumber.Builder().SetCountryCode(0).Build();
+            Assert.False(phoneUtil.IsValidNumberForRegion(invalidNumber, RegionCode.ZZ));
         }
 
         [Test]
@@ -1159,6 +1175,12 @@ namespace PhoneNumbers.Test
 
             invalidNumber = new PhoneNumber.Builder()
                 .SetCountryCode(64).SetNationalNumber(3316005L).Build();
+            Assert.False(phoneUtil.IsValidNumber(invalidNumber));
+
+            // Invalid country calling codes.
+            invalidNumber = new PhoneNumber.Builder().SetCountryCode(3923).SetNationalNumber(2366L).Build();
+            Assert.False(phoneUtil.IsValidNumber(invalidNumber));
+            invalidNumber = new PhoneNumber.Builder().SetCountryCode(0).SetNationalNumber(2366L).Build();
             Assert.False(phoneUtil.IsValidNumber(invalidNumber));
 
             Assert.False(phoneUtil.IsValidNumber(INTERNATIONAL_TOLL_FREE_TOO_LONG));
@@ -1727,6 +1749,10 @@ namespace PhoneNumbers.Test
             PhoneNumber usNumber = new PhoneNumber.Builder()
                 .SetCountryCode(1).SetNationalNumber(1234567890L).Build();
             Assert.AreEqual(usNumber, phoneUtil.Parse("123-456-7890", RegionCode.US));
+
+            // Test star numbers. Although this is not strictly valid, we would like to make sure we can
+            // parse the output we produce when formatting the number.
+            Assert.AreEqual(JP_STAR_NUMBER, phoneUtil.Parse("+81 *2345", RegionCode.JP));
         }
 
         [Test]
@@ -1905,6 +1931,34 @@ namespace PhoneNumbers.Test
                              ErrorType.NOT_A_NUMBER,
                              e.ErrorType,
                              "Wrong error type stored in exception.");
+            }
+            try
+            {
+                String plusStar = "+***";
+                phoneUtil.Parse(plusStar, RegionCode.DE);
+                Assert.Fail("This should not parse without throwing an exception " + plusStar);
+            }
+            catch (NumberParseException e)
+            {
+                // Expected this exception.
+                Assert.AreEqual(
+                   ErrorType.NOT_A_NUMBER,
+                   e.ErrorType,
+                   "Wrong error type stored in exception.");
+            }
+            try
+            {
+                String plusStarPhoneNumber = "+*******91";
+                phoneUtil.Parse(plusStarPhoneNumber, RegionCode.DE);
+                Assert.Fail("This should not parse without throwing an exception " + plusStarPhoneNumber);
+            }
+            catch (NumberParseException e)
+            {
+                // Expected this exception.
+                Assert.AreEqual(
+                   ErrorType.NOT_A_NUMBER,
+                   e.ErrorType,
+                   "Wrong error type stored in exception.");
             }
             try
             {

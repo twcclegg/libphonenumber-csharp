@@ -59,6 +59,15 @@ namespace PhoneNumbers
             new Regex("(?:(?:[0-3]?\\d/[01]?\\d)|(?:[01]?\\d/[0-3]?\\d))/(?:[12]\\d)?\\d{2}", RegexOptions.Compiled);
 
         /**
+        * Matches timestamps. Examples: "2012-01-02 08:00". Note that the reg-ex does not include the
+        * trailing ":\d\d" -- that is covered by TIME_STAMPS_SUFFIX.
+        */
+        private static readonly Regex TIME_STAMPS =
+            new Regex("[12]\\d{3}[-/]?[01]\\d[-/]?[0-3]\\d [0-2]\\d$", RegexOptions.Compiled);
+        private static readonly PhoneRegex TIME_STAMPS_SUFFIX = new PhoneRegex(":[0-5]\\d", RegexOptions.Compiled);
+
+
+        /**
         * Pattern to check that brackets match. Opening brackets should be closed within a phone number.
         * This also checks that there is something inside the brackets. Having no brackets at all is also
         * fine.
@@ -326,6 +335,14 @@ namespace PhoneNumbers
             // Skip a match that is more likely a publication page reference or a date.
             if (PUB_PAGES.Match(candidate).Success || SLASH_SEPARATED_DATES.Match(candidate).Success)
                 return null;
+            // Skip potential time-stamps.
+            if (TIME_STAMPS.Match(candidate).Success)
+            {
+                String followingText = text.ToString().Substring(offset + candidate.Length);
+                if (TIME_STAMPS_SUFFIX.MatchBeginning(followingText).Success)
+                    return null;
+            }
+
             // Try to come up with a valid match given the entire candidate.
             String rawString = candidate;
             PhoneNumberMatch match = ParseAndVerify(rawString, offset);

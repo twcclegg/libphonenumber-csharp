@@ -404,6 +404,9 @@ namespace PhoneNumbers.Test
     new NumberTest("1/12/2011", "US"),
     new NumberTest("10/12/82", "DE"),
     new NumberTest("650x2531234", RegionCode.US),
+    new NumberTest("2012-01-02 08:00", RegionCode.US),
+    new NumberTest("2012/01/02 08:00", RegionCode.US),
+    new NumberTest("20120102 08:00", RegionCode.US),
   };
 
         /**
@@ -436,6 +439,9 @@ namespace PhoneNumbers.Test
     new NumberTest("1979-2011 100", RegionCode.US),
     new NumberTest("+494949-4-94", "DE"),  // National number in wrong format
     new NumberTest("\uFF14\uFF11\uFF15\uFF16\uFF16\uFF16\uFF16-\uFF17\uFF17\uFF17", RegionCode.US),
+    new NumberTest("2012-0102 08", RegionCode.US),  // Very strange formatting.
+    new NumberTest("2012-01-02 08", RegionCode.US),
+    new NumberTest("1800-10-10 22", RegionCode.AU),  // Breakdown assistance number.
   };
 
         /**

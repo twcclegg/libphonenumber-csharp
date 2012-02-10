@@ -28,9 +28,9 @@ namespace PhoneNumbers
         // indicated with "isMainCountryForCode" in the metadata should be first.
         public static Dictionary<int, List<String>> GetCountryCodeToRegionCodeMap()
         {
-            // The capacity is set to 280 as there are 210 different country codes,
+            // The capacity is set to 281 as there are 211 different country codes,
             // and this offers a load factor of roughly 0.75.
-            var countryCodeToRegionCodeMap = new Dictionary<int, List<String>>(280);
+            var countryCodeToRegionCodeMap = new Dictionary<int, List<String>>(281);
 
             List<String> listWithRegionCode = new List<String>(25);
             listWithRegionCode.Add("US");
@@ -246,6 +246,10 @@ namespace PhoneNumbers
             listWithRegionCode = new List<String>(1);
             listWithRegionCode.Add("IR");
             countryCodeToRegionCodeMap[98] = listWithRegionCode;
+
+            listWithRegionCode = new List<String>(1);
+            listWithRegionCode.Add("SS");
+            countryCodeToRegionCodeMap[211] = listWithRegionCode;
 
             listWithRegionCode = new List<String>(1);
             listWithRegionCode.Add("MA");
@@ -679,8 +683,10 @@ namespace PhoneNumbers
             listWithRegionCode.Add("UY");
             countryCodeToRegionCodeMap[598] = listWithRegionCode;
 
-            listWithRegionCode = new List<String>(1);
+            listWithRegionCode = new List<String>(3);
+            listWithRegionCode.Add("CW");
             listWithRegionCode.Add("AN");
+            listWithRegionCode.Add("BQ");
             countryCodeToRegionCodeMap[599] = listWithRegionCode;
 
             listWithRegionCode = new List<String>(1);
