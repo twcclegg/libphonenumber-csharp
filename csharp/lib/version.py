@@ -29,10 +29,12 @@ def readjavaver(rootdir, rev):
 
 def getjavaver(rootdir):
     rev = '.'
+    prevver = None
     while True:
         ver, snapshot = readjavaver(rootdir, rev)
-        if not snapshot:
+        if not snapshot or (prevver is not None and prevver != ver):
             return ver
+        prevver = ver
         rev = 'p1(%s)' % rev
 
 asmfile = 'csharp/PhoneNumbers/Properties/AssemblyInfo.cs'
