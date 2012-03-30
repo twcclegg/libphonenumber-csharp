@@ -22,16 +22,8 @@ using NUnit.Framework;
 namespace PhoneNumbers.Test
 {
     [TestFixture]
-    class TestPhoneNumberMatcher
+    class TestPhoneNumberMatcher: TestMetadataTestCase
     {
-        private PhoneNumberUtil phoneUtil;
-
-        [SetUp]
-        protected void SetUp()
-        {
-            phoneUtil = TestPhoneNumberUtil.InitializePhoneUtilForTesting();
-        }
-
         /** See {@link PhoneNumberUtilTest#testParseNationalNumber()}. */
         [Test]
         public void TestFindNationalNumber()
@@ -785,6 +777,18 @@ namespace PhoneNumbers.Test
                 actual.Add(match.Number);
             Assert.AreEqual(expected, actual);
         }
+
+        [Test]
+        public void TestNonPlusPrefixedNumbersNotFoundForInvalidRegion()
+        {
+            // Does not start with a "+", we won't match it.
+            var iterable = phoneUtil.FindNumbers("1 456 764 156", RegionCode.ZZ);
+            var iterator = iterable.GetEnumerator();
+            
+            Assert.IsFalse(iterator.MoveNext());
+            Assert.IsFalse(iterator.MoveNext());
+        }
+
 
         [Test]
         public void TestEmptyIteration()

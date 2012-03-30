@@ -27,17 +27,14 @@ namespace PhoneNumbers.Test
      * @author Shaopeng Jia
      */
     [TestFixture]
-    public class ShortNumberUtilTest
+    class ShortNumberUtilTest: TestMetadataTestCase
     {
         private ShortNumberUtil shortUtil;
-        public const String TEST_META_DATA_FILE_PREFIX = "PhoneNumberMetaDataForTesting.xml";
 
-        public ShortNumberUtilTest()
+        [TestFixtureSetUp]
+        public void SetupFixture()
         {
-            PhoneNumberUtil.ResetInstance();
-            PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance(
-                TEST_META_DATA_FILE_PREFIX,
-                CountryCodeToRegionCodeMapForTesting.GetCountryCodeToRegionCodeMap());
+            base.SetupFixture();
             shortUtil = new ShortNumberUtil(phoneUtil);
         }
 

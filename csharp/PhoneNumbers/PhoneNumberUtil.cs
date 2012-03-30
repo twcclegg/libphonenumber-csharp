@@ -97,6 +97,9 @@ namespace PhoneNumbers
         internal const int MAX_LENGTH_FOR_NSN = 16;
         // The maximum length of the country calling code.
         internal const int MAX_LENGTH_COUNTRY_CODE = 3;
+        // We don't allow input strings for parsing to be longer than 250 chars. This prevents malicious
+        // input from overflowing the regular-expression engine.
+        private const int MAX_INPUT_STRING_LENGTH = 250;
         internal const String META_DATA_FILE_PREFIX = "PhoneNumberMetaData.xml";
         internal const String UNKNOWN_REGION = "ZZ";
 
@@ -1692,6 +1695,10 @@ namespace PhoneNumbers
             {
                 // Invalid region entered as country-calling-from (so no metadata was found for it) or the
                 // region chosen has multiple international dialling prefixes.
+                // LOGGER.log(Level.WARNING,
+                // "Trying to format number from invalid region "
+                // + regionCallingFrom
+                // + ". International formatting applied.");
                 PrefixNumberWithCountryCallingCode(countryCode, PhoneNumberFormat.INTERNATIONAL,
                     formattedNumber);
             }
@@ -2872,6 +2879,9 @@ namespace PhoneNumbers
             if (numberToParse == null)
                 throw new NumberParseException(ErrorType.NOT_A_NUMBER,
                     "The phone number supplied was null.");
+            else if (numberToParse.Length > MAX_INPUT_STRING_LENGTH)
+                throw new NumberParseException(ErrorType.TOO_LONG,
+                    "The string supplied was too long to parse.");
             // Extract a possible number from the string passed in (this strips leading characters that
             // could not be the start of a phone number.)
             String number = ExtractPossibleNumber(numberToParse);

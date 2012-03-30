@@ -24,13 +24,18 @@ using NUnit.Framework;
 
 namespace PhoneNumbers.Test
 {
+    /**
+    * Unit tests for PhoneNumberUtil.java
+    *
+    * Note that these tests use the test metadata, not the normal metadata file, so should not be used
+    * for regression test purposes - these tests are illustrative only and test functionality.
+    *
+    * @author Shaopeng Jia
+    * @author Lara Rennie
+    */
     [TestFixture]
-    public class TestPhoneNumberUtil
+    class TestPhoneNumberUtil: TestMetadataTestCase
     {
-        private PhoneNumberUtil phoneUtil;
-        // This is used by BuildMetadataProtoFromXml.
-        public const String TEST_META_DATA_FILE_PREFIX = "PhoneNumberMetaDataForTesting.xml";
-
         // Set up some test numbers to re-use.
         private static readonly PhoneNumber ALPHA_NUMERIC_NUMBER =
             new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(80074935247L).Build();
@@ -120,20 +125,6 @@ namespace PhoneNumbers.Test
         private static void AreEqual(PhoneNumber p1, PhoneNumber.Builder p2)
         {
             Assert.AreEqual(p1, p2.Clone().Build());
-        }
-
-        [TestFixtureSetUp]
-        public void SetupFixture()
-        {
-            phoneUtil = InitializePhoneUtilForTesting();
-        }
-
-        public static PhoneNumberUtil InitializePhoneUtilForTesting()
-        {
-            PhoneNumberUtil.ResetInstance();
-            return PhoneNumberUtil.GetInstance(
-                TEST_META_DATA_FILE_PREFIX,
-                CountryCodeToRegionCodeMapForTesting.GetCountryCodeToRegionCodeMap());
         }
 
         [Test]
@@ -1148,11 +1139,9 @@ namespace PhoneNumbers.Test
             // Invalid country calling codes.
             invalidNumber = new PhoneNumber.Builder().SetCountryCode(3923).SetNationalNumber(2366L).Build();
             Assert.False(phoneUtil.IsValidNumberForRegion(invalidNumber, RegionCode.ZZ));
-            invalidNumber = new PhoneNumber.Builder().SetCountryCode(3923).SetNationalNumber(2366L).Build();
-            Assert.False(phoneUtil.IsValidNumberForRegion(invalidNumber, RegionCode.UN001));
-            invalidNumber = new PhoneNumber.Builder().SetCountryCode(0).SetNationalNumber(2366L).Build();
             Assert.False(phoneUtil.IsValidNumberForRegion(invalidNumber, RegionCode.UN001));
             invalidNumber = new PhoneNumber.Builder().SetCountryCode(0).Build();
+            Assert.False(phoneUtil.IsValidNumberForRegion(invalidNumber, RegionCode.UN001));
             Assert.False(phoneUtil.IsValidNumberForRegion(invalidNumber, RegionCode.ZZ));
         }
 
@@ -1772,7 +1761,43 @@ namespace PhoneNumbers.Test
             Assert.AreEqual(premiumNumber, phoneUtil.Parse("0900 a332 600A5", RegionCode.NZ));
         }
 
-
+        [Test]
+        public void TestParseMaliciousInput()
+        {
+            // Lots of leading + signs before the possible number.
+            StringBuilder maliciousNumber = new StringBuilder(6000);
+            for(int i = 0; i < 6000; i++)
+                maliciousNumber.Append('+');
+            maliciousNumber.Append("12222-33-244 extensioB 343+");
+            try
+            {
+                phoneUtil.Parse(maliciousNumber.ToString(), RegionCode.US);
+                Assert.Fail("This should not parse without throwing an exception " + maliciousNumber);
+            }
+            catch (NumberParseException e)
+            {
+                // Expected this exception.
+                Assert.AreEqual(ErrorType.TOO_LONG,
+                           e.ErrorType,
+                           "Wrong error type stored in exception.");
+            }
+            StringBuilder maliciousNumberWithAlmostExt = new StringBuilder(6000);
+            for(int i = 0; i < 350; i++)
+                maliciousNumberWithAlmostExt.Append("200");
+            maliciousNumberWithAlmostExt.Append(" extensiOB 345");
+            try
+            {
+                phoneUtil.Parse(maliciousNumberWithAlmostExt.ToString(), RegionCode.US);
+                Assert.Fail("This should not parse without throwing an exception " + maliciousNumberWithAlmostExt);
+            }
+            catch (NumberParseException e)
+            {
+                // Expected this exception.
+                Assert.AreEqual(ErrorType.TOO_LONG,
+                           e.ErrorType,
+                           "Wrong error type stored in exception.");
+            }
+        }
 
         [Test]
         public void TestParseWithInternationalPrefixes()

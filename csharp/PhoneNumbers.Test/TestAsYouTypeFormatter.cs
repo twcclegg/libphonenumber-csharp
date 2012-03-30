@@ -21,17 +21,17 @@ using NUnit.Framework;
 
 namespace PhoneNumbers.Test
 {
+    /**
+    * Unit tests for AsYouTypeFormatter.java
+    *
+    * Note that these tests use the test metadata, not the normal metadata file, so should not be used
+    * for regression test purposes - these tests are illustrative only and test functionality.
+    *
+    * @author Shaopeng Jia
+    */
     [TestFixture]
-    class TestAsYouTypeFormatter
+    class TestAsYouTypeFormatter: TestMetadataTestCase
     {
-        private PhoneNumberUtil phoneUtil;
-
-        [TestFixtureSetUp]
-        public void SetupFixture()
-        {
-            phoneUtil = TestPhoneNumberUtil.InitializePhoneUtilForTesting();
-        }
-
         [Test]
         public void TestInvalidRegion()
         {

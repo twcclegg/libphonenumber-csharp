@@ -55,6 +55,7 @@
     <Compile Include="TestMappingFileProvider.cs" />
     <Compile Include="TestAsYouTypeFormatter.cs" />
     <Compile Include="TestExampleNumbers.cs" />
+    <Compile Include="TestMetadataTestCase.cs" />
     <Compile Include="TestPhonenumber.cs" />
     <Compile Include="TestPhoneNumberMatch.cs" />
     <Compile Include="TestPhoneNumberMatcher.cs" />

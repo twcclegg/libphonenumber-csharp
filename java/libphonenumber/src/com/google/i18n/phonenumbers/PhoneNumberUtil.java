@@ -63,6 +63,9 @@ public class PhoneNumberUtil {
   static final int MAX_LENGTH_FOR_NSN = 16;
   // The maximum length of the country calling code.
   static final int MAX_LENGTH_COUNTRY_CODE = 3;
+  // We don't allow input strings for parsing to be longer than 250 chars. This prevents malicious
+  // input from overflowing the regular-expression engine.
+  private static final int MAX_INPUT_STRING_LENGTH = 250;
   static final String META_DATA_FILE_PREFIX =
       "/com/google/i18n/phonenumbers/data/PhoneNumberMetadataProto";
   private String currentFilePrefix = META_DATA_FILE_PREFIX;
@@ -1623,9 +1626,13 @@ public class PhoneNumberUtil {
     } else {
       // Invalid region entered as country-calling-from (so no metadata was found for it) or the
       // region chosen has multiple international dialling prefixes.
+      LOGGER.log(Level.WARNING,
+                 "Trying to format number from invalid region "
+                 + regionCallingFrom
+                 + ". International formatting applied.");
       prefixNumberWithCountryCallingCode(countryCode,
-                           PhoneNumberFormat.INTERNATIONAL,
-                           formattedNumber);
+                                         PhoneNumberFormat.INTERNATIONAL,
+                                         formattedNumber);
     }
     return formattedNumber.toString();
   }
@@ -2737,6 +2744,9 @@ public class PhoneNumberUtil {
     if (numberToParse == null) {
       throw new NumberParseException(NumberParseException.ErrorType.NOT_A_NUMBER,
                                      "The phone number supplied was null.");
+    } else if (numberToParse.length() > MAX_INPUT_STRING_LENGTH) {
+      throw new NumberParseException(NumberParseException.ErrorType.TOO_LONG,
+                                     "The string supplied was too long to parse.");
     }
     // Extract a possible number from the string passed in (this strips leading characters that
     // could not be the start of a phone number.)
