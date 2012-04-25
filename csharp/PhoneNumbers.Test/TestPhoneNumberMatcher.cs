@@ -243,6 +243,7 @@ namespace PhoneNumbers.Test
             Assert.False(PhoneNumberMatcher.IsLatinLetter('.'));
             Assert.False(PhoneNumberMatcher.IsLatinLetter(' '));
             Assert.False(PhoneNumberMatcher.IsLatinLetter('\u6211'));  // Chinese character
+            Assert.False(PhoneNumberMatcher.IsLatinLetter('\u306E'));  // Hiragana letter no
         }
 
         [Test]
@@ -449,7 +450,7 @@ namespace PhoneNumbers.Test
   };
 
         /**
-         * Strings with number-like things that should found at all levels.
+         * Strings with number-like things that should be found at all levels.
          */
         private static readonly NumberTest[] EXACT_GROUPING_CASES = {
             new NumberTest("\uFF14\uFF11\uFF15\uFF16\uFF16\uFF16\uFF17\uFF17\uFF17\uFF17", "US"),

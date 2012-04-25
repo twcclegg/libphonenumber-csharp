@@ -24,15 +24,18 @@ using CountryCodeSource = PhoneNumbers.PhoneNumber.Types.CountryCodeSource;
 
 namespace PhoneNumbers
 {
-    // INTERNATIONAL and NATIONAL formats are consistent with the definition in ITU-T Recommendation
-    // E. 123. For example, the number of the Google Switzerland office will be written as
-    // "+41 44 668 1800" in INTERNATIONAL format, and as "044 668 1800" in NATIONAL format.
-    // E164 format is as per INTERNATIONAL format but with no formatting applied, e.g. +41446681800.
-    // RFC3966 is as per INTERNATIONAL format, but with all spaces and other separating symbols
-    // replaced with a hyphen, and with any phone number extension appended with ";ext=".
-    //
-    // Note: If you are considering storing the number in a neutral format, you are highly advised to
-    // use the PhoneNumber class.
+    /**
+    * INTERNATIONAL and NATIONAL formats are consistent with the definition in ITU-T Recommendation
+    * E123. For example, the number of the Google Switzerland office will be written as
+    * "+41 44 668 1800" in INTERNATIONAL format, and as "044 668 1800" in NATIONAL format.
+    * E164 format is as per INTERNATIONAL format but with no formatting applied, e.g.
+    * "+41446681800". RFC3966 is as per INTERNATIONAL format, but with all spaces and other
+    * separating symbols replaced with a hyphen, and with any phone number extension appended with
+    * ";ext=". It also will have a prefix of "tel:" added, e.g. "tel:+41-44-668-1800".
+    *
+    * Note: If you are considering storing the number in a neutral format, you are highly advised to
+    * use the PhoneNumber class.
+    */
     public enum PhoneNumberFormat
     {
         E164,
@@ -130,6 +133,10 @@ namespace PhoneNumbers
         private const char STAR_SIGN = '*';
 
         const String RFC3966_EXTN_PREFIX = ";ext=";
+        private const String RFC3966_PREFIX = "tel:";
+        // We include the "+" here since RFC3966 format specifies that the context must be specified in
+        // international format.
+        private const String RFC3966_PHONE_CONTEXT = ";phone-context=+";
 
         // A map that contains characters that are essential when dialling. That means any of the
         // characters in this map must not be removed from a number when dialing, otherwise the call will
@@ -254,7 +261,7 @@ namespace PhoneNumbers
         // have an extension prefix appended, followed by 1 or more digits.
         private static readonly PhoneRegex VALID_PHONE_NUMBER_PATTERN;
 
-        private static readonly Regex NON_DIGITS_PATTERN = new Regex("\\D+", RegexOptions.Compiled);
+        internal static readonly Regex NON_DIGITS_PATTERN = new Regex("\\D+", RegexOptions.Compiled);
 
         // The FIRST_GROUP_PATTERN was originally set to $1 but there are some countries for which the
         // first group is not used in the national pattern (e.g. Argentina) so the $1 group does not match
@@ -475,217 +482,49 @@ namespace PhoneNumbers
                 case Leniency.VALID:
                     {
                         if (!util.IsValidNumber(number) ||
-                            !PhoneNumberUtil.ContainsOnlyValidXChars(number, candidate, util))
+                            !PhoneNumberMatcher.ContainsOnlyValidXChars(number, candidate, util))
                             return false;
-                        return PhoneNumberUtil.IsNationalPrefixPresentIfRequired(number, util);
+                        return PhoneNumberMatcher.IsNationalPrefixPresentIfRequired(number, util);
                     }
                 case Leniency.STRICT_GROUPING:
                     {
                         if (!util.IsValidNumber(number) ||
-                           !PhoneNumberUtil.ContainsOnlyValidXChars(number, candidate, util) ||
-                           PhoneNumberUtil.ContainsMoreThanOneSlash(candidate) ||
-                           !PhoneNumberUtil.IsNationalPrefixPresentIfRequired(number, util))
+                           !PhoneNumberMatcher.ContainsOnlyValidXChars(number, candidate, util) ||
+                           PhoneNumberMatcher.ContainsMoreThanOneSlash(candidate) ||
+                           !PhoneNumberMatcher.IsNationalPrefixPresentIfRequired(number, util))
                         {
                             return false;
                         }
-                        // TODO: Evaluate how this works for other locales (testing has been
-                        // limited to NANPA regions) and optimise if necessary.
-                        String[] formattedNumberGroups = PhoneNumberUtil.GetNationalNumberGroups(util, number);
-                        StringBuilder normalizedCandidate = PhoneNumberUtil.NormalizeDigits(candidate,
-                                                                            true /* keep strip non-digits */);
-                        int fromIndex = 0;
-                        // Check each group of consecutive digits are not broken into separate groups in the
-                        // {@code candidate} string.
-                        for (int i = 0; i < formattedNumberGroups.Length; i++)
-                        {
-                            // Fails if the substring of {@code candidate} starting from {@code fromIndex} doesn't
-                            // contain the consecutive digits in formattedNumberGroups[i].
-                            fromIndex = normalizedCandidate.ToString().IndexOf(formattedNumberGroups[i], fromIndex);
-                            if (fromIndex < 0)
-                            {
-                                return false;
-                            }
-                            // Moves {@code fromIndex} forward.
-                            fromIndex += formattedNumberGroups[i].Length;
-                            if (i == 0 && fromIndex < normalizedCandidate.Length)
-                            {
-                                // We are at the position right after the NDC.
-                                if (char.IsDigit(normalizedCandidate[fromIndex]))
+                        return PhoneNumberMatcher.CheckNumberGroupingIsValid(
+                            number, candidate, util, (PhoneNumberUtil u, PhoneNumber n,
+                                         StringBuilder nc,
+                                         String[] eg) =>
                                 {
-                                    // This means there is no formatting symbol after the NDC. In this case, we only
-                                    // accept the number if there is no formatting symbol at all in the number, except
-                                    // for extensions.
-                                    String nationalSignificantNumber = util.GetNationalSignificantNumber(number);
-                                    return normalizedCandidate.ToString().Substring(fromIndex - formattedNumberGroups[i].Length)
-                                        .StartsWith(nationalSignificantNumber);
+                                    return PhoneNumberMatcher.AllNumberGroupsRemainGrouped(u, n, nc, eg);
                                 }
-                            }
-                        }
-                        // The check here makes sure that we haven't mistakenly already used the extension to
-                        // match the last group of the subscriber number. Note the extension cannot have
-                        // formatting in-between digits.
-                        return normalizedCandidate.ToString().Substring(fromIndex).Contains(number.Extension);
+                            );
                     }
                 case Leniency.EXACT_GROUPING:
                 default:
                     {
                         if (!util.IsValidNumber(number) ||
-                                !ContainsOnlyValidXChars(number, candidate, util) ||
-                                ContainsMoreThanOneSlash(candidate) ||
-                                !IsNationalPrefixPresentIfRequired(number, util))
+                                !PhoneNumberMatcher.ContainsOnlyValidXChars(number, candidate, util) ||
+                                PhoneNumberMatcher.ContainsMoreThanOneSlash(candidate) ||
+                                !PhoneNumberMatcher.IsNationalPrefixPresentIfRequired(number, util))
                         {
                             return false;
                         }
-                        // TODO: Evaluate how this works for other locales (testing has been
-                        // limited to NANPA regions) and optimise if necessary.
-                        StringBuilder normalizedCandidate = PhoneNumberUtil.NormalizeDigits(candidate,
-                                                                            true /* keep strip non-digits */);
-                        String[] candidateGroups =
-                            NON_DIGITS_PATTERN.Split(normalizedCandidate.ToString());
-                        // Set this to the last group, skipping it if the number has an extension.
-                        int candidateNumberGroupIndex =
-                            number.HasExtension ? candidateGroups.Length - 2 : candidateGroups.Length - 1;
-                        // First we check if the national significant number is formatted as a block.
-                        // We use contains and not equals, since the national significant number may be present with
-                        // a prefix such as a national number prefix, or the country code itself.
-                        if (candidateGroups.Length == 1 ||
-                            candidateGroups[candidateNumberGroupIndex].Contains(
-                                util.GetNationalSignificantNumber(number)))
-                        {
-                            return true;
-                        }
-                        String[] formattedNumberGroups = PhoneNumberUtil.GetNationalNumberGroups(util, number);
-                        // Starting from the end, go through in reverse, excluding the first group, and check the
-                        // candidate and number groups are the same.
-                        for (int formattedNumberGroupIndex = (formattedNumberGroups.Length - 1);
-                             formattedNumberGroupIndex > 0 && candidateNumberGroupIndex >= 0;
-                             formattedNumberGroupIndex--, candidateNumberGroupIndex--)
-                        {
-                            if (!candidateGroups[candidateNumberGroupIndex].Equals(
-                                formattedNumberGroups[formattedNumberGroupIndex]))
-                            {
-                                return false;
-                            }
-                        }
-                        // Now check the first group. There may be a national prefix at the start, so we only check
-                        // that the candidate group ends with the formatted number group.
-                        return (candidateNumberGroupIndex >= 0 &&
-                                candidateGroups[candidateNumberGroupIndex].EndsWith(formattedNumberGroups[0]));
+                        return PhoneNumberMatcher.CheckNumberGroupingIsValid(
+                            number, candidate, util, (PhoneNumberUtil u, PhoneNumber n,
+                                    StringBuilder normalizedCandidate,
+                                    String[] expectedNumberGroups) =>
+                                {
+                                    return PhoneNumberMatcher.AllNumberGroupsAreExactlyPresent(
+                                        u, n, normalizedCandidate, expectedNumberGroups);
+                                }
+                            );
                     }
             }
-        }
-
-        /**
-        * Helper method to get the national-number part of a number, formatted without any national
-        * prefix, and return it as a set of digit blocks that would be formatted together.
-        */
-        internal static String[] GetNationalNumberGroups(PhoneNumberUtil util, PhoneNumber number)
-        {
-            // This will be in the format +CC-DG;ext=EXT where DG represents groups of digits.
-            String rfc3966Format = util.Format(number, PhoneNumberFormat.RFC3966);
-            // We remove the extension part from the formatted string before splitting it into different
-            // groups.
-            int endIndex = rfc3966Format.IndexOf(';');
-            if (endIndex < 0)
-            {
-                endIndex = rfc3966Format.Length;
-            }
-            // The country-code will have a '-' following it.
-            int startIndex = rfc3966Format.IndexOf('-') + 1;
-            return rfc3966Format.Substring(startIndex, endIndex - startIndex).Split('-');
-        }
-
-        internal static bool ContainsMoreThanOneSlash(String candidate)
-        {
-            int firstSlashIndex = candidate.IndexOf('/');
-            return (firstSlashIndex > 0 && candidate.Substring(firstSlashIndex + 1).Contains("/"));
-        }
-
-        internal static bool ContainsOnlyValidXChars(
-            PhoneNumber number, String candidate, PhoneNumberUtil util)
-        {
-            // The characters 'x' and 'X' can be (1) a carrier code, in which case they always precede the
-            // national significant number or (2) an extension sign, in which case they always precede the
-            // extension number. We assume a carrier code is more than 1 digit, so the first case has to
-            // have more than 1 consecutive 'x' or 'X', whereas the second case can only have exactly 1
-            // 'x' or 'X'. We ignore the character if it appears as the last character of the string.
-            for (int index = 0; index < candidate.Length - 1; index++)
-            {
-                char charAtIndex = candidate[index];
-                if (charAtIndex == 'x' || charAtIndex == 'X')
-                {
-                    char charAtNextIndex = candidate[index + 1];
-                    if (charAtNextIndex == 'x' || charAtNextIndex == 'X')
-                    {
-                        // This is the carrier code case, in which the 'X's always precede the national
-                        // significant number.
-                        index++;
-                        if (util.IsNumberMatch(number, candidate.Substring(index)) != MatchType.NSN_MATCH)
-                        {
-                            return false;
-                        }
-                        // This is the extension sign case, in which the 'x' or 'X' should always precede the
-                        // extension number.
-                    }
-                    else if (!PhoneNumberUtil.NormalizeDigitsOnly(candidate.Substring(index)).Equals(
-                        number.Extension))
-                    {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-
-        internal static bool IsNationalPrefixPresentIfRequired(
-            PhoneNumber number, PhoneNumberUtil util)
-        {
-            // First, check how we deduced the country code. If it was written in international format,
-            // then the national prefix is not required.
-            if (number.CountryCodeSource != CountryCodeSource.FROM_DEFAULT_COUNTRY)
-            {
-                return true;
-            }
-            String phoneNumberRegion =
-                util.GetRegionCodeForCountryCode(number.CountryCode);
-            PhoneMetadata metadata = util.GetMetadataForRegion(phoneNumberRegion);
-            if (metadata == null)
-            {
-                return true;
-            }
-            // Check if a national prefix should be present when formatting this number.
-            String nationalNumber = util.GetNationalSignificantNumber(number);
-            NumberFormat formatRule =
-                util.ChooseFormattingPatternForNumber(metadata.NumberFormatList, nationalNumber);
-            // To do this, we check that a national prefix formatting rule was present and that it wasn't
-            // just the first-group symbol ($1) with punctuation.
-            if ((formatRule != null) && formatRule.NationalPrefixFormattingRule.Length > 0)
-            {
-                if (formatRule.NationalPrefixOptionalWhenFormatting)
-                {
-                    // The national-prefix is optional in these cases, so we don't need to check if it was
-                    // present.
-                    return true;
-                }
-                // Remove the first-group symbol.
-                String candidateNationalPrefixRule = formatRule.NationalPrefixFormattingRule;
-                // We assume that the first-group symbol will never be _before_ the national prefix.
-                candidateNationalPrefixRule =
-                    candidateNationalPrefixRule.Substring(0, candidateNationalPrefixRule.IndexOf("${1}"));
-                candidateNationalPrefixRule = PhoneNumberUtil.NormalizeDigitsOnly(candidateNationalPrefixRule);
-                if (candidateNationalPrefixRule.Length == 0)
-                {
-                    // National Prefix not needed for this number.
-                    return true;
-                }
-                // Normalize the remainder.
-                String rawInputCopy = PhoneNumberUtil.NormalizeDigitsOnly(number.RawInput);
-                StringBuilder rawInput = new StringBuilder(rawInputCopy);
-                // Check if we found a national prefix and/or carrier code at the start of the raw input,
-                // and return the result.
-                return util.MaybeStripNationalPrefixAndCarrierCode(rawInput, metadata, null);
-            }
-            return true;
         }
 
         // This class implements a singleton, so the only constructor is private.
@@ -847,7 +686,7 @@ namespace PhoneNumbers
         }
 
         /**
-        * Gets the length of the geographical area code in the {@code nationalNumber_} field of the
+        * Gets the length of the geographical area code from the {@code nationalNumber_} field of the
         * PhoneNumber object passed in, so that clients could use it to split a national significant
         * number into geographical area code and subscriber number. It works in such a way that the
         * resultant subscriber number should be diallable, at least on some devices. An example of how
@@ -893,7 +732,9 @@ namespace PhoneNumbers
             if (!IsValidRegionCode(regionCode))
                 return 0;
             var metadata = GetMetadataForRegion(regionCode);
-            if (!metadata.HasNationalPrefix)
+            // If a country doesn't use a national prefix, and this number doesn't have an Italian leading
+            // zero, we assume it is a closed dialling plan with no area codes.
+            if (!metadata.HasNationalPrefix && !number.ItalianLeadingZero)
                 return 0;
 
             var type = GetNumberTypeHelper(GetNationalSignificantNumber(number), metadata);
@@ -1735,7 +1576,8 @@ namespace PhoneNumbers
                     formattedNumber.Insert(0, " ").Insert(0, countryCallingCode).Insert(0, PLUS_SIGN);
                     return;
                 case PhoneNumberFormat.RFC3966:
-                    formattedNumber.Insert(0, "-").Insert(0, countryCallingCode).Insert(0, PLUS_SIGN);
+                    formattedNumber.Insert(0, "-").Insert(0, countryCallingCode).Insert(0, PLUS_SIGN)
+                         .Insert(0, RFC3966_PREFIX);
                     return;
                 case PhoneNumberFormat.NATIONAL:
                 default:
@@ -1771,7 +1613,7 @@ namespace PhoneNumbers
                 : FormatNsnUsingPattern(number, formattingPattern, numberFormat, carrierCode);
         }
 
-        private NumberFormat ChooseFormattingPatternForNumber(IList<NumberFormat> availableFormats,
+        internal NumberFormat ChooseFormattingPatternForNumber(IList<NumberFormat> availableFormats,
             String nationalNumber)
         {
             foreach (NumberFormat numFormat in availableFormats)
@@ -1790,7 +1632,7 @@ namespace PhoneNumbers
 
 
         // Simple wrapper of formatNsnUsingPattern for the common case of no carrier code.
-        private String FormatNsnUsingPattern(String nationalNumber,
+        internal String FormatNsnUsingPattern(String nationalNumber,
              NumberFormat formattingPattern, PhoneNumberFormat numberFormat)
         {
             return FormatNsnUsingPattern(nationalNumber, formattingPattern, numberFormat, null);
@@ -2882,23 +2724,43 @@ namespace PhoneNumbers
             else if (numberToParse.Length > MAX_INPUT_STRING_LENGTH)
                 throw new NumberParseException(ErrorType.TOO_LONG,
                     "The string supplied was too long to parse.");
-            // Extract a possible number from the string passed in (this strips leading characters that
-            // could not be the start of a phone number.)
-            String number = ExtractPossibleNumber(numberToParse);
-            if (!IsViablePhoneNumber(number))
+
+            int indexOfPhoneContext = numberToParse.IndexOf(RFC3966_PHONE_CONTEXT);
+            StringBuilder nationalNumber = new StringBuilder();
+            if (indexOfPhoneContext > 0)
+            {
+                // Prefix the number with the phone context. The offset here is because the context we are
+                // expecting to match should start with a "+" sign, and we want to include this at the start
+                // of the number.
+                nationalNumber.Append(numberToParse.Substring(indexOfPhoneContext +
+                    RFC3966_PHONE_CONTEXT.Length - 1));
+                // Now append everything between the "tel:" prefix and the phone-context.
+                var rfcOffset = numberToParse.IndexOf(RFC3966_PREFIX) + RFC3966_PREFIX.Length;
+                nationalNumber.Append(numberToParse.Substring(
+                    rfcOffset, indexOfPhoneContext - rfcOffset));
+                // Note that phone-contexts that are URLs will not be parsed - isViablePhoneNumber will throw
+                // an exception below.
+            }
+            else
+            {
+                // Extract a possible number from the string passed in (this strips leading characters that
+                // could not be the start of a phone number.)
+                nationalNumber.Append(ExtractPossibleNumber(numberToParse));
+            }
+
+            if (!IsViablePhoneNumber(nationalNumber.ToString()))
                 throw new NumberParseException(ErrorType.NOT_A_NUMBER,
                     "The string supplied did not seem to be a phone number.");
 
             // Check the region supplied is valid, or that the extracted number starts with some sort of +
             // sign so the number's region can be determined.
-            if (checkRegion && !CheckRegionForParsing(number, defaultRegion))
+            if (checkRegion && !CheckRegionForParsing(nationalNumber.ToString(), defaultRegion))
                 throw new NumberParseException(ErrorType.INVALID_COUNTRY_CODE,
                     "Missing or invalid default region.");
 
             if (keepRawInput)
                 phoneNumber.SetRawInput(numberToParse);
 
-            StringBuilder nationalNumber = new StringBuilder(number);
             // Attempt to parse extension first, since it doesn't require region-specific data and we want
             // to have the non-normalised number here.
             String extension = MaybeStripExtension(nationalNumber);

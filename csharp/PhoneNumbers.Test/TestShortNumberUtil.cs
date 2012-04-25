@@ -32,7 +32,7 @@ namespace PhoneNumbers.Test
         private ShortNumberUtil shortUtil;
 
         [TestFixtureSetUp]
-        public void SetupFixture()
+        public new void SetupFixture()
         {
             base.SetupFixture();
             shortUtil = new ShortNumberUtil(phoneUtil);

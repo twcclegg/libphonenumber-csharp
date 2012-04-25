@@ -11,8 +11,16 @@ def copygeocoding(source, prefix, dest):
             lang = os.path.split(root)[-1]
             fn = '%s%s_%s' % (prefix, country, lang)
             t = os.path.join(dest, fn)
-            if not os.path.exists(t):
-                print 'hg cp %s %s' % (s, t)
+            opts = ''
+            if os.path.exists(t):
+                print t
+                print s
+                datasrc = file(s, 'rb').read()
+                datadst = file(t, 'rb').read()
+                if datasrc == datadst:
+                    continue
+                opts = ' --force '
+            print 'hg cp %s %s %s' % (opts, s, t)
 
 if __name__ == '__main__':
     rootpath = os.path.join(os.path.dirname(__file__), '../../')
