@@ -572,8 +572,8 @@ namespace PhoneNumbers
         public static bool CheckNumberGroupingIsValid(
             PhoneNumber number, String candidate, PhoneNumberUtil util, CheckGroups checker)
         {
-            // TODO(lararennie,shaopengjia): Evaluate how this works for other locales (testing has been
-            // limited to NANPA regions) and optimise if necessary.
+            // TODO: Evaluate how this works for other locales (testing has been limited to NANPA regions)
+            // and optimise if necessary.
             StringBuilder normalizedCandidate =
                 PhoneNumberUtil.NormalizeDigits(candidate, true /* keep non-digits */);
             String[] formattedNumberGroups = PhoneNumberMatcher.GetNationalNumberGroups(util, number, null);
