@@ -96,7 +96,7 @@ namespace PhoneNumbers
         // Flags to use when compiling regular expressions for phone numbers.
         internal static readonly RegexOptions REGEX_FLAGS = RegexOptions.IgnoreCase | RegexOptions.CultureInvariant;
         // The minimum and maximum length of the national significant number.
-        internal const int MIN_LENGTH_FOR_NSN = 3;
+        internal const int MIN_LENGTH_FOR_NSN = 2;
         // The ITU says the maximum length should be 15, but we have found longer numbers in Germany.
         internal const int MAX_LENGTH_FOR_NSN = 16;
         // The maximum length of the country calling code.
@@ -135,10 +135,9 @@ namespace PhoneNumbers
 
         const String RFC3966_EXTN_PREFIX = ";ext=";
         private const String RFC3966_PREFIX = "tel:";
-        // We include the "+" here since RFC3966 format specifies that the context must be specified in
-        // international format.
-        private const String RFC3966_PHONE_CONTEXT = ";phone-context=+";
-
+        private const String RFC3966_PHONE_CONTEXT = ";phone-context=";
+        private const String RFC3966_ISDN_SUBADDRESS = ";isub=";
+        
         // A map that contains characters that are essential when dialling. That means any of the
         // characters in this map must not be removed from a number when dialing, otherwise the call will
         // not reach the intended destination.
@@ -172,7 +171,7 @@ namespace PhoneNumbers
         // placeholder for carrier information in some phone numbers. Full-width variants are also
         // present.
         internal const String VALID_PUNCTUATION = "-x\u2010-\u2015\u2212\u30FC\uFF0D-\uFF0F " +
-            "\u00A0\u200B\u2060\u3000()\uFF08\uFF09\uFF3B\uFF3D.\\[\\]/~\u2053\u223C\uFF5E";
+            "\u00A0\u00AD\u200B\u2060\u3000()\uFF08\uFF09\uFF3B\uFF3D.\\[\\]/~\u2053\u223C\uFF5E";
 
         private const String DIGITS = "\\p{Nd}";
 
@@ -330,7 +329,7 @@ namespace PhoneNumbers
             var diallableCharMap = new Dictionary<char, char>();
             foreach (var k in asciiDigitMappings)
                 diallableCharMap[k.Key] = k.Value;
-            diallableCharMap['+'] = '+';
+            diallableCharMap[PLUS_SIGN] = PLUS_SIGN;
             diallableCharMap['*'] = '*';
             DIALLABLE_CHAR_MAPPINGS = diallableCharMap;
 
@@ -557,7 +556,7 @@ namespace PhoneNumbers
                     foreach (var m in meta.MetadataList)
                     {
                         if(isNonGeoRegion)
-                            countryCodeToNonGeographicalMetadataMap[countryCallingCode] = m;
+                            countryCodeToNonGeographicalMetadataMap[m.CountryCode] = m;
                         else
                             regionToMetadataMap[m.Id] = m;
                     }
@@ -600,7 +599,7 @@ namespace PhoneNumbers
 
         /**
         * Checks to see if the string of characters could possibly be a phone number at all. At the
-        * moment, checks to see that the string begins with at least 3 digits, ignoring any punctuation
+        * moment, checks to see that the string begins with at least 2 digits, ignoring any punctuation
         * commonly found in phone numbers.
         * This method does not require the number to be normalized in advance - but does assume that
         * leading non-number symbols have been removed, such as by the method extractPossibleNumber.
@@ -1375,7 +1374,9 @@ namespace PhoneNumbers
             // If no digit is inserted/removed/modified as a result of our formatting, we return the
             // formatted phone number; otherwise we return the raw input the user entered.
             return (formattedNumber != null &&
-                NormalizeDigitsOnly(formattedNumber).Equals(NormalizeDigitsOnly(rawInput)))
+                NormalizeHelper(formattedNumber, DIALLABLE_CHAR_MAPPINGS, true /* remove non matches */)
+                    .Equals(NormalizeHelper(
+                        rawInput, DIALLABLE_CHAR_MAPPINGS, true /* remove non matches */)))
                 ? formattedNumber
                 : rawInput;
         }
@@ -2376,7 +2377,7 @@ namespace PhoneNumbers
             }
             if (countryCodeSource != CountryCodeSource.FROM_DEFAULT_COUNTRY)
             {
-                if (fullNumber.Length < MIN_LENGTH_FOR_NSN)
+                if (fullNumber.Length <= MIN_LENGTH_FOR_NSN)
                 {
                     throw new NumberParseException(ErrorType.TOO_SHORT_AFTER_IDD,
                            "Phone number had an IDD, but after this was not "
@@ -2611,7 +2612,8 @@ namespace PhoneNumbers
         * particular region is not performed. This can be done separately with {@link #isValidNumber}.
         *
         * @param numberToParse     number that we are attempting to parse. This can contain formatting
-        *                          such as +, ( and -, as well as a phone number extension.
+        *                          such as +, ( and -, as well as a phone number extension. It can also
+        *                          be provided in RFC3966 format.
         * @param defaultRegion     region that we are expecting the number to be from. This is only used
         *                          if the number being parsed is not written in international format.
         *                          The country_code for the number in this case would be stored as that
@@ -2726,28 +2728,8 @@ namespace PhoneNumbers
                 throw new NumberParseException(ErrorType.TOO_LONG,
                     "The string supplied was too long to parse.");
 
-            int indexOfPhoneContext = numberToParse.IndexOf(RFC3966_PHONE_CONTEXT);
             StringBuilder nationalNumber = new StringBuilder();
-            if (indexOfPhoneContext > 0)
-            {
-                // Prefix the number with the phone context. The offset here is because the context we are
-                // expecting to match should start with a "+" sign, and we want to include this at the start
-                // of the number.
-                nationalNumber.Append(numberToParse.Substring(indexOfPhoneContext +
-                    RFC3966_PHONE_CONTEXT.Length - 1));
-                // Now append everything between the "tel:" prefix and the phone-context.
-                var rfcOffset = numberToParse.IndexOf(RFC3966_PREFIX) + RFC3966_PREFIX.Length;
-                nationalNumber.Append(numberToParse.Substring(
-                    rfcOffset, indexOfPhoneContext - rfcOffset));
-                // Note that phone-contexts that are URLs will not be parsed - isViablePhoneNumber will throw
-                // an exception below.
-            }
-            else
-            {
-                // Extract a possible number from the string passed in (this strips leading characters that
-                // could not be the start of a phone number.)
-                nationalNumber.Append(ExtractPossibleNumber(numberToParse));
-            }
+            BuildNationalNumberForParsing(numberToParse, nationalNumber);
 
             if (!IsViablePhoneNumber(nationalNumber.ToString()))
                 throw new NumberParseException(ErrorType.NOT_A_NUMBER,
@@ -2853,6 +2835,59 @@ namespace PhoneNumbers
         private static bool AreEqual(PhoneNumber.Builder p1, PhoneNumber.Builder p2)
         {
             return p1.Clone().Build().Equals(p2.Clone().Build());
+        }
+
+        /**
+        * Converts numberToParse to a form that we can parse and write it to nationalNumber if it is
+        * written in RFC3966; otherwise extract a possible number out of it and write to nationalNumber.
+        */
+        private void BuildNationalNumberForParsing(String numberToParse, StringBuilder nationalNumber)
+        {
+            int indexOfPhoneContext = numberToParse.IndexOf(RFC3966_PHONE_CONTEXT);
+            if (indexOfPhoneContext > 0)
+            {
+                int phoneContextStart = indexOfPhoneContext + RFC3966_PHONE_CONTEXT.Length;
+                // If the phone context contains a phone number prefix, we need to capture it, whereas domains
+                // will be ignored.
+                if (numberToParse[phoneContextStart] == PLUS_SIGN)
+                {
+                    // Additional parameters might follow the phone context. If so, we will remove them here
+                    // because the parameters after phone context are not important for parsing the
+                    // phone number.
+                    int phoneContextEnd = numberToParse.IndexOf(';', phoneContextStart);
+                    if (phoneContextEnd > 0)
+                    {
+                        nationalNumber.Append(numberToParse.Substring(phoneContextStart, phoneContextEnd - phoneContextStart));
+                    }
+                    else
+                    {
+                        nationalNumber.Append(numberToParse.Substring(phoneContextStart));
+                    }
+                }
+
+                // Now append everything between the "tel:" prefix and the phone-context. This should include
+                // the national number, an optional extension or isdn-subaddress component.
+                int indexOfPrefix = numberToParse.IndexOf(RFC3966_PREFIX) + RFC3966_PREFIX.Length;
+                nationalNumber.Append(numberToParse.Substring(indexOfPrefix, indexOfPhoneContext - indexOfPrefix));
+            }
+            else
+            {
+                // Extract a possible number from the string passed in (this strips leading characters that
+                // could not be the start of a phone number.)
+                nationalNumber.Append(ExtractPossibleNumber(numberToParse));
+            }
+
+            // Delete the isdn-subaddress and everything after it if it is present. Note extension won't
+            // appear at the same time with isdn-subaddress according to paragraph 5.3 of the RFC3966 spec,
+            int indexOfIsdn = nationalNumber.ToString().IndexOf(RFC3966_ISDN_SUBADDRESS);
+            if (indexOfIsdn > 0)
+            {
+                nationalNumber.Remove(indexOfIsdn, nationalNumber.Length - indexOfIsdn);
+            }
+            // If both phone context and isdn-subaddress are absent but other parameters are present, the
+            // parameters are left in nationalNumber. This is because we are concerned about deleting
+            // content from a potential number string when there is no strong evidence that the number is
+            // actually written in RFC3966.
         }
 
         /**

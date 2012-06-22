@@ -206,6 +206,7 @@ namespace PhoneNumbers.Test
         [Test]
         public void TestEmergency()
         {
+            ShortNumberUtil shortUtil = new ShortNumberUtil(phoneNumberUtil);
             int wrongTypeCounter = 0;
             foreach(var regionCode in phoneNumberUtil.GetSupportedRegions())
             {
@@ -215,7 +216,7 @@ namespace PhoneNumbers.Test
                 {
                     String exampleNumber = desc.ExampleNumber;
                     if (!new PhoneRegex(desc.PossibleNumberPattern).MatchAll(exampleNumber).Success ||
-                        !new PhoneRegex(desc.NationalNumberPattern).MatchAll(exampleNumber).Success)
+                        !shortUtil.IsEmergencyNumber(exampleNumber, regionCode))
                     {
                         wrongTypeCounter++;
                     // LOGGER.log(Level.SEVERE, "Emergency example number test failed for " + regionCode);

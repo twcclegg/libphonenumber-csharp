@@ -67,7 +67,7 @@ namespace PhoneNumbers
         * @param regionCode  the region where the phone number is being dialed
         * @return  if the number exactly matches an emergency services number in the given region.
         */
-        public bool isEmergencyNumber(String number, String regionCode)
+        public bool IsEmergencyNumber(String number, String regionCode)
         {
             return MatchesEmergencyNumberHelper(number, regionCode, false /* doesn't allow prefix match */);
         }
