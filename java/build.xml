@@ -35,6 +35,7 @@
       <arg value="${resources.dir}/PhoneNumberMetaData.xml"/>
       <arg value="libphonenumber/src"/>
       <arg value="false"/> <!-- Not for testing. -->
+      <arg value="false"/> <!-- Not for alternate formats. -->
       <arg value="false"/> <!-- No lite metadata. -->
     </exec>
   </target>
@@ -47,6 +48,7 @@
       <arg value="${resources.dir}/PhoneNumberMetaDataForTesting.xml"/>
       <arg value="libphonenumber/test"/>
       <arg value="true"/> <!-- For testing. -->
+      <arg value="false"/> <!-- Not for alternate formats. -->
       <arg value="false"/> <!-- No lite metadata. -->
     </exec>
   </target>
@@ -172,10 +174,24 @@
     </junitreport>
   </target>
 
+  <target name="testname" unless="test">
+    <fail message="You must run this target with -Dtest=TestName"/>
+  </target>
+
+  <target name="test" depends="test-jar, testname">
+    <junit printsummary="withOutAndErr">
+      <classpath refid="test.classpath"/>
+      <formatter type="plain" usefile="false"/>
+      <batchtest fork="no">
+        <fileset dir="${libphonenumber.test.dir}" includes="**/*${test}.java"/>
+        <fileset dir="${geocoder.test.dir}" includes="**/*${test}.java"/>
+      </batchtest>
+    </junit>
+  </target>
+
   <target name="clean" description="Remove generated files.">
     <delete dir="${build.dir}"/>
   </target>
 
   <target name="clean-build" depends="clean,jar"/>
 </project>
-
