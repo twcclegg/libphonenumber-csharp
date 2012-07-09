@@ -85,7 +85,7 @@ namespace PhoneNumbers
     public class PhoneNumberOfflineGeocoder
     {
         private static PhoneNumberOfflineGeocoder instance = null;
-        private const String MAPPING_DATA_DIRECTORY = "res.";
+        private const String MAPPING_DATA_DIRECTORY = "res.prod_";
         private static Object thisLock = new Object();
 
         private readonly PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
@@ -117,7 +117,15 @@ namespace PhoneNumbers
             {
                 var name = n.Substring(prefix.Length);
                 var pos = name.IndexOf("_");
-                var country = int.Parse(name.Substring(0, pos));
+                int country;
+                try
+                {
+                    country = int.Parse(name.Substring(0, pos));
+                }
+                catch(FormatException e)
+                {
+                    throw new Exception("Failed to parse geocoding file name: " + name);
+                }
                 var language = name.Substring(pos + 1);
                 if (!files.ContainsKey(country))
                     files[country] = new HashSet<String>();

@@ -13,8 +13,6 @@ def copygeocoding(source, prefix, dest):
             t = os.path.join(dest, fn)
             opts = ''
             if os.path.exists(t):
-                print t
-                print s
                 datasrc = file(s, 'rb').read()
                 datadst = file(t, 'rb').read()
                 if datasrc == datadst:
@@ -28,7 +26,7 @@ if __name__ == '__main__':
     if not os.path.exists(dest):
         os.makedirs(dest)
     sources = [
-        (os.path.join(rootpath, 'resources/geocoding'), ''),
+        (os.path.join(rootpath, 'resources/geocoding'), 'prod_'),
         (os.path.join(rootpath, 'resources/test/geocoding'), 'test_'),
         ]
     for source, prefix in sources:

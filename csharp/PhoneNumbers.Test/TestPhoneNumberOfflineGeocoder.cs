@@ -69,6 +69,13 @@ namespace PhoneNumbers.Test
         }
 
         [Test]
+        public void testInstantiationWithRegularData()
+        {
+            PhoneNumberUtil.ResetInstance();
+            geocoder = PhoneNumberOfflineGeocoder.GetInstance();
+        }
+
+        [Test]
         public void testGetDescriptionForNumberWithNoDataFile()
         {
             // No data file containing mappings for US numbers is available in Chinese for the unittests. As
