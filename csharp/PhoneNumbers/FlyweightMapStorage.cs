@@ -118,7 +118,6 @@ namespace PhoneNumbers
         public override void readFromSortedMap(SortedDictionary<int, String> areaCodeMap)
         {
             var descriptionsSet = new HashSet<String>();
-            var descriptionsList = new List<String>();
             numOfEntries = areaCodeMap.Count;
             prefixSizeInBytes = getOptimalNumberOfBytesForValue(areaCodeMap.Keys.Last());
             phoneNumberPrefixes = new ByteBuffer(numOfEntries * prefixSizeInBytes);
@@ -132,31 +131,26 @@ namespace PhoneNumbers
                 int prefix = entry.Key;
                 storeWordInBuffer(phoneNumberPrefixes, prefixSizeInBytes, index, prefix);
                 var lengthOfPrefixRef = (int)Math.Log10(prefix) + 1;
-                if (!possibleLengthsSet.Contains(lengthOfPrefixRef))
-                {
-                    possibleLengthsSet.Add(lengthOfPrefixRef);
-                    possibleLengths.Add(lengthOfPrefixRef);
-                }
-                if (!descriptionsSet.Contains(entry.Value))
-                {
-                    descriptionsSet.Add(entry.Value);
-                    descriptionsList.Add(entry.Value);
-                }
+                possibleLengthsSet.Add(lengthOfPrefixRef);
+                descriptionsSet.Add(entry.Value);
                 index++;
             }
-            createDescriptionPool(descriptionsSet, descriptionsList, areaCodeMap);
+            possibleLengths.Clear();
+            possibleLengths.AddRange(possibleLengthsSet);
+            possibleLengths.Sort();
+            createDescriptionPool(descriptionsSet, areaCodeMap);
         }
 
         /**
         * Creates the description pool from the provided set of string descriptions and area code map.
         */
-        private void createDescriptionPool(HashSet<String> descriptionsSet, List<String> descriptionsList,
-            SortedDictionary<int, String> areaCodeMap)
+        private void createDescriptionPool(HashSet<String> descriptionsSet, SortedDictionary<int, String> areaCodeMap)
         {
             // Create the description pool.
-            descIndexSizeInBytes = getOptimalNumberOfBytesForValue(descriptionsList.Count - 1);
+            descIndexSizeInBytes = getOptimalNumberOfBytesForValue(descriptionsSet.Count - 1);
             descriptionIndexes = new ByteBuffer(numOfEntries * descIndexSizeInBytes);
-            descriptionPool = descriptionsList.ToArray();
+            descriptionPool = descriptionsSet.ToArray();
+            Array.Sort(descriptionPool);
 
             // Map the phone number prefixes to the descriptions.
             int index = 0;

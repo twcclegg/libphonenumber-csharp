@@ -61,16 +61,15 @@ namespace PhoneNumbers
             var possibleLengthsSet = new HashSet<int>();
             foreach (int prefix in sortedAreaCodeMap.Keys)
             {
-                phoneNumberPrefixes[index++] = prefix;
+                phoneNumberPrefixes[index] = prefix;
+                descriptions[index] = sortedAreaCodeMap[prefix];
+                index++;
                 var lengthOfPrefix = (int)Math.Log10(prefix) + 1;
-                possibleLengths.Add(lengthOfPrefix);
-                if (!possibleLengthsSet.Contains(lengthOfPrefix))
-                {
-                    possibleLengthsSet.Add(lengthOfPrefix);
-                    possibleLengths.Add(lengthOfPrefix);
-                }
+                possibleLengthsSet.Add(lengthOfPrefix);
             }
-            sortedAreaCodeMap.Values.CopyTo(descriptions, 0);
+            possibleLengths.Clear();
+            possibleLengths.AddRange(possibleLengthsSet);
+            possibleLengths.Sort();
         }
     }
 }
