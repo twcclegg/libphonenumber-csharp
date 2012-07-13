@@ -75,7 +75,11 @@ namespace PhoneNumbers
             var metadataCollection = new PhoneMetadataCollection.Builder();
             foreach (XmlElement territory in document.GetElementsByTagName("territory"))
             {
-                var regionCode = territory.GetAttribute("id");
+                String regionCode = "";
+                // For the main metadata file this should always be set, but for other supplementary data
+                // files the country calling code may be all that is needed.
+                if (territory.HasAttribute("id"))
+                     regionCode = territory.GetAttribute("id");
                 PhoneMetadata metadata = LoadCountryMetadata(regionCode, territory);
                 metadataCollection.AddMetadata(metadata);
             }
@@ -141,8 +145,7 @@ namespace PhoneNumbers
         }
 
         public static PhoneMetadata.Builder LoadTerritoryTagMetadata(String regionCode, XmlElement element,
-                                                        String nationalPrefix,
-                                                        String nationalPrefixFormattingRule)
+                                                        String nationalPrefix)
         {
             var metadata = new PhoneMetadata.Builder();
             metadata.SetId(regionCode);
@@ -267,7 +270,7 @@ namespace PhoneNumbers
         *  the parent (territory) element.
         */
         // @VisibleForTesting
-        public static void LoadAvailableFormats(PhoneMetadata.Builder metadata, String regionCode,
+        public static void LoadAvailableFormats(PhoneMetadata.Builder metadata,
                                          XmlElement element, String nationalPrefix,
                                          String nationalPrefixFormattingRule,
                                          bool nationalPrefixOptionalWhenFormatting)
@@ -456,12 +459,11 @@ namespace PhoneNumbers
         public static PhoneMetadata LoadCountryMetadata(String regionCode, XmlElement element)
         {
             String nationalPrefix = GetNationalPrefix(element);
+            PhoneMetadata.Builder metadata =
+                LoadTerritoryTagMetadata(regionCode, element, nationalPrefix);
             String nationalPrefixFormattingRule =
                 GetNationalPrefixFormattingRuleFromElement(element, nationalPrefix);
-            PhoneMetadata.Builder metadata =
-                LoadTerritoryTagMetadata(regionCode, element, nationalPrefix, nationalPrefixFormattingRule);
-
-            LoadAvailableFormats(metadata, regionCode, element, nationalPrefix.ToString(),
+            LoadAvailableFormats(metadata, element, nationalPrefix.ToString(),
                                  nationalPrefixFormattingRule.ToString(),
                                  element.HasAttribute(NATIONAL_PREFIX_OPTIONAL_WHEN_FORMATTING));
             LoadGeneralDesc(metadata, element);
