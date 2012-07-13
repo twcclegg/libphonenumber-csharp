@@ -54,6 +54,7 @@
     <Compile Include="FlyweightMapStorage.cs" />
     <Compile Include="LocaleData.cs" />
     <Compile Include="MappingFileProvider.cs" />
+    <Compile Include="MetadataManager.cs" />
     <Compile Include="NumberParseException.cs" />
     <Compile Include="Phonemetadata.cs" />
     <Compile Include="Phonenumber.cs" />
@@ -212,6 +213,9 @@
     <EmbeddedResource Include="res\prod_90_en" />
     <EmbeddedResource Include="res\prod_90_tr" />
     <EmbeddedResource Include="res\prod_94_en" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="PhoneNumberAlternateFormats.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
