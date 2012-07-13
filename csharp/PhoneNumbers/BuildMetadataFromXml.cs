@@ -106,7 +106,8 @@ namespace PhoneNumbers
                 {
                     // For most countries, there will be only one region code for the country calling code.
                     List<String> listWithRegionCode = new List<String>(1);
-                    listWithRegionCode.Add(regionCode);
+                    if(regionCode.Length > 0)
+                        listWithRegionCode.Add(regionCode);
                     countryCodeToRegionCodeMap[countryCode] = listWithRegionCode;
                 }
             }
