@@ -211,8 +211,15 @@ namespace PhoneNumbers
         // The symbol 'x' is allowed here as valid punctuation since it is often used as a placeholder for
         // carrier codes, for example in Brazilian phone numbers. We also allow multiple "+" characters at
         // the start.
-        // Corresponds to the following:
+        // [digits]{minLengthNsn}|
         // plus_sign*(([punctuation]|[star])*[digits]){3,}([punctuation]|[star]|[digits]|[alpha])*
+        //
+        // The first reg-ex is to allow short numbers (two digits long) to be parsed if they are entered
+        // as "15" etc, but only if there is no punctuation in them. The second expression restricts the
+        // number of digits to three or more, but then allows them to be in international form, and to
+        // have alpha-characters and punctuation.
+        //
+        // Note VALID_PUNCTUATION starts with a -, so must be the first in the range.
         private static readonly String VALID_PHONE_NUMBER;
 
         // Default extension prefix to use when formatting. This will be put in front of any extension
@@ -373,6 +380,7 @@ namespace PhoneNumbers
 
             CAPTURING_EXTN_DIGITS = "(" + DIGITS + "{1,7})";
             VALID_PHONE_NUMBER =
+                DIGITS + "{" + MIN_LENGTH_FOR_NSN + "}" + "|" +
                 "[" + PLUS_CHARS + "]*(?:[" + VALID_PUNCTUATION + STAR_SIGN + "]*" + DIGITS + "){3,}[" +
                 VALID_PUNCTUATION + STAR_SIGN + VALID_ALPHA + DIGITS + "]*";
 

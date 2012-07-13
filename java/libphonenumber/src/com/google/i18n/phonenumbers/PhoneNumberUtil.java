@@ -265,10 +265,18 @@ public class PhoneNumberUtil {
   // carrier codes, for example in Brazilian phone numbers. We also allow multiple "+" characters at
   // the start.
   // Corresponds to the following:
+  // [digits]{minLengthNsn}|
   // plus_sign*(([punctuation]|[star])*[digits]){3,}([punctuation]|[star]|[digits]|[alpha])*
+  //
+  // The first reg-ex is to allow short numbers (two digits long) to be parsed if they are entered
+  // as "15" etc, but only if there is no punctuation in them. The second expression restricts the
+  // number of digits to three or more, but then allows them to be in international form, and to
+  // have alpha-characters and punctuation.
+  //
   // Note VALID_PUNCTUATION starts with a -, so must be the first in the range.
   private static final String VALID_PHONE_NUMBER =
-      "[" + PLUS_CHARS + "]*(?:[" + VALID_PUNCTUATION + STAR_SIGN + "]*" + DIGITS + "){3,}[" +
+      DIGITS + "{" + MIN_LENGTH_FOR_NSN + "}" + "|" +
+      "[" + PLUS_CHARS + "]*+(?:[" + VALID_PUNCTUATION + STAR_SIGN + "]*" + DIGITS + "){3,}[" +
       VALID_PUNCTUATION + STAR_SIGN + VALID_ALPHA + DIGITS + "]*";
 
   // Default extension prefix to use when formatting. This will be put in front of any extension
@@ -2416,7 +2424,7 @@ public class PhoneNumberUtil {
       int numOfGroups = prefixMatcher.groupCount();
       String transformRule = metadata.getNationalPrefixTransformRule();
       if (transformRule == null || transformRule.length() == 0 ||
-          prefixMatcher.group(numOfGroups - 1) == null) {
+          prefixMatcher.group(numOfGroups) == null) {
         // If the original number was viable, and the resultant number is not, we return.
         if (isViableOriginalNumber &&
             !nationalNumberRule.matcher(number.substring(prefixMatcher.end())).matches()) {

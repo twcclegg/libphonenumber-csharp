@@ -581,6 +581,20 @@ namespace PhoneNumbers
             {
                 return true;
             }
+            // If this didn't pass, see if there are any alternate formats, and try them instead.
+            var alternateFormats =
+                MetadataManager.GetAlternateFormatsForCountry(number.CountryCode);
+            if (alternateFormats != null)
+            {
+                foreach (var alternateFormat in alternateFormats.NumberFormatList)
+                {
+                    formattedNumberGroups = GetNationalNumberGroups(util, number, alternateFormat);
+                    if (checker(util, number, normalizedCandidate, formattedNumberGroups))
+                    {
+                        return true;
+                    }
+                }
+            }
             return false;
         }
 

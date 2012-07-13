@@ -434,7 +434,12 @@ namespace PhoneNumbers.Test
     new NumberTest("\uFF14\uFF11\uFF15\uFF16\uFF16\uFF16\uFF16-\uFF17\uFF17\uFF17", RegionCode.US),
     new NumberTest("2012-0102 08", RegionCode.US),  // Very strange formatting.
     new NumberTest("2012-01-02 08", RegionCode.US),
-    new NumberTest("1800-10-10 22", RegionCode.AU),  // Breakdown assistance number.
+     // Breakdown assistance number with unexpected formatting.
+    new NumberTest("1800-1-0-10 22", RegionCode.AU),
+    new NumberTest("030-3-2 23 12 34", RegionCode.DE),
+    new NumberTest("03 0 -3 2 23 12 34", RegionCode.DE),
+    new NumberTest("(0)3 0 -3 2 23 12 34", RegionCode.DE),
+    new NumberTest("0 3 0 -3 2 23 12 34", RegionCode.DE),
   };
 
         /**
@@ -447,6 +452,11 @@ namespace PhoneNumbers.Test
     // Should be found by strict grouping but not exact grouping, as the last two groups are
     // formatted together as a block.
     new NumberTest("0800-2491234", "DE"),
+    // Doesn't match any formatting in the test file, but almost matches an alternate format (the
+    // last two groups have been squashed together here).
+    new NumberTest("0900-1 123123", RegionCode.DE),
+    new NumberTest("(0)900-1 123123", RegionCode.DE),
+    new NumberTest("0 900-1 123123", RegionCode.DE),
   };
 
         /**
@@ -473,6 +483,11 @@ namespace PhoneNumbers.Test
             new NumberTest("0494949 ext. 49", "DE"),
             new NumberTest("01 (33) 3461 2234", RegionCode.MX),  // Optional NP present
             new NumberTest("(33) 3461 2234", RegionCode.MX),  // Optional NP omitted
+            new NumberTest("1800-10-10 22", RegionCode.AU),  // Breakdown assistance number.
+            // Doesn't match any formatting in the test file, but matches an alternate format exactly.
+            new NumberTest("0900-1 123 123", RegionCode.DE),
+            new NumberTest("(0)900-1 123 123", RegionCode.DE),
+            new NumberTest("0 900-1 123 123", RegionCode.DE),
         };
 
         [Test]
@@ -867,7 +882,7 @@ namespace PhoneNumbers.Test
             contextPairs.Add(new NumberContext("It's cheap! Call ", " before 6:30"));
             // With a second number later.
             contextPairs.Add(new NumberContext("Call ", " or +1800-123-4567!"));
-            contextPairs.Add(new NumberContext("Call me on June 21 at", ""));  // with a Month-Day date
+            contextPairs.Add(new NumberContext("Call me on June 2 at", ""));  // with a Month-Day date
             // With publication pages.
             contextPairs.Add(new NumberContext(
             "As quoted by Alfonso 12-15 (2009), you may call me at ", ""));

@@ -1396,16 +1396,20 @@ namespace PhoneNumbers.Test
         [Test]
         public void TestIsViablePhoneNumber()
         {
+            Assert.False(PhoneNumberUtil.IsViablePhoneNumber("1"));
             // Only one or two digits before strange non-possible punctuation.
-            Assert.False(PhoneNumberUtil.IsViablePhoneNumber("12. March"));
             Assert.False(PhoneNumberUtil.IsViablePhoneNumber("1+1+1"));
             Assert.False(PhoneNumberUtil.IsViablePhoneNumber("80+0"));
-            Assert.False(PhoneNumberUtil.IsViablePhoneNumber("00"));
-            // Three digits is viable.
+             // Two digits is viable.
+            Assert.True(PhoneNumberUtil.IsViablePhoneNumber("00"));
             Assert.That(PhoneNumberUtil.IsViablePhoneNumber("111"));
             // Alpha numbers.
             Assert.That(PhoneNumberUtil.IsViablePhoneNumber("0800-4-pizza"));
             Assert.That(PhoneNumberUtil.IsViablePhoneNumber("0800-4-PIZZA"));
+            // We need at least three digits before any alpha characters.
+            Assert.False(PhoneNumberUtil.IsViablePhoneNumber("08-PIZZA"));
+            Assert.False(PhoneNumberUtil.IsViablePhoneNumber("8-PIZZA"));
+            Assert.False(PhoneNumberUtil.IsViablePhoneNumber("12. March"));
         }
 
         [Test]
@@ -1788,6 +1792,10 @@ namespace PhoneNumbers.Test
             // Test star numbers. Although this is not strictly valid, we would like to make sure we can
             // parse the output we produce when formatting the number.
             Assert.AreEqual(JP_STAR_NUMBER, phoneUtil.Parse("+81 *2345", RegionCode.JP));
+
+            PhoneNumber shortNumber = new PhoneNumber.Builder()
+                .SetCountryCode(64).SetNationalNumber(12L).Build();
+            Assert.AreEqual(shortNumber, phoneUtil.Parse("12", RegionCode.NZ));
         }
 
         [Test]
@@ -1976,6 +1984,45 @@ namespace PhoneNumbers.Test
                 Assert.AreEqual(ErrorType.NOT_A_NUMBER,
                              e.ErrorType,
                              "Wrong error type stored in exception.");
+            }
+            try
+            {
+                String sentencePhoneNumber = "1 Still not a number";
+                phoneUtil.Parse(sentencePhoneNumber, RegionCode.NZ);
+                Assert.Fail("This should not parse without throwing an exception " + sentencePhoneNumber);
+            }
+            catch (NumberParseException e)
+            {
+                // Expected this exception.
+                Assert.AreEqual(ErrorType.NOT_A_NUMBER,
+                       e.ErrorType,
+                       "Wrong error type stored in exception.");
+            }
+            try
+            {
+                String sentencePhoneNumber = "1 MICROSOFT";
+                phoneUtil.Parse(sentencePhoneNumber, RegionCode.NZ);
+                Assert.Fail("This should not parse without throwing an exception " + sentencePhoneNumber);
+            }
+            catch (NumberParseException e)
+            {
+                // Expected this exception.
+                Assert.AreEqual(ErrorType.NOT_A_NUMBER,
+                       e.ErrorType,
+                       "Wrong error type stored in exception.");
+            }
+            try
+            {
+                String sentencePhoneNumber = "12 MICROSOFT";
+                phoneUtil.Parse(sentencePhoneNumber, RegionCode.NZ);
+                Assert.Fail("This should not parse without throwing an exception " + sentencePhoneNumber);
+            }
+            catch (NumberParseException e)
+            {
+                // Expected this exception.
+                Assert.AreEqual(ErrorType.NOT_A_NUMBER,
+                       e.ErrorType,
+                       "Wrong error type stored in exception.");
             }
             try
             {
@@ -2523,7 +2570,7 @@ namespace PhoneNumbers.Test
 
             // Invalid numbers that can't be parsed.
             Assert.AreEqual(PhoneNumberUtil.MatchType.NOT_A_NUMBER,
-                phoneUtil.IsNumberMatch("43", "3 331 6043"));
+                phoneUtil.IsNumberMatch("4", "3 331 6043"));
             Assert.AreEqual(PhoneNumberUtil.MatchType.NOT_A_NUMBER,
                 phoneUtil.IsNumberMatch("+43", "+64 3 331 6005"));
             Assert.AreEqual(PhoneNumberUtil.MatchType.NOT_A_NUMBER,
@@ -2644,16 +2691,12 @@ namespace PhoneNumbers.Test
             Assert.That(phoneUtil.IsAlphaNumber("1800 six-flags"));
             Assert.That(phoneUtil.IsAlphaNumber("1800 six-flags ext. 1234"));
             Assert.That(phoneUtil.IsAlphaNumber("+800 six-flags"));
+            Assert.That(phoneUtil.IsAlphaNumber("180 six-flags"));
             Assert.False(phoneUtil.IsAlphaNumber("1800 123-1234"));
+            Assert.False(phoneUtil.IsAlphaNumber("1 six-flags"));
+            Assert.False(phoneUtil.IsAlphaNumber("18 six-flags"));
             Assert.False(phoneUtil.IsAlphaNumber("1800 123-1234 extension: 1234"));
             Assert.False(phoneUtil.IsAlphaNumber("+800 1234-1234"));
         }
     }
 }
-/*
-
-
-
-
-}
-*/
