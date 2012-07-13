@@ -67,7 +67,7 @@
     <Compile Include="RegionCode.cs" />
     <Compile Include="ShortNumberUtil.cs" />
     <Compile Include="Util.cs" />
-    <Compile Include="XmlParser.cs" />
+    <Compile Include="BuildMetadataFromXml.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="PhoneNumberMetaData.xml" />
