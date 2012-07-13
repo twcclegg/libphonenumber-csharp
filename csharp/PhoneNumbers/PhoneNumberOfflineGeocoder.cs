@@ -122,7 +122,7 @@ namespace PhoneNumbers
                 {
                     country = int.Parse(name.Substring(0, pos));
                 }
-                catch(FormatException e)
+                catch(FormatException)
                 {
                     throw new Exception("Failed to parse geocoding file name: " + name);
                 }

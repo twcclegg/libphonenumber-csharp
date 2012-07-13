@@ -21,6 +21,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.XPath;
+using System.Reflection;
 
 namespace PhoneNumbers
 {
@@ -464,6 +465,17 @@ namespace PhoneNumbers
                                  element.HasAttribute(NATIONAL_PREFIX_OPTIONAL_WHEN_FORMATTING));
             LoadGeneralDesc(metadata, element);
             return metadata.Build();
+        }
+
+        public static Dictionary<int, List<String>> GetCountryCodeToRegionCodeMap(String filePrefix)
+        {
+            var asm = Assembly.GetExecutingAssembly();
+            var name = asm.GetManifestResourceNames().Where(n => n.EndsWith(filePrefix)).FirstOrDefault() ?? "missing";
+            using (var stream = asm.GetManifestResourceStream(name))
+            {
+                var collection = BuildPhoneMetadataCollection(stream, false);
+                return BuildCountryCodeToRegionCodeMap(collection);
+            }
         }
     }
 }

@@ -28,86 +28,8 @@ namespace PhoneNumbers.Test
         // indicated with "isMainCountryForCode" in the metadata should be first.
         internal static Dictionary<int, List<String>> GetCountryCodeToRegionCodeMap()
         {
-            // The capacity is set to 24 as there are 18 different country codes,
-            // and this offers a load factor of roughly 0.75.
-            var countryCodeToRegionCodeMap = new Dictionary<int, List<String>>(24);
-
-            List<String> listWithRegionCode;
-            listWithRegionCode = new List<String>(2);
-            listWithRegionCode.Add("US");
-            listWithRegionCode.Add("BS");
-            countryCodeToRegionCodeMap[1] = listWithRegionCode;
-
-            listWithRegionCode = new List<String>(1);
-            listWithRegionCode.Add("IT");
-            countryCodeToRegionCodeMap[39] = listWithRegionCode;
-
-            listWithRegionCode = new List<String>(1);
-            listWithRegionCode.Add("GB");
-            countryCodeToRegionCodeMap[44] = listWithRegionCode;
-
-            listWithRegionCode = new List<String>(1);
-            listWithRegionCode.Add("PL");
-            countryCodeToRegionCodeMap[48] = listWithRegionCode;
-
-            listWithRegionCode = new List<String>(1);
-            listWithRegionCode.Add("DE");
-            countryCodeToRegionCodeMap[49] = listWithRegionCode;
-
-            listWithRegionCode = new List<String>(1);
-            listWithRegionCode.Add("MX");
-            countryCodeToRegionCodeMap[52] = listWithRegionCode;
-
-            listWithRegionCode = new List<String>(1);
-            listWithRegionCode.Add("AR");
-            countryCodeToRegionCodeMap[54] = listWithRegionCode;
-
-            listWithRegionCode = new List<String>(1);
-            listWithRegionCode.Add("BR");
-            countryCodeToRegionCodeMap[55] = listWithRegionCode;
-
-            listWithRegionCode = new List<String>(1);
-            listWithRegionCode.Add("AU");
-            countryCodeToRegionCodeMap[61] = listWithRegionCode;
-
-            listWithRegionCode = new List<String>(1);
-            listWithRegionCode.Add("NZ");
-            countryCodeToRegionCodeMap[64] = listWithRegionCode;
-
-            listWithRegionCode = new List<String>(1);
-            listWithRegionCode.Add("SG");
-            countryCodeToRegionCodeMap[65] = listWithRegionCode;
-
-            listWithRegionCode = new List<String>(1);
-            listWithRegionCode.Add("JP");
-            countryCodeToRegionCodeMap[81] = listWithRegionCode;
-
-            listWithRegionCode = new List<String>(1);
-            listWithRegionCode.Add("KR");
-            countryCodeToRegionCodeMap[82] = listWithRegionCode;
-
-            listWithRegionCode = new List<String>(1);
-            listWithRegionCode.Add("AO");
-            countryCodeToRegionCodeMap[244] = listWithRegionCode;
-
-            listWithRegionCode = new List<String>(2);
-            listWithRegionCode.Add("RE");
-            listWithRegionCode.Add("YT");
-            countryCodeToRegionCodeMap[262] = listWithRegionCode;
-
-            listWithRegionCode = new List<String>(1);
-            listWithRegionCode.Add("AD");
-            countryCodeToRegionCodeMap[376] = listWithRegionCode;
-
-            listWithRegionCode = new List<String>(1);
-            listWithRegionCode.Add("001");
-            countryCodeToRegionCodeMap[800] = listWithRegionCode;
-
-            listWithRegionCode = new List<String>(1);
-            listWithRegionCode.Add("001");
-            countryCodeToRegionCodeMap[979] = listWithRegionCode;
-
-            return countryCodeToRegionCodeMap;
+            return BuildMetadataFromXml.GetCountryCodeToRegionCodeMap(
+                TestMetadataTestCase.TEST_META_DATA_FILE_PREFIX);
         }
     }
 }
