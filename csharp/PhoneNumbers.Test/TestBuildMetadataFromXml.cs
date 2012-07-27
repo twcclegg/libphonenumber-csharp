@@ -419,7 +419,7 @@ namespace PhoneNumbers.Test
             XmlElement territoryElement = parseXmlString("<territory/>");
 
             var phoneNumberDesc = BuildMetadataFromXml.ProcessPhoneNumberDescElement(
-                null, territoryElement, "invalidType");
+                null, territoryElement, "invalidType", false);
             Assert.AreEqual("NA", phoneNumberDesc.PossibleNumberPattern);
             Assert.AreEqual("NA", phoneNumberDesc.NationalNumberPattern);
         }
@@ -432,7 +432,7 @@ namespace PhoneNumbers.Test
             XmlElement territoryElement = parseXmlString("<territory><fixedLine/></territory>");
 
             var phoneNumberDesc = BuildMetadataFromXml.ProcessPhoneNumberDescElement(
-                generalDesc, territoryElement, "fixedLine");
+                generalDesc, territoryElement, "fixedLine", false);
             Assert.AreEqual("\\d{6}", phoneNumberDesc.PossibleNumberPattern);
         }
 
@@ -448,31 +448,21 @@ namespace PhoneNumbers.Test
             XmlElement territoryElement = parseXmlString(xmlInput);
 
             var phoneNumberDesc = BuildMetadataFromXml.ProcessPhoneNumberDescElement(
-                generalDesc, territoryElement, "fixedLine");
+                generalDesc, territoryElement, "fixedLine", false);
             Assert.AreEqual("\\d{6}", phoneNumberDesc.PossibleNumberPattern);
         }
 
         [Test]
         public void TestProcessPhoneNumberDescElementHandlesLiteBuild()
         {
-            try
-            {
-                BuildMetadataFromXml.LiteBuild = true;
-                String xmlInput =
-                    "<territory><fixedLine>" +
-                    "  <exampleNumber>01 01 01 01</exampleNumber>" +
-                    "</fixedLine></territory>";
-                XmlElement territoryElement = parseXmlString(xmlInput);
-                var phoneNumberDesc = BuildMetadataFromXml.ProcessPhoneNumberDescElement(
-                    null, territoryElement, "fixedLine");
-                Assert.AreEqual("", phoneNumberDesc.ExampleNumber);
-            }
-            finally
-            {
-                // Restore the lite build parameter to its default value (false) to avoid potential
-                // side-effects in other tests.
-                BuildMetadataFromXml.LiteBuild = false;
-            }
+            String xmlInput =
+                "<territory><fixedLine>" +
+                "  <exampleNumber>01 01 01 01</exampleNumber>" +
+                "</fixedLine></territory>";
+            XmlElement territoryElement = parseXmlString(xmlInput);
+            var phoneNumberDesc = BuildMetadataFromXml.ProcessPhoneNumberDescElement(
+                null, territoryElement, "fixedLine", true);
+            Assert.AreEqual("", phoneNumberDesc.ExampleNumber);
         }
 
         [Test]
@@ -485,7 +475,7 @@ namespace PhoneNumbers.Test
             XmlElement territoryElement = parseXmlString(xmlInput);
 
             var phoneNumberDesc = BuildMetadataFromXml.ProcessPhoneNumberDescElement(
-                null, territoryElement, "fixedLine");
+                null, territoryElement, "fixedLine", false);
             Assert.AreEqual("01 01 01 01", phoneNumberDesc.ExampleNumber);
         }
 
@@ -499,7 +489,7 @@ namespace PhoneNumbers.Test
             XmlElement countryElement = parseXmlString(xmlInput);
 
             var phoneNumberDesc = BuildMetadataFromXml.ProcessPhoneNumberDescElement(
-                null, countryElement, "fixedLine");
+                null, countryElement, "fixedLine", false);
             Assert.AreEqual("\\d{6}", phoneNumberDesc.PossibleNumberPattern);
         }
 
@@ -515,7 +505,7 @@ namespace PhoneNumbers.Test
             XmlElement territoryElement = parseXmlString(xmlInput);
             PhoneMetadata.Builder metadata = new PhoneMetadata.Builder();
             // Should set sameMobileAndFixedPattern to true.
-            BuildMetadataFromXml.LoadGeneralDesc(metadata, territoryElement);
+            BuildMetadataFromXml.LoadGeneralDesc(metadata, territoryElement, false);
             Assert.True(metadata.SameMobileAndFixedLinePattern);
         }
 
@@ -537,7 +527,7 @@ namespace PhoneNumbers.Test
                  "</territory>";
             XmlElement territoryElement = parseXmlString(xmlInput);
             PhoneMetadata.Builder metadata = new PhoneMetadata.Builder();
-            BuildMetadataFromXml.LoadGeneralDesc(metadata, territoryElement);
+            BuildMetadataFromXml.LoadGeneralDesc(metadata, territoryElement, false);
             Assert.AreEqual("\\d{1}", metadata.FixedLine.NationalNumberPattern);
             Assert.AreEqual("\\d{2}", metadata.Mobile.NationalNumberPattern);
             Assert.AreEqual("\\d{3}", metadata.Pager.NationalNumberPattern);

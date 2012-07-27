@@ -63,12 +63,9 @@ namespace PhoneNumbers
         private static readonly String VOICEMAIL = "voicemail";
         private static readonly String VOIP = "voip";
 
-        static public bool LiteBuild { get; set; }
-
         // Build the PhoneMetadataCollection from the input XML file.
         public static PhoneMetadataCollection BuildPhoneMetadataCollection(Stream input, bool liteBuild)
         {
-            BuildMetadataFromXml.LiteBuild = liteBuild;
             var document = new XmlDocument();
             document.Load(input);
             document.Normalize();
@@ -80,7 +77,7 @@ namespace PhoneNumbers
                 // files the country calling code may be all that is needed.
                 if (territory.HasAttribute("id"))
                      regionCode = territory.GetAttribute("id");
-                PhoneMetadata metadata = LoadCountryMetadata(regionCode, territory);
+                PhoneMetadata metadata = LoadCountryMetadata(regionCode, territory, liteBuild);
                 metadataCollection.AddMetadata(metadata);
             }
             return metadataCollection.Build();
@@ -388,7 +385,7 @@ namespace PhoneNumbers
         * @return  complete description of that phone number type
         */
         public static PhoneNumberDesc ProcessPhoneNumberDescElement(PhoneNumberDesc generalDesc,
-            XmlElement countryElement, String numberType)
+            XmlElement countryElement, String numberType, bool liteBuild)
         {
             if (generalDesc == null)
                 generalDesc = new PhoneNumberDesc.Builder().Build();
@@ -412,7 +409,7 @@ namespace PhoneNumbers
                 if (validPattern.Count > 0)
                     numberDesc.SetNationalNumberPattern(ValidateRE(validPattern[0].InnerText, true));
 
-                if (!LiteBuild)
+                if (!liteBuild)
                 {
                     var exampleNumber = element.GetElementsByTagName(EXAMPLE_NUMBER);
                     if (exampleNumber.Count > 0)
@@ -431,32 +428,31 @@ namespace PhoneNumbers
         }
 
         // @VisibleForTesting
-        public static void LoadGeneralDesc(PhoneMetadata.Builder metadata, XmlElement element)
+        public static void LoadGeneralDesc(PhoneMetadata.Builder metadata, XmlElement element, bool liteBuild)
         {
-            var generalDesc = ProcessPhoneNumberDescElement(null,
-                element, GENERAL_DESC);
+            var generalDesc = ProcessPhoneNumberDescElement(null, element, GENERAL_DESC, liteBuild);
             metadata.SetGeneralDesc(generalDesc);
 
-            metadata.SetFixedLine(ProcessPhoneNumberDescElement(generalDesc, element, FIXED_LINE));
-            metadata.SetMobile(ProcessPhoneNumberDescElement(generalDesc, element, MOBILE));
-            metadata.SetTollFree(ProcessPhoneNumberDescElement(generalDesc, element, TOLL_FREE));
-            metadata.SetPremiumRate(ProcessPhoneNumberDescElement(generalDesc, element, PREMIUM_RATE));
-            metadata.SetSharedCost(ProcessPhoneNumberDescElement(generalDesc, element, SHARED_COST));
-            metadata.SetVoip(ProcessPhoneNumberDescElement(generalDesc, element, VOIP));
+            metadata.SetFixedLine(ProcessPhoneNumberDescElement(generalDesc, element, FIXED_LINE, liteBuild));
+            metadata.SetMobile(ProcessPhoneNumberDescElement(generalDesc, element, MOBILE, liteBuild));
+            metadata.SetTollFree(ProcessPhoneNumberDescElement(generalDesc, element, TOLL_FREE, liteBuild));
+            metadata.SetPremiumRate(ProcessPhoneNumberDescElement(generalDesc, element, PREMIUM_RATE, liteBuild));
+            metadata.SetSharedCost(ProcessPhoneNumberDescElement(generalDesc, element, SHARED_COST, liteBuild));
+            metadata.SetVoip(ProcessPhoneNumberDescElement(generalDesc, element, VOIP, liteBuild));
             metadata.SetPersonalNumber(ProcessPhoneNumberDescElement(generalDesc, element,
-                                                                     PERSONAL_NUMBER));
-            metadata.SetPager(ProcessPhoneNumberDescElement(generalDesc, element, PAGER));
-            metadata.SetUan(ProcessPhoneNumberDescElement(generalDesc, element, UAN));
-            metadata.SetVoicemail(ProcessPhoneNumberDescElement(generalDesc, element, VOICEMAIL));
-            metadata.SetEmergency(ProcessPhoneNumberDescElement(generalDesc, element, EMERGENCY));
+                                                                     PERSONAL_NUMBER, liteBuild));
+            metadata.SetPager(ProcessPhoneNumberDescElement(generalDesc, element, PAGER, liteBuild));
+            metadata.SetUan(ProcessPhoneNumberDescElement(generalDesc, element, UAN, liteBuild));
+            metadata.SetVoicemail(ProcessPhoneNumberDescElement(generalDesc, element, VOICEMAIL, liteBuild));
+            metadata.SetEmergency(ProcessPhoneNumberDescElement(generalDesc, element, EMERGENCY, liteBuild));
             metadata.SetNoInternationalDialling(ProcessPhoneNumberDescElement(generalDesc, element,
-                                                                              NO_INTERNATIONAL_DIALLING));
+                                                                              NO_INTERNATIONAL_DIALLING, liteBuild));
             metadata.SetSameMobileAndFixedLinePattern(
                 metadata.Mobile.NationalNumberPattern.Equals(
                 metadata.FixedLine.NationalNumberPattern));
         }
 
-        public static PhoneMetadata LoadCountryMetadata(String regionCode, XmlElement element)
+        public static PhoneMetadata LoadCountryMetadata(String regionCode, XmlElement element, bool liteBuild)
         {
             String nationalPrefix = GetNationalPrefix(element);
             PhoneMetadata.Builder metadata =
@@ -466,7 +462,7 @@ namespace PhoneNumbers
             LoadAvailableFormats(metadata, element, nationalPrefix.ToString(),
                                  nationalPrefixFormattingRule.ToString(),
                                  element.HasAttribute(NATIONAL_PREFIX_OPTIONAL_WHEN_FORMATTING));
-            LoadGeneralDesc(metadata, element);
+            LoadGeneralDesc(metadata, element, liteBuild);
             return metadata.Build();
         }
 
