@@ -14,9 +14,9 @@
 
      @author: Shaopeng Jia
 
-     MetaData on Phone Number Plan and formatting rules. This file is used
+     Metadata on Phone Number Plan and formatting rules. This file is used
      solely for the purpose of unittesting, so data in this file is not
-     necessarily consistent with that of PhoneNumberMetaData.xml.
+     necessarily consistent with that of PhoneNumberMetadata.xml.
 -->
 
 <phoneNumberMetadata>
@@ -25,9 +25,23 @@
     <territory id="AD" countryCode="376" internationalPrefix="00">
     </territory>
 
+    <!-- United Arab Emirates -->
+    <!-- Added since when formatting the number for mobile dialling we have special rules to handle
+         it. -->
+    <territory id="AE" countryCode="971" internationalPrefix="00">
+      <generalDesc>
+        <nationalNumberPattern>[1-9]\d{8}</nationalNumberPattern>
+        <possibleNumberPattern>\d{9}</possibleNumberPattern>
+      </generalDesc>
+      <uan>
+        <nationalNumberPattern>600\d{6}</nationalNumberPattern>
+        <exampleNumber>600123456</exampleNumber>
+      </uan>
+    </territory>
+
     <!-- Angola -->
-    <!-- This country has been coopted to test the case of a national prefix
-    with a non-numeric symbol in it. -->
+    <!-- This country has been coopted to test the case of a national prefix with a non-numeric
+         symbol in it. It is also useful since it has no national prefix formatting rule. -->
     <territory id="AO" countryCode="244" internationalPrefix="00" nationalPrefix="0~0">
       <availableFormats>
         <numberFormat pattern="(\d{3})(\d{3})(\d{3})">
@@ -43,7 +57,7 @@
         <exampleNumber>222123456</exampleNumber>
       </fixedLine>
       <mobile>
-        <!-- Expanded the 92 prefix possibilities to matchnumbers found online. -->
+        <!-- Expanded the 92 prefix possibilities to match numbers found online. -->
         <nationalNumberPattern>9[1-3]\d{7}</nationalNumberPattern>
         <exampleNumber>923123456</exampleNumber>
       </mobile>
@@ -105,6 +119,7 @@
     </territory>
 
     <!-- Australia -->
+    <!-- Country calling code shared with Cocos Islands (CC) and Christmas Islands (CX) -->
     <territory id="AU" countryCode="61" internationalPrefix="001[12]"
                nationalPrefix="0" preferredInternationalPrefix="0011"
                nationalPrefixFormattingRule="$NP$FG">
@@ -141,16 +156,14 @@
       </premiumRate>
     </territory>
 
+    <!-- Barbados -->
+    <territory id="BB" countryCode="1" internationalPrefix="011">
+    </territory>
+
     <!-- Brazil -->
-    <territory id="BR" countryCode="55" internationalPrefix="0014" nationalPrefix="0">
-      <emergency>
-        <nationalNumberPattern>
-          19[023]|
-          911
-        </nationalNumberPattern>
-        <possibleNumberPattern>\d{3}</possibleNumberPattern>
-        <exampleNumber>190</exampleNumber>
-      </emergency>
+    <!-- This country is used to test ShortNumberInfo, so at least the country calling code must be
+         recognised by the library. -->
+    <territory id="BR" countryCode="55">
     </territory>
 
     <!-- Bahamas -->
@@ -177,6 +190,77 @@
       </premiumRate>
     </territory>
 
+    <!-- Belarus -->
+    <!-- This country has been coopted to test the case of a national prefix formatting rule with a
+         space in it and the case where a number happens to begin with the national prefix, but
+         would become too short if the prefix is stripped. -->
+    <territory id="BY" countryCode="375" internationalPrefix="810" nationalPrefix="8"
+               nationalPrefixForParsing="80?|99999" nationalPrefixFormattingRule="$NP $FG">
+      <availableFormats>
+        <!-- We make some bogus formatting templates that differ only in length to check that
+             switching formatting patterns works as expected.-->
+        <numberFormat pattern="(\d{4})">
+          <leadingDigits>[1-8]</leadingDigits>
+          <format>$1</format>
+        </numberFormat>
+        <!-- This pattern has an override to remove the space after the national prefix. -->
+        <numberFormat pattern="(\d{2})(\d{3})" nationalPrefixFormattingRule="$NP$FG">
+          <leadingDigits>[1-8]</leadingDigits>
+          <format>$1 $2</format>
+        </numberFormat>
+        <numberFormat pattern="(\d{3})(\d{3})">
+          <leadingDigits>[1-8]</leadingDigits>
+          <format>$1 $2</format>
+        </numberFormat>
+      </availableFormats>
+      <generalDesc>
+        <!-- This numbering plan is completely bogus, but is used to test the AYTF logic. For that
+             reason, it is kept very simple. -->
+        <nationalNumberPattern>[1-9]\d{5}</nationalNumberPattern>
+        <possibleNumberPattern>\d{6}</possibleNumberPattern>
+      </generalDesc>
+      <fixedLine>
+        <exampleNumber>112345</exampleNumber>
+      </fixedLine>
+    </territory>
+
+    <!-- Canada -->
+    <territory id="CA" countryCode="1" internationalPrefix="011">
+    </territory>
+
+    <!-- Cocos Islands -->
+    <!-- Country calling code shared with Australia. -->
+    <!-- This country is used to test ShortNumberInfo, so at least the country calling code must be
+         recognised by the library. -->
+    <territory id="CC" countryCode="61">
+    </territory>
+
+    <!-- China -->
+    <!-- Used to test as-you-type-formatter with complicated number format patterns. -->
+    <territory id="CN" countryCode="86">
+      <availableFormats>
+        <numberFormat nationalPrefixFormattingRule="$NP$FG" pattern="(\d{3})(\d{5,6})"
+                      carrierCodeFormattingRule="$CC $FG">
+          <leadingDigits>[3-9]</leadingDigits>
+          <leadingDigits>[3-9]\d{2}[19]</leadingDigits>
+          <leadingDigits>
+            [3-9]\d{2}(?:
+              10|
+              95
+            )
+          </leadingDigits>
+          <format>$1 $2</format>
+        </numberFormat>
+      </availableFormats>
+    </territory>
+
+    <!-- Christmas Islands -->
+    <!-- Country calling code shared with Australia. -->
+    <!-- This country is used to test ShortNumberInfo, so at least the country calling code must be
+         recognised by the library. -->
+    <territory id="CX" countryCode="61" internationalPrefix="00">
+    </territory>
+
     <!-- Germany -->
     <territory id="DE" countryCode="49" internationalPrefix="00"
                nationalPrefix="0" nationalPrefixFormattingRule="$NP$FG">
@@ -185,7 +269,7 @@
           <leadingDigits>2|3[3-9]|906|[4-9][1-9]1</leadingDigits>
           <format>$1 $2</format>
         </numberFormat>
-        <numberFormat pattern="(\d{2})(\d{4,9})">
+        <numberFormat pattern="(\d{2})(\d{4,11})">
           <leadingDigits>[34]0|[68]9</leadingDigits>
           <format>$1/$2</format>
         </numberFormat>
@@ -233,9 +317,28 @@
       </premiumRate>
     </territory>
 
+    <!-- France -->
+    <territory id="FR" countryCode="33" nationalPrefix="0" nationalPrefixFormattingRule="$NP$FG"
+               internationalPrefix="00">
+      <availableFormats>
+        <!-- We use this to test the phone number matcher. For our test-case, the formatting
+             pattern must have as the first group a sub-part of the country calling code,
+             and have a national prefix. This corresponds to the test number +33 3 34 2312. -->
+        <numberFormat pattern="(\d)(\d{2})(\d{2})(\d{2})">
+          <leadingDigits>3</leadingDigits>
+          <format>$1 $2 $3 $4</format>
+        </numberFormat>
+      </availableFormats>
+      <generalDesc>
+        <nationalNumberPattern>3\d{6}</nationalNumberPattern>
+        <possibleNumberPattern>\d{7}</possibleNumberPattern>
+      </generalDesc>
+    </territory>
+
     <!-- United Kingdom -->
     <territory id="GB" countryCode="44" internationalPrefix="00"
-               nationalPrefix="0" nationalPrefixFormattingRule="($NP$FG)">
+               nationalPrefix="0" nationalPrefixFormattingRule="($NP$FG)"
+               mobileNumberPortableRegion="true">
       <availableFormats>
         <numberFormat pattern="(\d{2})(\d{4})(\d{4})">
           <leadingDigits>[1-59]|[78]0</leadingDigits>
@@ -265,6 +368,10 @@
         <nationalNumberPattern>7[1-57-9]\d{8}</nationalNumberPattern>
         <possibleNumberPattern>\d{10}</possibleNumberPattern>
       </mobile>
+      <pager>
+        <nationalNumberPattern>76\d{8}</nationalNumberPattern>
+        <possibleNumberPattern>\d{10}</possibleNumberPattern>
+      </pager>
       <tollFree>
         <nationalNumberPattern>80\d{8}</nationalNumberPattern>
         <possibleNumberPattern>\d{10}</possibleNumberPattern>
@@ -285,6 +392,25 @@
         <nationalNumberPattern>70\d{8}</nationalNumberPattern>
         <possibleNumberPattern>\d{10}</possibleNumberPattern>
       </personalNumber>
+    </territory>
+
+    <!-- Guernsey -->
+    <!-- This country is used to test ShortNumberInfo, so at least the country calling code must be
+         recognised by the library, and it must be the same as that of the United Kingdom. -->
+    <territory id="GG" countryCode="44">
+    </territory>
+
+    <!-- Hungary -->
+    <!-- This country has special logic in formatNumberForMobileDialing which must be tested. -->
+    <territory id="HU" countryCode="36" nationalPrefix="06">
+      <generalDesc>
+        <nationalNumberPattern>30\d{7}</nationalNumberPattern>
+        <possibleNumberPattern>\d{9}</possibleNumberPattern>
+      </generalDesc>
+      <mobile>
+        <nationalNumberPattern>30\d{7}</nationalNumberPattern>
+        <possibleNumberPattern>\d{9}</possibleNumberPattern>
+      </mobile>
     </territory>
 
     <!-- Italy -->
@@ -701,11 +827,11 @@
 
     <!-- United States -->
     <!-- http://www.nanpa.com/reports/reports_npa.html -->
-    <!-- For testing purposes, numbers starting with 24 are not considered US
-    numbers.-->
+    <!-- For testing purposes, numbers starting with 24 are not considered US numbers.-->
     <territory id="US" countryCode="1" internationalPrefix="011"
                preferredExtnPrefix=" extn. " nationalPrefix="1"
-               mainCountryForCode="true" >
+               mainCountryForCode="true" nationalPrefixOptionalWhenFormatting="true"
+               mobileNumberPortableRegion="true">
       <availableFormats>
         <numberFormat pattern="(\d{3})(\d{4})">
           <format>$1 $2</format>
@@ -734,14 +860,6 @@
         <nationalNumberPattern>900\d{7}</nationalNumberPattern>
         <possibleNumberPattern>\d{10}</possibleNumberPattern>
       </premiumRate>
-      <emergency>
-        <nationalNumberPattern>
-          119|
-          911
-        </nationalNumberPattern>
-        <possibleNumberPattern>\d{3}</possibleNumberPattern>
-        <exampleNumber>911</exampleNumber>
-      </emergency>
     </territory>
 
     <!-- Mayotte -->
@@ -768,7 +886,7 @@
     </territory>
 
     <!-- International Toll Free numbers  -->
-    <territory id="001" countryCode="800">
+    <territory id="001" countryCode="800" leadingZeroPossible="true">
       <availableFormats>
         <numberFormat pattern="(\d{4})(\d{4})">
           <format>$1 $2</format>
