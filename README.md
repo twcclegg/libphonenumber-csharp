@@ -1,14 +1,16 @@
 # Overview
 
 # libphonenumber-csharp
-Fork of original C# clone here:  https://bitbucket.org/pmezard/libphonenumber-csharp/wiki/Home
+Clone of original C# port here:  https://bitbucket.org/pmezard/libphonenumber-csharp/wiki/Home
+
+All I've ever done is pull updated metadata from Google's project.
 
 # From the original WIKI
 ## Conversion Notes
 
 C# port of Google's libphonenumber library:
 
-  [[http://code.google.com/p/libphonenumber/]]
+  [[https://github.com/googlei18n/libphonenumber]]
 
   The code was rewritten from the Java source mostly unchanged, please refer to the original documentation for sample code and API documentation.
 
