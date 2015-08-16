@@ -1,0 +1,10 @@
+\.suo$
+\.user$
+^csharp/PhoneNumbers/obj/
+^csharp/PhoneNumbers/bin/
+^csharp/PhoneNumbers.Test/obj/
+^csharp/PhoneNumbers.Test/bin/
+~$
+csharp/lib/Phonenumber.cs
+csharp/lib/Phonemetadata.cs
+csharp/lib/DumpLocale.class
