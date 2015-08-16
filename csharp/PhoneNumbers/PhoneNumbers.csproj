@@ -256,6 +256,7 @@
   </Target>
   -->
   <PropertyGroup>
-    <PreBuildEvent>python $(SolutionDir)\lib\version.py</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
 </Project>
