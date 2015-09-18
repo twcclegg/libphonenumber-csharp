@@ -1,22 +1,20 @@
 # Overview
 
 # libphonenumber-csharp
-Clone of original C# port here:  https://bitbucket.org/pmezard/libphonenumber-csharp/wiki/Home
+Clone of original C# port [here](https://bitbucket.org/pmezard/libphonenumber-csharp/wiki/Home).
 
 All I've ever done is pull updated metadata from Google's project.
 
 # From the original WIKI
 ## Conversion Notes
 
-C# port of Google's libphonenumber library:
-
-  [[https://github.com/googlei18n/libphonenumber]]
+C# port of Google's [libphonenumber library](https://github.com/googlei18n/libphonenumber).
 
   The code was rewritten from the Java source mostly unchanged, please refer to the original documentation for sample code and API documentation.
 
   The original Apache License 2.0 was preserved.
 
-  See [[https://bitbucket.org/pmezard/libphonenumber-csharp/src/tip/csharp/README.txt|csharp/README.txt]] for details about the port.
+  See [this](https://bitbucket.org/pmezard/libphonenumber-csharp/src/tip/csharp/README.txt "csharp/README.txt") for details about the port.
 
 ## Features
 
@@ -27,3 +25,6 @@ C# port of Google's libphonenumber library:
   * IsPossibleNumber - quickly guessing whether a number is a possible phonenumber by using only the length information, much faster than a full validation.
   * AsYouTypeFormatter - formats phone numbers on-the-fly when users enter each digit.
   * FindNumbers - finds numbers in text input 
+
+
+Available on NuGet as package [`libphonenumber-csharp`](https://www.nuget.org/packages/libphonenumber-csharp).
