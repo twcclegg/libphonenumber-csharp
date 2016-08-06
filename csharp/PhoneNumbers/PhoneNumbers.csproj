@@ -62,7 +62,7 @@
     <Compile Include="MetadataManager.cs" />
     <Compile Include="NumberParseException.cs" />
     <Compile Include="Phonemetadata.cs" />
-    <Compile Include="Phonenumber.cs" />
+    <Compile Include="PhoneNumber.cs" />
     <Compile Include="PhoneNumberMatch.cs" />
     <Compile Include="PhoneNumberMatcher.cs" />
     <Compile Include="PhoneNumberOfflineGeocoder.cs" />

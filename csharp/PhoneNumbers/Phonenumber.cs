@@ -6,14 +6,14 @@ namespace PhoneNumbers {
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
   [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
   [global::System.CodeDom.Compiler.GeneratedCodeAttribute("ProtoGen", "2.3.0.277")]
-  public static partial class Phonenumber {
+  public static partial class PhoneNumberExtensions {
   
     
     #region Static variables
     #endregion
     #region Extensions
     internal static readonly object Descriptor;
-    static Phonenumber() {
+    static PhoneNumberExtensions() {
       Descriptor = null;
     }
     #endregion
@@ -371,7 +371,7 @@ namespace PhoneNumbers {
       }
     }
     static PhoneNumber() {
-      object.ReferenceEquals(global::PhoneNumbers.Phonenumber.Descriptor, null);
+      object.ReferenceEquals(global::PhoneNumbers.PhoneNumberExtensions.Descriptor, null);
     }
   }
   
