@@ -26,5 +26,9 @@ C# port of Google's [libphonenumber library](https://github.com/googlei18n/libph
   * AsYouTypeFormatter - formats phone numbers on-the-fly when users enter each digit.
   * FindNumbers - finds numbers in text input 
 
+## ToDo
+
+7.7.4 changes the organization of metadata https://groups.google.com/forum/#!topic/libphonenumber-discuss/GlS11RdyocQ
+This should be checked.
 
 Available on NuGet as package [`libphonenumber-csharp`](https://www.nuget.org/packages/libphonenumber-csharp).
