@@ -4,7 +4,7 @@ PhoneNumbers C# Library
 This is a C# port of libphonenumber, originally from:
   http://code.google.com/p/libphonenumber/.
 
-Original Java code is Copyright (C) 2009-2011 Google Inc.
+Original Java code is Copyright (C) 2009-2016 Google Inc.
 
 
 Project Layout
@@ -28,7 +28,7 @@ PhoneNumbers.Test/
 Building
 --------
 
-Open csharp/PhoneNumbers.sln VS2008 solution file to get an overview
+Open csharp/PhoneNumbers.sln VS2015 solution file to get an overview
 of the code. "Build All" should put the libraries at the usual places.
 
 
@@ -42,8 +42,8 @@ To run the tests, either use a GUI tool or download NUnit binaries from:
 Extract the executables and add the following invocation to
 PhoneNumbers.Test Debug panel:
 
-* Start external program: C:\path\to\nunit-console.exe
-* Command line arguments: PhoneNumbers.Test.dll /wait /run:PhoneNumbers.Test
+* Start external program: C:\path\to\nunit3-console.exe
+* Command line arguments: PhoneNumbers.Test.dll /wait /test=PhoneNumbers.Test
 
 Then run PhoneNumbers.Test, the test console window should appear and
 the tests run.
