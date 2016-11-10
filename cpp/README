@@ -1,18 +1,51 @@
-C++ version of the libphonenumber project.
+                  C++ version of the libphonenumber project
+                  =========================================
 
-This is a port of the Java version.
+This library is a port of the Java version.
 
 This project uses some third-party code:
   - src/phonenumbers/utf/ sources come from lib9 which is also used in Go.
 
 
-Building the library on GNU/Linux
----------------------------------
+Installing the library on GNU/Linux
+-----------------------------------
+In recent Debian-based distributions you may be able to simply install the
+libphonenumber library directly.
+
+Installing the binary packages:
+  - Use this if you just need to use or link against the library:
+    $ sudo apt-get install libphonenumber6 libphonenumber6-dev
+
+Installing the source package:
+  - Use this if you wish to develop or debug the library:
+    $ sudo apt-get source libphonenumber
+
+The latest packages can be found on the Debian packages site:
+  https://packages.debian.org/search?searchon=names&keywords=libphonenumber
+
+
+Manually installing the library on GNU/Linux
+--------------------------------------------
+You should only need these instructions if the above instructions do not work.
+
+The example command lines below assume that you have a Debian-based GNU/Linux
+distribution. Other distributions and packaging systems will differ.
+
+Quickstart:
+  - In recent Debian-based distributions, it should be sufficent to run:
+    $ sudo apt-get install \
+      cmake cmake-curses-gui libprotobuf-dev libgtest-dev libre2-dev \
+      libicu-dev libboost-dev libboost-thread-dev libboost-system-dev \
+      protobuf-compiler
+
+If any of these packages fails to install correctly, follow the instructions
+in the appropriate section below.
+
 Requirements:
   - CMake build system
     http://www.cmake.org
 
-    You can install it very easily on a Debian-based GNU/Linux distribution:
+    Installation:
     $ sudo apt-get install cmake
 
     Additionally it is recommended you install the ccmake configuration tool:
@@ -20,9 +53,17 @@ Requirements:
 
   - Protocol Buffers
     http://code.google.com/p/protobuf/
-    Version 2.4 or more recent is required.
+    Version 2.4 or more recent is required (this is available by default for
+    recent Debian-based GNU/Linux distributions).
 
-    You can install it very easily on a Debian-based GNU/Linux distribution:
+    You can check which version is available:
+    $ apt-cache show libprotobuf-dev
+    Package: libprotobuf-dev
+    Source: protobuf
+    Version: 2.5.0-9ubuntu1   <-- This must be >= 2.4.0
+    ...
+
+    Installation:
     $ sudo apt-get install libprotobuf-dev
 
     Note: if your GNU/Linux distribution doesn't provide the needed package,
@@ -34,72 +75,129 @@ Requirements:
   - Google Test
     http://code.google.com/p/googletest/
 
-    You can install it very easily on a Debian-based GNU/Linux distribution:
+    Installation:
     $ sudo apt-get install libgtest-dev
 
   - RE2
     http://code.google.com/p/re2/
 
-    You can install it very easily on Ubuntu Maverick and later:
+    Installation:
     $ sudo apt-get install libre2-dev
 
-    Otherwise if you use a Debian-based distribution you can fetch the Ubuntu
-    package which should work:
-    http://packages.ubuntu.com/maverick/libre2-dev
+    Note that some distributions (notably Ubuntu 10.4) may not include this,
+    so you might need to download and install it manually.
 
-    If you want to install it manually:
-    You need Mercurial to checkout its source code:
-    $ sudo apt-get install mercurial
+    Find and download the Debian packages for your system. For example:
+    http://packages.ubuntu.com/utopic/libre2-1
+    http://packages.ubuntu.com/utopic/libre2-dev
 
-    Then checkout, build and install it:
-    $ hg clone https://re2.googlecode.com/hg re2
-    $ cd re2
-    $ make test
-    $ make install
-    $ make testinstall
+    You need to download both the libre2-dev and libre2-1 packages.
+    Once downloaded, install them with:
+    $ sudo dpkg -i libre2*.deb
+
+    If you want to install it from source, it's available via Mercurial at:
+    https://re2.googlecode.com/hg
+    however precise instructions on building and installing are outside the
+    scope of this document.
 
   - ICU
-    Version 4.4 or more recent is required. It can be installed easily on Debian
-    systems or be built from the most recent sources (currently 49.1.2).
-
-    If you have a Debian-based distribution you can check which version of the
-    ICU libraries is available by doing:
-    $ apt-cache show libicu-dev
-    And looking for the "Version:" string.
-
-    If this is above 4.4 then you can just do:
+    Installation:
     $ sudo apt-get install libicu-dev
 
     Otherwise you need to download the source tarball for the latest version
     from:
       http://site.icu-project.org/download
     And then extract it via:
-    $ tar xzf icu4c-49_1_2-src.tgz
+    $ tar xzf icu4c-*-src.tgz
 
     Alternatively you can export the SVN repository to the current directory
     via:
-    $ svn export http://source.icu-project.org/repos/icu/icu/tags/release-49-1-2/
+    $ svn export http://source.icu-project.org/repos/icu/icu/tags/release-XX-y-z/
 
     Having acquired the latest sources, make and install it via:
     $ cd icu/source
     $ ./configure && make && sudo make install
 
   - Boost
-    Version 1.40 or more recent is required.
+    Version 1.40 or more recent is required if you need libphonenumber to be
+    thread-safe. If you access libphonenumber from a single thread, you can
+    avoid the Boost dependency by disabling the USE_BOOST CMake option (see
+    Troubleshooting section below for information about ccmake).
 
     You can install it very easily on a Debian-based GNU/Linux distribution:
-    $ sudo apt-get install libboost1.40-dev libboost-thread1.40-dev
+    $ sudo apt-get install libboost-dev libboost-thread-dev libboost-system-dev
 
     Note: Boost Thread is the only library needed at link time.
 
-How to build libphonenumber C++:
+
+Building and testing the library
+--------------------------------
   $ cd libphonenumber/cpp
   $ mkdir build
   $ cd build
   $ cmake ..
   $ make
+  $ ./libphonenumber_test
 
-Troubleshooting CMake via ccmake:
+
+Manually installing the library on Mac
+--------------------------------------
+
+You can easily install dependencies on Mac using a package manager. In these
+instructions we use Homebrew (http://brew.sh).
+
+Install Homebrew package manager and use it to install dependencies:
+  $ /usr/bin/ruby -e "$(curl -fsSL \
+    https://raw.githubusercontent.com/Homebrew/install/master/install)"
+  $ brew install boost cmake icu4c pkg-config protobuf wget
+
+See https://github.com/Homebrew/homebrew/issues/14099 - homebrew does not have
+gtest. We don't need to install gtest, we only copy sources. For example:
+  $ mkdir ~/googletest_clone
+  $ cd ~/googletest_clone
+  $ git clone https://github.com/google/googletest.git
+
+Get the libphonenumber source. For example:
+  $ mkdir ~/libphonenumber_clone
+  $ cd ~/libphonenumber_clone
+  $ git clone https://github.com/googlei18n/libphonenumber.git
+
+Build and test the library:
+  $ cd libphonenumber/cpp
+  $ mkdir build
+  $ cd build
+  Replace XXX in the commands below with the appropriate version number:
+  $ cmake \
+    -DGTEST_SOURCE_DIR=~/googletest_clone/googletest/googletest/ \
+    -DGTEST_INCLUDE_DIR=~/googletest_clone/googletest/googletest/include/ \
+    -DICU_UC_INCLUDE_DIR=/usr/local/Cellar/icu4c/XXX/include/ \
+    -DICU_UC_LIB=/usr/local/Cellar/icu4c/XXX/lib/libicuuc.dylib \
+    -DICU_I18N_INCLUDE_DIR=/usr/local/Cellar/icu4c/XXX/include/ \
+    -DICU_I18N_LIB=/usr/local/Cellar/icu4c/XXX/lib/libicui18n.dylib \
+    -DUSE_STD_MAP=ON \
+    ..
+  $ make
+  $ ./libphonenumber_test
+
+Optional: Deleting & uninstalling everything again:
+  $ cd
+  $ rm -rf ~/libphonenumber_clone ~/googletest_clone
+
+  openssl is a dependency of wget and installed with it by Homebrew. If you had
+  openssl before installing wget don't uninstall here.
+  $ brew uninstall boost cmake icu4c openssl pkg-config protobuf wget
+
+  $ /usr/bin/ruby -e "$(curl -fsSL \
+    https://raw.githubusercontent.com/Homebrew/install/master/uninstall)"
+
+  Homebrew will have changed permissions at installation. See output of previous
+  command for how to change them back, for example:
+  $ sudo chmod 0755 /usr/local
+  $ sudo chgrp wheel /usr/local
+
+
+Troubleshooting CMake via ccmake
+--------------------------------
   Follow these instructions if the build steps above don't work for you.
 
   - Incorrect protocol buffer library issues
@@ -162,6 +260,7 @@ Troubleshooting CMake via ccmake:
     $ cmake ..
     $ make
 
+
 Building the library on Windows (Visual Studio)
 -----------------------------------------------
 The library was tested with Visual Studio 2010.
@@ -175,6 +274,7 @@ You will need to manually fetch and install the following dependencies:
     http://www.boostpro.com/download/
     * Select all the variants and Boost DateTime and Boost Thread during the
       installation process.
+    See Linux instructions for information about thread-safety.
 
   - GTest (tested with v1.6.0):
     http://code.google.com/p/googletest/downloads/list
@@ -223,13 +323,22 @@ C:/Program Files/libphonenumber/.
 Note that this path can be set by overriding the CMAKE_INSTALL_PREFIX variable
 with cmake-gui.
 
+
 Supported build parameters
 --------------------------
   Build parameters can be specified invoking CMake with '-DKEY=VALUE' or using a
   CMake user interface (ccmake or cmake-gui).
 
-  USE_ICU_REGEXP    = ON | OFF [ON]  -- Use ICU regexp engine.
-  USE_LITE_METADATA = ON | OFF [OFF] -- Generates smaller metadata that doesn't
-                                        include example numbers.
-  USE_RE2           = ON | OFF [OFF] -- Use RE2.
-  USE_STD_MAP       = ON | OFF [OFF] -- Force the use of std::map.
+  USE_ALTERNATE_FORMATS = ON | OFF [ON]  -- Use alternate formats for the phone
+                                            number matcher.
+  USE_BOOST             = ON | OFF [ON]  -- Use Boost. This is only needed in
+                                            multi-threaded environments that
+                                            are not Linux and Mac.
+                                            Libphonenumber relies on Boost for
+                                            non-POSIX (e.g. Windows)
+                                            multi-threading.
+  USE_ICU_REGEXP        = ON | OFF [ON]  -- Use ICU regexp engine.
+  USE_LITE_METADATA     = ON | OFF [OFF] -- Generates smaller metadata that
+                                            doesn't include example numbers.
+  USE_RE2               = ON | OFF [OFF] -- Use RE2.
+  USE_STD_MAP           = ON | OFF [OFF] -- Force the use of std::map.

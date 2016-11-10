@@ -30,11 +30,11 @@
 #include <cstddef>
 #include <string>
 
-#include "base/basictypes.h"
-#include "base/memory/scoped_ptr.h"
-#include "base/synchronization/lock.h"
+#include "phonenumbers/base/basictypes.h"
+#include "phonenumbers/base/memory/scoped_ptr.h"
+#include "phonenumbers/base/synchronization/lock.h"
 
-#ifdef USE_TR1_UNORDERED_MAP
+#ifdef I18N_PHONENUMBERS_USE_TR1_UNORDERED_MAP
 #  include <tr1/unordered_map>
 #else
 #  include <map>
@@ -50,7 +50,7 @@ class RegExp;
 
 class RegExpCache {
  private:
-#ifdef USE_TR1_UNORDERED_MAP
+#ifdef I18N_PHONENUMBERS_USE_TR1_UNORDERED_MAP
   typedef std::tr1::unordered_map<string, const RegExp*> CacheImpl;
 #else
   typedef std::map<string, const RegExp*> CacheImpl;
@@ -65,7 +65,7 @@ class RegExpCache {
 
  private:
   const AbstractRegExpFactory& regexp_factory_;
-  base::Lock lock_;  // protects cache_impl_
+  Lock lock_;  // protects cache_impl_
   scoped_ptr<CacheImpl> cache_impl_;  // protected by lock_
   friend class RegExpCacheTest_CacheConstructor_Test;
   DISALLOW_COPY_AND_ASSIGN(RegExpCache);

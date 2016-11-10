@@ -25,7 +25,6 @@ import junit.framework.TestCase;
  * used for regression test purposes.
  *
  * @author Shaopeng Jia
- * @author Lara Rennie
  */
 public class TestMetadataTestCase extends TestCase {
   private static final String TEST_META_DATA_FILE_PREFIX =
@@ -38,10 +37,11 @@ public class TestMetadataTestCase extends TestCase {
   }
 
   static PhoneNumberUtil initializePhoneUtilForTesting() {
-    PhoneNumberUtil.resetInstance();
-    PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance(
-        TEST_META_DATA_FILE_PREFIX,
+    PhoneNumberUtil phoneUtil = new PhoneNumberUtil(
+        new MultiFileMetadataSourceImpl(TEST_META_DATA_FILE_PREFIX,
+            PhoneNumberUtil.DEFAULT_METADATA_LOADER),
         CountryCodeToRegionCodeMapForTesting.getCountryCodeToRegionCodeMap());
+    PhoneNumberUtil.setInstance(phoneUtil);
     return phoneUtil;
   }
 }

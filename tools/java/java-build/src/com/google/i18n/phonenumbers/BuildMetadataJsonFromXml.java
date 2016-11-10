@@ -51,26 +51,26 @@ public class BuildMetadataJsonFromXml extends Command {
       "BuildMetadataJsonFromXml PhoneNumberMetadata.xml metadatalite.js true\n";
 
   private static final String FILE_OVERVIEW =
-      "/**\n" +
-      " * @fileoverview Generated metadata for file\n" +
-      " * %s\n" +
-      " * @author Nikolaos Trogkanis\n" +
-      " */\n\n";
+      "/**\n"
+      + " * @fileoverview Generated metadata for file\n"
+      + " * %s\n"
+      + " * @author Nikolaos Trogkanis\n"
+      + " */\n\n";
 
   private static final String COUNTRY_CODE_TO_REGION_CODE_MAP_COMMENT =
-      "/**\n" +
-      " * A mapping from a country calling code to the region codes which denote the\n" +
-      " * region represented by that country calling code. In the case of multiple\n" +
-      " * countries sharing a calling code, such as the NANPA regions, the one\n" +
-      " * indicated with \"isMainCountryForCode\" in the metadata should be first.\n" +
-      " * @type {Object.<number, Array.<string>>}\n" +
-      " */\n";
+      "/**\n"
+      + " * A mapping from a country calling code to the region codes which denote the\n"
+      + " * region represented by that country calling code. In the case of multiple\n"
+      + " * countries sharing a calling code, such as the NANPA regions, the one\n"
+      + " * indicated with \"isMainCountryForCode\" in the metadata should be first.\n"
+      + " * @type {!Object.<number, Array.<string>>}\n"
+      + " */\n";
 
   private static final String COUNTRY_TO_METADATA_COMMENT =
-      "/**\n" +
-      " * A mapping from a region code to the PhoneMetadata for that region.\n" +
-      " * @type {Object.<string, Array>}\n" +
-      " */\n";
+      "/**\n"
+      + " * A mapping from a region code to the PhoneMetadata for that region.\n"
+      + " * @type {!Object.<string, Array>}\n"
+      + " */\n";
 
   private static final int COPYRIGHT_YEAR = 2010;
 
@@ -93,7 +93,7 @@ public class BuildMetadataJsonFromXml extends Command {
 
     try {
       PhoneMetadataCollection metadataCollection =
-          BuildMetadataFromXml.buildPhoneMetadataCollection(inputFile, liteBuild);
+          BuildMetadataFromXml.buildPhoneMetadataCollection(inputFile, liteBuild, false);
       Map<Integer, List<String>> countryCodeToRegionCodeMap =
           BuildMetadataFromXml.buildCountryCodeToRegionCodeMap(metadataCollection);
 
@@ -197,19 +197,22 @@ public class BuildMetadataJsonFromXml extends Command {
       jsArrayBuilder.append(null);
     }
     // optional string national_prefix_formatting_rule = 4;
-    if (format.hasNationalPrefixFormattingRule()) {
+    // TODO: Don't set in format if default to begin with, and replace this check with "has".
+    if (format.getNationalPrefixFormattingRule().length() > 0) {
       jsArrayBuilder.append(format.getNationalPrefixFormattingRule());
     } else {
       jsArrayBuilder.append(null);
     }
     // optional string domestic_carrier_code_formatting_rule = 5;
-    if (format.hasDomesticCarrierCodeFormattingRule()) {
+    // TODO: Don't set in format if default to begin with, and replace this check with "has".
+    if (format.getDomesticCarrierCodeFormattingRule().length() > 0) {
       jsArrayBuilder.append(format.getDomesticCarrierCodeFormattingRule());
     } else {
       jsArrayBuilder.append(null);
     }
     // optional bool national_prefix_optional_when_formatting = 6;
-    if (format.hasNationalPrefixOptionalWhenFormatting()) {
+    // TODO: Don't set in format if default to begin with, and replace this check with "has".
+    if (format.isNationalPrefixOptionalWhenFormatting()) {
       jsArrayBuilder.append(format.isNationalPrefixOptionalWhenFormatting());
     } else {
       jsArrayBuilder.append(null);
@@ -220,6 +223,12 @@ public class BuildMetadataJsonFromXml extends Command {
 
   // Converts PhoneNumberDesc to JSArray.
   private static void toJsArray(PhoneNumberDesc desc, JSArrayBuilder jsArrayBuilder) {
+    if (desc == null) {
+      // Some descriptions are optional; in these cases we just append null and return if they are
+      // absent.
+      jsArrayBuilder.append(null);
+      return;
+    }
     jsArrayBuilder.beginArray();
 
     // missing 0
@@ -248,6 +257,32 @@ public class BuildMetadataJsonFromXml extends Command {
     } else {
       jsArrayBuilder.append(null);
     }
+    // missing 7
+    jsArrayBuilder.append(null);
+    // missing 8
+    jsArrayBuilder.append(null);
+    // repeated int32 possible_length = 9;
+    int possibleLengthSize = desc.getPossibleLengthCount();
+    if (possibleLengthSize > 0) {
+      jsArrayBuilder.beginArray();
+      for (int i = 0; i < possibleLengthSize; i++) {
+        jsArrayBuilder.append(desc.getPossibleLength(i));
+      }
+      jsArrayBuilder.endArray();
+    } else {
+      jsArrayBuilder.append(null);
+    }
+    // repeated int32 possible_length = 10;
+    int possibleLengthLocalOnlySize = desc.getPossibleLengthLocalOnlyCount();
+    if (possibleLengthLocalOnlySize > 0) {
+      jsArrayBuilder.beginArray();
+      for (int i = 0; i < possibleLengthLocalOnlySize; i++) {
+        jsArrayBuilder.append(desc.getPossibleLengthLocalOnly(i));
+      }
+      jsArrayBuilder.endArray();
+    } else {
+      jsArrayBuilder.append(null);
+    }
 
     jsArrayBuilder.endArray();
   }
@@ -258,28 +293,37 @@ public class BuildMetadataJsonFromXml extends Command {
 
     // missing 0
     jsArrayBuilder.append(null);
-    // required PhoneNumberDesc general_desc = 1;
+    // optional PhoneNumberDesc general_desc = 1;
     toJsArray(metadata.getGeneralDesc(), jsArrayBuilder);
-    // required PhoneNumberDesc fixed_line = 2;
+    // optional PhoneNumberDesc fixed_line = 2;
     toJsArray(metadata.getFixedLine(), jsArrayBuilder);
-    // required PhoneNumberDesc mobile = 3;
+    // optional PhoneNumberDesc mobile = 3;
     toJsArray(metadata.getMobile(), jsArrayBuilder);
-    // required PhoneNumberDesc toll_free = 4;
+    // optional PhoneNumberDesc toll_free = 4;
     toJsArray(metadata.getTollFree(), jsArrayBuilder);
-    // required PhoneNumberDesc premium_rate = 5;
+    // optional PhoneNumberDesc premium_rate = 5;
     toJsArray(metadata.getPremiumRate(), jsArrayBuilder);
-    // required PhoneNumberDesc shared_cost = 6;
+    // optional PhoneNumberDesc shared_cost = 6;
     toJsArray(metadata.getSharedCost(), jsArrayBuilder);
-    // required PhoneNumberDesc personal_number = 7;
+    // optional PhoneNumberDesc personal_number = 7;
     toJsArray(metadata.getPersonalNumber(), jsArrayBuilder);
-    // required PhoneNumberDesc voip = 8;
+    // optional PhoneNumberDesc voip = 8;
     toJsArray(metadata.getVoip(), jsArrayBuilder);
     // required string id = 9;
     jsArrayBuilder.append(metadata.getId());
-    // required int32 country_code = 10;
-    jsArrayBuilder.append(metadata.getCountryCode());
-    // required string international_prefix = 11;
-    jsArrayBuilder.append(metadata.getInternationalPrefix());
+    // optional int32 country_code = 10;
+    if (metadata.hasCountryCode()) {
+      jsArrayBuilder.append(metadata.getCountryCode());
+    } else {
+      jsArrayBuilder.append(null);
+    }
+    // optional string international_prefix = 11;
+    // TODO: Don't set in format if default to begin with, and replace this check with "has".
+    if (metadata.getInternationalPrefix().length() > 0) {
+      jsArrayBuilder.append(metadata.getInternationalPrefix());
+    } else {
+      jsArrayBuilder.append(null);
+    }
 
     // optional string national_prefix = 12;
     if (metadata.hasNationalPrefix()) {
@@ -341,7 +385,7 @@ public class BuildMetadataJsonFromXml extends Command {
     } else {
       jsArrayBuilder.append(null);
     }
-    // required PhoneNumberDesc pager = 21;
+    // optional PhoneNumberDesc pager = 21;
     toJsArray(metadata.getPager(), jsArrayBuilder);
     // optional bool main_country_for_code = 22 [default=false];
     if (metadata.isMainCountryForCode()) {
@@ -355,9 +399,9 @@ public class BuildMetadataJsonFromXml extends Command {
     } else {
       jsArrayBuilder.append(null);
     }
-    // required PhoneNumberDesc no_international_dialling = 24;
+    // optional PhoneNumberDesc no_international_dialling = 24;
     toJsArray(metadata.getNoInternationalDialling(), jsArrayBuilder);
-    // required PhoneNumberDesc uan = 25;
+    // optional PhoneNumberDesc uan = 25;
     toJsArray(metadata.getUan(), jsArrayBuilder);
     // optional bool leading_zero_possible = 26 [default=false];
     if (metadata.isLeadingZeroPossible()) {
@@ -365,10 +409,18 @@ public class BuildMetadataJsonFromXml extends Command {
     } else {
       jsArrayBuilder.append(null);
     }
-    // required PhoneNumberDesc emergency = 27;
+    // optional PhoneNumberDesc emergency = 27;
     toJsArray(metadata.getEmergency(), jsArrayBuilder);
-    // required PhoneNumberDesc voicemail = 28;
+    // optional PhoneNumberDesc voicemail = 28;
     toJsArray(metadata.getVoicemail(), jsArrayBuilder);
+    // Fields 29-31 are omitted due to space increase.
+    // optional PhoneNumberDesc short_code = 29;
+    // optional PhoneNumberDesc standard_rate = 30;
+    // optional PhoneNumberDesc carrier_specific = 31;
+    // optional bool mobile_number_portable_region = 32 [default=false];
+    // Omit since the JS API doesn't expose this data.
+    // Note: Need to add null for each of the above fields when a subsequent
+    // field is being populated.
 
     jsArrayBuilder.endArray();
   }

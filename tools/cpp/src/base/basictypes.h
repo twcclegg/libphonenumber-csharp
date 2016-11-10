@@ -94,16 +94,20 @@ typedef signed int         char32;
 
 // A macro to disallow the copy constructor and operator= functions
 // This should be used in the private: declarations for a class
+#if !defined(DISALLOW_COPY_AND_ASSIGN)
 #define DISALLOW_COPY_AND_ASSIGN(TypeName) \
   TypeName(const TypeName&);               \
   void operator=(const TypeName&)
+#endif
 
 // An older, deprecated, politically incorrect name for the above.
 // NOTE: The usage of this macro was baned from our code base, but some
 // third_party libraries are yet using it.
 // TODO(tfarina): Figure out how to fix the usage of this macro in the
 // third_party libraries and get rid of it.
+#if !defined(DISALLOW_EVIL_CONSTRUCTORS)
 #define DISALLOW_EVIL_CONSTRUCTORS(TypeName) DISALLOW_COPY_AND_ASSIGN(TypeName)
+#endif
 
 // A macro to disallow all the implicit constructors, namely the
 // default constructor, copy constructor and operator= functions.
@@ -111,9 +115,11 @@ typedef signed int         char32;
 // This should be used in the private: declarations for a class
 // that wants to prevent anyone from instantiating it. This is
 // especially useful for classes containing only static methods.
+#if !defined(DISALLOW_IMPLICIT_CONSTRUCTORS)
 #define DISALLOW_IMPLICIT_CONSTRUCTORS(TypeName) \
   TypeName();                                    \
   DISALLOW_COPY_AND_ASSIGN(TypeName)
+#endif
 
 // The arraysize(arr) macro returns the # of elements in an array arr.
 // The expression is a compile-time constant, and therefore can be
@@ -140,7 +146,9 @@ template <typename T, size_t N>
 char (&ArraySizeHelper(const T (&array)[N]))[N];
 #endif
 
+#if !defined(arraysize)
 #define arraysize(array) (sizeof(ArraySizeHelper(array)))
+#endif
 
 // ARRAYSIZE_UNSAFE performs essentially the same calculation as arraysize,
 // but can be used on anonymous types or types defined inside
@@ -179,10 +187,11 @@ char (&ArraySizeHelper(const T (&array)[N]))[N];
 // where a pointer is 4 bytes, this means all pointers to a type whose
 // size is 3 or greater than 4 will be (righteously) rejected.
 
+#if !defined(ARRAYSIZE_UNSAFE)
 #define ARRAYSIZE_UNSAFE(a) \
   ((sizeof(a) / sizeof(*(a))) / \
    static_cast<size_t>(!(sizeof(a) % sizeof(*(a)))))
-
+#endif
 
 // Use implicit_cast as a safe version of static_cast or const_cast
 // for upcasting in the type hierarchy (i.e. casting a pointer to Foo
@@ -221,13 +230,30 @@ inline To implicit_cast(From const &f) {
 // the expression is false, most compilers will issue a warning/error
 // containing the name of the variable.
 
+#if __cplusplus >= 201103L
+
+// Under C++11, just use static_assert.
+#define COMPILE_ASSERT(expr, msg) static_assert(expr, #msg)
+
+#else
+
 template <bool>
 struct CompileAssert {
 };
 
-#undef COMPILE_ASSERT
+// Annotate a variable indicating it's ok if the variable is not used.
+// (Typically used to silence a compiler warning when the assignment
+// is important for some other reason.)
+// Use like:
+//   int x ALLOW_UNUSED = ...;
+#if defined(__GNUC__)
+#define ALLOW_UNUSED __attribute__((unused))
+#else
+#define ALLOW_UNUSED
+#endif
+
 #define COMPILE_ASSERT(expr, msg) \
-  typedef CompileAssert<(bool(expr))> msg[bool(expr) ? 1 : -1]
+  typedef CompileAssert<(bool(expr))> msg[bool(expr) ? 1 : -1] ALLOW_UNUSED
 
 // Implementation details of COMPILE_ASSERT:
 //
@@ -251,7 +277,7 @@ struct CompileAssert {
 //   expr is a compile-time constant.  (Template arguments must be
 //   determined at compile-time.)
 //
-// - The outter parentheses in CompileAssert<(bool(expr))> are necessary
+// - The outer parentheses in CompileAssert<(bool(expr))> are necessary
 //   to work around a bug in gcc 3.4.4 and 4.0.1.  If we had written
 //
 //     CompileAssert<bool(expr)>
@@ -269,6 +295,8 @@ struct CompileAssert {
 //
 //   This is to avoid running into a bug in MS VC 7.1, which
 //   causes ((0.0) ? 1 : -1) to incorrectly evaluate to 1.
+
+#endif
 
 // Used to explicitly mark the return value of a function as unused. If you are
 // really sure you don't want to do anything with the return value of a function

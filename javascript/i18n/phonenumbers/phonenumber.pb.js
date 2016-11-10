@@ -35,7 +35,7 @@ goog.require('goog.proto2.Message');
  * @extends {goog.proto2.Message}
  */
 i18n.phonenumbers.PhoneNumber = function() {
-  goog.proto2.Message.apply(this);
+  goog.proto2.Message.call(this);
 };
 goog.inherits(i18n.phonenumbers.PhoneNumber, goog.proto2.Message);
 
@@ -253,6 +253,57 @@ i18n.phonenumbers.PhoneNumber.prototype.clearItalianLeadingZero = function() {
 
 
 /**
+ * Gets the value of the number_of_leading_zeros field.
+ * @return {?number} The value.
+ */
+i18n.phonenumbers.PhoneNumber.prototype.getNumberOfLeadingZeros = function() {
+  return /** @type {?number} */ (this.get$Value(8));
+};
+
+
+/**
+ * Gets the value of the number_of_leading_zeros field or the default value if not set.
+ * @return {number} The value.
+ */
+i18n.phonenumbers.PhoneNumber.prototype.getNumberOfLeadingZerosOrDefault = function() {
+  return /** @type {number} */ (this.get$ValueOrDefault(8));
+};
+
+
+/**
+ * Sets the value of the number_of_leading_zeros field.
+ * @param {number} value The value.
+ */
+i18n.phonenumbers.PhoneNumber.prototype.setNumberOfLeadingZeros = function(value) {
+  this.set$Value(8, value);
+};
+
+
+/**
+ * @return {boolean} Whether the number_of_leading_zeros field has a value.
+ */
+i18n.phonenumbers.PhoneNumber.prototype.hasNumberOfLeadingZeros = function() {
+  return this.has$Value(8);
+};
+
+
+/**
+ * @return {number} The number of values in the number_of_leading_zeros field.
+ */
+i18n.phonenumbers.PhoneNumber.prototype.numberOfLeadingZerosCount = function() {
+  return this.count$Values(8);
+};
+
+
+/**
+ * Clears the values in the number_of_leading_zeros field.
+ */
+i18n.phonenumbers.PhoneNumber.prototype.clearNumberOfLeadingZeros = function() {
+  this.clear$Field(8);
+};
+
+
+/**
  * Gets the value of the raw_input field.
  * @return {?string} The value.
  */
@@ -417,47 +468,69 @@ i18n.phonenumbers.PhoneNumber.CountryCodeSource = {
 };
 
 
-goog.proto2.Message.set$Metadata(i18n.phonenumbers.PhoneNumber, {
-  0: {
-    name: 'PhoneNumber',
-    fullName: 'i18n.phonenumbers.PhoneNumber'
-  },
-  1: {
-    name: 'country_code',
-    required: true,
-    fieldType: goog.proto2.Message.FieldType.INT32,
-    type: Number
-  },
-  2: {
-    name: 'national_number',
-    required: true,
-    fieldType: goog.proto2.Message.FieldType.UINT64,
-    type: Number
-  },
-  3: {
-    name: 'extension',
-    fieldType: goog.proto2.Message.FieldType.STRING,
-    type: String
-  },
-  4: {
-    name: 'italian_leading_zero',
-    fieldType: goog.proto2.Message.FieldType.BOOL,
-    type: Boolean
-  },
-  5: {
-    name: 'raw_input',
-    fieldType: goog.proto2.Message.FieldType.STRING,
-    type: String
-  },
-  6: {
-    name: 'country_code_source',
-    fieldType: goog.proto2.Message.FieldType.ENUM,
-    defaultValue: i18n.phonenumbers.PhoneNumber.CountryCodeSource.FROM_NUMBER_WITH_PLUS_SIGN,
-    type: i18n.phonenumbers.PhoneNumber.CountryCodeSource
-  },
-  7: {
-    name: 'preferred_domestic_carrier_code',
-    fieldType: goog.proto2.Message.FieldType.STRING,
-    type: String
+/** @override */
+i18n.phonenumbers.PhoneNumber.prototype.getDescriptor = function() {
+  if (!i18n.phonenumbers.PhoneNumber.descriptor_) {
+    // The descriptor is created lazily when we instantiate a new instance.
+    var descriptorObj = {
+      0: {
+        name: 'PhoneNumber',
+        fullName: 'i18n.phonenumbers.PhoneNumber'
+      },
+      1: {
+        name: 'country_code',
+        required: true,
+        fieldType: goog.proto2.Message.FieldType.INT32,
+        type: Number
+      },
+      2: {
+        name: 'national_number',
+        required: true,
+        fieldType: goog.proto2.Message.FieldType.UINT64,
+        type: Number
+      },
+      3: {
+        name: 'extension',
+        fieldType: goog.proto2.Message.FieldType.STRING,
+        type: String
+      },
+      4: {
+        name: 'italian_leading_zero',
+        fieldType: goog.proto2.Message.FieldType.BOOL,
+        type: Boolean
+      },
+      8: {
+        name: 'number_of_leading_zeros',
+        fieldType: goog.proto2.Message.FieldType.INT32,
+        defaultValue: 1,
+        type: Number
+      },
+      5: {
+        name: 'raw_input',
+        fieldType: goog.proto2.Message.FieldType.STRING,
+        type: String
+      },
+      6: {
+        name: 'country_code_source',
+        fieldType: goog.proto2.Message.FieldType.ENUM,
+        defaultValue: i18n.phonenumbers.PhoneNumber.CountryCodeSource.FROM_NUMBER_WITH_PLUS_SIGN,
+        type: i18n.phonenumbers.PhoneNumber.CountryCodeSource
+      },
+      7: {
+        name: 'preferred_domestic_carrier_code',
+        fieldType: goog.proto2.Message.FieldType.STRING,
+        type: String
+      }
+    };
+    i18n.phonenumbers.PhoneNumber.descriptor_ =
+        goog.proto2.Message.createDescriptor(
+             i18n.phonenumbers.PhoneNumber, descriptorObj);
   }
-});
+  return i18n.phonenumbers.PhoneNumber.descriptor_;
+};
+
+
+// Export getDescriptor static function robust to minification.
+i18n.phonenumbers.PhoneNumber['ctor'] = i18n.phonenumbers.PhoneNumber;
+i18n.phonenumbers.PhoneNumber['ctor'].getDescriptor =
+    i18n.phonenumbers.PhoneNumber.prototype.getDescriptor;

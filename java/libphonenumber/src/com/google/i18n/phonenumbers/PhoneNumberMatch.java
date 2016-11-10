@@ -33,7 +33,7 @@ import java.util.Arrays;
 
  * <pre>
  * CharSequence text = "Call me at +1 425 882-8080 for details.";
- * RegionCode country = RegionCode.US;
+ * String country = "US";
  * PhoneNumberUtil util = PhoneNumberUtil.getInstance();
  *
  * // Find the first phone number match:
@@ -50,8 +50,6 @@ import java.util.Arrays;
  * // invoked on rawString().
  * util.parse(m.rawString(), country).equals(m.number());
  * </pre>
- *
- * @author Tom Hofmann
  */
 public final class PhoneNumberMatch {
   /** The start index into the text. */
@@ -114,8 +112,8 @@ public final class PhoneNumberMatch {
       return false;
     }
     PhoneNumberMatch other = (PhoneNumberMatch) obj;
-    return rawString.equals(other.rawString) && (start == other.start) &&
-        number.equals(other.number);
+    return rawString.equals(other.rawString) && (start == other.start)
+        && number.equals(other.number);
   }
 
   @Override

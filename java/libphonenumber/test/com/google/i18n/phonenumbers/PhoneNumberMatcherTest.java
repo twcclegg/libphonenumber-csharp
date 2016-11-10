@@ -18,6 +18,7 @@ package com.google.i18n.phonenumbers;
 
 import com.google.i18n.phonenumbers.PhoneNumberUtil.Leniency;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
+import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber.CountryCodeSource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,10 +29,53 @@ import java.util.NoSuchElementException;
 /**
  * Tests for {@link PhoneNumberMatcher}. This only tests basic functionality based on test metadata.
  *
- * @author Tom Hofmann
  * @see PhoneNumberUtilTest {@link PhoneNumberUtilTest} for the origin of the test data
  */
 public class PhoneNumberMatcherTest extends TestMetadataTestCase {
+
+  public void testContainsMoreThanOneSlashInNationalNumber() throws Exception {
+    // A date should return true.
+    PhoneNumber number = new PhoneNumber();
+    number.setCountryCode(1);
+    number.setCountryCodeSource(CountryCodeSource.FROM_DEFAULT_COUNTRY);
+    String candidate = "1/05/2013";
+    assertTrue(PhoneNumberMatcher.containsMoreThanOneSlashInNationalNumber(number, candidate));
+
+    // Here, the country code source thinks it started with a country calling code, but this is not
+    // the same as the part before the slash, so it's still true.
+    number = new PhoneNumber();
+    number.setCountryCode(274);
+    number.setCountryCodeSource(CountryCodeSource.FROM_NUMBER_WITHOUT_PLUS_SIGN);
+    candidate = "27/4/2013";
+    assertTrue(PhoneNumberMatcher.containsMoreThanOneSlashInNationalNumber(number, candidate));
+
+    // Now it should be false, because the first slash is after the country calling code.
+    number = new PhoneNumber();
+    number.setCountryCode(49);
+    number.setCountryCodeSource(CountryCodeSource.FROM_NUMBER_WITH_PLUS_SIGN);
+    candidate = "49/69/2013";
+    assertFalse(PhoneNumberMatcher.containsMoreThanOneSlashInNationalNumber(number, candidate));
+
+    number = new PhoneNumber();
+    number.setCountryCode(49);
+    number.setCountryCodeSource(CountryCodeSource.FROM_NUMBER_WITHOUT_PLUS_SIGN);
+    candidate = "+49/69/2013";
+    assertFalse(PhoneNumberMatcher.containsMoreThanOneSlashInNationalNumber(number, candidate));
+
+    candidate = "+ 49/69/2013";
+    assertFalse(PhoneNumberMatcher.containsMoreThanOneSlashInNationalNumber(number, candidate));
+
+    candidate = "+ 49/69/20/13";
+    assertTrue(PhoneNumberMatcher.containsMoreThanOneSlashInNationalNumber(number, candidate));
+
+    // Here, the first group is not assumed to be the country calling code, even though it is the
+    // same as it, so this should return true.
+    number = new PhoneNumber();
+    number.setCountryCode(49);
+    number.setCountryCodeSource(CountryCodeSource.FROM_DEFAULT_COUNTRY);
+    candidate = "49/69/2013";
+    assertTrue(PhoneNumberMatcher.containsMoreThanOneSlashInNationalNumber(number, candidate));
+  }
 
   /** See {@link PhoneNumberUtilTest#testParseNationalNumber()}. */
   public void testFindNationalNumber() throws Exception {
@@ -52,7 +96,8 @@ public class PhoneNumberMatcherTest extends TestMetadataTestCase {
 
     doTestFindInContext("64(0)64123456", RegionCode.NZ);
     // Check that using a "/" is fine in a phone number.
-    doTestFindInContext("123/45678", RegionCode.DE);
+    // Note that real Polish numbers do *not* start with a 0.
+    doTestFindInContext("0123/456789", RegionCode.PL);
     doTestFindInContext("123-456-7890", RegionCode.US);
   }
 
@@ -74,8 +119,8 @@ public class PhoneNumberMatcherTest extends TestMetadataTestCase {
     // Using a full-width plus sign.
     doTestFindInContext("\uFF0B1 (650) 333-6000", RegionCode.SG);
     // The whole number, including punctuation, is here represented in full-width form.
-    doTestFindInContext("\uFF0B\uFF11\u3000\uFF08\uFF16\uFF15\uFF10\uFF09" +
-        "\u3000\uFF13\uFF13\uFF13\uFF0D\uFF16\uFF10\uFF10\uFF10",
+    doTestFindInContext("\uFF0B\uFF11\u3000\uFF08\uFF16\uFF15\uFF10\uFF09"
+        + "\u3000\uFF13\uFF13\uFF13\uFF0D\uFF16\uFF10\uFF10\uFF10",
         RegionCode.SG);
   }
 
@@ -195,29 +240,58 @@ public class PhoneNumberMatcherTest extends TestMetadataTestCase {
     }
   }
 
+  public void testFourMatchesInARow() throws Exception {
+    String number1 = "415-666-7777";
+    String number2 = "800-443-1223";
+    String number3 = "212-443-1223";
+    String number4 = "650-443-1223";
+    String text = number1 + " - " + number2 + " - " + number3 + " - " + number4;
+
+    Iterator<PhoneNumberMatch> iterator =
+        phoneUtil.findNumbers(text, RegionCode.US).iterator();
+    PhoneNumberMatch match = iterator.hasNext() ? iterator.next() : null;
+    assertMatchProperties(match, text, number1, RegionCode.US);
+
+    match = iterator.hasNext() ? iterator.next() : null;
+    assertMatchProperties(match, text, number2, RegionCode.US);
+
+    match = iterator.hasNext() ? iterator.next() : null;
+    assertMatchProperties(match, text, number3, RegionCode.US);
+
+    match = iterator.hasNext() ? iterator.next() : null;
+    assertMatchProperties(match, text, number4, RegionCode.US);
+  }
+
+  public void testMatchesFoundWithMultipleSpaces() throws Exception {
+    String number1 = "(415) 666-7777";
+    String number2 = "(800) 443-1223";
+    String text = number1 + " " + number2;
+
+    Iterator<PhoneNumberMatch> iterator =
+        phoneUtil.findNumbers(text, RegionCode.US).iterator();
+    PhoneNumberMatch match = iterator.hasNext() ? iterator.next() : null;
+    assertMatchProperties(match, text, number1, RegionCode.US);
+
+    match = iterator.hasNext() ? iterator.next() : null;
+    assertMatchProperties(match, text, number2, RegionCode.US);
+  }
+
   public void testMatchWithSurroundingZipcodes() throws Exception {
     String number = "415-666-7777";
     String zipPreceding = "My address is CA 34215 - " + number + " is my number.";
-    PhoneNumber expectedResult = phoneUtil.parse(number, RegionCode.US);
 
     Iterator<PhoneNumberMatch> iterator =
         phoneUtil.findNumbers(zipPreceding, RegionCode.US).iterator();
     PhoneNumberMatch match = iterator.hasNext() ? iterator.next() : null;
-    assertNotNull("Did not find a number in '" + zipPreceding + "'; expected " + number, match);
-    assertEquals(expectedResult, match.number());
-    assertEquals(number, match.rawString());
+    assertMatchProperties(match, zipPreceding, number, RegionCode.US);
 
     // Now repeat, but this time the phone number has spaces in it. It should still be found.
     number = "(415) 666 7777";
 
     String zipFollowing = "My number is " + number + ". 34215 is my zip-code.";
     iterator = phoneUtil.findNumbers(zipFollowing, RegionCode.US).iterator();
-
     PhoneNumberMatch matchWithSpaces = iterator.hasNext() ? iterator.next() : null;
-    assertNotNull("Did not find a number in '" + zipFollowing + "'; expected " + number,
-                  matchWithSpaces);
-    assertEquals(expectedResult, matchWithSpaces.number());
-    assertEquals(number, matchWithSpaces.rawString());
+    assertMatchProperties(matchWithSpaces, zipFollowing, number, RegionCode.US);
   }
 
   public void testIsLatinLetter() throws Exception {
@@ -366,6 +440,10 @@ public class PhoneNumberMatcherTest extends TestMetadataTestCase {
     new NumberTest("2012-01-02 08:00", RegionCode.US),
     new NumberTest("2012/01/02 08:00", RegionCode.US),
     new NumberTest("20120102 08:00", RegionCode.US),
+    new NumberTest("2014-04-12 04:04 PM", RegionCode.US),
+    new NumberTest("2014-04-12 &nbsp;04:04 PM", RegionCode.US),
+    new NumberTest("2014-04-12 &nbsp;04:04 PM", RegionCode.US),
+    new NumberTest("2014-04-12  04:04 PM", RegionCode.US),
   };
 
   /**
@@ -423,6 +501,9 @@ public class PhoneNumberMatcherTest extends TestMetadataTestCase {
     new NumberTest("0900-1 123123", RegionCode.DE),
     new NumberTest("(0)900-1 123123", RegionCode.DE),
     new NumberTest("0 900-1 123123", RegionCode.DE),
+    // NDC also found as part of the country calling code; this shouldn't ruin the grouping
+    // expectations.
+    new NumberTest("+33 3 34 2312", RegionCode.FR),
   };
 
   /**
@@ -454,6 +535,7 @@ public class PhoneNumberMatcherTest extends TestMetadataTestCase {
     new NumberTest("0900-1 123 123", RegionCode.DE),
     new NumberTest("(0)900-1 123 123", RegionCode.DE),
     new NumberTest("0 900-1 123 123", RegionCode.DE),
+    new NumberTest("+33 3 34 23 12", RegionCode.FR),
   };
 
   public void testMatchesWithPossibleLeniency() throws Exception {
@@ -516,8 +598,7 @@ public class PhoneNumberMatcherTest extends TestMetadataTestCase {
     doTestNumberNonMatchesForLeniency(testCases, Leniency.EXACT_GROUPING);
   }
 
-  private void doTestNumberMatchesForLeniency(List<NumberTest> testCases,
-                                              PhoneNumberUtil.Leniency leniency) {
+  private void doTestNumberMatchesForLeniency(List<NumberTest> testCases, Leniency leniency) {
     int noMatchFoundCount = 0;
     int wrongMatchFoundCount = 0;
     for (NumberTest test : testCases) {
@@ -530,8 +611,8 @@ public class PhoneNumberMatcherTest extends TestMetadataTestCase {
       } else {
         if (!test.rawString.equals(match.rawString())) {
           wrongMatchFoundCount++;
-          System.err.println("Found wrong match in test " + test.toString() +
-                             ". Found " + match.rawString());
+          System.err.println("Found wrong match in test " + test.toString()
+              + ". Found " + match.rawString());
         }
       }
     }
@@ -539,8 +620,7 @@ public class PhoneNumberMatcherTest extends TestMetadataTestCase {
     assertEquals(0, wrongMatchFoundCount);
   }
 
-  private void doTestNumberNonMatchesForLeniency(List<NumberTest> testCases,
-                                                 PhoneNumberUtil.Leniency leniency) {
+  private void doTestNumberNonMatchesForLeniency(List<NumberTest> testCases, Leniency leniency) {
     int matchFoundCount = 0;
     for (NumberTest test : testCases) {
       Iterator<PhoneNumberMatch> iterator =
@@ -830,6 +910,18 @@ public class PhoneNumberMatcherTest extends TestMetadataTestCase {
   }
 
   /**
+   * Asserts that the expected match is non-null, and that the raw string and expected
+   * proto buffer are set appropriately.
+   */
+  private void assertMatchProperties(
+      PhoneNumberMatch match, String text, String number, String region) throws Exception {
+    PhoneNumber expectedResult = phoneUtil.parse(number, region);
+    assertNotNull("Did not find a number in '" + text + "'; expected " + number, match);
+    assertEquals(expectedResult, match.number());
+    assertEquals(number, match.rawString());
+  }
+
+  /**
    * Asserts that another number can be found in {@code text} starting at {@code index}, and that
    * its corresponding range is {@code [start, end)}.
    */
@@ -956,7 +1048,7 @@ public class PhoneNumberMatcherTest extends TestMetadataTestCase {
   }
 
   private Iterator<PhoneNumberMatch> findNumbersForLeniency(
-      String text, String defaultCountry, PhoneNumberUtil.Leniency leniency) {
+      String text, String defaultCountry, Leniency leniency) {
     return phoneUtil.findNumbers(text, defaultCountry, leniency, Long.MAX_VALUE).iterator();
   }
 

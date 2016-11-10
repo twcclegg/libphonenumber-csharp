@@ -16,9 +16,8 @@
 #ifndef STRINGS_STRINGPIECE_H_
 #define STRINGS_STRINGPIECE_H_
 
-//#include "third_party/chromium/src/base/string_piece.h"
-#include "base/string_piece.h"
+#include "phonenumbers/base/strings/string_piece.h"
 
-using base::StringPiece;
+using i18n::phonenumbers::StringPiece;
 
 #endif  // STRINGS_STRINGPIECE_H_

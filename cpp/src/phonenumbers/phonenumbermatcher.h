@@ -25,8 +25,8 @@
 #include <string>
 #include <vector>
 
-#include "base/basictypes.h"
-#include "base/memory/scoped_ptr.h"
+#include "phonenumbers/base/basictypes.h"
+#include "phonenumbers/base/memory/scoped_ptr.h"
 #include "phonenumbers/callback.h"
 #include "phonenumbers/regexp_adapter.h"
 
@@ -148,6 +148,12 @@ class PhoneNumberMatcher {
 
   bool VerifyAccordingToLeniency(Leniency leniency, const PhoneNumber& number,
                                  const string& candidate) const;
+
+  // In interface for testing purposes.
+  static bool ContainsMoreThanOneSlashInNationalNumber(
+      const PhoneNumber& number,
+      const string& candidate,
+      const PhoneNumberUtil& util);
 
   // Helper method to determine if a character is a Latin-script letter or not.
   // For our purposes, combining marks should also return true since we assume
