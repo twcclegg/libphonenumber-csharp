@@ -41,6 +41,8 @@ public class PhoneNumberOfflineGeocoderTest extends TestCase {
       new PhoneNumber().setCountryCode(82).setNationalNumber(6421234567L);
   private static final PhoneNumber KO_INVALID_NUMBER =
       new PhoneNumber().setCountryCode(82).setNationalNumber(1234L);
+  private static final PhoneNumber KO_MOBILE =
+      new PhoneNumber().setCountryCode(82).setNationalNumber(101234567L);
   private static final PhoneNumber US_NUMBER1 =
       new PhoneNumber().setCountryCode(1).setNationalNumber(6502530000L);
   private static final PhoneNumber US_NUMBER2 =
@@ -51,10 +53,14 @@ public class PhoneNumberOfflineGeocoderTest extends TestCase {
       new PhoneNumber().setCountryCode(1).setNationalNumber(6174240000L);
   private static final PhoneNumber US_INVALID_NUMBER =
       new PhoneNumber().setCountryCode(1).setNationalNumber(123456789L);
+  private static final PhoneNumber NANPA_TOLL_FREE =
+      new PhoneNumber().setCountryCode(1).setNationalNumber(8002431234L);
   private static final PhoneNumber BS_NUMBER1 =
       new PhoneNumber().setCountryCode(1).setNationalNumber(2423651234L);
   private static final PhoneNumber AU_NUMBER =
       new PhoneNumber().setCountryCode(61).setNationalNumber(236618300L);
+  private static final PhoneNumber AR_MOBILE_NUMBER =
+      new PhoneNumber().setCountryCode(54).setNationalNumber(92214000000L);
   private static final PhoneNumber NUMBER_WITH_INVALID_COUNTRY_CODE =
       new PhoneNumber().setCountryCode(999).setNationalNumber(2423651234L);
   private static final PhoneNumber INTERNATIONAL_TOLL_FREE =
@@ -82,6 +88,13 @@ public class PhoneNumberOfflineGeocoderTest extends TestCase {
         geocoder.getDescriptionForNumber(US_NUMBER4, new Locale("en", "US")));
   }
 
+  public void testGetDescriptionForNumberBelongingToMultipleCountriesIsEmpty() {
+      // Test that nothing is returned when the number passed in is valid but not
+      // covered by the geocoding data file and belongs to multiple countries
+      assertEquals("",
+          geocoder.getDescriptionForNumber(NANPA_TOLL_FREE, new Locale("en", "US")));
+  }
+
   public void testGetDescriptionForNumber_en_US() {
     assertEquals("CA",
         geocoder.getDescriptionForNumber(US_NUMBER1, new Locale("en", "US")));
@@ -102,6 +115,11 @@ public class PhoneNumberOfflineGeocoderTest extends TestCase {
         geocoder.getDescriptionForNumber(KO_NUMBER1, Locale.KOREAN));
     assertEquals("\uC778\uCC9C",
         geocoder.getDescriptionForNumber(KO_NUMBER2, Locale.KOREAN));
+  }
+
+  public void testGetDescriptionForArgentinianMobileNumber() {
+    assertEquals("La Plata",
+        geocoder.getDescriptionForNumber(AR_MOBILE_NUMBER, Locale.ENGLISH));
   }
 
   public void testGetDescriptionForFallBack() {
@@ -143,5 +161,10 @@ public class PhoneNumberOfflineGeocoderTest extends TestCase {
   public void testGetDescriptionForInvalidNumber() {
     assertEquals("", geocoder.getDescriptionForNumber(KO_INVALID_NUMBER, Locale.ENGLISH));
     assertEquals("", geocoder.getDescriptionForNumber(US_INVALID_NUMBER, Locale.ENGLISH));
+  }
+
+  public void testGetDescriptionForNonGeographicalNumberWithGeocodingPrefix() {
+    // We have a geocoding prefix, but we shouldn't use it since this is not geographical.
+    assertEquals("South Korea", geocoder.getDescriptionForNumber(KO_MOBILE, Locale.ENGLISH));
   }
 }

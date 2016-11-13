@@ -18,6 +18,11 @@
  * Definition of the class representing metadata for international telephone numbers. This class is
  * hand created based on the class file compiled from phonemetadata.proto. Please refer to that file
  * for detailed descriptions of the meaning of each field.
+ *
+ * <p>WARNING: This API isn't stable. It is considered libphonenumber-internal and can change at any
+ * time. We only declare it as public for easy inclusion in our build tools not in this package.
+ * Clients should not refer to this file, we do not commit to support backwards-compatibility or to
+ * warn about breaking changes.
  */
 
 package com.google.i18n.phonenumbers;
@@ -42,7 +47,30 @@ public final class Phonemetadata {
       public NumberFormat build() {
         return this;
       }
+
+      public Builder mergeFrom(NumberFormat other) {
+        if (other.hasPattern()) {
+          setPattern(other.getPattern());
+        }
+        if (other.hasFormat()) {
+          setFormat(other.getFormat());
+        }
+        for (int i = 0; i < other.leadingDigitsPatternSize(); i++) {
+          addLeadingDigitsPattern(other.getLeadingDigitsPattern(i));
+        }
+        if (other.hasNationalPrefixFormattingRule()) {
+          setNationalPrefixFormattingRule(other.getNationalPrefixFormattingRule());
+        }
+        if (other.hasDomesticCarrierCodeFormattingRule()) {
+          setDomesticCarrierCodeFormattingRule(other.getDomesticCarrierCodeFormattingRule());
+        }
+        if (other.hasNationalPrefixOptionalWhenFormatting()) {
+          setNationalPrefixOptionalWhenFormatting(other.isNationalPrefixOptionalWhenFormatting());
+        }
+        return this;
+      }
     }
+
     public static Builder newBuilder() {
       return new Builder();
     }
@@ -128,27 +156,6 @@ public final class Phonemetadata {
       return this;
     }
 
-    public NumberFormat mergeFrom(NumberFormat other) {
-      if (other.hasPattern()) {
-        setPattern(other.getPattern());
-      }
-      if (other.hasFormat()) {
-        setFormat(other.getFormat());
-      }
-      int leadingDigitsPatternSize = other.leadingDigitsPatternSize();
-      for (int i = 0; i < leadingDigitsPatternSize; i++) {
-        addLeadingDigitsPattern(other.getLeadingDigitsPattern(i));
-      }
-      if (other.hasNationalPrefixFormattingRule()) {
-        setNationalPrefixFormattingRule(other.getNationalPrefixFormattingRule());
-      }
-      if (other.hasDomesticCarrierCodeFormattingRule()) {
-        setDomesticCarrierCodeFormattingRule(other.getDomesticCarrierCodeFormattingRule());
-      }
-      setNationalPrefixOptionalWhenFormatting(other.isNationalPrefixOptionalWhenFormatting());
-      return this;
-    }
-
     public void writeExternal(ObjectOutput objectOutput) throws IOException {
       objectOutput.writeUTF(pattern_);
       objectOutput.writeUTF(format_);
@@ -199,7 +206,27 @@ public final class Phonemetadata {
       public PhoneNumberDesc build() {
         return this;
       }
+
+      public Builder mergeFrom(PhoneNumberDesc other) {
+        if (other.hasNationalNumberPattern()) {
+          setNationalNumberPattern(other.getNationalNumberPattern());
+        }
+        if (other.hasPossibleNumberPattern()) {
+          setPossibleNumberPattern(other.getPossibleNumberPattern());
+        }
+        for (int i = 0; i < other.getPossibleLengthCount(); i++) {
+          addPossibleLength(other.getPossibleLength(i));
+        }
+        for (int i = 0; i < other.getPossibleLengthLocalOnlyCount(); i++) {
+          addPossibleLengthLocalOnly(other.getPossibleLengthLocalOnly(i));
+        }
+        if (other.hasExampleNumber()) {
+          setExampleNumber(other.getExampleNumber());
+        }
+        return this;
+      }
     }
+
     public static Builder newBuilder() {
       return new Builder();
     }
@@ -214,6 +241,11 @@ public final class Phonemetadata {
       nationalNumberPattern_ = value;
       return this;
     }
+    public PhoneNumberDesc clearNationalNumberPattern() {
+      hasNationalNumberPattern = false;
+      nationalNumberPattern_ = "";
+      return this;
+    }
 
     // optional string possible_number_pattern = 3;
     private boolean hasPossibleNumberPattern;
@@ -223,6 +255,47 @@ public final class Phonemetadata {
     public PhoneNumberDesc setPossibleNumberPattern(String value) {
       hasPossibleNumberPattern = true;
       possibleNumberPattern_ = value;
+      return this;
+    }
+    public PhoneNumberDesc clearPossibleNumberPattern() {
+      hasPossibleNumberPattern = false;
+      possibleNumberPattern_ = "";
+      return this;
+    }
+
+    // repeated int32 possible_length = 9;
+    private java.util.List<Integer> possibleLength_ = new java.util.ArrayList<Integer>();
+    public java.util.List<Integer> getPossibleLengthList() {
+      return possibleLength_;
+    }
+    public int getPossibleLengthCount() { return possibleLength_.size(); }
+    public int getPossibleLength(int index) {
+      return possibleLength_.get(index);
+    }
+    public PhoneNumberDesc addPossibleLength(int value) {
+      possibleLength_.add(value);
+      return this;
+    }
+    public PhoneNumberDesc clearPossibleLength() {
+      possibleLength_.clear();
+      return this;
+    }
+
+    // repeated int32 possible_length_local_only = 10;
+    private java.util.List<Integer> possibleLengthLocalOnly_ = new java.util.ArrayList<Integer>();
+    public java.util.List<Integer> getPossibleLengthLocalOnlyList() {
+      return possibleLengthLocalOnly_;
+    }
+    public int getPossibleLengthLocalOnlyCount() { return possibleLengthLocalOnly_.size(); }
+    public int getPossibleLengthLocalOnly(int index) {
+      return possibleLengthLocalOnly_.get(index);
+    }
+    public PhoneNumberDesc addPossibleLengthLocalOnly(int value) {
+      possibleLengthLocalOnly_.add(value);
+      return this;
+    }
+    public PhoneNumberDesc clearPossibleLengthLocalOnly() {
+      possibleLengthLocalOnly_.clear();
       return this;
     }
 
@@ -236,23 +309,17 @@ public final class Phonemetadata {
       exampleNumber_ = value;
       return this;
     }
-
-    public PhoneNumberDesc mergeFrom(PhoneNumberDesc other) {
-      if (other.hasNationalNumberPattern()) {
-        setNationalNumberPattern(other.getNationalNumberPattern());
-      }
-      if (other.hasPossibleNumberPattern()) {
-        setPossibleNumberPattern(other.getPossibleNumberPattern());
-      }
-      if (other.hasExampleNumber()) {
-        setExampleNumber(other.getExampleNumber());
-      }
+    public PhoneNumberDesc clearExampleNumber() {
+      hasExampleNumber = false;
+      exampleNumber_ = "";
       return this;
     }
 
     public boolean exactlySameAs(PhoneNumberDesc other) {
       return nationalNumberPattern_.equals(other.nationalNumberPattern_) &&
           possibleNumberPattern_.equals(other.possibleNumberPattern_) &&
+          possibleLength_.equals(other.possibleLength_) &&
+          possibleLengthLocalOnly_.equals(other.possibleLengthLocalOnly_) &&
           exampleNumber_.equals(other.exampleNumber_);
     }
 
@@ -265,6 +332,18 @@ public final class Phonemetadata {
       objectOutput.writeBoolean(hasPossibleNumberPattern);
       if (hasPossibleNumberPattern) {
         objectOutput.writeUTF(possibleNumberPattern_);
+      }
+
+      int possibleLengthSize = getPossibleLengthCount();
+      objectOutput.writeInt(possibleLengthSize);
+      for (int i = 0; i < possibleLengthSize; i++) {
+        objectOutput.writeInt(possibleLength_.get(i));
+      }
+
+      int possibleLengthLocalOnlySize = getPossibleLengthLocalOnlyCount();
+      objectOutput.writeInt(possibleLengthLocalOnlySize);
+      for (int i = 0; i < possibleLengthLocalOnlySize; i++) {
+        objectOutput.writeInt(possibleLengthLocalOnly_.get(i));
       }
 
       objectOutput.writeBoolean(hasExampleNumber);
@@ -280,6 +359,16 @@ public final class Phonemetadata {
 
       if (objectInput.readBoolean()) {
         setPossibleNumberPattern(objectInput.readUTF());
+      }
+
+      int possibleLengthSize = objectInput.readInt();
+      for (int i = 0; i < possibleLengthSize; i++) {
+        possibleLength_.add(objectInput.readInt());
+      }
+
+      int possibleLengthLocalOnlySize = objectInput.readInt();
+      for (int i = 0; i < possibleLengthLocalOnlySize; i++) {
+        possibleLengthLocalOnly_.add(objectInput.readInt());
       }
 
       if (objectInput.readBoolean()) {
@@ -306,7 +395,7 @@ public final class Phonemetadata {
       return new Builder();
     }
 
-    // required PhoneNumberDesc general_desc = 1;
+    // optional PhoneNumberDesc general_desc = 1;
     private boolean hasGeneralDesc;
     private PhoneNumberDesc generalDesc_ = null;
     public boolean hasGeneralDesc() { return hasGeneralDesc; }
@@ -320,7 +409,7 @@ public final class Phonemetadata {
       return this;
     }
 
-    // required PhoneNumberDesc fixed_line = 2;
+    // optional PhoneNumberDesc fixed_line = 2;
     private boolean hasFixedLine;
     private PhoneNumberDesc fixedLine_ = null;
     public boolean hasFixedLine() { return hasFixedLine; }
@@ -334,7 +423,7 @@ public final class Phonemetadata {
       return this;
     }
 
-    // required PhoneNumberDesc mobile = 3;
+    // optional PhoneNumberDesc mobile = 3;
     private boolean hasMobile;
     private PhoneNumberDesc mobile_ = null;
     public boolean hasMobile() { return hasMobile; }
@@ -348,7 +437,7 @@ public final class Phonemetadata {
       return this;
     }
 
-    // required PhoneNumberDesc toll_free = 4;
+    // optional PhoneNumberDesc toll_free = 4;
     private boolean hasTollFree;
     private PhoneNumberDesc tollFree_ = null;
     public boolean hasTollFree() { return hasTollFree; }
@@ -362,7 +451,7 @@ public final class Phonemetadata {
       return this;
     }
 
-    // required PhoneNumberDesc premium_rate = 5;
+    // optional PhoneNumberDesc premium_rate = 5;
     private boolean hasPremiumRate;
     private PhoneNumberDesc premiumRate_ = null;
     public boolean hasPremiumRate() { return hasPremiumRate; }
@@ -376,7 +465,7 @@ public final class Phonemetadata {
       return this;
     }
 
-    // required PhoneNumberDesc shared_cost = 6;
+    // optional PhoneNumberDesc shared_cost = 6;
     private boolean hasSharedCost;
     private PhoneNumberDesc sharedCost_ = null;
     public boolean hasSharedCost() { return hasSharedCost; }
@@ -390,7 +479,7 @@ public final class Phonemetadata {
       return this;
     }
 
-    // required PhoneNumberDesc personal_number = 7;
+    // optional PhoneNumberDesc personal_number = 7;
     private boolean hasPersonalNumber;
     private PhoneNumberDesc personalNumber_ = null;
     public boolean hasPersonalNumber() { return hasPersonalNumber; }
@@ -404,7 +493,7 @@ public final class Phonemetadata {
       return this;
     }
 
-    // required PhoneNumberDesc voip = 8;
+    // optional PhoneNumberDesc voip = 8;
     private boolean hasVoip;
     private PhoneNumberDesc voip_ = null;
     public boolean hasVoip() { return hasVoip; }
@@ -418,7 +507,7 @@ public final class Phonemetadata {
       return this;
     }
 
-    // required PhoneNumberDesc pager = 21;
+    // optional PhoneNumberDesc pager = 21;
     private boolean hasPager;
     private PhoneNumberDesc pager_ = null;
     public boolean hasPager() { return hasPager; }
@@ -432,7 +521,7 @@ public final class Phonemetadata {
       return this;
     }
 
-    // required PhoneNumberDesc uan = 25;
+    // optional PhoneNumberDesc uan = 25;
     private boolean hasUan;
     private PhoneNumberDesc uan_ = null;
     public boolean hasUan() { return hasUan; }
@@ -446,21 +535,7 @@ public final class Phonemetadata {
       return this;
     }
 
-    // required PhoneNumberDesc voicemail = 28;
-    private boolean hasVoicemail;
-    private PhoneNumberDesc voicemail_ = null;
-    public boolean hasVoicemail() { return hasVoicemail; }
-    public PhoneNumberDesc getVoicemail() { return voicemail_; }
-    public PhoneMetadata setVoicemail(PhoneNumberDesc value) {
-      if (value == null) {
-        throw new NullPointerException();
-      }
-      hasVoicemail = true;
-      voicemail_ = value;
-      return this;
-    }
-
-    // required PhoneNumberDesc emergency = 27;
+    // optional PhoneNumberDesc emergency = 27;
     private boolean hasEmergency;
     private PhoneNumberDesc emergency_ = null;
     public boolean hasEmergency() { return hasEmergency; }
@@ -474,7 +549,63 @@ public final class Phonemetadata {
       return this;
     }
 
-    // required PhoneNumberDesc noInternationalDialling = 24;
+    // optional PhoneNumberDesc voicemail = 28;
+    private boolean hasVoicemail;
+    private PhoneNumberDesc voicemail_ = null;
+    public boolean hasVoicemail() { return hasVoicemail; }
+    public PhoneNumberDesc getVoicemail() { return voicemail_; }
+    public PhoneMetadata setVoicemail(PhoneNumberDesc value) {
+      if (value == null) {
+        throw new NullPointerException();
+      }
+      hasVoicemail = true;
+      voicemail_ = value;
+      return this;
+    }
+
+    // optional PhoneNumberDesc short_code = 29;
+    private boolean hasShortCode;
+    private PhoneNumberDesc shortCode_ = null;
+    public boolean hasShortCode() { return hasShortCode; }
+    public PhoneNumberDesc getShortCode() { return shortCode_; }
+    public PhoneMetadata setShortCode(PhoneNumberDesc value) {
+      if (value == null) {
+        throw new NullPointerException();
+      }
+      hasShortCode = true;
+      shortCode_ = value;
+      return this;
+    }
+
+    // optional PhoneNumberDesc standard_rate = 30;
+    private boolean hasStandardRate;
+    private PhoneNumberDesc standardRate_ = null;
+    public boolean hasStandardRate() { return hasStandardRate; }
+    public PhoneNumberDesc getStandardRate() { return standardRate_; }
+    public PhoneMetadata setStandardRate(PhoneNumberDesc value) {
+      if (value == null) {
+        throw new NullPointerException();
+      }
+      hasStandardRate = true;
+      standardRate_ = value;
+      return this;
+    }
+
+    // optional PhoneNumberDesc carrier_specific = 31;
+    private boolean hasCarrierSpecific;
+    private PhoneNumberDesc carrierSpecific_ = null;
+    public boolean hasCarrierSpecific() { return hasCarrierSpecific; }
+    public PhoneNumberDesc getCarrierSpecific() { return carrierSpecific_; }
+    public PhoneMetadata setCarrierSpecific(PhoneNumberDesc value) {
+      if (value == null) {
+        throw new NullPointerException();
+      }
+      hasCarrierSpecific = true;
+      carrierSpecific_ = value;
+      return this;
+    }
+
+    // optional PhoneNumberDesc noInternationalDialling = 24;
     private boolean hasNoInternationalDialling;
     private PhoneNumberDesc noInternationalDialling_ = null;
     public boolean hasNoInternationalDialling() { return hasNoInternationalDialling; }
@@ -499,7 +630,7 @@ public final class Phonemetadata {
       return this;
     }
 
-    // required int32 country_code = 10;
+    // optional int32 country_code = 10;
     private boolean hasCountryCode;
     private int countryCode_ = 0;
     public boolean hasCountryCode() { return hasCountryCode; }
@@ -510,7 +641,7 @@ public final class Phonemetadata {
       return this;
     }
 
-    // required string international_prefix = 11;
+    // optional string international_prefix = 11;
     private boolean hasInternationalPrefix;
     private String internationalPrefix_ = "";
     public boolean hasInternationalPrefix() { return hasInternationalPrefix; }
@@ -531,6 +662,11 @@ public final class Phonemetadata {
       preferredInternationalPrefix_ = value;
       return this;
     }
+    public PhoneMetadata clearPreferredInternationalPrefix() {
+      hasPreferredInternationalPrefix = false;
+      preferredInternationalPrefix_ = "";
+      return this;
+    }
 
     // optional string national_prefix = 12;
     private boolean hasNationalPrefix;
@@ -542,6 +678,11 @@ public final class Phonemetadata {
       nationalPrefix_ = value;
       return this;
     }
+    public PhoneMetadata clearNationalPrefix() {
+      hasNationalPrefix = false;
+      nationalPrefix_ = "";
+      return this;
+    }
 
     // optional string preferred_extn_prefix = 13;
     private boolean hasPreferredExtnPrefix;
@@ -551,6 +692,11 @@ public final class Phonemetadata {
     public PhoneMetadata setPreferredExtnPrefix(String value) {
       hasPreferredExtnPrefix = true;
       preferredExtnPrefix_ = value;
+      return this;
+    }
+    public PhoneMetadata clearPreferredExtnPrefix() {
+      hasPreferredExtnPrefix = false;
+      preferredExtnPrefix_ = "";
       return this;
     }
 
@@ -575,6 +721,11 @@ public final class Phonemetadata {
       nationalPrefixTransformRule_ = value;
       return this;
     }
+    public PhoneMetadata clearNationalPrefixTransformRule() {
+      hasNationalPrefixTransformRule = false;
+      nationalPrefixTransformRule_ = "";
+      return this;
+    }
 
     // optional bool same_mobile_and_fixed_line_pattern = 18 [default = false];
     private boolean hasSameMobileAndFixedLinePattern;
@@ -584,6 +735,11 @@ public final class Phonemetadata {
     public PhoneMetadata setSameMobileAndFixedLinePattern(boolean value) {
       hasSameMobileAndFixedLinePattern = true;
       sameMobileAndFixedLinePattern_ = value;
+      return this;
+    }
+    public PhoneMetadata clearSameMobileAndFixedLinePattern() {
+      hasSameMobileAndFixedLinePattern = false;
+      sameMobileAndFixedLinePattern_ = false;
       return this;
     }
 
@@ -640,6 +796,11 @@ public final class Phonemetadata {
       mainCountryForCode_ = value;
       return this;
     }
+    public PhoneMetadata clearMainCountryForCode() {
+      hasMainCountryForCode = false;
+      mainCountryForCode_ = false;
+      return this;
+    }
 
     // optional string leading_digits = 23;
     private boolean hasLeadingDigits;
@@ -660,6 +821,27 @@ public final class Phonemetadata {
     public PhoneMetadata setLeadingZeroPossible(boolean value) {
       hasLeadingZeroPossible = true;
       leadingZeroPossible_ = value;
+      return this;
+    }
+    public PhoneMetadata clearLeadingZeroPossible() {
+      hasLeadingZeroPossible = false;
+      leadingZeroPossible_ = false;
+      return this;
+    }
+
+    // optional bool mobile_number_portable_region = 32 [default = false];
+    private boolean hasMobileNumberPortableRegion;
+    private boolean mobileNumberPortableRegion_ = false;
+    public boolean hasMobileNumberPortableRegion() { return hasMobileNumberPortableRegion; }
+    public boolean isMobileNumberPortableRegion() { return mobileNumberPortableRegion_; }
+    public PhoneMetadata setMobileNumberPortableRegion(boolean value) {
+      hasMobileNumberPortableRegion = true;
+      mobileNumberPortableRegion_ = value;
+      return this;
+    }
+    public PhoneMetadata clearMobileNumberPortableRegion() {
+      hasMobileNumberPortableRegion = false;
+      mobileNumberPortableRegion_ = false;
       return this;
     }
 
@@ -704,13 +886,25 @@ public final class Phonemetadata {
       if (hasUan) {
         uan_.writeExternal(objectOutput);
       }
+      objectOutput.writeBoolean(hasEmergency);
+      if (hasEmergency) {
+        emergency_.writeExternal(objectOutput);
+      }
       objectOutput.writeBoolean(hasVoicemail);
       if (hasVoicemail) {
         voicemail_.writeExternal(objectOutput);
       }
-      objectOutput.writeBoolean(hasEmergency);
-      if (hasEmergency) {
-        emergency_.writeExternal(objectOutput);
+      objectOutput.writeBoolean(hasShortCode);
+      if (hasShortCode) {
+        shortCode_.writeExternal(objectOutput);
+      }
+      objectOutput.writeBoolean(hasStandardRate);
+      if (hasStandardRate) {
+        standardRate_.writeExternal(objectOutput);
+      }
+      objectOutput.writeBoolean(hasCarrierSpecific);
+      if (hasCarrierSpecific) {
+        carrierSpecific_.writeExternal(objectOutput);
       }
       objectOutput.writeBoolean(hasNoInternationalDialling);
       if (hasNoInternationalDialling) {
@@ -768,6 +962,8 @@ public final class Phonemetadata {
       }
 
       objectOutput.writeBoolean(leadingZeroPossible_);
+
+      objectOutput.writeBoolean(mobileNumberPortableRegion_);
     }
 
     public void readExternal(ObjectInput objectInput) throws IOException {
@@ -835,13 +1031,31 @@ public final class Phonemetadata {
       if (hasDesc) {
         PhoneNumberDesc desc = new PhoneNumberDesc();
         desc.readExternal(objectInput);
+        setEmergency(desc);
+      }
+      hasDesc = objectInput.readBoolean();
+      if (hasDesc) {
+        PhoneNumberDesc desc = new PhoneNumberDesc();
+        desc.readExternal(objectInput);
         setVoicemail(desc);
       }
       hasDesc = objectInput.readBoolean();
       if (hasDesc) {
         PhoneNumberDesc desc = new PhoneNumberDesc();
         desc.readExternal(objectInput);
-        setEmergency(desc);
+        setShortCode(desc);
+      }
+      hasDesc = objectInput.readBoolean();
+      if (hasDesc) {
+        PhoneNumberDesc desc = new PhoneNumberDesc();
+        desc.readExternal(objectInput);
+        setStandardRate(desc);
+      }
+      hasDesc = objectInput.readBoolean();
+      if (hasDesc) {
+        PhoneNumberDesc desc = new PhoneNumberDesc();
+        desc.readExternal(objectInput);
+        setCarrierSpecific(desc);
       }
       hasDesc = objectInput.readBoolean();
       if (hasDesc) {
@@ -903,6 +1117,8 @@ public final class Phonemetadata {
       }
 
       setLeadingZeroPossible(objectInput.readBoolean());
+
+      setMobileNumberPortableRegion(objectInput.readBoolean());
     }
   }
 

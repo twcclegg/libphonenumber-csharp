@@ -24,8 +24,9 @@
 // asyoutypeformatter_test.cc for more details on how the formatter is to be
 // used.
 //
-// This is a direct port from AsYouTypeFormatter.java.  Changes to this class
-// should also happen to the Java version, whenever it makes sense.
+// This is a direct port from AsYouTypeFormatter.java.
+// Changes to this class should also happen to the Java version, whenever it
+// makes sense.
 //
 // This class is NOT THREAD SAFE.
 
@@ -35,8 +36,8 @@
 #include <list>
 #include <string>
 
-#include "base/basictypes.h"
-#include "base/memory/scoped_ptr.h"
+#include "phonenumbers/base/basictypes.h"
+#include "phonenumbers/base/memory/scoped_ptr.h"
 #include "phonenumbers/regexp_adapter.h"
 #include "phonenumbers/regexp_cache.h"
 #include "phonenumbers/phonemetadata.pb.h"
@@ -92,9 +93,13 @@ class AsYouTypeFormatter {
   // existing template.
   bool MaybeCreateNewTemplate();
 
-  void GetAvailableFormats(const string& leading_three_digits);
+  void GetAvailableFormats(const string& leading_digits);
 
   void NarrowDownPossibleFormats(const string& leading_digits);
+
+  // Calculates whether we should be adding a space after the national prefix
+  // for this formatting rule or not.
+  void SetShouldAddSpaceAfterNationalPrefix(const NumberFormat& format);
 
   bool CreateFormattingTemplate(const NumberFormat& format);
 
@@ -110,12 +115,24 @@ class AsYouTypeFormatter {
 
   void AttemptToChoosePatternWithPrefixExtracted(string* formatted_number);
 
+  const string& GetExtractedNationalPrefix() const;
+
   // Some national prefixes are a substring of others. If extracting the
   // shorter NDD doesn't result in a number we can format, we try to see if we
   // can extract a longer version here.
   bool AbleToExtractLongerNdd();
 
+  // Check to see if there is an exact pattern match for these digits. If so, we
+  // should use this instead of any other formatting template whose
+  // leadingDigitsPattern also matches the input.
   void AttemptToFormatAccruedDigits(string* formatted_number);
+
+  // Combines the national number with any prefix (IDD/+ and country code or
+  // national prefix) that was collected. A space will be inserted between them
+  // if the current formatting template indicates this to be suitable.
+  // The result will be stored in phone_number.
+  void AppendNationalNumber(const string& national_number,
+                            string* phone_number) const;
 
   // Attempts to set the formatting template and assigns the passed-in string
   // parameter to the formatted version of the digits entered so far.
@@ -124,6 +141,10 @@ class AsYouTypeFormatter {
   // Invokes InputDigitHelper on each digit of the national number accrued, and
   // assigns the passed-in string parameter to a formatted string in the end.
   void InputAccruedNationalNumber(string* number);
+
+  // Returns true if the current country is a NANPA country and the national
+  // number begins with the national prefix.
+  bool IsNanpaNumberWithNationalPrefix() const;
 
   // Extracts the national prefix into national_prefix, or sets it to empty
   // string if a national prefix is not present.
@@ -170,7 +191,11 @@ class AsYouTypeFormatter {
   // Set to true when users enter their own formatting. AsYouTypeFormatter will
   // do no formatting at all when this is set to true.
   bool input_has_formatting_;
-  bool is_international_formatting_;
+  // This is set to true when we know the user is entering a full national
+  // significant number, since we have either detected a national prefix or an
+  // international dialing prefix. When this is true, we will no longer use
+  // local number formatting patterns.
+  bool is_complete_number_;
   bool is_expecting_country_code_;
 
   const PhoneNumberUtil& phone_util_;
@@ -196,9 +221,10 @@ class AsYouTypeFormatter {
   // significant number, and it is formatted (e.g. with space inserted). For
   // example, this can contain IDD, country code, and/or NDD, etc.
   string prefix_before_national_number_;
+  bool should_add_space_after_national_prefix_;
   // This contains the national prefix that has been extracted. It contains only
   // digits without formatting.
-  string national_prefix_extracted_;
+  string extracted_national_prefix_;
   string national_number_;
 
   list<const NumberFormat*> possible_formats_;

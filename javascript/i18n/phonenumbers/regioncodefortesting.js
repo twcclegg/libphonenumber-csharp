@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright (C) 2011 The Libphonenumber Authors
+ * Copyright (C) 2011 The Libphonenumber Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,17 +32,23 @@ i18n.phonenumbers.RegionCode = {
   // Region code for global networks (e.g. +800 numbers).
   UN001: '001',
   AD: 'AD',
+  AE: 'AE',
   AO: 'AO',
   AQ: 'AQ',
   AR: 'AR',
   AU: 'AU',
+  BB: 'BB',
   BR: 'BR',
   BS: 'BS',
+  BY: 'BY',
   CA: 'CA',
+  CH: 'CH',
   CN: 'CN',
   CS: 'CS',
+  CX: 'CX',
   DE: 'DE',
   GB: 'GB',
+  HU: 'HU',
   IT: 'IT',
   JP: 'JP',
   KR: 'KR',
@@ -50,6 +56,7 @@ i18n.phonenumbers.RegionCode = {
   NZ: 'NZ',
   PL: 'PL',
   RE: 'RE',
+  SE: 'SE',
   SG: 'SG',
   US: 'US',
   YT: 'YT',

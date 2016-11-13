@@ -14,23 +14,24 @@
 
 // Author: Jim Meehan
 
-#include <iostream>
+#include <algorithm>
 #include <sstream>
 #include <cassert>
+#include <cstdio>
 
 #include "phonenumbers/utf/unicodetext.h"
-//#include "base/logging.h"
 #include "phonenumbers/utf/stringpiece.h"
 //#include "utf/stringprintf.h"
 #include "phonenumbers/utf/utf.h"
 #include "phonenumbers/utf/unilib.h"
 
+namespace i18n {
+namespace phonenumbers {
+
 using std::stringstream;
 using std::max;
 using std::hex;
 using std::dec;
-using std::cerr;
-using std::endl;
 
 static int CodepointDistance(const char* start, const char* end) {
   int n = 0;
@@ -84,7 +85,7 @@ static int ConvertToInterchangeValid(char* start, int len) {
       }
     }
     // Is the current string invalid UTF8 or just non-interchange UTF8?
-    char32 rune;
+    Rune rune;
     int n;
     if (isvalidcharntorune(start, end - start, &rune, &n)) {
       // structurally valid UTF8, but not interchange valid
@@ -230,7 +231,7 @@ UnicodeText& UnicodeText::Copy(const UnicodeText& src) {
 UnicodeText& UnicodeText::CopyUTF8(const char* buffer, int byte_length) {
   repr_.Copy(buffer, byte_length);
   if (!UniLib:: IsInterchangeValid(buffer, byte_length)) {
-    cerr << "UTF-8 buffer is not interchange-valid." << endl;
+    fprintf(stderr, "UTF-8 buffer is not interchange-valid.\n");
     repr_.size_ = ConvertToInterchangeValid(repr_.data_, byte_length);
   }
   return *this;
@@ -249,7 +250,7 @@ UnicodeText& UnicodeText::TakeOwnershipOfUTF8(char* buffer,
                                               int byte_capacity) {
   repr_.TakeOwnershipOf(buffer, byte_length, byte_capacity);
   if (!UniLib:: IsInterchangeValid(buffer, byte_length)) {
-    cerr << "UTF-8 buffer is not interchange-valid." << endl;
+    fprintf(stderr, "UTF-8 buffer is not interchange-valid.\n");
     repr_.size_ = ConvertToInterchangeValid(repr_.data_, byte_length);
   }
   return *this;
@@ -268,7 +269,7 @@ UnicodeText& UnicodeText::PointToUTF8(const char* buffer, int byte_length) {
   if (UniLib:: IsInterchangeValid(buffer, byte_length)) {
     repr_.PointTo(buffer, byte_length);
   } else {
-    cerr << "UTF-8 buffer is not interchange-valid." << endl;
+    fprintf(stderr, "UTF-8 buffer is not interchange-valid.");
     repr_.Copy(buffer, byte_length);
     repr_.size_ = ConvertToInterchangeValid(repr_.data_, byte_length);
   }
@@ -361,16 +362,16 @@ UnicodeText::~UnicodeText() {}
 void UnicodeText::push_back(char32 c) {
   if (UniLib::IsValidCodepoint(c)) {
     char buf[UTFmax];
-    int len = runetochar(buf, &c);
+    Rune rune = c;
+    int len = runetochar(buf, &rune);
     if (UniLib::IsInterchangeValid(buf, len)) {
       repr_.append(buf, len);
     } else {
-      cerr << "Unicode value 0x" << hex << c
-           << " is not valid for interchange" << endl;
+      fprintf(stderr, "Unicode value 0x%x is not valid for interchange\n", c);
       repr_.append(" ", 1);
     }
   } else {
-    cerr << "Illegal Unicode value: 0x" << hex << c << endl;
+    fprintf(stderr, "Illegal Unicode value: 0x%x\n", c);
     repr_.append(" ", 1);
   }
 }
@@ -493,6 +494,7 @@ int UnicodeText::const_iterator::get_utf8(char* utf8_output) const {
 
 
 UnicodeText::const_iterator UnicodeText::MakeIterator(const char* p) const {
+#ifndef NDEBUG
   assert(p != NULL);
   const char* start = utf8_data();
   int len = utf8_length();
@@ -500,6 +502,7 @@ UnicodeText::const_iterator UnicodeText::MakeIterator(const char* p) const {
   assert(p >= start);
   assert(p <= end);
   assert(p == end || !UniLib::IsTrailByte(*p));
+#endif
   return const_iterator(p);
 }
 
@@ -512,3 +515,6 @@ string UnicodeText::const_iterator::DebugString() const {
 
   return result;
 }
+
+}  // namespace phonenumbers
+}  // namespace i18n

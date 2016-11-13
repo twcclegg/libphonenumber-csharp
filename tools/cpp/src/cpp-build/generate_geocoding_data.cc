@@ -20,6 +20,7 @@
 #include <locale>
 #include <sys/stat.h>
 #include <algorithm>
+#include <cctype>
 #include <cmath>
 #include <cstdio>
 #include <cstring>
@@ -141,7 +142,7 @@ bool StrToInt(const string& s, int32* n) {
   std::stringstream stream;
   stream << s;
   stream >> *n;
-  return stream;
+  return !stream.fail();
 }
 
 // Converts integer to string, returns true on success.
@@ -149,7 +150,7 @@ bool IntToStr(int32 n, string* s) {
   std::stringstream stream;
   stream << n;
   stream >> *s;
-  return stream;
+  return !stream.fail();
 }
 
 // Parses the prefix descriptions file at path, clears and fills the output
@@ -279,7 +280,7 @@ void WriteCppHeader(const string& base_name, FILE* output) {
   fprintf(output, "#include \"phonenumbers/geocoding/%s.h\"\n",
           base_name.c_str());
   fprintf(output, "\n");
-  fprintf(output, "#include \"base/basictypes.h\"\n");
+  fprintf(output, "#include \"phonenumbers/base/basictypes.h\"\n");
   fprintf(output, "\n");
 }
 

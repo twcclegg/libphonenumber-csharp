@@ -22,8 +22,6 @@ import junit.framework.TestCase;
 
 /**
  * Some basic tests to check that the phone number metadata can be correctly loaded.
- *
- * @author Lara Rennie
  */
 public class MetadataManagerTest extends TestCase {
 
@@ -31,11 +29,23 @@ public class MetadataManagerTest extends TestCase {
     // We should have some data for Germany.
     PhoneMetadata germanyAlternateFormats = MetadataManager.getAlternateFormatsForCountry(49);
     assertNotNull(germanyAlternateFormats);
-    assertTrue(germanyAlternateFormats.numberFormats().size() > 0);
+    assertTrue(germanyAlternateFormats.numberFormatSize() > 0);
+  }
+
+  public void testShortNumberMetadataContainsData() throws Exception {
+    // We should have some data for France.
+    PhoneMetadata franceShortNumberMetadata = MetadataManager.getShortNumberMetadataForRegion("FR");
+    assertNotNull(franceShortNumberMetadata);
+    assertTrue(franceShortNumberMetadata.hasShortCode());
   }
 
   public void testAlternateFormatsFailsGracefully() throws Exception {
     PhoneMetadata noAlternateFormats = MetadataManager.getAlternateFormatsForCountry(999);
     assertNull(noAlternateFormats);
+  }
+
+  public void testShortNumberMetadataFailsGracefully() throws Exception {
+    PhoneMetadata noShortNumberMetadata = MetadataManager.getShortNumberMetadataForRegion("XXX");
+    assertNull(noShortNumberMetadata);
   }
 }

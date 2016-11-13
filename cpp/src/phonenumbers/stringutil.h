@@ -21,7 +21,7 @@
 #include <string>
 #include <vector>
 
-#include "base/basictypes.h"
+#include "phonenumbers/base/basictypes.h"
 
 namespace i18n {
 namespace phonenumbers {
@@ -148,6 +148,13 @@ string StrCat(const StringHolder& s1, const StringHolder& s2,
               const StringHolder& s7, const StringHolder& s8,
               const StringHolder& s9, const StringHolder& s10,
               const StringHolder& s11);
+
+string StrCat(const StringHolder& s1, const StringHolder& s2,
+              const StringHolder& s3, const StringHolder& s4,
+              const StringHolder& s5, const StringHolder& s6,
+              const StringHolder& s7, const StringHolder& s8,
+              const StringHolder& s9, const StringHolder& s10,
+              const StringHolder& s11, const StringHolder& s12);
 
 void StrAppend(string* dest, const StringHolder& s1);
 

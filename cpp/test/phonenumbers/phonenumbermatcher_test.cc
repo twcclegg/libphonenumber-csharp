@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Author: Lara Rennie
-
 #include "phonenumbers/phonenumbermatcher.h"
 
 #include <string>
@@ -22,9 +20,10 @@
 #include <gtest/gtest.h>
 #include <unicode/unistr.h>
 
-#include "base/basictypes.h"
-#include "base/memory/scoped_ptr.h"
-#include "base/memory/singleton.h"
+#include "phonenumbers/base/basictypes.h"
+#include "phonenumbers/base/memory/scoped_ptr.h"
+#include "phonenumbers/base/memory/singleton.h"
+#include "phonenumbers/default_logger.h"
 #include "phonenumbers/phonenumber.h"
 #include "phonenumbers/phonenumber.pb.h"
 #include "phonenumbers/phonenumbermatch.h"
@@ -77,10 +76,17 @@ class PhoneNumberMatcherTest : public testing::Test {
                  RegionCode::US(),
                  PhoneNumberMatcher::VALID, 5),
         offset_(0) {
+    PhoneNumberUtil::GetInstance()->SetLogger(new StdoutLogger());
   }
 
   bool IsLatinLetter(char32 letter) {
     return PhoneNumberMatcher::IsLatinLetter(letter);
+  }
+
+  bool ContainsMoreThanOneSlashInNationalNumber(
+      const PhoneNumber& phone_number, const string& candidate) {
+    return PhoneNumberMatcher::ContainsMoreThanOneSlashInNationalNumber(
+        phone_number, candidate, phone_util_);
   }
 
   bool ExtractMatch(const string& text, PhoneNumberMatch* match) {
@@ -130,6 +136,17 @@ class PhoneNumberMatcherTest : public testing::Test {
       EXPECT_FALSE(matcher->HasNext()) << "Match found in " << test->ToString()
                                        << " for leniency: " << leniency;
     }
+  }
+
+  // Asserts that the raw string and expected proto buffer for a match are set
+  // appropriately.
+  void AssertMatchProperties(const PhoneNumberMatch& match, const string& text,
+                             const string& number, const string& region_code) {
+    PhoneNumber expected_result;
+    phone_util_.Parse(number, region_code, &expected_result);
+
+    EXPECT_EQ(expected_result, match.number());
+    EXPECT_EQ(number, match.raw_string()) << " Wrong number found in " << text;
   }
 
   // Asserts that another number can be found in "text" starting at "index", and
@@ -224,7 +241,7 @@ class PhoneNumberMatcherTest : public testing::Test {
     // With a second number later.
     context_pairs.push_back(NumberContext("Call ", " or +1800-123-4567!"));
     // With a Month-Day date.
-    context_pairs.push_back(NumberContext("Call me on June 21 at", ""));
+    context_pairs.push_back(NumberContext("Call me on June 2 at", ""));
     // With publication pages.
     context_pairs.push_back(NumberContext(
         "As quoted by Alfonso 12-15 (2009), you may call me at ", ""));
@@ -322,6 +339,52 @@ class PhoneNumberMatcherTest : public testing::Test {
   int offset_;
 };
 
+TEST_F(PhoneNumberMatcherTest, ContainsMoreThanOneSlashInNationalNumber) {
+  // A date should return true.
+  PhoneNumber number;
+  number.set_country_code(1);
+  number.set_country_code_source(PhoneNumber::FROM_DEFAULT_COUNTRY);
+  string candidate = "1/05/2013";
+  EXPECT_TRUE(ContainsMoreThanOneSlashInNationalNumber(number, candidate));
+
+  // Here, the country code source thinks it started with a country calling
+  // code, but this is not the same as the part before the slash, so it's still
+  // true.
+  number.Clear();
+  number.set_country_code(274);
+  number.set_country_code_source(PhoneNumber::FROM_NUMBER_WITHOUT_PLUS_SIGN);
+  candidate = "27/4/2013";
+  EXPECT_TRUE(ContainsMoreThanOneSlashInNationalNumber(number, candidate));
+
+  // Now it should be false, because the first slash is after the country
+  // calling code.
+  number.Clear();
+  number.set_country_code(49);
+  number.set_country_code_source(PhoneNumber::FROM_NUMBER_WITH_PLUS_SIGN);
+  candidate = "49/69/2013";
+  EXPECT_FALSE(ContainsMoreThanOneSlashInNationalNumber(number, candidate));
+
+  number.Clear();
+  number.set_country_code(49);
+  number.set_country_code_source(PhoneNumber::FROM_NUMBER_WITHOUT_PLUS_SIGN);
+  candidate = "+49/69/2013";
+  EXPECT_FALSE(ContainsMoreThanOneSlashInNationalNumber(number, candidate));
+
+  candidate = "+ 49/69/2013";
+  EXPECT_FALSE(ContainsMoreThanOneSlashInNationalNumber(number, candidate));
+
+  candidate = "+ 49/69/20/13";
+  EXPECT_TRUE(ContainsMoreThanOneSlashInNationalNumber(number, candidate));
+
+  // Here, the first group is not assumed to be the country calling code, even
+  // though it is the same as it, so this should return true.
+  number.Clear();
+  number.set_country_code(49);
+  number.set_country_code_source(PhoneNumber::FROM_DEFAULT_COUNTRY);
+  candidate = "49/69/2013";
+  EXPECT_TRUE(ContainsMoreThanOneSlashInNationalNumber(number, candidate));
+}
+
 // See PhoneNumberUtilTest::ParseNationalNumber.
 TEST_F(PhoneNumberMatcherTest, FindNationalNumber) {
   // Same cases as in ParseNationalNumber.
@@ -341,7 +404,8 @@ TEST_F(PhoneNumberMatcherTest, FindNationalNumber) {
 
   DoTestFindInContext("64(0)64123456", RegionCode::NZ());
   // Check that using a "/" is fine in a phone number.
-  DoTestFindInContext("123/45678", RegionCode::DE());
+  // Note that real Polish numbers do *not* start with a 0.
+  DoTestFindInContext("0123/456789", RegionCode::PL());
   DoTestFindInContext("123-456-7890", RegionCode::US());
 }
 
@@ -489,6 +553,50 @@ TEST_F(PhoneNumberMatcherTest, IntermediateParsePositions) {
   }
 }
 
+TEST_F(PhoneNumberMatcherTest, FourMatchesInARow) {
+  string number1 = "415-666-7777";
+  string number2 = "800-443-1223";
+  string number3 = "212-443-1223";
+  string number4 = "650-443-1223";
+  string text = StrCat(number1, " - ", number2, " - ", number3, " - ", number4);
+
+  PhoneNumberMatcher matcher(text, RegionCode::US());
+  PhoneNumberMatch match;
+
+  EXPECT_TRUE(matcher.HasNext());
+  EXPECT_TRUE(matcher.Next(&match));
+  AssertMatchProperties(match, text, number1, RegionCode::US());
+
+  EXPECT_TRUE(matcher.HasNext());
+  EXPECT_TRUE(matcher.Next(&match));
+  AssertMatchProperties(match, text, number2, RegionCode::US());
+
+  EXPECT_TRUE(matcher.HasNext());
+  EXPECT_TRUE(matcher.Next(&match));
+  AssertMatchProperties(match, text, number3, RegionCode::US());
+
+  EXPECT_TRUE(matcher.HasNext());
+  EXPECT_TRUE(matcher.Next(&match));
+  AssertMatchProperties(match, text, number4, RegionCode::US());
+}
+
+TEST_F(PhoneNumberMatcherTest, MatchesFoundWithMultipleSpaces) {
+  string number1 = "415-666-7777";
+  string number2 = "800-443-1223";
+  string text = StrCat(number1, " ", number2);
+
+  PhoneNumberMatcher matcher(text, RegionCode::US());
+  PhoneNumberMatch match;
+
+  EXPECT_TRUE(matcher.HasNext());
+  EXPECT_TRUE(matcher.Next(&match));
+  AssertMatchProperties(match, text, number1, RegionCode::US());
+
+  EXPECT_TRUE(matcher.HasNext());
+  EXPECT_TRUE(matcher.Next(&match));
+  AssertMatchProperties(match, text, number2, RegionCode::US());
+}
+
 TEST_F(PhoneNumberMatcherTest, MatchWithSurroundingZipcodes) {
   string number = "415-666-7777";
   string zip_preceding =
@@ -503,8 +611,7 @@ TEST_F(PhoneNumberMatcherTest, MatchWithSurroundingZipcodes) {
   PhoneNumberMatch match;
   EXPECT_TRUE(matcher->HasNext());
   EXPECT_TRUE(matcher->Next(&match));
-  EXPECT_EQ(expected_result, match.number());
-  EXPECT_EQ(number, match.raw_string());
+  AssertMatchProperties(match, zip_preceding, number, RegionCode::US());
 
   // Now repeat, but this time the phone number has spaces in it. It should
   // still be found.
@@ -519,8 +626,8 @@ TEST_F(PhoneNumberMatcherTest, MatchWithSurroundingZipcodes) {
   PhoneNumberMatch match_with_spaces;
   EXPECT_TRUE(matcher->HasNext());
   EXPECT_TRUE(matcher->Next(&match_with_spaces));
-  EXPECT_EQ(expected_result, match_with_spaces.number());
-  EXPECT_EQ(number, match_with_spaces.raw_string());
+  AssertMatchProperties(
+      match_with_spaces, zip_following, number, RegionCode::US());
 }
 
 TEST_F(PhoneNumberMatcherTest, IsLatinLetter) {
@@ -702,6 +809,10 @@ static const NumberTest kImpossibleCases[] = {
   NumberTest("2012-01-02 08:00", RegionCode::US()),
   NumberTest("2012/01/02 08:00", RegionCode::US()),
   NumberTest("20120102 08:00", RegionCode::US()),
+  NumberTest("2014-04-12 04:04 PM", RegionCode::US()),
+  NumberTest("2014-04-12 &nbsp;04:04 PM", RegionCode::US()),
+  NumberTest("2014-04-12 &nbsp;04:04 PM", RegionCode::US()),
+  NumberTest("2014-04-12  04:04 PM", RegionCode::US()),
 };
 
 // Strings with number-like things that should only be found under "possible".
@@ -742,7 +853,8 @@ static const NumberTest kValidCases[] = {
   NumberTest("030-3-2 23 12 34", RegionCode::DE()),
   NumberTest("03 0 -3 2 23 12 34", RegionCode::DE()),
   NumberTest("(0)3 0 -3 2 23 12 34", RegionCode::DE()),
-  NumberTest("0 3 0 -3 2 23 12 34", RegionCode::DE()),};
+  NumberTest("0 3 0 -3 2 23 12 34", RegionCode::DE()),
+};
 
 // Strings with number-like things that should only be found up to and including
 // the "strict_grouping" leniency level.
@@ -752,11 +864,18 @@ static const NumberTest kStrictGroupingCases[] = {
   // Should be found by strict grouping but not exact grouping, as the last two
   // groups are formatted together as a block.
   NumberTest("0800-2491234", RegionCode::DE()),
+  // If the user is using alternate formats, test that numbers formatted in
+  // that way are found.
+#ifdef I18N_PHONENUMBERS_USE_ALTERNATE_FORMATS
   // Doesn't match any formatting in the test file, but almost matches an
   // alternate format (the last two groups have been squashed together here).
   NumberTest("0900-1 123123", RegionCode::DE()),
   NumberTest("(0)900-1 123123", RegionCode::DE()),
   NumberTest("0 900-1 123123", RegionCode::DE()),
+#endif  // I18N_PHONENUMBERS_USE_ALTERNATE_FORMATS
+  // NDC also found as part of the country calling code; this shouldn't ruin the
+  // grouping expectations.
+  NumberTest("+33 3 34 2312", RegionCode::FR()),
 };
 
 // Strings with number-like things that should be found at all levels.
@@ -788,13 +907,18 @@ static const NumberTest kExactGroupingCases[] = {
   NumberTest("0494949 ext. 49", RegionCode::DE()),
   NumberTest("01 (33) 3461 2234", RegionCode::MX()),  // Optional NP present
   NumberTest("(33) 3461 2234", RegionCode::MX()),  // Optional NP omitted
-  // Breakdown assistance number with normal formatting.
+  // If the user is using alternate formats, test that numbers formatted in
+  // that way are found.
+#ifdef I18N_PHONENUMBERS_USE_ALTERNATE_FORMATS
+  // Breakdown assistance number using alternate formatting pattern.
   NumberTest("1800-10-10 22", RegionCode::AU()),
   // Doesn't match any formatting in the test file, but matches an alternate
   // format exactly.
   NumberTest("0900-1 123 123", RegionCode::DE()),
   NumberTest("(0)900-1 123 123", RegionCode::DE()),
   NumberTest("0 900-1 123 123", RegionCode::DE()),
+#endif  // I18N_PHONENUMBERS_USE_ALTERNATE_FORMATS
+  NumberTest("+33 3 34 23 12", RegionCode::FR()),
 };
 
 TEST_F(PhoneNumberMatcherTest, MatchesWithPossibleLeniency) {

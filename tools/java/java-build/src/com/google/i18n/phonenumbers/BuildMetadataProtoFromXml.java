@@ -38,6 +38,10 @@ import java.util.regex.Pattern;
 /**
  * Tool to convert phone number metadata from the XML format to protocol buffer format.
  *
+ * <p>
+ * Based on the name of the {@code inputFile}, some optimization and removal of unnecessary metadata
+ * is carried out to reduce the size of the output file.
+ *
  * @author Shaopeng Jia
  */
 public class BuildMetadataProtoFromXml extends Command {
@@ -50,7 +54,11 @@ public class BuildMetadataProtoFromXml extends Command {
   private static final String DATA_PREFIX = "data-prefix";
   private static final String MAPPING_CLASS = "mapping-class";
   private static final String COPYRIGHT = "copyright";
+  private static final String SINGLE_FILE = "single-file";
   private static final String LITE_BUILD = "lite-build";
+  // Only supported for clients who have consulted with the libphonenumber team, and the behavior is
+  // subject to change without notice.
+  private static final String SPECIAL_BUILD = "special-build";
 
   private static final String HELP_MESSAGE =
       "Usage: " + CLASS_NAME + " [OPTION]...\n" +
@@ -59,23 +67,29 @@ public class BuildMetadataProtoFromXml extends Command {
       "  --" + OUTPUT_DIR + "=PATH     Use PATH as the root directory for output files.\n" +
       "  --" + DATA_PREFIX +
           "=PATH    Use PATH (relative to " + OUTPUT_DIR + ") as the basename when\n" +
-      "                        writing phone number metadata (one file per region) in\n" +
-      "                        proto format.\n" +
+      "                        writing phone number metadata in proto format.\n" +
+      "                        One file per region will be written unless " + SINGLE_FILE + "\n" +
+      "                        is set, in which case a single file will be written with\n" +
+      "                        metadata for all regions.\n" +
       "  --" + MAPPING_CLASS + "=NAME  Store country code mappings in the class NAME, which\n" +
       "                        will be written to a file in " + OUTPUT_DIR + ".\n" +
       "  --" + COPYRIGHT + "=YEAR      Use YEAR in generated copyright headers.\n" +
       "\n" +
+      "  [--" + SINGLE_FILE + "=<true|false>] Optional (default: false). Whether to write\n" +
+      "                               metadata to a single file, instead of one file\n" +
+      "                               per region.\n" +
       "  [--" + LITE_BUILD + "=<true|false>]  Optional (default: false). In a lite build,\n" +
       "                               certain metadata will be omitted. At this\n" +
       "                               moment, example numbers information is omitted.\n" +
       "\n" +
       "Example command line invocation:\n" +
       CLASS_NAME + " \\\n" +
-      "  --" + INPUT_FILE + "=resources/PhoneNumberMetaData.xml \\\n" +
+      "  --" + INPUT_FILE + "=resources/PhoneNumberMetadata.xml \\\n" +
       "  --" + OUTPUT_DIR + "=java/libphonenumber/src/com/google/i18n/phonenumbers \\\n" +
       "  --" + DATA_PREFIX + "=data/PhoneNumberMetadataProto \\\n" +
       "  --" + MAPPING_CLASS + "=CountryCodeToRegionCodeMap \\\n" +
       "  --" + COPYRIGHT + "=2010 \\\n" +
+      "  --" + SINGLE_FILE + "=false \\\n" +
       "  --" + LITE_BUILD + "=false\n";
 
   private static final String GENERATION_COMMENT =
@@ -98,7 +112,9 @@ public class BuildMetadataProtoFromXml extends Command {
     String dataPrefix = null;
     String mappingClass = null;
     String copyright = null;
+    boolean singleFile = false;
     boolean liteBuild = false;
+    boolean specialBuild = false;
 
     for (int i = 1; i < getArgs().length; i++) {
       String key = null;
@@ -119,9 +135,15 @@ public class BuildMetadataProtoFromXml extends Command {
         mappingClass = value;
       } else if (COPYRIGHT.equals(key)) {
         copyright = value;
+      } else if (SINGLE_FILE.equals(key) &&
+                 ("true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value))) {
+        singleFile = "true".equalsIgnoreCase(value);
       } else if (LITE_BUILD.equals(key) &&
                  ("true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value))) {
         liteBuild = "true".equalsIgnoreCase(value);
+      } else if (SPECIAL_BUILD.equals(key) &&
+                 ("true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value))) {
+        specialBuild = "true".equalsIgnoreCase(value);
       } else {
         System.err.println(HELP_MESSAGE);
         System.err.println("Illegal command line parameter: " + getArgs()[i]);
@@ -142,21 +164,28 @@ public class BuildMetadataProtoFromXml extends Command {
 
     try {
       PhoneMetadataCollection metadataCollection =
-          BuildMetadataFromXml.buildPhoneMetadataCollection(inputFile, liteBuild);
+          BuildMetadataFromXml.buildPhoneMetadataCollection(inputFile, liteBuild, specialBuild);
 
-      for (PhoneMetadata metadata : metadataCollection.getMetadataList()) {
-        String regionCode = metadata.getId();
-        // For non-geographical country calling codes (e.g. +800), or for alternate formats, use the
-        // country calling codes instead of the region code to form the file name.
-        if (regionCode.equals("001") || regionCode.isEmpty()) {
-          regionCode = Integer.toString(metadata.getCountryCode());
-        }
-        PhoneMetadataCollection outMetadataCollection = new PhoneMetadataCollection();
-        outMetadataCollection.addMetadata(metadata);
-        FileOutputStream outputForRegion = new FileOutputStream(filePrefix + "_" + regionCode);
-        ObjectOutputStream out = new ObjectOutputStream(outputForRegion);
-        outMetadataCollection.writeExternal(out);
+      if (singleFile) {
+        FileOutputStream output = new FileOutputStream(filePrefix);
+        ObjectOutputStream out = new ObjectOutputStream(output);
+        metadataCollection.writeExternal(out);
         out.close();
+      } else {
+        for (PhoneMetadata metadata : metadataCollection.getMetadataList()) {
+          String regionCode = metadata.getId();
+          // For non-geographical country calling codes (e.g. +800), or for alternate formats, use the
+          // country calling codes instead of the region code to form the file name.
+          if (regionCode.equals("001") || regionCode.isEmpty()) {
+            regionCode = Integer.toString(metadata.getCountryCode());
+          }
+          PhoneMetadataCollection outMetadataCollection = new PhoneMetadataCollection();
+          outMetadataCollection.addMetadata(metadata);
+          FileOutputStream outputForRegion = new FileOutputStream(filePrefix + "_" + regionCode);
+          ObjectOutputStream out = new ObjectOutputStream(outputForRegion);
+          outMetadataCollection.writeExternal(out);
+          out.close();
+        }
       }
 
       Map<Integer, List<String>> countryCodeToRegionCodeMap =
@@ -177,19 +206,20 @@ public class BuildMetadataProtoFromXml extends Command {
       "  // country/region represented by that country code. In the case of multiple\n" +
       "  // countries sharing a calling code, such as the NANPA countries, the one\n" +
       "  // indicated with \"isMainCountryForCode\" in the metadata should be first.\n";
-  private static final String SET_COMMENT =
+  private static final String COUNTRY_CODE_SET_COMMENT =
       "  // A set of all country codes for which data is available.\n";
+  private static final String REGION_CODE_SET_COMMENT =
+      "  // A set of all region codes for which data is available.\n";
   private static final double CAPACITY_FACTOR = 0.75;
   private static final String CAPACITY_COMMENT =
-      "    // The capacity is set to %d as there are %d different country codes,\n" +
+      "    // The capacity is set to %d as there are %d different entries,\n" +
       "    // and this offers a load factor of roughly " + CAPACITY_FACTOR + ".\n";
 
   private static void writeCountryCallingCodeMappingToJavaFile(
       Map<Integer, List<String>> countryCodeToRegionCodeMap,
       String outputDir, String mappingClass, String copyright) throws IOException {
-    int capacity = (int) (countryCodeToRegionCodeMap.size() / CAPACITY_FACTOR);
-
-    // Find out whether the countryCodeToRegionCodeMap has any region codes listed in it.
+    // Find out whether the countryCodeToRegionCodeMap has any region codes or country
+    // calling codes listed in it.
     boolean hasRegionCodes = false;
     for (List<String> listWithRegionCode : countryCodeToRegionCodeMap.values()) {
       if (!listWithRegionCode.isEmpty()) {
@@ -197,13 +227,19 @@ public class BuildMetadataProtoFromXml extends Command {
         break;
       }
     }
+    boolean hasCountryCodes = countryCodeToRegionCodeMap.size() > 1;
 
     ClassWriter writer = new ClassWriter(outputDir, mappingClass, copyright);
 
-    if (hasRegionCodes) {
+    int capacity = (int) (countryCodeToRegionCodeMap.size() / CAPACITY_FACTOR);
+    if (hasRegionCodes && hasCountryCodes) {
       writeMap(writer, capacity, countryCodeToRegionCodeMap);
+    } else if (hasCountryCodes) {
+      writeCountryCodeSet(writer, capacity, countryCodeToRegionCodeMap.keySet());
     } else {
-      writeSet(writer, capacity, countryCodeToRegionCodeMap.keySet());
+      List<String> regionCodeList = countryCodeToRegionCodeMap.get(0);
+      capacity = (int) (regionCodeList.size() / CAPACITY_FACTOR);
+      writeRegionCodeSet(writer, capacity, regionCodeList);
     }
 
     writer.writeToFile();
@@ -243,9 +279,30 @@ public class BuildMetadataProtoFromXml extends Command {
     writer.addToBody("  }\n");
   }
 
-  private static void writeSet(ClassWriter writer, int capacity,
-                               Set<Integer> countryCodeSet) {
-    writer.addToBody(SET_COMMENT);
+  private static void writeRegionCodeSet(ClassWriter writer, int capacity,
+                                         List<String> regionCodeList) {
+    writer.addToBody(REGION_CODE_SET_COMMENT);
+
+    writer.addToImports("java.util.HashSet");
+    writer.addToImports("java.util.Set");
+
+    writer.addToBody("  static Set<String> getRegionCodeSet() {\n");
+    writer.formatToBody(CAPACITY_COMMENT, capacity, regionCodeList.size());
+    writer.addToBody("    Set<String> regionCodeSet = new HashSet<String>(" + capacity + ");\n");
+    writer.addToBody("\n");
+
+    for (String regionCode : regionCodeList) {
+      writer.addToBody("    regionCodeSet.add(\"" + regionCode + "\");\n");
+    }
+
+    writer.addToBody("\n");
+    writer.addToBody("    return regionCodeSet;\n");
+    writer.addToBody("  }\n");
+  }
+
+  private static void writeCountryCodeSet(ClassWriter writer, int capacity,
+                                          Set<Integer> countryCodeSet) {
+    writer.addToBody(COUNTRY_CODE_SET_COMMENT);
 
     writer.addToImports("java.util.HashSet");
     writer.addToImports("java.util.Set");
