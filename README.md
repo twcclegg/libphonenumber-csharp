@@ -26,6 +26,15 @@ C# port of Google's [libphonenumber library](https://github.com/googlei18n/libph
   * AsYouTypeFormatter - formats phone numbers on-the-fly when users enter each digit.
   * FindNumbers - finds numbers in text input 
 
+## HowTo Update
+
+  * checkout the latest release from https://github.com/googlei18n/libphonenumber/releases
+  * synchronize all contained folders with this repository
+  * copy PhoneNumberMetaDataForTesting.xml PhoneNumberMetaData.xml PhoneNumberAlternateFormats.xml from /resources to /csharp/PhoneNumbers
+  * optional run /csharp/lib/makeprotobuf.bat
+  * modify AssemblyVersion and AssemblyFileVersion in /csharp/PhoneNumbers/Properties/AssemblyInfo.cs and /csharp/PhoneNumbers.Test/Properties/AssemblyInfo.cs
+  * make /csharp/PhoneNumbers.sln
+
 ## ToDo
 
 7.7.4 changes the organization of metadata https://groups.google.com/forum/#!topic/libphonenumber-discuss/GlS11RdyocQ
