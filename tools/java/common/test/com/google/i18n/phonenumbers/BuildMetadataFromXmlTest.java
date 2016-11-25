@@ -443,7 +443,6 @@ public class BuildMetadataFromXmlTest extends TestCase {
 
     phoneNumberDesc = BuildMetadataFromXml.processPhoneNumberDescElement(
         generalDesc, territoryElement, "invalidType");
-    assertEquals("NA", phoneNumberDesc.getPossibleNumberPattern());
     assertEquals("NA", phoneNumberDesc.getNationalNumberPattern());
   }
 
@@ -462,24 +461,21 @@ public class BuildMetadataFromXmlTest extends TestCase {
     assertEquals("\\d{6}", phoneNumberDesc.getNationalNumberPattern());
   }
 
-  public void testFilterMetadata_liteBuild() throws Exception {
+  public void testBuildPhoneMetadataCollection_liteBuild() throws Exception {
     String xmlInput =
         "<phoneNumberMetadata>"
         + "  <territories>"
         + "    <territory id=\"AM\" countryCode=\"374\" internationalPrefix=\"00\">"
         + "      <generalDesc>"
         + "        <nationalNumberPattern>[1-9]\\d{7}</nationalNumberPattern>"
-        + "        <possibleNumberPattern>\\d{5,8}</possibleNumberPattern>"
         + "      </generalDesc>"
         + "      <fixedLine>"
         + "        <nationalNumberPattern>[1-9]\\d{7}</nationalNumberPattern>"
-        + "        <possibleNumberPattern>\\d{5,8}</possibleNumberPattern>"
         + "        <possibleLengths national=\"8\" localOnly=\"5,6\"/>"
         + "        <exampleNumber>10123456</exampleNumber>"
         + "      </fixedLine>"
         + "      <mobile>"
         + "        <nationalNumberPattern>[1-9]\\d{7}</nationalNumberPattern>"
-        + "        <possibleNumberPattern>\\d{5,8}</possibleNumberPattern>"
         + "        <possibleLengths national=\"8\" localOnly=\"5,6\"/>"
         + "        <exampleNumber>10123456</exampleNumber>"
         + "      </mobile>"
@@ -499,6 +495,9 @@ public class BuildMetadataFromXmlTest extends TestCase {
     PhoneMetadata metadata = metadataCollection.getMetadataList().get(0);
     assertTrue(metadata.hasGeneralDesc());
     assertFalse(metadata.getGeneralDesc().hasExampleNumber());
+    // Some Phonemetadata.java implementations may have custom logic, so we ensure this
+    // implementation is doing the right thing by checking the value of the example number even when
+    // hasExampleNumber is false.
     assertEquals("", metadata.getGeneralDesc().getExampleNumber());
     assertTrue(metadata.hasFixedLine());
     assertFalse(metadata.getFixedLine().hasExampleNumber());
@@ -508,24 +507,21 @@ public class BuildMetadataFromXmlTest extends TestCase {
     assertEquals("", metadata.getMobile().getExampleNumber());
   }
 
-  public void testFilterMetadata_specialBuild() throws Exception {
+  public void testBuildPhoneMetadataCollection_specialBuild() throws Exception {
     String xmlInput =
         "<phoneNumberMetadata>"
         + "  <territories>"
         + "    <territory id=\"AM\" countryCode=\"374\" internationalPrefix=\"00\">"
         + "      <generalDesc>"
         + "        <nationalNumberPattern>[1-9]\\d{7}</nationalNumberPattern>"
-        + "        <possibleNumberPattern>\\d{5,8}</possibleNumberPattern>"
         + "      </generalDesc>"
         + "      <fixedLine>"
         + "        <nationalNumberPattern>[1-9]\\d{7}</nationalNumberPattern>"
-        + "        <possibleNumberPattern>\\d{5,8}</possibleNumberPattern>"
         + "        <possibleLengths national=\"8\" localOnly=\"5,6\"/>"
         + "        <exampleNumber>10123456</exampleNumber>"
         + "      </fixedLine>"
         + "      <mobile>"
         + "        <nationalNumberPattern>[1-9]\\d{7}</nationalNumberPattern>"
-        + "        <possibleNumberPattern>\\d{5,8}</possibleNumberPattern>"
         + "        <possibleLengths national=\"8\" localOnly=\"5,6\"/>"
         + "        <exampleNumber>10123456</exampleNumber>"
         + "      </mobile>"
@@ -545,6 +541,9 @@ public class BuildMetadataFromXmlTest extends TestCase {
     PhoneMetadata metadata = metadataCollection.getMetadataList().get(0);
     assertTrue(metadata.hasGeneralDesc());
     assertFalse(metadata.getGeneralDesc().hasExampleNumber());
+    // Some Phonemetadata.java implementations may have custom logic, so we ensure this
+    // implementation is doing the right thing by checking the value of the example number even when
+    // hasExampleNumber is false.
     assertEquals("", metadata.getGeneralDesc().getExampleNumber());
     // TODO: Consider clearing fixed-line if empty after being filtered.
     assertTrue(metadata.hasFixedLine());
@@ -555,24 +554,21 @@ public class BuildMetadataFromXmlTest extends TestCase {
     assertEquals("10123456", metadata.getMobile().getExampleNumber());
   }
 
-  public void testFilterMetadata_fullBuild() throws Exception {
+  public void testBuildPhoneMetadataCollection_fullBuild() throws Exception {
     String xmlInput =
         "<phoneNumberMetadata>"
         + "  <territories>"
         + "    <territory id=\"AM\" countryCode=\"374\" internationalPrefix=\"00\">"
         + "      <generalDesc>"
         + "        <nationalNumberPattern>[1-9]\\d{7}</nationalNumberPattern>"
-        + "        <possibleNumberPattern>\\d{5,8}</possibleNumberPattern>"
         + "      </generalDesc>"
         + "      <fixedLine>"
         + "        <nationalNumberPattern>[1-9]\\d{7}</nationalNumberPattern>"
-        + "        <possibleNumberPattern>\\d{5,8}</possibleNumberPattern>"
         + "        <possibleLengths national=\"8\" localOnly=\"5,6\"/>"
         + "        <exampleNumber>10123456</exampleNumber>"
         + "      </fixedLine>"
         + "      <mobile>"
         + "        <nationalNumberPattern>[1-9]\\d{7}</nationalNumberPattern>"
-        + "        <possibleNumberPattern>\\d{5,8}</possibleNumberPattern>"
         + "        <possibleLengths national=\"8\" localOnly=\"5,6\"/>"
         + "        <exampleNumber>10123456</exampleNumber>"
         + "      </mobile>"
@@ -592,6 +588,9 @@ public class BuildMetadataFromXmlTest extends TestCase {
     PhoneMetadata metadata = metadataCollection.getMetadataList().get(0);
     assertTrue(metadata.hasGeneralDesc());
     assertFalse(metadata.getGeneralDesc().hasExampleNumber());
+    // Some Phonemetadata.java implementations may have custom logic, so we ensure this
+    // implementation is doing the right thing by checking the value of the example number even when
+    // hasExampleNumber is false.
     assertEquals("", metadata.getGeneralDesc().getExampleNumber());
     assertTrue(metadata.hasFixedLine());
     assertTrue(metadata.getFixedLine().hasExampleNumber());
@@ -619,14 +618,14 @@ public class BuildMetadataFromXmlTest extends TestCase {
       throws ParserConfigurationException, SAXException, IOException {
     PhoneNumberDesc.Builder generalDesc = PhoneNumberDesc.newBuilder();
     String xmlInput = "<territory><fixedLine>"
-        + "  <possibleNumberPattern>\t \\d { 6 } </possibleNumberPattern>"
+        + "  <nationalNumberPattern>\t \\d { 6 } </nationalNumberPattern>"
         + "</fixedLine></territory>";
     Element countryElement = parseXmlString(xmlInput);
     PhoneNumberDesc.Builder phoneNumberDesc;
 
     phoneNumberDesc = BuildMetadataFromXml.processPhoneNumberDescElement(
         generalDesc, countryElement, "fixedLine");
-    assertEquals("\\d{6}", phoneNumberDesc.getPossibleNumberPattern());
+    assertEquals("\\d{6}", phoneNumberDesc.getNationalNumberPattern());
   }
 
   // Tests setRelevantDescPatterns().
