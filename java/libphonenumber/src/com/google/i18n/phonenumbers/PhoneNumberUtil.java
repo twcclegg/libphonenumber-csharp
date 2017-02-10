@@ -313,9 +313,9 @@ public class PhoneNumberUtil {
     // One-character symbols that can be used to indicate an extension.
     String singleExtnSymbolsForMatching = "x\uFF58#\uFF03~\uFF5E";
     // For parsing, we are slightly more lenient in our interpretation than for matching. Here we
-    // allow a "comma" as a possible extension indicator. When matching, this is hardly ever used to
-    // indicate this.
-    String singleExtnSymbolsForParsing = "," + singleExtnSymbolsForMatching;
+    // allow "comma" and "semicolon" as possible extension indicators. When matching, these are
+    // hardly ever used to indicate this.
+    String singleExtnSymbolsForParsing = ",;" + singleExtnSymbolsForMatching;
 
     EXTN_PATTERNS_FOR_PARSING = createExtnPattern(singleExtnSymbolsForParsing);
     EXTN_PATTERNS_FOR_MATCHING = createExtnPattern(singleExtnSymbolsForMatching);
@@ -328,9 +328,9 @@ public class PhoneNumberUtil {
   private static String createExtnPattern(String singleExtnSymbols) {
     // There are three regular expressions here. The first covers RFC 3966 format, where the
     // extension is added using ";ext=". The second more generic one starts with optional white
-    // space and ends with an optional full stop (.), followed by zero or more spaces/tabs and then
-    // the numbers themselves. The other one covers the special case of American numbers where the
-    // extension is written with a hash at the end, such as "- 503#".
+    // space and ends with an optional full stop (.), followed by zero or more spaces/tabs/commas
+    // and then the numbers themselves. The other one covers the special case of American numbers
+    // where the extension is written with a hash at the end, such as "- 503#"
     // Note that the only capturing groups should be around the digits that you want to capture as
     // part of the extension, or else parsing will fail!
     // Canonical-equivalence doesn't seem to be an option with Android java, so we allow two options
@@ -2135,7 +2135,11 @@ public class PhoneNumberUtil {
 
   /**
    * Tests whether a phone number matches a valid pattern. Note this doesn't verify the number
-   * is actually in use, which is impossible to tell by just looking at a number itself.
+   * is actually in use, which is impossible to tell by just looking at a number itself. It only
+   * verifies whether the parsed, canonicalised number is valid: not whether a particular series of
+   * digits entered by the user is diallable from the region provided when parsing. For example, the
+   * number +41 (0) 78 927 2696 can be parsed into a number with country code "41" and national
+   * significant number "789272696". This is valid, while the original string is not diallable.
    *
    * @param number  the phone number that we want to validate
    * @return  a boolean that indicates whether the number is of a valid pattern
