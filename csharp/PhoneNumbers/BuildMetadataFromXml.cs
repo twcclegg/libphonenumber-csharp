@@ -20,9 +20,9 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
-using System.Xml.XPath;
 using System.Reflection;
-
+using System.Xml.Linq;
+using System.Diagnostics;
 namespace PhoneNumbers
 {
     public class BuildMetadataFromXml
@@ -66,11 +66,10 @@ namespace PhoneNumbers
         // Build the PhoneMetadataCollection from the input XML file.
         public static PhoneMetadataCollection BuildPhoneMetadataCollection(Stream input, bool liteBuild)
         {
-            var document = new XmlDocument();
-            document.Load(input);
-            document.Normalize();
+            var document = XDocument.Load(input);
+            
             var metadataCollection = new PhoneMetadataCollection.Builder();
-            foreach (XmlElement territory in document.GetElementsByTagName("territory"))
+            foreach (XElement territory in document.GetElementsByTagName("territory"))
             {
                 String regionCode = "";
                 // For the main metadata file this should always be set, but for other supplementary data
@@ -126,7 +125,7 @@ namespace PhoneNumbers
             // make it work across programming languages.
             if (removeWhitespace)
                 regex = Regex.Replace(regex, "\\s", "");
-            new Regex(regex, RegexOptions.Compiled);
+            new Regex(regex, InternalRegexOptions.Default);
             // return regex itself if it is of correct regex syntax
             // i.e. compile did not fail with a PatternSyntaxException.
             return regex;
@@ -136,12 +135,12 @@ namespace PhoneNumbers
         * Returns the national prefix of the provided country element.
         */
         // @VisibleForTesting
-        public static String GetNationalPrefix(XmlElement element)
+        public static String GetNationalPrefix(XElement element)
         {
             return element.HasAttribute(NATIONAL_PREFIX) ? element.GetAttribute(NATIONAL_PREFIX) : "";
         }
 
-        public static PhoneMetadata.Builder LoadTerritoryTagMetadata(String regionCode, XmlElement element,
+        public static PhoneMetadata.Builder LoadTerritoryTagMetadata(String regionCode, XElement element,
                                                         String nationalPrefix)
         {
             var metadata = new PhoneMetadata.Builder();
@@ -195,13 +194,13 @@ namespace PhoneNumbers
         */
         // @VisibleForTesting
         public static bool LoadInternationalFormat(PhoneMetadata.Builder metadata,
-            XmlElement numberFormatElement,
+            XElement numberFormatElement,
             String nationalFormat)
         {
             NumberFormat.Builder intlFormat = new NumberFormat.Builder();
             SetLeadingDigitsPatterns(numberFormatElement, intlFormat);
             intlFormat.SetPattern(numberFormatElement.GetAttribute(PATTERN));
-            var intlFormatPattern = numberFormatElement.GetElementsByTagName(INTL_FORMAT);
+            var intlFormatPattern = numberFormatElement.GetElementsByTagName(INTL_FORMAT).ToList();
             bool hasExplicitIntlFormatDefined = false;
 
             if (intlFormatPattern.Count > 1)
@@ -219,7 +218,7 @@ namespace PhoneNumbers
             }
             else
             {
-                String intlFormatPatternValue = intlFormatPattern[0].InnerText;
+                var intlFormatPatternValue = intlFormatPattern.First().Value;
                 if (!intlFormatPatternValue.Equals("NA"))
                 {
                     intlFormat.SetFormat(intlFormatPatternValue);
@@ -241,13 +240,13 @@ namespace PhoneNumbers
          * @return  the national format string.
          */
         // @VisibleForTesting
-        public static String LoadNationalFormat(PhoneMetadata.Builder metadata, XmlElement numberFormatElement,
+        public static String LoadNationalFormat(PhoneMetadata.Builder metadata, XElement numberFormatElement,
                                          NumberFormat.Builder format)
         {
             SetLeadingDigitsPatterns(numberFormatElement, format);
             format.SetPattern(ValidateRE(numberFormatElement.GetAttribute(PATTERN)));
 
-            var formatPattern = numberFormatElement.GetElementsByTagName(FORMAT);
+            var formatPattern = numberFormatElement.GetElementsByTagName(FORMAT).ToList();
             if (formatPattern.Count != 1)
             {
                 //LOGGER.log(Level.SEVERE,
@@ -255,7 +254,7 @@ namespace PhoneNumbers
                 throw new Exception("Invalid number of format patterns for country: " +
                                     metadata.Id);
             }
-            String nationalFormat = formatPattern[0].InnerText;
+            var nationalFormat = formatPattern[0].Value;
             format.SetFormat(nationalFormat);
             return nationalFormat;
         }
@@ -268,7 +267,7 @@ namespace PhoneNumbers
         */
         // @VisibleForTesting
         public static void LoadAvailableFormats(PhoneMetadata.Builder metadata,
-                                         XmlElement element, String nationalPrefix,
+                                         XElement element, String nationalPrefix,
                                          String nationalPrefixFormattingRule,
                                          bool nationalPrefixOptionalWhenFormatting)
         {
@@ -281,10 +280,10 @@ namespace PhoneNumbers
             var numberFormatElements = element.GetElementsByTagName(NUMBER_FORMAT);
             bool hasExplicitIntlFormatDefined = false;
 
-            int numOfFormatElements = numberFormatElements.Count;
+            int numOfFormatElements = numberFormatElements.Count();
             if (numOfFormatElements > 0)
             {
-                foreach (XmlElement numberFormatElement in numberFormatElements)
+                foreach (var numberFormatElement in numberFormatElements)
                 {
                     var format = new NumberFormat.Builder();
 
@@ -333,15 +332,15 @@ namespace PhoneNumbers
             }
         }
 
-        public static void SetLeadingDigitsPatterns(XmlElement numberFormatElement, NumberFormat.Builder format)
+        public static void SetLeadingDigitsPatterns(XElement numberFormatElement, NumberFormat.Builder format)
         {
-            foreach (XmlElement e in numberFormatElement.GetElementsByTagName(LEADING_DIGITS))
+            foreach (var e in numberFormatElement.GetElementsByTagName(LEADING_DIGITS))
             {
-                format.AddLeadingDigitsPattern(ValidateRE(e.InnerText, true));
+                format.AddLeadingDigitsPattern(ValidateRE(e.Value, true));
             }
         }
 
-        public static String GetNationalPrefixFormattingRuleFromElement(XmlElement element,
+        public static String GetNationalPrefixFormattingRuleFromElement(XElement element,
             String nationalPrefix)
         {
             String nationalPrefixFormattingRule = element.GetAttribute(NATIONAL_PREFIX_FORMATTING_RULE);
@@ -351,7 +350,7 @@ namespace PhoneNumbers
             return nationalPrefixFormattingRule;
         }
 
-        public static String GetDomesticCarrierCodeFormattingRuleFromElement(XmlElement element,
+        public static String GetDomesticCarrierCodeFormattingRuleFromElement(XElement element,
             String nationalPrefix)
         {
             String carrierCodeFormattingRule = element.GetAttribute(CARRIER_CODE_FORMATTING_RULE);
@@ -385,11 +384,11 @@ namespace PhoneNumbers
         * @return  complete description of that phone number type
         */
         public static PhoneNumberDesc ProcessPhoneNumberDescElement(PhoneNumberDesc generalDesc,
-            XmlElement countryElement, String numberType, bool liteBuild)
+            XElement countryElement, String numberType, bool liteBuild)
         {
             if (generalDesc == null)
                 generalDesc = new PhoneNumberDesc.Builder().Build();
-            var phoneNumberDescList = countryElement.GetElementsByTagName(numberType);
+            var phoneNumberDescList = countryElement.GetElementsByTagName(numberType).ToList();
             var numberDesc = new PhoneNumberDesc.Builder();
             if (phoneNumberDescList.Count == 0 && !IsValidNumberType(numberType))
             {
@@ -400,20 +399,20 @@ namespace PhoneNumbers
             numberDesc.MergeFrom(generalDesc);
             if (phoneNumberDescList.Count > 0)
             {
-                XmlElement element = (XmlElement)phoneNumberDescList[0];
+                var element = (XElement)phoneNumberDescList[0];
                 var possiblePattern = element.GetElementsByTagName(POSSIBLE_NUMBER_PATTERN);
-                if (possiblePattern.Count > 0)
-                    numberDesc.SetPossibleNumberPattern(ValidateRE(possiblePattern[0].InnerText, true));
+                if (possiblePattern.Any())
+                    numberDesc.SetPossibleNumberPattern(ValidateRE(possiblePattern.First().Value, true));
 
                 var validPattern = element.GetElementsByTagName(NATIONAL_NUMBER_PATTERN);
-                if (validPattern.Count > 0)
-                    numberDesc.SetNationalNumberPattern(ValidateRE(validPattern[0].InnerText, true));
+                if (validPattern.Any())
+                    numberDesc.SetNationalNumberPattern(ValidateRE(validPattern.First().Value, true));
 
                 if (!liteBuild)
                 {
                     var exampleNumber = element.GetElementsByTagName(EXAMPLE_NUMBER);
-                    if (exampleNumber.Count > 0)
-                        numberDesc.SetExampleNumber(exampleNumber[0].InnerText);
+                    if (exampleNumber.Any())
+                        numberDesc.SetExampleNumber(exampleNumber.First().Value);
                 }
             }
             return numberDesc.Build();
@@ -428,7 +427,7 @@ namespace PhoneNumbers
         }
 
         // @VisibleForTesting
-        public static void LoadGeneralDesc(PhoneMetadata.Builder metadata, XmlElement element, bool liteBuild)
+        public static void LoadGeneralDesc(PhoneMetadata.Builder metadata, XElement element, bool liteBuild)
         {
             var generalDesc = ProcessPhoneNumberDescElement(null, element, GENERAL_DESC, liteBuild);
             metadata.SetGeneralDesc(generalDesc);
@@ -452,7 +451,7 @@ namespace PhoneNumbers
                 metadata.FixedLine.NationalNumberPattern));
         }
 
-        public static PhoneMetadata LoadCountryMetadata(String regionCode, XmlElement element, bool liteBuild)
+        public static PhoneMetadata LoadCountryMetadata(String regionCode, XElement element, bool liteBuild)
         {
             String nationalPrefix = GetNationalPrefix(element);
             PhoneMetadata.Builder metadata =
@@ -468,7 +467,7 @@ namespace PhoneNumbers
 
         public static Dictionary<int, List<String>> GetCountryCodeToRegionCodeMap(String filePrefix)
         {
-            var asm = Assembly.GetExecutingAssembly();
+            var asm = typeof(BuildMetadataFromXml).GetTypeInfo().Assembly;
             var name = asm.GetManifestResourceNames().Where(n => n.EndsWith(filePrefix)).FirstOrDefault() ?? "missing";
             using (var stream = asm.GetManifestResourceStream(name))
             {

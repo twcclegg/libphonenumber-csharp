@@ -1,0 +1,43 @@
+{
+  "version": "1.0.0-*",
+  "title": "libphonenumber-dotnet",
+  "description": "A port of Google's libphonenumber for .NET Core",
+  "authors": [ "Jarrod Alexander" ],
+  "packOptions": {
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/jarroda/libphonenumber-dotnet"
+    },
+    "tags": [ "phonenumber phone libphonenumber google e164 e.164 international" ],
+    "projectUrl": "https://github.com/jarroda/libphonenumber-dotnet",
+    "licenseUrl": "https://raw.githubusercontent.com/jarroda/libphonenumber-dotnet/master/LICENSE"
+  },
+  "dependencies": {
+
+  },
+  "frameworks": {
+    // "net45": {
+    //   "frameworkAssemblies": {
+    //     "System.Xml": "4.0.0.0",
+    //     "System.Linq": "4.0.0.0",
+    //     "System.Runtime.Serialization": "4.0.0.0",
+    //     "System.Runtime.Serialization.Json": "4.0.0.0",
+    //     "System.Xml.Linq": "4.0.0.0"
+    //   }
+    // },
+    "netstandard1.0": {
+      "dependencies": {
+        "NETStandard.Library": "1.6.0",
+        "System.Runtime.Serialization.Json": "4.0.2"
+      }
+    }
+  },
+  "buildOptions": {
+    "embed": [
+      "res/**/*.*",
+      "PhoneNumberAlternateFormats.xml",
+      "PhoneNumberMetaData.xml",
+      "PhoneNumberMetaDataForTesting.xml"
+    ]
+  }
+}
