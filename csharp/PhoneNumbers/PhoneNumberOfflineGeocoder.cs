@@ -20,6 +20,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Text;
+using System.Globalization;
 
 namespace PhoneNumbers
 {
@@ -49,7 +50,7 @@ namespace PhoneNumbers
             var name = GetCountryName(Country, language);
             if(name != null)
                 return name;
-            var lang = Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName;
+            var lang = CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
             if(lang != language)
             {
                 name = GetCountryName(Country, lang);
@@ -109,7 +110,7 @@ namespace PhoneNumbers
         private void LoadMappingFileProvider()
         {
             var files = new SortedDictionary<int, HashSet<String>>();
-            var asm = Assembly.GetExecutingAssembly();
+            var asm = typeof(PhoneNumberOfflineGeocoder).GetTypeInfo().Assembly;
             var allNames = asm.GetManifestResourceNames();
             var prefix = asm.GetName().Name + "." + phonePrefixDataDirectory;
             var names = allNames.Where(n => n.StartsWith(prefix));
@@ -153,7 +154,7 @@ namespace PhoneNumbers
 
         private void LoadAreaCodeMapFromFile(String fileName)
         {
-            var asm = Assembly.GetExecutingAssembly();
+            var asm = typeof(PhoneNumberOfflineGeocoder).GetTypeInfo().Assembly;
             var prefix = asm.GetName().Name + "." + phonePrefixDataDirectory;
             var resName = prefix + fileName;
             using (var fp = asm.GetManifestResourceStream(resName))

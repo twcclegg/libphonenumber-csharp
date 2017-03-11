@@ -59,13 +59,13 @@ namespace PhoneNumbers
 
         // A pattern that is used to match character classes in regular expressions. An example of a
         // character class is [1-4].
-        private static readonly Regex CHARACTER_CLASS_PATTERN = new Regex("\\[([^\\[\\]])*\\]", RegexOptions.Compiled);
+        private static readonly Regex CHARACTER_CLASS_PATTERN = new Regex("\\[([^\\[\\]])*\\]", InternalRegexOptions.Default);
         // Any digit in a regular expression that actually denotes a digit. For example, in the regular
         // expression 80[0-2]\d{6,10}, the first 2 digits (8 and 0) are standalone digits, but the rest
         // are not.
         // Two look-aheads are needed because the number following \\d could be a two-digit number, since
         // the phone number can be as long as 15 digits.
-        private static readonly Regex STANDALONE_DIGIT_PATTERN = new Regex("\\d(?=[^,}][^,}])", RegexOptions.Compiled);
+        private static readonly Regex STANDALONE_DIGIT_PATTERN = new Regex("\\d(?=[^,}][^,}])", InternalRegexOptions.Default);
 
         // A pattern that is used to determine if a numberFormat under availableFormats is eligible to be
         // used by the AYTF. It is eligible when the format element under numberFormat contains groups of
@@ -75,7 +75,7 @@ namespace PhoneNumbers
         private static readonly PhoneRegex ELIGIBLE_FORMAT_PATTERN =
             new PhoneRegex("[" + PhoneNumberUtil.VALID_PUNCTUATION + "]*" +
                 "(\\$\\d" + "[" + PhoneNumberUtil.VALID_PUNCTUATION + "]*)+",
-                RegexOptions.Compiled);
+                InternalRegexOptions.Default);
 
         // This is the minimum length of national number accrued that is required to trigger the
         // formatter. The first element of the leadingDigitsPattern of each numberFormat contains a
@@ -114,7 +114,7 @@ namespace PhoneNumbers
          */
         public AsYouTypeFormatter(String regionCode)
         {
-            digitPattern = new Regex(digitPlaceholder, RegexOptions.Compiled);
+            digitPattern = new Regex(digitPlaceholder, InternalRegexOptions.Default);
             defaultCountry = regionCode;
             currentMetaData = GetMetadataForRegion(defaultCountry);
             defaultMetaData = currentMetaData;

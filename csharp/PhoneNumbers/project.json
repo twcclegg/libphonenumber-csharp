@@ -1,0 +1,42 @@
+{
+  "version": "8.3.1-*",
+  "title": "libphonenumber-csharp",
+  "description": "C# port of Google's common Java, C++ and Javascript library for parsing, formatting, storing and validating international phone numbers. For usage samples: http: //code.google.com/p/libphonenumber/A port of Google's libphonenumber for .NET Core",
+  "authors": [ "Patrick Mézard", "Jarrod Alexander", "Google", "libphonenumber", "contributors" ],
+  "packOptions": {
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/jarroda/libphonenumber-dotnet"
+    },
+    "tags": [ "phonenumber phone libphonenumber e164 e.164 international" ],
+    "owners": [ "Patrick Mézard" ],
+    "projectUrl": "https://bitbucket.org/pmezard/libphonenumber-csharp/wiki/Home",
+    "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+    "requireLicenseAcceptance": true
+  },
+  "frameworks": {
+    "net45": {
+      "frameworkAssemblies": {
+        "System.Xml": "4.0.0.0",
+        "System.Linq": "4.0.0.0",
+        "System.Runtime.Serialization": "4.0.0.0",
+        "System.Runtime.Serialization.Json": "4.0.0.0",
+        "System.Xml.Linq": "4.0.0.0"
+      }
+    },
+    "netstandard1.0": {
+      "dependencies": {
+        "NETStandard.Library": "1.6.0",
+        "System.Runtime.Serialization.Json": "4.0.2"
+      }
+    }
+  },
+  "buildOptions": {
+    "embed": [
+      "res/**/*.*",
+      "PhoneNumberAlternateFormats.xml",
+      "PhoneNumberMetaData.xml",
+      "PhoneNumberMetaDataForTesting.xml"
+    ]
+  }
+}
