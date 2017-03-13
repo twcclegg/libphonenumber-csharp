@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "PhoneNumbers", "PhoneNumbers\PhoneNumbers.xproj", "{AA0F869D-A624-47D0-9614-B40FF5782D61}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhoneNumbers", "PhoneNumbers\PhoneNumbers.csproj", "{AA0F869D-A624-47D0-9614-B40FF5782D61}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "PhoneNumbers.Test", "PhoneNumbers.Test\PhoneNumbers.Test.xproj", "{98341310-7045-435F-B199-7E9602B7BCF0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhoneNumbers.Test", "PhoneNumbers.Test\PhoneNumbers.Test.csproj", "{98341310-7045-435F-B199-7E9602B7BCF0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
