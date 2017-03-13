@@ -49,22 +49,22 @@ namespace PhoneNumbers
         *
         * The string "211-227 (2003)" is not a telephone number.
         */
-        private static readonly Regex PUB_PAGES = new Regex("\\d{1,5}-+\\d{1,5}\\s{0,4}\\(\\d{1,4}", RegexOptions.Compiled);
+        private static readonly Regex PUB_PAGES = new Regex("\\d{1,5}-+\\d{1,5}\\s{0,4}\\(\\d{1,4}", InternalRegexOptions.Default);
 
         /**
         * Matches strings that look like dates using "/" as a separator. Examples: 3/10/2011, 31/10/96 or
         * 08/31/95.
         */
         private static readonly Regex SLASH_SEPARATED_DATES =
-            new Regex("(?:(?:[0-3]?\\d/[01]?\\d)|(?:[01]?\\d/[0-3]?\\d))/(?:[12]\\d)?\\d{2}", RegexOptions.Compiled);
+            new Regex("(?:(?:[0-3]?\\d/[01]?\\d)|(?:[01]?\\d/[0-3]?\\d))/(?:[12]\\d)?\\d{2}", InternalRegexOptions.Default);
 
         /**
         * Matches timestamps. Examples: "2012-01-02 08:00". Note that the reg-ex does not include the
         * trailing ":\d\d" -- that is covered by TIME_STAMPS_SUFFIX.
         */
         private static readonly Regex TIME_STAMPS =
-            new Regex("[12]\\d{3}[-/]?[01]\\d[-/]?[0-3]\\d [0-2]\\d$", RegexOptions.Compiled);
-        private static readonly PhoneRegex TIME_STAMPS_SUFFIX = new PhoneRegex(":[0-5]\\d", RegexOptions.Compiled);
+            new Regex("[12]\\d{3}[-/]?[01]\\d[-/]?[0-3]\\d [0-2]\\d$", InternalRegexOptions.Default);
+        private static readonly PhoneRegex TIME_STAMPS_SUFFIX = new PhoneRegex(":[0-5]\\d", InternalRegexOptions.Default);
 
 
         /**
@@ -106,7 +106,7 @@ namespace PhoneNumbers
                 "(?:[" + openingParens + "])?" + "(?:" + nonParens + "+" + "[" + closingParens + "])?" +
                 nonParens + "+" +
                 "(?:[" + openingParens + "]" + nonParens + "+[" + closingParens + "])" + bracketPairLimit +
-                nonParens + "*", RegexOptions.Compiled);
+                nonParens + "*", InternalRegexOptions.Default);
 
             /* Limit on the number of leading (plus) characters. */
             String leadLimit = Limit(0, 2);
@@ -127,7 +127,7 @@ namespace PhoneNumbers
             String digitSequence = "\\p{Nd}" + Limit(1, digitBlockLimit);
             String leadClassChars = openingParens + PhoneNumberUtil.PLUS_CHARS;
             String leadClass = "[" + leadClassChars + "]";
-            LEAD_CLASS = new PhoneRegex(leadClass, RegexOptions.Compiled);
+            LEAD_CLASS = new PhoneRegex(leadClass, InternalRegexOptions.Default);
             GROUP_SEPARATOR = new PhoneRegex("\\p{Z}" + "[^" + leadClassChars + "\\p{Nd}]*");
 
             /* Phone number pattern allowing optional punctuation. */
@@ -247,7 +247,7 @@ namespace PhoneNumbers
         public static bool IsLatinLetter(char letter)
         {
             // Combining marks are a subset of non-spacing-mark.
-            if (!char.IsLetter(letter) && char.GetUnicodeCategory(letter) != UnicodeCategory.NonSpacingMark)
+            if (!char.IsLetter(letter) && CharUnicodeInfo.GetUnicodeCategory(letter) != UnicodeCategory.NonSpacingMark)
                 return false;
             return
                 letter >= 0x0000 && letter <= 0x007F        // BASIC_LATIN
@@ -261,7 +261,7 @@ namespace PhoneNumbers
 
         private static bool IsInvalidPunctuationSymbol(char character)
         {
-            return character == '%' || char.GetUnicodeCategory(character) == UnicodeCategory.CurrencySymbol;
+            return character == '%' || CharUnicodeInfo.GetUnicodeCategory(character) == UnicodeCategory.CurrencySymbol;
         }
 
         public static String TrimAfterUnwantedChars(String s)

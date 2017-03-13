@@ -46,7 +46,7 @@ namespace PhoneNumbers
 
         static private void LoadMedataFromFile(String filePrefix)
         {
-            var asm = Assembly.GetExecutingAssembly();
+            var asm = typeof(MetadataManager).GetTypeInfo().Assembly;
             var name = asm.GetManifestResourceNames().Where(n => n.EndsWith(filePrefix)).FirstOrDefault() ?? "missing";
             using (var stream = asm.GetManifestResourceStream(name))
             {
