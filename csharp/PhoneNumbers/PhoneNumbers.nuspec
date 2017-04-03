@@ -14,4 +14,8 @@
     </description>
     <tags>phonenumber phone</tags>
   </metadata>
+  <files>
+    <file src="bin\Release\net45\PhoneNumbers.dll" target="lib\net45\PhoneNumbers.dll" />
+    <file src="bin\Release\netstandard1.0\PhoneNumbers.dll" target="lib\netstandard1.0\PhoneNumbers.dll" />
+  </files>
 </package>
