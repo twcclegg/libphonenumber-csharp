@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using NUnit.Framework;
+using Xunit;
 
 namespace PhoneNumbers.Test
 {
@@ -27,8 +23,7 @@ namespace PhoneNumbers.Test
     *
     * @author Shaopeng Jia
     */
-    [TestFixture]
-    class TestPhoneNumberOfflineGeocoder
+    public class TestPhoneNumberOfflineGeocoder
     {
         private PhoneNumberOfflineGeocoder geocoder;
         const String TEST_MAPPING_DATA_DIRECTORY = "res.test_";
@@ -61,117 +56,114 @@ namespace PhoneNumbers.Test
         private static readonly PhoneNumber INTERNATIONAL_TOLL_FREE =
             new PhoneNumber.Builder().SetCountryCode(800).SetNationalNumber(12345678L).Build();
 
-        [TestFixtureSetUp]
-        public void SetupFixture()
+        public TestPhoneNumberOfflineGeocoder()
         {
             PhoneNumberUtil.ResetInstance();
             geocoder = new PhoneNumberOfflineGeocoder(TEST_MAPPING_DATA_DIRECTORY);
         }
 
-        [Test]
+        [Fact]
         public void testInstantiationWithRegularData()
         {
             PhoneNumberUtil.ResetInstance();
             geocoder = PhoneNumberOfflineGeocoder.GetInstance();
         }
 
-        [Test]
+        [Fact]
         public void testGetDescriptionForNumberWithNoDataFile()
         {
             // No data file containing mappings for US numbers is available in Chinese for the unittests. As
             // a result, the country name of United States in simplified Chinese is returned.
-            Assert.AreEqual("\u7F8E\u56FD",
+            Assert.Equal("\u7F8E\u56FD",
                 geocoder.GetDescriptionForNumber(US_NUMBER1, Locale.SIMPLIFIED_CHINESE));
-            Assert.AreEqual("Bahamas",
+            Assert.Equal("Bahamas",
                 geocoder.GetDescriptionForNumber(BS_NUMBER1, new Locale("en", "US")));
-            Assert.AreEqual("Australia",
+            Assert.Equal("Australia",
                 geocoder.GetDescriptionForNumber(AU_NUMBER, new Locale("en", "US")));
-            Assert.AreEqual("", geocoder.GetDescriptionForNumber(NUMBER_WITH_INVALID_COUNTRY_CODE,
+            Assert.Equal("", geocoder.GetDescriptionForNumber(NUMBER_WITH_INVALID_COUNTRY_CODE,
                                                               new Locale("en", "US")));
-            Assert.AreEqual("", geocoder.GetDescriptionForNumber(INTERNATIONAL_TOLL_FREE,
+            Assert.Equal("", geocoder.GetDescriptionForNumber(INTERNATIONAL_TOLL_FREE,
                                                             new Locale("en", "US")));
         }
 
-        [Test]
+        [Fact]
         public void testGetDescriptionForNumberWithMissingPrefix()
         {
             // Test that the name of the country is returned when the number passed in is valid but not
             // covered by the geocoding data file.
-            Assert.AreEqual("United States",
+            Assert.Equal("United States",
                 geocoder.GetDescriptionForNumber(US_NUMBER4, new Locale("en", "US")));
         }
 
-        [Test]
+        [Fact]
         public void testGetDescriptionForNumber_en_US()
         {
-            Assert.AreEqual("CA",
+            Assert.Equal("CA",
                 geocoder.GetDescriptionForNumber(US_NUMBER1, new Locale("en", "US")));
-            Assert.AreEqual("Mountain View, CA",
-                geocoder.GetDescriptionForNumber(US_NUMBER2, new Locale("en", "US")));
-            Assert.AreEqual("New York, NY",
-                geocoder.GetDescriptionForNumber(US_NUMBER3, new Locale("en", "US")));
+            Assert.Equal("Mountain View, CA", geocoder.GetDescriptionForNumber(US_NUMBER2, new Locale("en", "US")));
+            Assert.Equal("New York, NY", geocoder.GetDescriptionForNumber(US_NUMBER2, new Locale("en", "US")));
         }
 
-        [Test]
+        [Fact]
         public void testGetDescriptionForKoreanNumber()
         {
-            Assert.AreEqual("Seoul",
+            Assert.Equal("Seoul",
                 geocoder.GetDescriptionForNumber(KO_NUMBER1, Locale.ENGLISH));
-            Assert.AreEqual("Incheon",
+            Assert.Equal("Incheon",
                 geocoder.GetDescriptionForNumber(KO_NUMBER2, Locale.ENGLISH));
-            Assert.AreEqual("Jeju",
+            Assert.Equal("Jeju",
                 geocoder.GetDescriptionForNumber(KO_NUMBER3, Locale.ENGLISH));
-            Assert.AreEqual("\uC11C\uC6B8",
+            Assert.Equal("\uC11C\uC6B8",
                 geocoder.GetDescriptionForNumber(KO_NUMBER1, Locale.KOREAN));
-            Assert.AreEqual("\uC778\uCC9C",
+            Assert.Equal("\uC778\uCC9C",
                 geocoder.GetDescriptionForNumber(KO_NUMBER2, Locale.KOREAN));
         }
 
-        [Test]
+        [Fact]
         public void TestGetDescriptionForFallBack()
         {
             // No fallback, as the location name for the given phone number is available in the requested
             // language.
-            Assert.AreEqual("Kalifornien",
+            Assert.Equal("Kalifornien",
                 geocoder.GetDescriptionForNumber(US_NUMBER1, Locale.GERMAN));
             // German falls back to English.
-            Assert.AreEqual("New York, NY",
+            Assert.Equal("New York, NY",
                 geocoder.GetDescriptionForNumber(US_NUMBER3, Locale.GERMAN));
             // Italian falls back to English.
-            Assert.AreEqual("CA",
+            Assert.Equal("CA",
                 geocoder.GetDescriptionForNumber(US_NUMBER1, Locale.ITALIAN));
             // Korean doesn't fall back to English.
-            Assert.AreEqual("\uB300\uD55C\uBBFC\uAD6D",
+            Assert.Equal("\uB300\uD55C\uBBFC\uAD6D",
                 geocoder.GetDescriptionForNumber(KO_NUMBER3, Locale.KOREAN));
         }
 
-        [Test]
+        [Fact]
         public void TestGetDescriptionForNumberWithUserRegion()
         {
             // User in Italy, American number. We should just show United States, in Spanish, and not more
             // detailed information.
-            Assert.AreEqual("Estados Unidos",
+            Assert.Equal("Estados Unidos",
                 geocoder.GetDescriptionForNumber(US_NUMBER1, new Locale("es", "ES"), "IT"));
             // Unknown region - should just show country name.
-            Assert.AreEqual("Estados Unidos",
+            Assert.Equal("Estados Unidos",
                 geocoder.GetDescriptionForNumber(US_NUMBER1, new Locale("es", "ES"), "ZZ"));
             // User in the States, language German, should show detailed data.
-            Assert.AreEqual("Kalifornien",
+            Assert.Equal("Kalifornien",
                 geocoder.GetDescriptionForNumber(US_NUMBER1, Locale.GERMAN, "US"));
             // User in the States, language French, no data for French, so we fallback to English detailed
             // data.
-            Assert.AreEqual("CA",
+            Assert.Equal("CA",
                 geocoder.GetDescriptionForNumber(US_NUMBER1, Locale.FRENCH, "US"));
             // Invalid number - return an empty string.
-            Assert.AreEqual("", geocoder.GetDescriptionForNumber(US_INVALID_NUMBER, Locale.ENGLISH,
+            Assert.Equal("", geocoder.GetDescriptionForNumber(US_INVALID_NUMBER, Locale.ENGLISH,
                 "US"));
         }
 
-        [Test]
+        [Fact]
         public void TestGetDescritionForInvaildNumber()
         {
-            Assert.AreEqual("", geocoder.GetDescriptionForNumber(KO_INVALID_NUMBER, Locale.ENGLISH));
-            Assert.AreEqual("", geocoder.GetDescriptionForNumber(US_INVALID_NUMBER, Locale.ENGLISH));
+            Assert.Equal("", geocoder.GetDescriptionForNumber(KO_INVALID_NUMBER, Locale.ENGLISH));
+            Assert.Equal("", geocoder.GetDescriptionForNumber(US_INVALID_NUMBER, Locale.ENGLISH));
         }
     }
 }
