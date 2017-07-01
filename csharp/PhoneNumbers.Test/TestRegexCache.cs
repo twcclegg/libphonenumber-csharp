@@ -20,7 +20,7 @@ namespace PhoneNumbers.Test
 {
     public class TestRegexCache
     {
-        private RegexCache regexCache;
+        private readonly RegexCache regexCache;
 
         public TestRegexCache()
         {

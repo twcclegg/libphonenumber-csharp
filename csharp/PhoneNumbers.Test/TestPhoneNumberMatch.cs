@@ -42,33 +42,10 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestIllegalArguments()
         {
-            try
-            {
-                new PhoneNumberMatch(-110, "1 800 234 45 67", new PhoneNumber());
-                Assert.True(false);
-            }
-            catch (ArgumentException) { /* success */ }
-
-            try
-            {
-                new PhoneNumberMatch(10, "1 800 234 45 67", null);
-                Assert.True(false);
-            }
-            catch (ArgumentNullException) { /* success */ }
-
-            try
-            {
-                new PhoneNumberMatch(10, null, new PhoneNumber());
-                Assert.True(false);
-            }
-            catch (ArgumentNullException) { /* success */ }
-
-            try
-            {
-                new PhoneNumberMatch(10, null, null);
-                Assert.True(false);
-            }
-            catch (ArgumentNullException) { /* success */ }
+            Assert.Throws<ArgumentException>(() => new PhoneNumberMatch(-110, "1 800 234 45 67", new PhoneNumber()));
+            Assert.Throws<ArgumentNullException>(() => new PhoneNumberMatch(10, "1 800 234 45 67", null));
+            Assert.Throws<ArgumentNullException>(() => new PhoneNumberMatch(10, null, new PhoneNumber()));
+            Assert.Throws<ArgumentNullException>(() => new PhoneNumberMatch(10, null, null));
         }
     }
 }

@@ -55,7 +55,7 @@ namespace PhoneNumbers.Test
             areaCodeMapForIT.readAreaCodeMap(sortedMap);
         }
 
-        private static SortedDictionary<int, String> createDefaultStorageMapCandidate()
+        private static SortedDictionary<int, String> CreateDefaultStorageMapCandidate()
         {
             var sortedMap = new SortedDictionary<int, String>();
             // Make the area codes bigger to store them using integer.
@@ -64,7 +64,7 @@ namespace PhoneNumbers.Test
             return sortedMap;
         }
 
-        private static SortedDictionary<int, String> createFlyweightStorageMapCandidate()
+        private static SortedDictionary<int, String> CreateFlyweightStorageMapCandidate()
         {
             var sortedMap = new SortedDictionary<int, String>();
             sortedMap[1212] = "New York";
@@ -78,7 +78,7 @@ namespace PhoneNumbers.Test
         public void TestGetSmallerMapStorageChoosesDefaultImpl()
         {
             AreaCodeMapStorageStrategy mapStorage =
-                new AreaCodeMap().getSmallerMapStorage(createDefaultStorageMapCandidate());
+                new AreaCodeMap().getSmallerMapStorage(CreateDefaultStorageMapCandidate());
             Assert.False(mapStorage.GetType() == typeof(FlyweightMapStorage));
         }
 
@@ -86,7 +86,7 @@ namespace PhoneNumbers.Test
         public void TestGetSmallerMapStorageChoosesFlyweightImpl()
         {
             AreaCodeMapStorageStrategy mapStorage =
-                new AreaCodeMap().getSmallerMapStorage(createFlyweightStorageMapCandidate());
+                new AreaCodeMap().getSmallerMapStorage(CreateFlyweightStorageMapCandidate());
             Assert.True(mapStorage.GetType() == typeof(FlyweightMapStorage));
         }
 

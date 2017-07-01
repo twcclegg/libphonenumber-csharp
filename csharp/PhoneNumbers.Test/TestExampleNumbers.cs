@@ -21,9 +21,9 @@ namespace PhoneNumbers.Test
 {
     public class TestExampleNumbers
     {
-        private PhoneNumberUtil phoneNumberUtil;
-        private List<PhoneNumber> invalidCases = new List<PhoneNumber>();
-        private List<PhoneNumber> wrongTypeCases = new List<PhoneNumber>();
+        private readonly PhoneNumberUtil phoneNumberUtil;
+        private readonly List<PhoneNumber> invalidCases = new List<PhoneNumber>();
+        private readonly List<PhoneNumber> wrongTypeCases = new List<PhoneNumber>();
 
         public TestExampleNumbers()
         {
@@ -38,7 +38,7 @@ namespace PhoneNumbers.Test
         * @param possibleExpectedTypes       acceptable types that this number should match, such as
         *     FIXED_LINE and FIXED_LINE_OR_MOBILE for a fixed line example number.
         */
-        private void checkNumbersValidAndCorrectType(PhoneNumberType exampleNumberRequestedType,
+        private void CheckNumbersValidAndCorrectType(PhoneNumberType exampleNumberRequestedType,
             HashSet<PhoneNumberType> possibleExpectedTypes)
         {
             foreach (var regionCode in phoneNumberUtil.GetSupportedRegions())
@@ -71,7 +71,7 @@ namespace PhoneNumbers.Test
 
         private HashSet<PhoneNumberType> MakeSet(PhoneNumberType t1, PhoneNumberType t2)
         {
-            return new HashSet<PhoneNumberType>(new PhoneNumberType[] { t1, t2 });
+            return new HashSet<PhoneNumberType>(new[] { t1, t2 });
         }
 
         private HashSet<PhoneNumberType> MakeSet(PhoneNumberType t1)
@@ -84,7 +84,7 @@ namespace PhoneNumbers.Test
         {
             HashSet<PhoneNumberType> fixedLineTypes = MakeSet(PhoneNumberType.FIXED_LINE,
                                             PhoneNumberType.FIXED_LINE_OR_MOBILE);
-            checkNumbersValidAndCorrectType(PhoneNumberType.FIXED_LINE, fixedLineTypes);
+            CheckNumbersValidAndCorrectType(PhoneNumberType.FIXED_LINE, fixedLineTypes);
             Assert.Equal(0, invalidCases.Count);
             Assert.Equal(0, wrongTypeCases.Count);
         }
@@ -94,7 +94,7 @@ namespace PhoneNumbers.Test
         {
             HashSet<PhoneNumberType> mobileTypes = MakeSet(PhoneNumberType.MOBILE,
                                                           PhoneNumberType.FIXED_LINE_OR_MOBILE);
-            checkNumbersValidAndCorrectType(PhoneNumberType.MOBILE, mobileTypes);
+            CheckNumbersValidAndCorrectType(PhoneNumberType.MOBILE, mobileTypes);
             Assert.Equal(0, invalidCases.Count);
             Assert.Equal(0, wrongTypeCases.Count);
         }
@@ -104,7 +104,7 @@ namespace PhoneNumbers.Test
         {
 
             HashSet<PhoneNumberType> tollFreeTypes = MakeSet(PhoneNumberType.TOLL_FREE);
-            checkNumbersValidAndCorrectType(PhoneNumberType.TOLL_FREE, tollFreeTypes);
+            CheckNumbersValidAndCorrectType(PhoneNumberType.TOLL_FREE, tollFreeTypes);
             Assert.Equal(0, invalidCases.Count);
             Assert.Equal(0, wrongTypeCases.Count);
         }
@@ -113,7 +113,7 @@ namespace PhoneNumbers.Test
         public void TestPremiumRate()
         {
             HashSet<PhoneNumberType> premiumRateTypes = MakeSet(PhoneNumberType.PREMIUM_RATE);
-            checkNumbersValidAndCorrectType(PhoneNumberType.PREMIUM_RATE, premiumRateTypes);
+            CheckNumbersValidAndCorrectType(PhoneNumberType.PREMIUM_RATE, premiumRateTypes);
             Assert.Equal(0, invalidCases.Count);
             Assert.Equal(0, wrongTypeCases.Count);
         }
@@ -122,7 +122,7 @@ namespace PhoneNumbers.Test
         public void TestVoip()
         {
             HashSet<PhoneNumberType> voipTypes = MakeSet(PhoneNumberType.VOIP);
-            checkNumbersValidAndCorrectType(PhoneNumberType.VOIP, voipTypes);
+            CheckNumbersValidAndCorrectType(PhoneNumberType.VOIP, voipTypes);
             Assert.Equal(0, invalidCases.Count);
             Assert.Equal(0, wrongTypeCases.Count);
         }
@@ -131,7 +131,7 @@ namespace PhoneNumbers.Test
         public void TestPager()
         {
             HashSet<PhoneNumberType> pagerTypes = MakeSet(PhoneNumberType.PAGER);
-            checkNumbersValidAndCorrectType(PhoneNumberType.PAGER, pagerTypes);
+            CheckNumbersValidAndCorrectType(PhoneNumberType.PAGER, pagerTypes);
             Assert.Equal(0, invalidCases.Count);
             Assert.Equal(0, wrongTypeCases.Count);
         }
@@ -140,7 +140,7 @@ namespace PhoneNumbers.Test
         public void TestUan()
         {
             HashSet<PhoneNumberType> uanTypes = MakeSet(PhoneNumberType.UAN);
-            checkNumbersValidAndCorrectType(PhoneNumberType.UAN, uanTypes);
+            CheckNumbersValidAndCorrectType(PhoneNumberType.UAN, uanTypes);
             Assert.Equal(0, invalidCases.Count);
             Assert.Equal(0, wrongTypeCases.Count);
         }
@@ -149,7 +149,7 @@ namespace PhoneNumbers.Test
         public void TestVoicemail()
         {
             HashSet<PhoneNumberType> voicemailTypes = MakeSet(PhoneNumberType.VOICEMAIL);
-            checkNumbersValidAndCorrectType(PhoneNumberType.VOICEMAIL, voicemailTypes);
+            CheckNumbersValidAndCorrectType(PhoneNumberType.VOICEMAIL, voicemailTypes);
             Assert.Equal(0, invalidCases.Count);
             Assert.Equal(0, wrongTypeCases.Count);
         }
@@ -158,7 +158,7 @@ namespace PhoneNumbers.Test
         public void TestSharedCost()
         {
             HashSet<PhoneNumberType> sharedCostTypes = MakeSet(PhoneNumberType.SHARED_COST);
-            checkNumbersValidAndCorrectType(PhoneNumberType.SHARED_COST, sharedCostTypes);
+            CheckNumbersValidAndCorrectType(PhoneNumberType.SHARED_COST, sharedCostTypes);
             Assert.Equal(0, invalidCases.Count);
             Assert.Equal(0, wrongTypeCases.Count);
         }

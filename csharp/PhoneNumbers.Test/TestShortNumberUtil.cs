@@ -24,7 +24,7 @@ namespace PhoneNumbers.Test
      */
     public class TestShortNumberUtil : TestMetadataTestCase
     {
-        private ShortNumberUtil shortUtil;
+        private readonly ShortNumberUtil shortUtil;
 
         public TestShortNumberUtil()
         {

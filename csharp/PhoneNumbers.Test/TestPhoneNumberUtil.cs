@@ -123,11 +123,6 @@ namespace PhoneNumbers.Test
             Assert.Equal(p1.Clone().Build(), p2.Clone().Build());
         }
 
-        private static void AreEqual(PhoneNumber p1, PhoneNumber.Builder p2)
-        {
-            Assert.Equal(p1, p2.Clone().Build());
-        }
-
         [Fact]
         public void TestGetSupportedRegions()
         {
@@ -514,7 +509,7 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
-        public void testFormatOutOfCountryCallingNumber()
+        public void TestFormatOutOfCountryCallingNumber()
         {
             Assert.Equal("00 1 900 253 0000",
             phoneUtil.FormatOutOfCountryCallingNumber(US_PREMIUM, RegionCode.DE));
@@ -1560,7 +1555,7 @@ namespace PhoneNumbers.Test
                 Assert.Equal(strippedNumber,
                     numberToFill.ToString());
             }
-            catch (NumberParseException e)
+            catch (NumberParseException)
             {
                 Assert.True(false);
             }
@@ -1574,7 +1569,7 @@ namespace PhoneNumbers.Test
                     phoneUtil.MaybeExtractCountryCode(phoneNumber, metadata, numberToFill, true, number));
                 Assert.Equal(PhoneNumber.Types.CountryCodeSource.FROM_NUMBER_WITH_PLUS_SIGN, number.CountryCodeSource);
             }
-            catch (NumberParseException e)
+            catch (NumberParseException)
             {
                 Assert.True(false);
             }
@@ -1588,7 +1583,7 @@ namespace PhoneNumbers.Test
                    phoneUtil.MaybeExtractCountryCode(phoneNumber, metadata, numberToFill, true, number));
                 Assert.Equal(PhoneNumber.Types.CountryCodeSource.FROM_NUMBER_WITH_PLUS_SIGN, number.CountryCodeSource);
             }
-            catch (NumberParseException e)
+            catch (NumberParseException)
             {
                 Assert.True(false);
             }
@@ -1601,7 +1596,7 @@ namespace PhoneNumbers.Test
                 phoneUtil.MaybeExtractCountryCode(phoneNumber, metadata, numberToFill, true, number));
                 Assert.Equal(PhoneNumber.Types.CountryCodeSource.FROM_DEFAULT_COUNTRY, number.CountryCodeSource);
             }
-            catch (NumberParseException e)
+            catch (NumberParseException)
             {
                 Assert.True(false);
             }
@@ -1631,7 +1626,7 @@ namespace PhoneNumbers.Test
                 Assert.Equal(PhoneNumber.Types.CountryCodeSource.FROM_NUMBER_WITHOUT_PLUS_SIGN,
                 number.CountryCodeSource);
             }
-            catch (NumberParseException e)
+            catch (NumberParseException)
             {
                 Assert.True(false);
             }
@@ -1646,7 +1641,7 @@ namespace PhoneNumbers.Test
                 number));
                 Assert.False(number.HasCountryCodeSource, "Should not contain CountryCodeSource.");
             }
-            catch (NumberParseException e)
+            catch (NumberParseException)
             {
                 Assert.True(false);
             }
@@ -1660,7 +1655,7 @@ namespace PhoneNumbers.Test
                 number));
                 Assert.False(number.HasCountryCodeSource, "Should not contain CountryCodeSource.");
             }
-            catch (NumberParseException e)
+            catch (NumberParseException)
             {
                 Assert.True(false);
             }
@@ -1674,7 +1669,7 @@ namespace PhoneNumbers.Test
                 number));
                 Assert.Equal(PhoneNumber.Types.CountryCodeSource.FROM_DEFAULT_COUNTRY, number.CountryCodeSource);
             }
-            catch (NumberParseException e)
+            catch (NumberParseException)
             {
                 Assert.True(false);
             }

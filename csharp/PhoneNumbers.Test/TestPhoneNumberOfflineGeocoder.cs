@@ -63,14 +63,14 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
-        public void testInstantiationWithRegularData()
+        public void TestInstantiationWithRegularData()
         {
             PhoneNumberUtil.ResetInstance();
             geocoder = PhoneNumberOfflineGeocoder.GetInstance();
         }
 
         [Fact]
-        public void testGetDescriptionForNumberWithNoDataFile()
+        public void TestGetDescriptionForNumberWithNoDataFile()
         {
             // No data file containing mappings for US numbers is available in Chinese for the unittests. As
             // a result, the country name of United States in simplified Chinese is returned.
@@ -87,7 +87,7 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
-        public void testGetDescriptionForNumberWithMissingPrefix()
+        public void TestGetDescriptionForNumberWithMissingPrefix()
         {
             // Test that the name of the country is returned when the number passed in is valid but not
             // covered by the geocoding data file.
@@ -105,7 +105,7 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
-        public void testGetDescriptionForKoreanNumber()
+        public void TestGetDescriptionForKoreanNumber()
         {
             Assert.Equal("Seoul",
                 geocoder.GetDescriptionForNumber(KO_NUMBER1, Locale.ENGLISH));
