@@ -25,8 +25,16 @@ namespace PhoneNumbers.Test
     *
     * @author Shaopeng Jia
     */
-    public class TestAsYouTypeFormatter : TestMetadataTestCase
+    [Collection("TestMetadataTestCase")]
+    public class TestAsYouTypeFormatter : IClassFixture<TestMetadataTestCase>
     {
+        private readonly PhoneNumberUtil phoneUtil;
+
+        public TestAsYouTypeFormatter(TestMetadataTestCase metadata)
+        {
+            phoneUtil = metadata.phoneUtil;
+        }
+
         [Fact]
         public void TestInvalidRegion()
         {

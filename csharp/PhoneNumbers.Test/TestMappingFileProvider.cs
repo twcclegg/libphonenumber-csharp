@@ -24,6 +24,7 @@ namespace PhoneNumbers.Test
     *
     * @author Shaopeng Jia
     */
+    [Collection("TestMetadataTestCase")]
     public class TestMappingFileProvider
     {
         private readonly MappingFileProvider mappingProvider = new MappingFileProvider();

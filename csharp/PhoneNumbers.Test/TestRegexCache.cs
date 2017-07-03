@@ -18,6 +18,7 @@ using Xunit;
 
 namespace PhoneNumbers.Test
 {
+    [Collection("TestMetadataTestCase")]
     public class TestRegexCache
     {
         private readonly RegexCache regexCache;

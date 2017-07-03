@@ -23,6 +23,7 @@ namespace PhoneNumbers.Test
     *
     * @author Shaopeng Jia
     */
+    [Collection("TestMetadataTestCase")]
     public class TestPhoneNumberOfflineGeocoder
     {
         private PhoneNumberOfflineGeocoder geocoder;
@@ -101,7 +102,7 @@ namespace PhoneNumbers.Test
             Assert.Equal("CA",
                 geocoder.GetDescriptionForNumber(US_NUMBER1, new Locale("en", "US")));
             Assert.Equal("Mountain View, CA", geocoder.GetDescriptionForNumber(US_NUMBER2, new Locale("en", "US")));
-            Assert.Equal("New York, NY", geocoder.GetDescriptionForNumber(US_NUMBER2, new Locale("en", "US")));
+            Assert.Equal("New York, NY", geocoder.GetDescriptionForNumber(US_NUMBER3, new Locale("en", "US")));
         }
 
         [Fact]

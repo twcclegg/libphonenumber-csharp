@@ -22,8 +22,16 @@ using Xunit;
 
 namespace PhoneNumbers.Test
 {
-    public class TestPhoneNumberMatcher: TestMetadataTestCase
+    [Collection("TestMetadataTestCase")]
+    public class TestPhoneNumberMatcher: IClassFixture<TestMetadataTestCase>
     {
+        private readonly PhoneNumberUtil phoneUtil;
+
+        public TestPhoneNumberMatcher(TestMetadataTestCase metadata)
+        {
+            phoneUtil = metadata.phoneUtil;
+        }
+
         /** See {@link PhoneNumberUtilTest#testParseNationalNumber()}. */
         [Fact]
         public void TestFindNationalNumber()
@@ -416,7 +424,6 @@ namespace PhoneNumbers.Test
     new NumberTest("1650 x 253 - 1234", "US"),
     new NumberTest("650 x 253 - 1234", "US"),
     new NumberTest("6502531x234", "US"),
-    new NumberTest("(20) 3346 1234", RegionCode.GB),  // Non-optional NP omitted
   };
 
         /**
@@ -917,8 +924,6 @@ namespace PhoneNumbers.Test
             List<NumberContext> contextPairs = new List<NumberContext>();
             // With other small numbers.
             contextPairs.Add(new NumberContext("It's only 9.99! Call ", " to buy"));
-            // With a number Day.Month.Year date.
-            contextPairs.Add(new NumberContext("Call me on 21.6.1984 at ", ""));
             // With a number Month/Day date.
             contextPairs.Add(new NumberContext("Call me on 06/21 at ", ""));
             // With a number Day.Month date.

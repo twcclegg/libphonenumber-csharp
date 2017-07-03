@@ -22,13 +22,14 @@ namespace PhoneNumbers.Test
      *
      * @author Shaopeng Jia
      */
-    public class TestShortNumberUtil : TestMetadataTestCase
+    [Collection("TestMetadataTestCase")]
+    public class TestShortNumberUtil : IClassFixture<TestMetadataTestCase>
     {
         private readonly ShortNumberUtil shortUtil;
 
-        public TestShortNumberUtil()
+        public TestShortNumberUtil(TestMetadataTestCase metadata)
         {
-            shortUtil = new ShortNumberUtil(phoneUtil);
+            shortUtil = new ShortNumberUtil(metadata.phoneUtil);
         }
 
         [Fact]

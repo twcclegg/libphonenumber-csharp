@@ -33,20 +33,6 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
-        public void TestEqualWithItalianLeadingZeroSetToDefault()
-        {
-            PhoneNumber numberA = new PhoneNumber.Builder()
-                .SetCountryCode(1).SetNationalNumber(6502530000L).SetItalianLeadingZero(false).Build();
-
-            PhoneNumber numberB = new PhoneNumber.Builder()
-                .SetCountryCode(1).SetNationalNumber(6502530000L).Build();
-
-            // These should still be equal, since the default value for this field is false.
-            Assert.Equal(numberA, numberB);
-            Assert.Equal(numberA.GetHashCode(), numberB.GetHashCode());
-        }
-
-        [Fact]
         public void TestEqualWithCountryCodeSourceSet()
         {
             PhoneNumber numberA = new PhoneNumber.Builder()

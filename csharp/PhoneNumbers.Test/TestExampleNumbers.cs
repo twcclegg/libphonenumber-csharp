@@ -19,6 +19,7 @@ using Xunit;
 
 namespace PhoneNumbers.Test
 {
+    [Collection("TestMetadataTestCase")]
     public class TestExampleNumbers
     {
         private readonly PhoneNumberUtil phoneNumberUtil;

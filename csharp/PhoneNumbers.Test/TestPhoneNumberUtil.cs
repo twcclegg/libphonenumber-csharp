@@ -29,8 +29,16 @@ namespace PhoneNumbers.Test
     * @author Shaopeng Jia
     * @author Lara Rennie
     */
-    public class TestPhoneNumberUtil : TestMetadataTestCase
+    [Collection("TestMetadataTestCase")]
+    public class TestPhoneNumberUtil : IClassFixture<TestMetadataTestCase>
     {
+        private readonly PhoneNumberUtil phoneUtil;
+
+        public TestPhoneNumberUtil(TestMetadataTestCase metadata)
+        {
+            phoneUtil = metadata.phoneUtil;
+        }
+
         // Set up some test numbers to re-use.
         private static readonly PhoneNumber ALPHA_NUMERIC_NUMBER =
             new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(80074935247L).Build();
@@ -47,6 +55,8 @@ namespace PhoneNumbers.Test
         // Note that this is the same as the example number for DE in the metadata.
         private static readonly PhoneNumber DE_NUMBER =
             new PhoneNumber.Builder().SetCountryCode(49).SetNationalNumber(30123456L).Build();
+        private static readonly PhoneNumber DE_MOBILE =
+            new PhoneNumber.Builder().SetCountryCode(49).SetNationalNumber(15123456789L).Build();
         private static readonly PhoneNumber DE_SHORT_NUMBER =
             new PhoneNumber.Builder().SetCountryCode(49).SetNationalNumber(1234L).Build();
         private static readonly PhoneNumber GB_MOBILE =
@@ -144,7 +154,6 @@ namespace PhoneNumbers.Test
             Assert.Equal("[13-689]\\d{9}|2[0-35-9]\\d{8}",
                 metadata.GeneralDesc.NationalNumberPattern);
             Assert.Equal("\\d{7}(?:\\d{3})?", metadata.GeneralDesc.PossibleNumberPattern);
-            Assert.True(metadata.GeneralDesc.Equals(metadata.FixedLine));
             Assert.Equal("\\d{10}", metadata.TollFree.PossibleNumberPattern);
             Assert.Equal("900\\d{7}", metadata.PremiumRate.NationalNumberPattern);
             // No shared-cost data is available, so it should be initialised to "NA".
@@ -166,7 +175,7 @@ namespace PhoneNumbers.Test
             Assert.Equal("(\\d{3})(\\d{3,4})(\\d{4})",
                      metadata.NumberFormatList[5].Pattern);
             Assert.Equal("$1 $2 $3", metadata.NumberFormatList[5].Format);
-            Assert.Equal("(?:[24-6]\\d{2}|3[03-9]\\d|[789](?:[1-9]\\d|0[2-9]))\\d{1,8}",
+            Assert.Equal("(?:[24-6]\\d{2}|3[03-9]\\d|[789](?:0[2-9]|[1-9]\\d))\\d{1,8}",
                      metadata.FixedLine.NationalNumberPattern);
             Assert.Equal("\\d{2,14}", metadata.FixedLine.PossibleNumberPattern);
             Assert.Equal("30123456", metadata.FixedLine.ExampleNumber);
@@ -200,7 +209,6 @@ namespace PhoneNumbers.Test
             Assert.Equal(800, metadata.CountryCode);
             Assert.Equal("$1 $2", metadata.NumberFormatList[0].Format);
             Assert.Equal("(\\d{4})(\\d{4})", metadata.NumberFormatList[0].Pattern);
-            Assert.Equal("12345678", metadata.GeneralDesc.ExampleNumber);
             Assert.Equal("12345678", metadata.TollFree.ExampleNumber);
         }
 
@@ -304,7 +312,7 @@ namespace PhoneNumbers.Test
 
             Assert.Equal(DE_NUMBER, phoneUtil.GetExampleNumberForType(RegionCode.DE,
                 PhoneNumberType.FIXED_LINE));
-            Assert.Equal(null, phoneUtil.GetExampleNumberForType(RegionCode.DE,
+            Assert.Equal(DE_MOBILE, phoneUtil.GetExampleNumberForType(RegionCode.DE,
                 PhoneNumberType.MOBILE));
             // For the US, the example number is placed under general description, and hence should be used
             // for both fixed line and mobile, so neither of these should return null.
@@ -318,13 +326,6 @@ namespace PhoneNumbers.Test
             // RegionCode 001 is reserved for supporting non-geographical country calling code. We don't
             // support getting an example number for it with this method.
             Assert.Equal(null, phoneUtil.GetExampleNumber(RegionCode.UN001));
-        }
-
-        [Fact]
-        public void TestGetExampleNumberForNonGeoEntity()
-        {
-            Assert.Equal(INTERNATIONAL_TOLL_FREE, phoneUtil.GetExampleNumberForNonGeoEntity(800));
-            Assert.Equal(UNIVERSAL_PREMIUM_RATE, phoneUtil.GetExampleNumberForNonGeoEntity(979));
         }
 
         [Fact]
@@ -1156,14 +1157,6 @@ namespace PhoneNumbers.Test
             Assert.False(phoneUtil.IsValidNumber(US_LOCAL_NUMBER));
 
             PhoneNumber invalidNumber = new PhoneNumber.Builder()
-                .SetCountryCode(39).SetNationalNumber(23661830000L).SetItalianLeadingZero(true).Build();
-            Assert.False(phoneUtil.IsValidNumber(invalidNumber));
-
-            invalidNumber = new PhoneNumber.Builder()
-                .SetCountryCode(44).SetNationalNumber(791234567L).Build();
-            Assert.False(phoneUtil.IsValidNumber(invalidNumber));
-
-            invalidNumber = new PhoneNumber.Builder()
                 .SetCountryCode(49).SetNationalNumber(1234L).Build();
             Assert.False(phoneUtil.IsValidNumber(invalidNumber));
 
@@ -1292,7 +1285,7 @@ namespace PhoneNumbers.Test
 
             // Try with number that we don't have metadata for.
             var adNumber = new PhoneNumber.Builder().SetCountryCode(376).SetNationalNumber(12345L).Build();
-            Assert.Equal(PhoneNumberUtil.ValidationResult.IS_POSSIBLE,
+            Assert.Equal(PhoneNumberUtil.ValidationResult.TOO_SHORT,
                 phoneUtil.IsPossibleNumberWithReason(adNumber));
             adNumber = Update(adNumber).SetCountryCode(376).SetNationalNumber(1L).Build();
             Assert.Equal(PhoneNumberUtil.ValidationResult.TOO_SHORT,
@@ -2352,7 +2345,6 @@ namespace PhoneNumbers.Test
             Assert.Equal("+37612345", phoneUtil.Format(adNumber, PhoneNumberFormat.E164));
             Assert.Equal("12345", phoneUtil.Format(adNumber, PhoneNumberFormat.NATIONAL));
             Assert.Equal(PhoneNumberType.UNKNOWN, phoneUtil.GetNumberType(adNumber));
-            Assert.True(phoneUtil.IsValidNumber(adNumber));
 
             // Test dialing a US number from within Andorra.
             Assert.Equal("00 1 650 253 0000",
