@@ -1753,17 +1753,29 @@ namespace PhoneNumbers
             PhoneMetadata metadata = GetMetadataForNonGeographicalRegion(countryCallingCode);
             if (metadata != null)
             {
-                PhoneNumberDesc desc = metadata.GeneralDesc;
-                try
+
+                foreach (var desc in new List<PhoneNumberDesc>
                 {
-                    if (desc.HasExampleNumber)
+                    metadata.Mobile,
+                    metadata.TollFree,
+                    metadata.SharedCost,
+                    metadata.Voip,
+                    metadata.Voicemail,
+                    metadata.Uan,
+                    metadata.PremiumRate
+                })
+                {
+                    try
                     {
-                        return Parse("+" + countryCallingCode + desc.ExampleNumber, "ZZ");
+                        if (desc != null && desc.HasExampleNumber)
+                        {
+                            return Parse("+" + countryCallingCode + desc.ExampleNumber, UNKNOWN_REGION);
+                        }
                     }
-                }
-                catch (NumberParseException)
-                {
-                    //LOGGER.log(Level.SEVERE, e.toString());
+                    catch (NumberParseException)
+                    {
+                        //LOGGER.log(Level.SEVERE, e.toString());
+                    }
                 }
             }
             else

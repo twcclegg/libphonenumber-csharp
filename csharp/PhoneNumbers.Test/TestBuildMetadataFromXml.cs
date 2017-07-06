@@ -400,13 +400,6 @@ namespace PhoneNumbers.Test
                                                                                               "0"));
         }
 
-        // Tests isValidNumberType().
-        [Fact]
-        public void TestIsValidNumberTypeWithInvalidInput()
-        {
-            Assert.False(BuildMetadataFromXml.NumberTypeShouldAlwaysBeFilledIn("invalidType"));
-        }
-
         // Tests ProcessPhoneNumberDescElement().
         [Fact]
         public void TestProcessPhoneNumberDescElementWithInvalidInput()
@@ -420,31 +413,19 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
-        public void TestProcessPhoneNumberDescElementMergesWithGeneralDesc()
-        {
-            var generalDesc = new PhoneNumberDesc.Builder()
-                .SetPossibleNumberPattern("\\d{6}").Build();
-            var territoryElement = ParseXmlString("<territory><fixedLine/></territory>");
-
-            var phoneNumberDesc = BuildMetadataFromXml.ProcessPhoneNumberDescElement(
-                generalDesc, territoryElement, "fixedLine", false);
-            Assert.Equal("\\d{6}", phoneNumberDesc.PossibleNumberPattern);
-        }
-
-        [Fact]
         public void TestProcessPhoneNumberDescElementOverridesGeneralDesc()
         {
             var generalDesc = new PhoneNumberDesc.Builder()
-                .SetPossibleNumberPattern("\\d{8}").Build();
+                .SetNationalNumberPattern("\\d{8}").Build();
             var xmlInput =
                 "<territory><fixedLine>" +
-                "  <possibleNumberPattern>\\d{6}</possibleNumberPattern>" +
+                "  <nationalNumberPattern>\\d{6}</nationalNumberPattern>" +
                 "</fixedLine></territory>";
             var territoryElement = ParseXmlString(xmlInput);
 
             var phoneNumberDesc = BuildMetadataFromXml.ProcessPhoneNumberDescElement(
                 generalDesc, territoryElement, "fixedLine", false);
-            Assert.Equal("\\d{6}", phoneNumberDesc.PossibleNumberPattern);
+            Assert.Equal("\\d{6}", phoneNumberDesc.NationalNumberPattern);
         }
 
         [Fact]

@@ -365,13 +365,6 @@ namespace PhoneNumbers
             carrierCodeFormattingRule = ReplaceFirst(carrierCodeFormattingRule, "$NP", nationalPrefix);
             return carrierCodeFormattingRule;
         }
-
-        // @VisibleForTesting
-        public static bool NumberTypeShouldAlwaysBeFilledIn(String numberType)
-        {
-            return numberType.Equals(FIXED_LINE) || numberType.Equals(MOBILE) ||
-                 numberType.Equals(GENERAL_DESC);
-        }
         
         /**
         * Checks if the possible lengths provided as a sorted set are equal to the possible lengths
@@ -421,7 +414,7 @@ namespace PhoneNumbers
                 parentDesc = new PhoneNumberDesc.Builder().Build();
             var phoneNumberDescList = countryElement.GetElementsByTagName(numberType).ToList();
             var numberDesc = new PhoneNumberDesc.Builder();
-            if (phoneNumberDescList.Count == 0 && !NumberTypeShouldAlwaysBeFilledIn(numberType))
+            if (phoneNumberDescList.Count == 0)
             {
                 numberDesc.SetNationalNumberPattern("NA");
                 numberDesc.SetPossibleNumberPattern("NA");
@@ -431,7 +424,6 @@ namespace PhoneNumbers
                 numberDesc.AddPossibleLength(-1);
                 return numberDesc;
             }
-            numberDesc.MergeFrom(parentDesc);
             if (phoneNumberDescList.Count > 0)
             {
                 if (phoneNumberDescList.Count > 1)
