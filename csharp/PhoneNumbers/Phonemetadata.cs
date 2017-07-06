@@ -367,16 +367,6 @@ namespace PhoneNumbers {
       get { return nationalNumberPattern_; }
     }
     
-    public const int PossibleNumberPatternFieldNumber = 3;
-    private bool hasPossibleNumberPattern;
-    private string possibleNumberPattern_ = "";
-    public bool HasPossibleNumberPattern {
-      get { return hasPossibleNumberPattern; }
-    }
-    public string PossibleNumberPattern {
-      get { return possibleNumberPattern_; }
-    }
-    
     public const int PossibleLengthFieldNumber = 9;
     private scg::List<int> possibleLength_ = new scg::List<int>();
     public scg::IList<int> PossibleLengthList {
@@ -424,7 +414,6 @@ namespace PhoneNumbers {
     public override int GetHashCode() {
       int hash = GetType().GetHashCode();
       if (hasNationalNumberPattern) hash ^= nationalNumberPattern_.GetHashCode();
-      if (hasPossibleNumberPattern) hash ^= possibleNumberPattern_.GetHashCode();
       foreach(int i in possibleLength_)
         hash ^= i.GetHashCode();
       foreach(int i in possibleLengthLocalOnly_)
@@ -437,7 +426,6 @@ namespace PhoneNumbers {
       PhoneNumberDesc other = obj as PhoneNumberDesc;
       if (other == null) return false;
       if (hasNationalNumberPattern != other.hasNationalNumberPattern || (hasNationalNumberPattern && !nationalNumberPattern_.Equals(other.nationalNumberPattern_))) return false;
-      if (hasPossibleNumberPattern != other.hasPossibleNumberPattern || (hasPossibleNumberPattern && !possibleNumberPattern_.Equals(other.possibleNumberPattern_))) return false;
       if(possibleLength_.Count != other.possibleLength_.Count) return false;
       for(int ix=0; ix < possibleLength_.Count; ix++)
         if(!possibleLength_[ix].Equals(other.possibleLength_[ix])) return false;
@@ -504,9 +492,6 @@ namespace PhoneNumbers {
         if (other.HasNationalNumberPattern) {
           NationalNumberPattern = other.NationalNumberPattern;
         }
-        if (other.HasPossibleNumberPattern) {
-          PossibleNumberPattern = other.PossibleNumberPattern;
-        }
         if (other.possibleLength_.Count != 0) {
            result.possibleLength_.AddRange(other.possibleLength_);
         }
@@ -538,25 +523,6 @@ namespace PhoneNumbers {
       public Builder ClearNationalNumberPattern() {
         result.hasNationalNumberPattern = false;
         result.nationalNumberPattern_ = "";
-        return this;
-      }
-      
-      public bool HasPossibleNumberPattern {
-        get { return result.HasPossibleNumberPattern; }
-      }
-      public string PossibleNumberPattern {
-        get { return result.PossibleNumberPattern; }
-        set { SetPossibleNumberPattern(value); }
-      }
-      public Builder SetPossibleNumberPattern(string value) {
-        if(value == null) throw new global::System.ArgumentNullException("value");
-        result.hasPossibleNumberPattern = true;
-        result.possibleNumberPattern_ = value;
-        return this;
-      }
-      public Builder ClearPossibleNumberPattern() {
-        result.hasPossibleNumberPattern = false;
-        result.possibleNumberPattern_ = "";
         return this;
       }
       

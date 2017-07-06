@@ -45,6 +45,7 @@ namespace PhoneNumbers {
       [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
       [global::System.CodeDom.Compiler.GeneratedCodeAttribute("ProtoGen", "2.3.0.277")]
       public enum CountryCodeSource {
+        UNSPECIFIED = 0,
         FROM_NUMBER_WITH_PLUS_SIGN = 1,
         FROM_NUMBER_WITH_IDD = 5,
         FROM_NUMBER_WITHOUT_PLUS_SIGN = 10,
@@ -116,7 +117,7 @@ namespace PhoneNumbers {
     
     public const int CountryCodeSourceFieldNumber = 6;
     private bool hasCountryCodeSource;
-    private global::PhoneNumbers.PhoneNumber.Types.CountryCodeSource countryCodeSource_ = global::PhoneNumbers.PhoneNumber.Types.CountryCodeSource.FROM_NUMBER_WITH_PLUS_SIGN;
+    private global::PhoneNumbers.PhoneNumber.Types.CountryCodeSource countryCodeSource_ = global::PhoneNumbers.PhoneNumber.Types.CountryCodeSource.UNSPECIFIED;
     public bool HasCountryCodeSource {
       get { return hasCountryCodeSource; }
     }
@@ -378,7 +379,7 @@ namespace PhoneNumbers {
       }
       public Builder ClearCountryCodeSource() {
         result.hasCountryCodeSource = false;
-        result.countryCodeSource_ = global::PhoneNumbers.PhoneNumber.Types.CountryCodeSource.FROM_NUMBER_WITH_PLUS_SIGN;
+        result.countryCodeSource_ = global::PhoneNumbers.PhoneNumber.Types.CountryCodeSource.UNSPECIFIED;
         return this;
       }
       
