@@ -404,7 +404,7 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestIsValidNumberTypeWithInvalidInput()
         {
-            Assert.False(BuildMetadataFromXml.IsValidNumberType("invalidType"));
+            Assert.False(BuildMetadataFromXml.NumberTypeShouldAlwaysBeFilledIn("invalidType"));
         }
 
         // Tests ProcessPhoneNumberDescElement().

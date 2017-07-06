@@ -1930,11 +1930,18 @@ namespace PhoneNumbers
 
         private bool IsNumberMatchingDesc(String nationalNumber, PhoneNumberDesc numberDesc)
         {
-            var possibleNumberPatternMatch = regexCache.GetPatternForRegex(
-                numberDesc.PossibleNumberPattern).MatchAll(nationalNumber);
+            // Check if any possible number lengths are present; if so, we use them to avoid checking the
+            // validation pattern if they don't match. If they are absent, this means they match the general
+            // description, which we have already checked before checking a specific number type.
+            int actualLength = nationalNumber.Length;
+            IList<int> possibleLengths = numberDesc.PossibleLengthList;
+            if (possibleLengths.Count > 0 && !possibleLengths.Contains(actualLength))
+            {
+                return false;
+            }
             var nationalNumberPatternMatch = regexCache.GetPatternForRegex(
                 numberDesc.NationalNumberPattern).MatchAll(nationalNumber);
-            return possibleNumberPatternMatch.Success && nationalNumberPatternMatch.Success;
+            return nationalNumberPatternMatch.Success;
         }
 
         /**
@@ -2174,18 +2181,41 @@ namespace PhoneNumbers
         }
 
         /**
-        * Helper method to check a number against a particular pattern and determine whether it matches,
-        * or is too short or too long. Currently, if a number pattern suggests that numbers of length 7
-        * and 10 are possible, and a number in between these possible lengths is entered, such as of
-        * length 8, this will return TOO_LONG.
+        * Helper method to check a number against possible lengths for this number, and determine whether
+        * it matches, or is too short or too long. Currently, if a number pattern suggests that numbers
+        * of length 7 and 10 are possible, and a number in between these possible lengths is entered,
+        * such as of length 8, this will return TOO_LONG.
         */
-        private ValidationResult TestNumberLengthAgainstPattern(PhoneRegex numberPattern, String number)
+        private ValidationResult TestNumberLength(String number, PhoneNumberDesc phoneNumberDesc)
         {
-            if (numberPattern.MatchAll(number).Success)
+            var possibleLengths = phoneNumberDesc.PossibleLengthList;
+            var localLengths = phoneNumberDesc.PossibleLengthLocalOnlyList;
+            var actualLength = number.Length;
+            if (localLengths.Contains(actualLength))
+            {
                 return ValidationResult.IS_POSSIBLE;
-            if (numberPattern.MatchBeginning(number).Success)
+            }
+            // There should always be "possibleLengths" set for every element. This will be a build-time
+            // check once ShortNumberMetadata.xml is migrated to contain this information as well.
+            int minimumLength = possibleLengths.ElementAt(0);
+            if (minimumLength == actualLength)
+            {
+                return ValidationResult.IS_POSSIBLE;
+            }
+            else if (minimumLength > actualLength)
+            {
+                return ValidationResult.TOO_SHORT;
+            }
+            else if (possibleLengths.ElementAt(possibleLengths.Count - 1) < actualLength)
+            {
                 return ValidationResult.TOO_LONG;
-            return ValidationResult.TOO_SHORT;
+            }
+            // Note that actually the number is not too long if possibleLengths does not contain the length:
+            // we know it is less than the highest possible number length, and higher than the lowest
+            // possible number length. However, we don't currently have an enum to express this, so we
+            // return TOO_LONG in the short-term.
+            return possibleLengths.Contains(actualLength)
+                ? ValidationResult.IS_POSSIBLE : ValidationResult.TOO_LONG;
         }
 
         /**
@@ -2221,20 +2251,7 @@ namespace PhoneNumbers
                 return ValidationResult.INVALID_COUNTRY_CODE;
             String regionCode = GetRegionCodeForCountryCode(countryCode);
             PhoneMetadata metadata = GetMetadataForRegionOrCallingCode(countryCode, regionCode);
-            PhoneNumberDesc generalNumDesc = metadata.GeneralDesc;
-            // Handling case of numbers with no metadata.
-            if (!generalNumDesc.HasNationalNumberPattern)
-            {
-                int numberLength = nationalNumber.Length;
-                if (numberLength < MIN_LENGTH_FOR_NSN)
-                    return ValidationResult.TOO_SHORT;
-                if (numberLength > MAX_LENGTH_FOR_NSN)
-                    return ValidationResult.TOO_LONG;
-                return ValidationResult.IS_POSSIBLE;
-            }
-            var possibleNumberPattern =
-                regexCache.GetPatternForRegex(generalNumDesc.PossibleNumberPattern);
-            return TestNumberLengthAgainstPattern(possibleNumberPattern, nationalNumber);
+            return TestNumberLength(nationalNumber, metadata.GeneralDesc);
         }
 
         /**
@@ -2421,15 +2438,12 @@ namespace PhoneNumbers
                         regexCache.GetPatternForRegex(generalDesc.NationalNumberPattern);
                     MaybeStripNationalPrefixAndCarrierCode(
                         potentialNationalNumber, defaultRegionMetadata, null /* Don't need the carrier code */);
-                    var possibleNumberPattern =
-                        regexCache.GetPatternForRegex(generalDesc.PossibleNumberPattern);
                     // If the number was not valid before but is valid now, or if it was too long before, we
                     // consider the number with the country calling code stripped to be a better result and
                     // keep that instead.
                     if ((!validNumberPattern.MatchAll(fullNumber.ToString()).Success &&             //XXX: ToString
                      validNumberPattern.MatchAll(potentialNationalNumber.ToString()).Success) ||    //XXX: ToString
-                     TestNumberLengthAgainstPattern(possibleNumberPattern, fullNumber.ToString())
-                          == ValidationResult.TOO_LONG)
+                     TestNumberLength(fullNumber.ToString(), generalDesc) == ValidationResult.TOO_LONG)
                     {
                         nationalNumber.Append(potentialNationalNumber);
                         if (keepRawInput)
