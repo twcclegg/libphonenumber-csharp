@@ -153,12 +153,16 @@ namespace PhoneNumbers.Test
             Assert.Equal("$1 $2 $3", metadata.NumberFormatList[1].Format);
             Assert.Equal("[13-689]\\d{9}|2[0-35-9]\\d{8}",
                 metadata.GeneralDesc.NationalNumberPattern);
-            Assert.Equal("\\d{7}(?:\\d{3})?", metadata.GeneralDesc.PossibleNumberPattern);
-            Assert.Equal("\\d{10}", metadata.TollFree.PossibleNumberPattern);
+            Assert.Equal("[13-689]\\d{9}|2[0-35-9]\\d{8}",
+                metadata.FixedLine.NationalNumberPattern);
+            Assert.Equal(1, metadata.GeneralDesc.PossibleLengthCount);
+            Assert.Equal(10, metadata.GeneralDesc.PossibleLengthList[0]);
+            // Possible lengths are the same as the general description, so aren't stored separately in the
+            // toll free element as well.
+            Assert.Equal(0, metadata.TollFree.PossibleLengthCount);
             Assert.Equal("900\\d{7}", metadata.PremiumRate.NationalNumberPattern);
-            // No shared-cost data is available, so it should be initialised to "NA".
-            Assert.Equal("NA", metadata.SharedCost.NationalNumberPattern);
-            Assert.Equal("NA", metadata.SharedCost.PossibleNumberPattern);
+            // No shared-cost data is available, so its national number data should not be set.
+            Assert.False(metadata.SharedCost.HasNationalNumberPattern);
         }
 
         [Fact]
@@ -173,13 +177,18 @@ namespace PhoneNumbers.Test
             Assert.Equal(1, metadata.NumberFormatList[5].LeadingDigitsPatternCount);
             Assert.Equal("900", metadata.NumberFormatList[5].LeadingDigitsPatternList[0]);
             Assert.Equal("(\\d{3})(\\d{3,4})(\\d{4})",
-                     metadata.NumberFormatList[5].Pattern);
+                metadata.NumberFormatList[5].Pattern);
             Assert.Equal("$1 $2 $3", metadata.NumberFormatList[5].Format);
+            Assert.Equal(2, metadata.GeneralDesc.PossibleLengthLocalOnlyCount);
+            Assert.Equal(8, metadata.GeneralDesc.PossibleLengthCount);
+            // Nothing is present for fixed-line, since it is the same as the general desc, so for
+            // efficiency reasons we don't store an extra value.
+            Assert.Equal(0, metadata.FixedLine.PossibleLengthCount);
+            Assert.Equal(2, metadata.Mobile.PossibleLengthCount);
             Assert.Equal("(?:[24-6]\\d{2}|3[03-9]\\d|[789](?:0[2-9]|[1-9]\\d))\\d{1,8}",
-                     metadata.FixedLine.NationalNumberPattern);
-            Assert.Equal("\\d{2,14}", metadata.FixedLine.PossibleNumberPattern);
+                metadata.FixedLine.NationalNumberPattern);
             Assert.Equal("30123456", metadata.FixedLine.ExampleNumber);
-            Assert.Equal("\\d{10}", metadata.TollFree.PossibleNumberPattern);
+            Assert.Equal(10, metadata.TollFree.PossibleLengthList[0]);
             Assert.Equal("900([135]\\d{6}|9\\d{7})", metadata.PremiumRate.NationalNumberPattern);
         }
 

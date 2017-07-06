@@ -407,9 +407,8 @@ namespace PhoneNumbers.Test
             var territoryElement = ParseXmlString("<territory/>");
 
             var phoneNumberDesc = BuildMetadataFromXml.ProcessPhoneNumberDescElement(
-                null, territoryElement, "invalidType", false);
-            Assert.Equal("NA", phoneNumberDesc.PossibleNumberPattern);
-            Assert.Equal("NA", phoneNumberDesc.NationalNumberPattern);
+                null, territoryElement, "invalidType");
+            Assert.False(phoneNumberDesc.HasNationalNumberPattern);
         }
 
         [Fact]
@@ -424,7 +423,7 @@ namespace PhoneNumbers.Test
             var territoryElement = ParseXmlString(xmlInput);
 
             var phoneNumberDesc = BuildMetadataFromXml.ProcessPhoneNumberDescElement(
-                generalDesc, territoryElement, "fixedLine", false);
+                generalDesc, territoryElement, "fixedLine");
             Assert.Equal("\\d{6}", phoneNumberDesc.NationalNumberPattern);
         }
 
@@ -437,7 +436,7 @@ namespace PhoneNumbers.Test
                 "</fixedLine></territory>";
             var territoryElement = ParseXmlString(xmlInput);
             var phoneNumberDesc = BuildMetadataFromXml.ProcessPhoneNumberDescElement(
-                null, territoryElement, "fixedLine", true);
+                null, territoryElement, "fixedLine");
             Assert.Equal("", phoneNumberDesc.ExampleNumber);
         }
 
@@ -451,7 +450,7 @@ namespace PhoneNumbers.Test
             var territoryElement = ParseXmlString(xmlInput);
 
             var phoneNumberDesc = BuildMetadataFromXml.ProcessPhoneNumberDescElement(
-                null, territoryElement, "fixedLine", false);
+                null, territoryElement, "fixedLine");
             Assert.Equal("01 01 01 01", phoneNumberDesc.ExampleNumber);
         }
 
@@ -465,8 +464,8 @@ namespace PhoneNumbers.Test
             var countryElement = ParseXmlString(xmlInput);
 
             var phoneNumberDesc = BuildMetadataFromXml.ProcessPhoneNumberDescElement(
-                null, countryElement, "fixedLine", false);
-            Assert.Equal("\\d{6}", phoneNumberDesc.PossibleNumberPattern);
+                null, countryElement, "fixedLine");
+            Assert.Equal("\\d{6}", phoneNumberDesc.NationalNumberPattern);
         }
 
         // Tests LoadGeneralDesc().
@@ -481,7 +480,7 @@ namespace PhoneNumbers.Test
             var territoryElement = ParseXmlString(xmlInput);
             var metadata = new PhoneMetadata.Builder();
             // Should set sameMobileAndFixedPattern to true.
-            BuildMetadataFromXml.LoadGeneralDesc(metadata, territoryElement, false);
+            BuildMetadataFromXml.LoadGeneralDesc(metadata, territoryElement);
             Assert.True(metadata.SameMobileAndFixedLinePattern);
         }
 
@@ -503,7 +502,7 @@ namespace PhoneNumbers.Test
                  "</territory>";
             var territoryElement = ParseXmlString(xmlInput);
             var metadata = new PhoneMetadata.Builder();
-            BuildMetadataFromXml.LoadGeneralDesc(metadata, territoryElement, false);
+            BuildMetadataFromXml.LoadGeneralDesc(metadata, territoryElement);
             Assert.Equal("\\d{1}", metadata.FixedLine.NationalNumberPattern);
             Assert.Equal("\\d{2}", metadata.Mobile.NationalNumberPattern);
             Assert.Equal("\\d{3}", metadata.Pager.NationalNumberPattern);

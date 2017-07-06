@@ -82,7 +82,7 @@ namespace PhoneNumbers
                 // files the country calling code may be all that is needed.
                 if (territory.HasAttribute("id"))
                      regionCode = territory.GetAttribute("id");
-                PhoneMetadata metadata = LoadCountryMetadata(regionCode, territory, liteBuild);
+                PhoneMetadata metadata = LoadCountryMetadata(regionCode, territory);
                 metadataCollection.AddMetadata(metadata);
             }
             return metadataCollection.Build();
@@ -408,7 +408,7 @@ namespace PhoneNumbers
         * @return  complete description of that phone number type
         */
         public static PhoneNumberDesc.Builder ProcessPhoneNumberDescElement(PhoneNumberDesc parentDesc,
-            XElement countryElement, String numberType, bool liteBuild)
+            XElement countryElement, String numberType)
         {
             if (parentDesc == null)
                 parentDesc = new PhoneNumberDesc.Builder().Build();
@@ -416,8 +416,6 @@ namespace PhoneNumbers
             var numberDesc = new PhoneNumberDesc.Builder();
             if (phoneNumberDescList.Count == 0)
             {
-                numberDesc.SetNationalNumberPattern("NA");
-                numberDesc.SetPossibleNumberPattern("NA");
                 // -1 will never match a possible phone number length, so is safe to use to ensure this never
                 // matches. We don't leave it empty, since for compression reasons, we use the empty list to
                 // mean that the generalDesc possible lengths apply.
@@ -430,12 +428,7 @@ namespace PhoneNumbers
                 {
                     throw new Exception($"Multiple elements with type {numberType} found.");
                 }
-                var element = (XElement)phoneNumberDescList[0];
-                // Old way of handling possible number lengths. This will be deleted when no data is
-                // represented in this way anymore.
-                var possiblePattern = element.GetElementsByTagName(POSSIBLE_NUMBER_PATTERN);
-                if (possiblePattern.Any())
-                    numberDesc.SetPossibleNumberPattern(ValidateRE(possiblePattern.First().Value, true));
+                var element = phoneNumberDescList[0];
 
                 if (parentDesc != null)
                 {
@@ -446,24 +439,17 @@ namespace PhoneNumbers
                     var lengths = new SortedSet<int>();
                     var localOnlyLengths = new SortedSet<int>();
                     PopulatePossibleLengthSets(element, lengths, localOnlyLengths);
-                    // NOTE: We don't use the localOnlyLengths for specific number types yet, since they aren't
-                    // used in the API and won't be until a method that assesses whether a number is possible
-                    // for a certain type or not is available. To ensure binary size is small, we don't set them
-                    // outside the general desc at this time. If we want this data later, the empty set here
-                    // should be replaced with the localOnlyLengths set above.
                     SetPossibleLengths(lengths, new SortedSet<int>(), parentDesc, numberDesc);
                 }
 
-                var validPattern = element.GetElementsByTagName(NATIONAL_NUMBER_PATTERN);
+                var validPattern = element.GetElementsByTagName(NATIONAL_NUMBER_PATTERN).ToList();
                 if (validPattern.Any())
                     numberDesc.SetNationalNumberPattern(ValidateRE(validPattern.First().Value, true));
 
-                if (!liteBuild)
-                {
-                    var exampleNumber = element.GetElementsByTagName(EXAMPLE_NUMBER);
-                    if (exampleNumber.Any())
-                        numberDesc.SetExampleNumber(exampleNumber.First().Value);
-                }
+                var exampleNumber = element.GetElementsByTagName(EXAMPLE_NUMBER).ToList();
+                if (exampleNumber.Any())
+                    numberDesc.SetExampleNumber(exampleNumber.First().Value);
+
             }
             return numberDesc;
         }
@@ -710,32 +696,30 @@ namespace PhoneNumbers
         }
 
         // @VisibleForTesting
-        public static void LoadGeneralDesc(PhoneMetadata.Builder metadata, XElement element, bool liteBuild)
+        public static void LoadGeneralDesc(PhoneMetadata.Builder metadata, XElement element)
         {
-            var generalDescBuilder = ProcessPhoneNumberDescElement(null, element, GENERAL_DESC, liteBuild);
+            var generalDescBuilder = ProcessPhoneNumberDescElement(null, element, GENERAL_DESC);
             SetPossibleLengthsGeneralDesc(generalDescBuilder, metadata.Id, element, false);
             var generalDesc = generalDescBuilder.Build();
 
-            metadata.SetFixedLine(ProcessPhoneNumberDescElement(generalDesc, element, FIXED_LINE, liteBuild));
-            metadata.SetMobile(ProcessPhoneNumberDescElement(generalDesc, element, MOBILE, liteBuild));
-            metadata.SetTollFree(ProcessPhoneNumberDescElement(generalDesc, element, TOLL_FREE, liteBuild));
-            metadata.SetPremiumRate(ProcessPhoneNumberDescElement(generalDesc, element, PREMIUM_RATE, liteBuild));
-            metadata.SetSharedCost(ProcessPhoneNumberDescElement(generalDesc, element, SHARED_COST, liteBuild));
-            metadata.SetVoip(ProcessPhoneNumberDescElement(generalDesc, element, VOIP, liteBuild));
-            metadata.SetPersonalNumber(ProcessPhoneNumberDescElement(generalDesc, element,
-                                                                     PERSONAL_NUMBER, liteBuild));
-            metadata.SetPager(ProcessPhoneNumberDescElement(generalDesc, element, PAGER, liteBuild));
-            metadata.SetUan(ProcessPhoneNumberDescElement(generalDesc, element, UAN, liteBuild));
-            metadata.SetVoicemail(ProcessPhoneNumberDescElement(generalDesc, element, VOICEMAIL, liteBuild));
-            metadata.SetEmergency(ProcessPhoneNumberDescElement(generalDesc, element, EMERGENCY, liteBuild));
-            metadata.SetNoInternationalDialling(ProcessPhoneNumberDescElement(generalDesc, element,
-                                                                              NO_INTERNATIONAL_DIALLING, liteBuild));
+            metadata.SetFixedLine(ProcessPhoneNumberDescElement(generalDesc, element, FIXED_LINE));
+            metadata.SetMobile(ProcessPhoneNumberDescElement(generalDesc, element, MOBILE));
+            metadata.SetTollFree(ProcessPhoneNumberDescElement(generalDesc, element, TOLL_FREE));
+            metadata.SetPremiumRate(ProcessPhoneNumberDescElement(generalDesc, element, PREMIUM_RATE));
+            metadata.SetSharedCost(ProcessPhoneNumberDescElement(generalDesc, element, SHARED_COST));
+            metadata.SetVoip(ProcessPhoneNumberDescElement(generalDesc, element, VOIP));
+            metadata.SetPersonalNumber(ProcessPhoneNumberDescElement(generalDesc, element, PERSONAL_NUMBER));
+            metadata.SetPager(ProcessPhoneNumberDescElement(generalDesc, element, PAGER));
+            metadata.SetUan(ProcessPhoneNumberDescElement(generalDesc, element, UAN));
+            metadata.SetVoicemail(ProcessPhoneNumberDescElement(generalDesc, element, VOICEMAIL));
+            metadata.SetEmergency(ProcessPhoneNumberDescElement(generalDesc, element, EMERGENCY));
+            metadata.SetNoInternationalDialling(ProcessPhoneNumberDescElement(generalDesc, element, NO_INTERNATIONAL_DIALLING));
             metadata.SetSameMobileAndFixedLinePattern(
                 metadata.Mobile.NationalNumberPattern.Equals(
                 metadata.FixedLine.NationalNumberPattern));
         }
 
-        public static PhoneMetadata LoadCountryMetadata(String regionCode, XElement element, bool liteBuild)
+        public static PhoneMetadata LoadCountryMetadata(String regionCode, XElement element)
         {
             String nationalPrefix = GetNationalPrefix(element);
             PhoneMetadata.Builder metadata =
@@ -745,7 +729,7 @@ namespace PhoneNumbers
             LoadAvailableFormats(metadata, element, nationalPrefix.ToString(),
                                  nationalPrefixFormattingRule.ToString(),
                                  element.HasAttribute(NATIONAL_PREFIX_OPTIONAL_WHEN_FORMATTING));
-            LoadGeneralDesc(metadata, element, liteBuild);
+            LoadGeneralDesc(metadata, element);
             return metadata.Build();
         }
 

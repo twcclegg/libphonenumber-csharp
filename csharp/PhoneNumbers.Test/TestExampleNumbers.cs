@@ -206,7 +206,7 @@ namespace PhoneNumbers.Test
                 if (desc.HasExampleNumber)
                 {
                     String exampleNumber = desc.ExampleNumber;
-                    if (!new PhoneRegex(desc.PossibleNumberPattern).MatchAll(exampleNumber).Success ||
+                    if (!new PhoneRegex(desc.NationalNumberPattern).MatchAll(exampleNumber).Success ||
                         !shortUtil.IsEmergencyNumber(exampleNumber, regionCode))
                     {
                         wrongTypeCounter++;
