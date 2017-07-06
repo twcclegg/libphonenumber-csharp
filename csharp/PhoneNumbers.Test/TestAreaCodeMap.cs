@@ -24,6 +24,7 @@ namespace PhoneNumbers.Test
     *
     * @author Shaopeng Jia
     */
+    [Collection("TestMetadataTestCase")]
     public class TestAreaCodeMap
     {
         private readonly AreaCodeMap areaCodeMapForUS = new AreaCodeMap();

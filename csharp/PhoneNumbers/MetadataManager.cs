@@ -44,13 +44,13 @@ namespace PhoneNumbers
         {
         }
 
-        static private void LoadMedataFromFile(String filePrefix)
+        private static void LoadMedataFromFile(String filePrefix)
         {
             var asm = typeof(MetadataManager).GetTypeInfo().Assembly;
-            var name = asm.GetManifestResourceNames().Where(n => n.EndsWith(filePrefix)).FirstOrDefault() ?? "missing";
+            var name = asm.GetManifestResourceNames().FirstOrDefault(n => n.EndsWith(filePrefix)) ?? "missing";
             using (var stream = asm.GetManifestResourceStream(name))
             {
-                var meta = BuildMetadataFromXml.BuildPhoneMetadataCollection(stream, false);
+                var meta = BuildMetadataFromXml.BuildPhoneMetadataCollection(stream, false, false); // todo lite/special build
                 foreach (var m in meta.MetadataList)
                 {
                     callingCodeToAlternateFormatsMap[m.CountryCode] = m;

@@ -29,6 +29,7 @@ namespace PhoneNumbers
     {
         // String constants used to fetch the XML nodes and attributes.
         private static readonly String CARRIER_CODE_FORMATTING_RULE = "carrierCodeFormattingRule";
+        private static readonly String CARRIER_SPECIFIC = "carrierSpecific";
         private static readonly String COUNTRY_CODE = "countryCode";
         private static readonly String EMERGENCY = "emergency";
         private static readonly String EXAMPLE_NUMBER = "exampleNumber";
@@ -62,6 +63,7 @@ namespace PhoneNumbers
         private static readonly String PREMIUM_RATE = "premiumRate";
         private static readonly String SHARED_COST = "sharedCost";
         private static readonly String SHORT_CODE = "shortCode";
+        private static readonly String STANDARD_RATE = "standardRate";
         private static readonly String TOLL_FREE = "tollFree";
         private static readonly String UAN = "uan";
         private static readonly String VOICEMAIL = "voicemail";
@@ -70,11 +72,23 @@ namespace PhoneNumbers
         private static readonly HashSet<string> PHONE_NUMBER_DESCS_WITHOUT_MATCHING_TYPES = new HashSet<string>{NO_INTERNATIONAL_DIALLING};
 
         // Build the PhoneMetadataCollection from the input XML file.
-        public static PhoneMetadataCollection BuildPhoneMetadataCollection(Stream input, bool liteBuild)
+        public static PhoneMetadataCollection BuildPhoneMetadataCollection(Stream input,
+            bool liteBuild, bool specialBuild)
         {
             var document = XDocument.Load(input);
-            
+            var isShortNumberMetadata = document.GetElementsByTagName("ShortNumberMetadata").Count() != 0;
+            var isAlternateFormatsMetadata = document.GetElementsByTagName("PhoneNumberAlternateFormats").Count() != 0;
+            return BuildPhoneMetadataCollection(document, liteBuild, specialBuild,
+                isShortNumberMetadata, isAlternateFormatsMetadata);
+        }
+
+        // @VisibleForTesting
+        static PhoneMetadataCollection BuildPhoneMetadataCollection(XDocument document,
+            bool liteBuild, bool specialBuild, bool isShortNumberMetadata,
+            bool isAlternateFormatsMetadata)
+        {
             var metadataCollection = new PhoneMetadataCollection.Builder();
+            var metadataFilter = GetMetadataFilter(liteBuild, specialBuild);
             foreach (XElement territory in document.GetElementsByTagName("territory"))
             {
                 String regionCode = "";
@@ -82,7 +96,9 @@ namespace PhoneNumbers
                 // files the country calling code may be all that is needed.
                 if (territory.HasAttribute("id"))
                      regionCode = territory.GetAttribute("id");
-                PhoneMetadata metadata = LoadCountryMetadata(regionCode, territory);
+                var metadata = LoadCountryMetadata(regionCode, territory,
+                    isShortNumberMetadata, isAlternateFormatsMetadata);
+                metadataFilter.FilterMetadata(metadata);
                 metadataCollection.AddMetadata(metadata);
             }
             return metadataCollection.Build();
@@ -454,6 +470,56 @@ namespace PhoneNumbers
             return numberDesc;
         }
 
+        // @VisibleForTesting
+        static void SetRelevantDescPatterns(PhoneMetadata.Builder metadata, XElement element,
+            bool isShortNumberMetadata)
+        {
+            PhoneNumberDesc.Builder generalDescBuilder = ProcessPhoneNumberDescElement(null, element,
+                GENERAL_DESC);
+            // Calculate the possible lengths for the general description. This will be based on the
+            // possible lengths of the child elements.
+            SetPossibleLengthsGeneralDesc(
+                generalDescBuilder, metadata.Id, element, isShortNumberMetadata);
+            metadata.SetGeneralDesc(generalDescBuilder);
+
+            PhoneNumberDesc generalDesc = metadata.GeneralDesc;
+
+            if (!isShortNumberMetadata)
+            {
+                // Set fields used by regular length phone numbers.
+                metadata.SetFixedLine(ProcessPhoneNumberDescElement(generalDesc, element, FIXED_LINE));
+                metadata.SetMobile(ProcessPhoneNumberDescElement(generalDesc, element, MOBILE));
+                metadata.SetSharedCost(ProcessPhoneNumberDescElement(generalDesc, element, SHARED_COST));
+                metadata.SetVoip(ProcessPhoneNumberDescElement(generalDesc, element, VOIP));
+                metadata.SetPersonalNumber(ProcessPhoneNumberDescElement(generalDesc, element,
+                    PERSONAL_NUMBER));
+                metadata.SetPager(ProcessPhoneNumberDescElement(generalDesc, element, PAGER));
+                metadata.SetUan(ProcessPhoneNumberDescElement(generalDesc, element, UAN));
+                metadata.SetVoicemail(ProcessPhoneNumberDescElement(generalDesc, element, VOICEMAIL));
+                metadata.SetNoInternationalDialling(ProcessPhoneNumberDescElement(generalDesc, element,
+                    NO_INTERNATIONAL_DIALLING));
+                bool mobileAndFixedAreSame = metadata.Mobile.NationalNumberPattern
+                    .Equals(metadata.FixedLine.NationalNumberPattern);
+                if (metadata.SameMobileAndFixedLinePattern != mobileAndFixedAreSame)
+                {
+                    // Set this if it is not the same as the default.
+                    metadata.SetSameMobileAndFixedLinePattern(mobileAndFixedAreSame);
+                }
+                metadata.SetTollFree(ProcessPhoneNumberDescElement(generalDesc, element, TOLL_FREE));
+                metadata.SetPremiumRate(ProcessPhoneNumberDescElement(generalDesc, element, PREMIUM_RATE));
+            }
+            else
+            {
+                // Set fields used by short numbers.
+                metadata.SetStandardRate(ProcessPhoneNumberDescElement(generalDesc, element, STANDARD_RATE));
+                metadata.SetShortCode(ProcessPhoneNumberDescElement(generalDesc, element, SHORT_CODE));
+                metadata.SetCarrierSpecific(ProcessPhoneNumberDescElement(generalDesc, element,
+                    CARRIER_SPECIFIC));
+                metadata.SetEmergency(ProcessPhoneNumberDescElement(generalDesc, element, EMERGENCY));
+                metadata.SetTollFree(ProcessPhoneNumberDescElement(generalDesc, element, TOLL_FREE));
+                metadata.SetPremiumRate(ProcessPhoneNumberDescElement(generalDesc, element, PREMIUM_RATE));
+            }
+        }
 
         private static ISet<int> ParsePossibleLengthStringToSet(String possibleLengthString)
         {
@@ -719,18 +785,26 @@ namespace PhoneNumbers
                 metadata.FixedLine.NationalNumberPattern));
         }
 
-        public static PhoneMetadata LoadCountryMetadata(String regionCode, XElement element)
+        public static PhoneMetadata.Builder LoadCountryMetadata(String regionCode,
+            XElement element,
+            bool isShortNumberMetadata,
+            bool isAlternateFormatsMetadata)
         {
             String nationalPrefix = GetNationalPrefix(element);
             PhoneMetadata.Builder metadata =
                 LoadTerritoryTagMetadata(regionCode, element, nationalPrefix);
             String nationalPrefixFormattingRule =
                 GetNationalPrefixFormattingRuleFromElement(element, nationalPrefix);
-            LoadAvailableFormats(metadata, element, nationalPrefix.ToString(),
-                                 nationalPrefixFormattingRule.ToString(),
+            LoadAvailableFormats(metadata, element, nationalPrefix,
+                                 nationalPrefixFormattingRule,
                                  element.HasAttribute(NATIONAL_PREFIX_OPTIONAL_WHEN_FORMATTING));
             LoadGeneralDesc(metadata, element);
-            return metadata.Build();
+            if (!isAlternateFormatsMetadata)
+            {
+                // The alternate formats metadata does not need most of the patterns to be set.
+                SetRelevantDescPatterns(metadata, element, isShortNumberMetadata);
+            }
+            return metadata;
         }
 
         public static Dictionary<int, List<String>> GetCountryCodeToRegionCodeMap(String filePrefix)
@@ -739,9 +813,34 @@ namespace PhoneNumbers
             var name = asm.GetManifestResourceNames().FirstOrDefault(n => n.EndsWith(filePrefix)) ?? "missing";
             using (var stream = asm.GetManifestResourceStream(name))
             {
-                var collection = BuildPhoneMetadataCollection(stream, false);
+                var collection = BuildPhoneMetadataCollection(stream, false, false); // todo lite/special build
                 return BuildCountryCodeToRegionCodeMap(collection);
             }
+        }
+
+        /**
+         * Processes the custom build flags and gets a {@code MetadataFilter} which may be used to
+        * filter {@code PhoneMetadata} objects. Incompatible flag combinations throw RuntimeException.
+        *
+        * @param liteBuild  The liteBuild flag value as given by the command-line
+        * @param specialBuild  The specialBuild flag value as given by the command-line
+        */
+        // @VisibleForTesting
+        internal static MetadataFilter GetMetadataFilter(bool liteBuild, bool specialBuild)
+        {
+            if (specialBuild)
+            {
+                if (liteBuild)
+                {
+                    throw new Exception("liteBuild and specialBuild may not both be set");
+                }
+                return MetadataFilter.ForSpecialBuild();
+            }
+            if (liteBuild)
+            {
+                return MetadataFilter.ForLiteBuild();
+            }
+            return MetadataFilter.EmptyFilter();
         }
     }
 }

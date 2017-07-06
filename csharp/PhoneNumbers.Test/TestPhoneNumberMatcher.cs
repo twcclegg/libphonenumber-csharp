@@ -423,7 +423,7 @@ namespace PhoneNumbers.Test
     // a carrier code or extension.
     new NumberTest("1650 x 253 - 1234", "US"),
     new NumberTest("650 x 253 - 1234", "US"),
-    new NumberTest("6502531x234", "US"),
+    new NumberTest("(20) 3346 1234", RegionCode.GB),  // Non-optional NP omitted
   };
 
         /**

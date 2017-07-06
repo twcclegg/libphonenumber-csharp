@@ -428,19 +428,6 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
-        public void TestProcessPhoneNumberDescElementHandlesLiteBuild()
-        {
-            var xmlInput =
-                "<territory><fixedLine>" +
-                "  <exampleNumber>01 01 01 01</exampleNumber>" +
-                "</fixedLine></territory>";
-            var territoryElement = ParseXmlString(xmlInput);
-            var phoneNumberDesc = BuildMetadataFromXml.ProcessPhoneNumberDescElement(
-                null, territoryElement, "fixedLine");
-            Assert.Equal("", phoneNumberDesc.ExampleNumber);
-        }
-
-        [Fact]
         public void TestProcessPhoneNumberDescOutputsExampleNumberByDefault()
         {
             var xmlInput =
@@ -459,7 +446,7 @@ namespace PhoneNumbers.Test
         {
             var xmlInput =
                 "<territory><fixedLine>" +
-                 "  <possibleNumberPattern>\t \\d { 6 } </possibleNumberPattern>" +
+                 "  <nationalNumberPattern>\t \\d { 6 } </nationalNumberPattern>" +
                  "</fixedLine></territory>";
             var countryElement = ParseXmlString(xmlInput);
 

@@ -222,16 +222,6 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
-        public void TestIsLeadingZeroPossible()
-        {
-            Assert.True(phoneUtil.IsLeadingZeroPossible(39));   // Italy
-            Assert.False(phoneUtil.IsLeadingZeroPossible(1));   // USA
-            Assert.False(phoneUtil.IsLeadingZeroPossible(800)); // International toll free numbers
-            Assert.False(phoneUtil.IsLeadingZeroPossible(888)); // Not in metadata file, just default to
-            // false.
-        }
-
-        [Fact]
         public void TestGetLengthOfGeographicalAreaCode()
         {
             // Google MTV, which has area code "650".
@@ -931,16 +921,6 @@ namespace PhoneNumbers.Test
             Assert.Equal("33 1234 5678",
             phoneUtil.FormatInOriginalFormat(numberWithoutNationalPrefixMX, RegionCode.MX));
 
-            PhoneNumber italianFixedLineNumber =
-            phoneUtil.ParseAndKeepRawInput("0212345678", RegionCode.IT);
-            Assert.Equal("02 1234 5678",
-            phoneUtil.FormatInOriginalFormat(italianFixedLineNumber, RegionCode.IT));
-
-            PhoneNumber numberWithNationalPrefixJP =
-            phoneUtil.ParseAndKeepRawInput("00777012", RegionCode.JP);
-            Assert.Equal("0077-7012",
-            phoneUtil.FormatInOriginalFormat(numberWithNationalPrefixJP, RegionCode.JP));
-
             PhoneNumber numberWithoutNationalPrefixJP =
             phoneUtil.ParseAndKeepRawInput("0777012", RegionCode.JP);
             Assert.Equal("0777012",
@@ -1247,19 +1227,15 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestIsPossibleNumber()
         {
-            Assert.True(phoneUtil.IsPossibleNumber(US_NUMBER));
-            Assert.True(phoneUtil.IsPossibleNumber(US_LOCAL_NUMBER));
             Assert.True(phoneUtil.IsPossibleNumber(GB_NUMBER));
             Assert.True(phoneUtil.IsPossibleNumber(INTERNATIONAL_TOLL_FREE));
 
             Assert.True(phoneUtil.IsPossibleNumber("+1 650 253 0000", RegionCode.US));
             Assert.True(phoneUtil.IsPossibleNumber("+1 650 GOO OGLE", RegionCode.US));
             Assert.True(phoneUtil.IsPossibleNumber("(650) 253-0000", RegionCode.US));
-            Assert.True(phoneUtil.IsPossibleNumber("253-0000", RegionCode.US));
             Assert.True(phoneUtil.IsPossibleNumber("+1 650 253 0000", RegionCode.GB));
             Assert.True(phoneUtil.IsPossibleNumber("+44 20 7031 3000", RegionCode.GB));
             Assert.True(phoneUtil.IsPossibleNumber("(020) 7031 3000", RegionCode.GB));
-            Assert.True(phoneUtil.IsPossibleNumber("7031 3000", RegionCode.GB));
             Assert.True(phoneUtil.IsPossibleNumber("3331 6005", RegionCode.NZ));
             Assert.True(phoneUtil.IsPossibleNumber("+800 1234 5678", RegionCode.UN001));
         }
@@ -1271,7 +1247,7 @@ namespace PhoneNumbers.Test
             Assert.Equal(PhoneNumberUtil.ValidationResult.IS_POSSIBLE,
             phoneUtil.IsPossibleNumberWithReason(US_NUMBER));
 
-            Assert.Equal(PhoneNumberUtil.ValidationResult.IS_POSSIBLE,
+            Assert.Equal(PhoneNumberUtil.ValidationResult.IS_POSSIBLE_LOCAL_ONLY,
             phoneUtil.IsPossibleNumberWithReason(US_LOCAL_NUMBER));
 
             Assert.Equal(PhoneNumberUtil.ValidationResult.TOO_LONG,

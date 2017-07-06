@@ -164,58 +164,9 @@ namespace PhoneNumbers.Test
             Assert.Equal(0, wrongTypeCases.Count);
         }
 
-        [Fact]
-        public void TestCanBeInternationallyDialled()
-        {
-            foreach (var regionCode in phoneNumberUtil.GetSupportedRegions())
-            {
-                PhoneNumber exampleNumber = null;
-                PhoneNumberDesc desc =
-                    phoneNumberUtil.GetMetadataForRegion(regionCode).NoInternationalDialling;
-                try
-                {
-                    if (desc.HasExampleNumber)
-                    {
-                        exampleNumber = phoneNumberUtil.Parse(desc.ExampleNumber, regionCode);
-                    }
-                }
-                catch (NumberParseException)
-                {
-                }
-                if (exampleNumber != null && phoneNumberUtil.CanBeInternationallyDialled(exampleNumber))
-                {
-                    wrongTypeCases.Add(exampleNumber);
-                    // LOGGER.log(Level.SEVERE, "Number " + exampleNumber.toString()
-                    //   + " should not be internationally diallable");
-                }
-            }
-            Assert.Equal(0, wrongTypeCases.Count);
-        }
 
         // TODO: Update this to use connectsToEmergencyNumber or similar once that is
-        // implemented.
-        [Fact]
-        public void TestEmergency()
-        {
-            ShortNumberUtil shortUtil = new ShortNumberUtil(phoneNumberUtil);
-            int wrongTypeCounter = 0;
-            foreach(var regionCode in phoneNumberUtil.GetSupportedRegions())
-            {
-                PhoneNumberDesc desc =
-                    phoneNumberUtil.GetMetadataForRegion(regionCode).Emergency;
-                if (desc.HasExampleNumber)
-                {
-                    String exampleNumber = desc.ExampleNumber;
-                    if (!new PhoneRegex(desc.NationalNumberPattern).MatchAll(exampleNumber).Success ||
-                        !shortUtil.IsEmergencyNumber(exampleNumber, regionCode))
-                    {
-                        wrongTypeCounter++;
-                    // LOGGER.log(Level.SEVERE, "Emergency example number test failed for " + regionCode);
-                    }
-                }
-            }
-            Assert.Equal(0, wrongTypeCounter);
-        }
+
 
         [Fact]
         public void TestGlobalNetworkNumbers()
@@ -233,14 +184,5 @@ namespace PhoneNumbers.Test
             }
         }
 
-        [Fact]
-        public void TestEveryRegionHasAnExampleNumber()
-        {
-            foreach (var regionCode in phoneNumberUtil.GetSupportedRegions())
-            {
-                PhoneNumber exampleNumber = phoneNumberUtil.GetExampleNumber(regionCode);
-                Assert.NotNull(exampleNumber);
-            }
-        }
     }
 }
