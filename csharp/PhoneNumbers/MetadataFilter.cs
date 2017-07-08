@@ -41,7 +41,7 @@ namespace PhoneNumbers
         // meaning a field may have only direct descendants, who may not have descendants of their own. If
         // this changes, the blacklist handling in this class should also change.
         // @VisibleForTesting
-        private static readonly SortedSet<String> excludableParentFields = new SortedSet<String>
+        private static readonly SortedSet<string> excludableParentFields = new SortedSet<string>
         {
             "fixedLine",
             "mobile",
@@ -65,7 +65,7 @@ namespace PhoneNumbers
         // "clears" a PhoneNumberDesc field by simply clearing all of the fields under it. See the comment
         // above, about all 3 sets, for more about these fields.
         // @VisibleForTesting
-        private static readonly SortedSet<String> excludableChildFields = new SortedSet<String>
+        private static readonly SortedSet<string> excludableChildFields = new SortedSet<string>
         {
             "nationalNumberPattern",
             "possibleLength",
@@ -74,7 +74,7 @@ namespace PhoneNumbers
         };
 
         // @VisibleForTesting
-        private static readonly SortedSet<String> excludableChildlessFields = new SortedSet<String>
+        private static readonly SortedSet<string> excludableChildlessFields = new SortedSet<string>
         {
             "preferredInternationalPrefix",
             "nationalPrefix",
@@ -86,7 +86,7 @@ namespace PhoneNumbers
             "mobileNumberPortableRegion"
         };
 
-        private Dictionary<String, SortedSet<String>> blacklist;
+        private Dictionary<string, SortedSet<string>> blacklist;
 
         // Note: If changing the blacklist here or the name of the method, update documentation about
         // affected methods at the same time:
@@ -106,16 +106,16 @@ namespace PhoneNumbers
         internal static MetadataFilter EmptyFilter()
         {
             // Empty blacklist, meaning we filter nothing.
-            return new MetadataFilter(new Dictionary<String, SortedSet<String>>());
+            return new MetadataFilter(new Dictionary<string, SortedSet<string>>());
         }
 
         // @VisibleForTesting
-        MetadataFilter(Dictionary<String, SortedSet<String>> blacklist)
+        MetadataFilter(Dictionary<string, SortedSet<string>> blacklist)
         {
             this.blacklist = blacklist;
         }
 
-        public override bool Equals(Object obj)
+        public override bool Equals(object obj)
         {
             return blacklist.Equals(((MetadataFilter) obj).blacklist);
         }
@@ -240,7 +240,7 @@ namespace PhoneNumbers
          * strings should be treated as a special case by the flag checking code and not passed here.
          */
         // @VisibleForTesting
-        static Dictionary<String, SortedSet<String>> ParseFieldMapFromString(String str)
+        static Dictionary<string, SortedSet<string>> ParseFieldMapFromString(string str)
         {
             if (str == null)
             {
@@ -251,9 +251,9 @@ namespace PhoneNumbers
                 throw new Exception("Null nor empty string should not be passed to ParseFieldMapFromString");
             }
 
-            Dictionary<String, SortedSet<String>> fieldMap = new Dictionary<String, SortedSet<String>>();
-            SortedSet<String> wildcardChildren = new SortedSet<String>();
-            foreach (String group in str.Split(':'))
+            Dictionary<string, SortedSet<string>> fieldMap = new Dictionary<string, SortedSet<string>>();
+            SortedSet<string> wildcardChildren = new SortedSet<string>();
+            foreach (string group in str.Split(':'))
             {
                 int leftParenIndex = group.IndexOf('(');
                 int rightParenIndex = group.IndexOf(')');
@@ -265,7 +265,7 @@ namespace PhoneNumbers
                         {
                             throw new Exception(group + " given more than once in " + str);
                         }
-                        fieldMap.Add(group, new SortedSet<String>(excludableChildFields));
+                        fieldMap.Add(group, new SortedSet<string>(excludableChildFields));
                     }
                     else if (excludableChildlessFields.Contains(group))
                     {
@@ -273,7 +273,7 @@ namespace PhoneNumbers
                         {
                             throw new Exception(group + " given more than once in " + str);
                         }
-                        fieldMap.Add(group, new SortedSet<String>());
+                        fieldMap.Add(group, new SortedSet<string>());
                     }
                     else if (excludableChildFields.Contains(group))
                     {
@@ -292,7 +292,7 @@ namespace PhoneNumbers
                 {
                     // We don't check for duplicate parentheses or illegal characters since these will be caught
                     // as not being part of valid field tokens.
-                    String parent = group.Substring(0, leftParenIndex);
+                    string parent = group.Substring(0, leftParenIndex);
                     if (!excludableParentFields.Contains(parent))
                     {
                         throw new Exception(parent + " is not a valid parent token");
@@ -301,8 +301,8 @@ namespace PhoneNumbers
                     {
                         throw new Exception(parent + " given more than once in " + str);
                     }
-                    SortedSet<String> children = new SortedSet<String>();
-                    foreach (String child in group.Substring(leftParenIndex + 1, rightParenIndex - leftParenIndex)
+                    SortedSet<string> children = new SortedSet<string>();
+                    foreach (string child in group.Substring(leftParenIndex + 1, rightParenIndex - leftParenIndex)
                         .Split(','))
                     {
                         if (!excludableChildFields.Contains(child))
@@ -321,14 +321,14 @@ namespace PhoneNumbers
                     throw new Exception("Incorrect location of parantheses in " + group);
                 }
             }
-            foreach (String wildcardChild in wildcardChildren)
+            foreach (string wildcardChild in wildcardChildren)
             {
-                foreach (String parent in excludableParentFields)
+                foreach (string parent in excludableParentFields)
                 {
-                    SortedSet<String> children = fieldMap[parent];
+                    SortedSet<string> children = fieldMap[parent];
                     if (children == null)
                     {
-                        children = new SortedSet<String>();
+                        children = new SortedSet<string>();
                         fieldMap.Add(parent, children);
                     }
                     if (!children.Add(wildcardChild)
@@ -349,25 +349,25 @@ namespace PhoneNumbers
         // ParseFieldMapFromString(String) which does check. If fieldMap Contains illegal tokens or parent
         // fields with no children or other unexpected state, the behavior of this function is undefined.
         // @VisibleForTesting
-        static Dictionary<String, SortedSet<String>> ComputeComplement(
-            Dictionary<String, SortedSet<String>> fieldMap)
+        static Dictionary<string, SortedSet<string>> ComputeComplement(
+            Dictionary<string, SortedSet<string>> fieldMap)
         {
-            Dictionary<String, SortedSet<String>> complement = new Dictionary<String, SortedSet<String>>();
-            foreach (String parent in excludableParentFields)
+            Dictionary<string, SortedSet<string>> complement = new Dictionary<string, SortedSet<string>>();
+            foreach (string parent in excludableParentFields)
             {
                 if (!fieldMap.ContainsKey(parent))
                 {
-                    complement.Add(parent, new SortedSet<String>(excludableChildFields));
+                    complement.Add(parent, new SortedSet<string>(excludableChildFields));
                 }
                 else
                 {
-                    SortedSet<String> otherChildren = fieldMap[parent];
+                    SortedSet<string> otherChildren = fieldMap[parent];
                     // If the other map has all the children for this parent then we don't want to include the
                     // parent as a key.
                     if (otherChildren.Count != excludableChildFields.Count)
                     {
-                        SortedSet<String> children = new SortedSet<String>();
-                        foreach (String child in excludableChildFields)
+                        SortedSet<string> children = new SortedSet<string>();
+                        foreach (string child in excludableChildFields)
                         {
                             if (!otherChildren.Contains(child))
                             {
@@ -378,18 +378,18 @@ namespace PhoneNumbers
                     }
                 }
             }
-            foreach (String childlessField in excludableChildlessFields)
+            foreach (string childlessField in excludableChildlessFields)
             {
                 if (!fieldMap.ContainsKey(childlessField))
                 {
-                    complement.Add(childlessField, new SortedSet<String>());
+                    complement.Add(childlessField, new SortedSet<string>());
                 }
             }
             return complement;
         }
 
         // @VisibleForTesting
-        bool ShouldDrop(String parent, String child)
+        bool ShouldDrop(string parent, string child)
         {
             if (!excludableParentFields.Contains(parent))
             {
@@ -403,7 +403,7 @@ namespace PhoneNumbers
         }
 
         // @VisibleForTesting
-        bool ShouldDrop(String childlessField)
+        bool ShouldDrop(string childlessField)
         {
             if (!excludableChildlessFields.Contains(childlessField))
             {
@@ -412,7 +412,7 @@ namespace PhoneNumbers
             return blacklist.ContainsKey(childlessField);
         }
 
-        private PhoneNumberDesc GetFiltered(String type, PhoneNumberDesc desc)
+        private PhoneNumberDesc GetFiltered(string type, PhoneNumberDesc desc)
         {
             PhoneNumberDesc.Builder builder = new PhoneNumberDesc.Builder().MergeFrom(desc);
             if (ShouldDrop(type, "nationalNumberPattern"))

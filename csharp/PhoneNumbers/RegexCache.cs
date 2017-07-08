@@ -26,21 +26,21 @@ namespace PhoneNumbers
         class Entry
         {
             public PhoneRegex Regex;
-            public LinkedListNode<String> Node;
+            public LinkedListNode<string> Node;
         }
 
         private int size_;
-        private LinkedList<String> lru_;
-        private Dictionary<String, Entry> cache_;
+        private LinkedList<string> lru_;
+        private Dictionary<string, Entry> cache_;
 
         public RegexCache(int size)
         {
             size_ = size;
-            cache_ = new Dictionary<String, Entry>(size);
-            lru_ = new LinkedList<String>();
+            cache_ = new Dictionary<string, Entry>(size);
+            lru_ = new LinkedList<string>();
         }
 
-        public PhoneRegex GetPatternForRegex(String regex)
+        public PhoneRegex GetPatternForRegex(string regex)
         {
             lock (this)
             {
@@ -72,7 +72,7 @@ namespace PhoneNumbers
         }
 
         // This method is used for testing.
-        public bool ContainsRegex(String regex)
+        public bool ContainsRegex(string regex)
         {
             lock (this)
             {

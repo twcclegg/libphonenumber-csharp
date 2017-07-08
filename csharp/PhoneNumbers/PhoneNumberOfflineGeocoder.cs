@@ -34,18 +34,18 @@ namespace PhoneNumbers
         public static readonly Locale KOREAN = new Locale("ko", "KR");
         public static readonly Locale SIMPLIFIED_CHINESE = new Locale("zh", "CN");
 
-        public readonly String Language;
-        public readonly String Country;
+        public readonly string Language;
+        public readonly string Country;
 
-        public Locale(String language, String countryCode)
+        public Locale(string language, string countryCode)
         {
             Language = language;
             Country = countryCode;
         }
 
-        public String GetDisplayCountry(String language)
+        public string GetDisplayCountry(string language)
         {
-            if(String.IsNullOrEmpty(Country))
+            if(string.IsNullOrEmpty(Country))
                 return "";
             var name = GetCountryName(Country, language);
             if(name != null)
@@ -67,10 +67,10 @@ namespace PhoneNumbers
             return name ?? "";
         }
 
-        private String GetCountryName(String country, String language)
+        private string GetCountryName(string country, string language)
         {
             var names = LocaleData.Data[Country];
-            String name;
+            string name;
             if(!names.TryGetValue(language, out name))
                 return null;
             if(name.Length > 0 && name[0] == '*')
@@ -86,11 +86,11 @@ namespace PhoneNumbers
     public class PhoneNumberOfflineGeocoder
     {
         private static PhoneNumberOfflineGeocoder instance = null;
-        private const String MAPPING_DATA_DIRECTORY = "res.prod_";
-        private static Object thisLock = new Object();
+        private const string MAPPING_DATA_DIRECTORY = "res.prod_";
+        private static object thisLock = new object();
 
         private readonly PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
-        private readonly String phonePrefixDataDirectory;
+        private readonly string phonePrefixDataDirectory;
 
         // The mappingFileProvider knows for which combination of countryCallingCode and language a phone
         // prefix mapping file is available in the file system, so that a file can be loaded when needed.
@@ -98,10 +98,10 @@ namespace PhoneNumbers
 
         // A mapping from countryCallingCode_lang to the corresponding phone prefix map that has been
         // loaded.
-        private Dictionary<String, AreaCodeMap> availablePhonePrefixMaps = new Dictionary<String, AreaCodeMap>();
+        private Dictionary<string, AreaCodeMap> availablePhonePrefixMaps = new Dictionary<string, AreaCodeMap>();
 
         // @VisibleForTesting
-        public PhoneNumberOfflineGeocoder(String phonePrefixDataDirectory)
+        public PhoneNumberOfflineGeocoder(string phonePrefixDataDirectory)
         {
             this.phonePrefixDataDirectory = phonePrefixDataDirectory;
             LoadMappingFileProvider();
@@ -109,7 +109,7 @@ namespace PhoneNumbers
 
         private void LoadMappingFileProvider()
         {
-            var files = new SortedDictionary<int, HashSet<String>>();
+            var files = new SortedDictionary<int, HashSet<string>>();
 #if NET40
             var asm = Assembly.GetExecutingAssembly();
 #else
@@ -133,7 +133,7 @@ namespace PhoneNumbers
                 }
                 var language = name.Substring(pos + 1);
                 if (!files.ContainsKey(country))
-                    files[country] = new HashSet<String>();
+                    files[country] = new HashSet<string>();
                 files[country].Add(language);
             }
             mappingFileProvider = new MappingFileProvider();
@@ -141,9 +141,9 @@ namespace PhoneNumbers
         }
 
         private AreaCodeMap GetPhonePrefixDescriptions(
-            int prefixMapKey, String language, String script, String region)
+            int prefixMapKey, string language, string script, string region)
         {
-            String fileName = mappingFileProvider.GetFileName(prefixMapKey, language, script, region);
+            string fileName = mappingFileProvider.GetFileName(prefixMapKey, language, script, region);
             if (fileName.Length == 0)
             {
                 return null;
@@ -156,7 +156,7 @@ namespace PhoneNumbers
             return availablePhonePrefixMaps.TryGetValue(fileName, out map) ? map : null;
         }
 
-        private void LoadAreaCodeMapFromFile(String fileName)
+        private void LoadAreaCodeMapFromFile(string fileName)
         {
 #if NET40
             var asm = Assembly.GetExecutingAssembly();
@@ -211,16 +211,16 @@ namespace PhoneNumbers
          * Returns the customary display name in the given language for the given territory the phone
          * number is from.
          */
-        private String GetCountryNameForNumber(PhoneNumber number, Locale language)
+        private string GetCountryNameForNumber(PhoneNumber number, Locale language)
         {
-            String regionCode = phoneUtil.GetRegionCodeForNumber(number);
+            string regionCode = phoneUtil.GetRegionCodeForNumber(number);
             return GetRegionDisplayName(regionCode, language);
         }
 
         /**
         * Returns the customary display name in the given language for the given region.
         */
-        private String GetRegionDisplayName(String regionCode, Locale language)
+        private string GetRegionDisplayName(string regionCode, Locale language)
         {
             return (regionCode == null || regionCode.Equals("ZZ") ||
                 regionCode.Equals(PhoneNumberUtil.REGION_CODE_FOR_NON_GEO_ENTITY))
@@ -239,13 +239,13 @@ namespace PhoneNumbers
         * @param languageCode  the language code for which the description should be written
         * @return  a text description for the given language code for the given phone number
         */
-        public String GetDescriptionForValidNumber(PhoneNumber number, Locale languageCode)
+        public string GetDescriptionForValidNumber(PhoneNumber number, Locale languageCode)
         {
-            String langStr = languageCode.Language;
-            String scriptStr = "";  // No script is specified
-            String regionStr = languageCode.Country;
+            string langStr = languageCode.Language;
+            string scriptStr = "";  // No script is specified
+            string regionStr = languageCode.Country;
 
-            String areaDescription =
+            string areaDescription =
                 GetAreaDescriptionForNumber(number, langStr, scriptStr, regionStr);
             return (areaDescription.Length > 0)
                 ? areaDescription : GetCountryNameForNumber(number, languageCode);
@@ -272,13 +272,13 @@ namespace PhoneNumbers
         * @return  a text description for the given language code for the given phone number, or empty
         *     string if the number passed in is invalid
         */
-        public String GetDescriptionForValidNumber(PhoneNumber number, Locale languageCode,
-            String userRegion)
+        public string GetDescriptionForValidNumber(PhoneNumber number, Locale languageCode,
+            string userRegion)
         {
             // If the user region matches the number's region, then we just show the lower-level
             // description, if one exists - if no description exists, we will show the region(country) name
             // for the number.
-            String regionCode = phoneUtil.GetRegionCodeForNumber(number);
+            string regionCode = phoneUtil.GetRegionCodeForNumber(number);
             if (userRegion.Equals(regionCode))
             {
                 return GetDescriptionForValidNumber(number, languageCode);
@@ -298,7 +298,7 @@ namespace PhoneNumbers
         * @return  a text description for the given language code for the given phone number, or empty
         *     string if the number passed in is invalid
         */
-        public String GetDescriptionForNumber(PhoneNumber number, Locale languageCode)
+        public string GetDescriptionForNumber(PhoneNumber number, Locale languageCode)
         {
             if (!phoneUtil.IsValidNumber(number))
                 return "";
@@ -317,8 +317,8 @@ namespace PhoneNumbers
         * @return  a text description for the given language code for the given phone number, or empty
         *     string if the number passed in is invalid
         */
-        public String GetDescriptionForNumber(PhoneNumber number, Locale languageCode,
-            String userRegion)
+        public string GetDescriptionForNumber(PhoneNumber number, Locale languageCode,
+            string userRegion)
         {
             if (!phoneUtil.IsValidNumber(number))
             {
@@ -327,8 +327,8 @@ namespace PhoneNumbers
             return GetDescriptionForValidNumber(number, languageCode, userRegion);
         }
 
-        private String GetAreaDescriptionForNumber(
-            PhoneNumber number, String lang, String script, String region)
+        private string GetAreaDescriptionForNumber(
+            PhoneNumber number, string lang, string script, string region)
         {
             int countryCallingCode = number.CountryCode;
             // As the NANPA data is split into multiple files covering 3-digit areas, use a phone number
@@ -339,7 +339,7 @@ namespace PhoneNumbers
 
             AreaCodeMap phonePrefixDescriptions =
                 GetPhonePrefixDescriptions(phonePrefix, lang, script, region);
-            String description = (phonePrefixDescriptions != null)
+            string description = (phonePrefixDescriptions != null)
                 ? phonePrefixDescriptions.Lookup(number)
                 : null;
             // When a location is not available in the requested language, fall back to English.
@@ -355,7 +355,7 @@ namespace PhoneNumbers
             return description != null ? description : "";
         }
 
-        private bool MayFallBackToEnglish(String lang)
+        private bool MayFallBackToEnglish(string lang)
         {
             // Don't fall back to English if the requested language is among the following:
             // - Chinese

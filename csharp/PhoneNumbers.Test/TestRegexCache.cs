@@ -31,9 +31,9 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestRegexInsertion()
         {
-            const String regex1 = "[1-5]";
-            const String regex2 = "(?:12|34)";
-            const String regex3 = "[1-3][58]";
+            const string regex1 = "[1-5]";
+            const string regex2 = "(?:12|34)";
+            const string regex3 = "[1-3][58]";
 
             regexCache.GetPatternForRegex(regex1);
             Assert.True(regexCache.ContainsRegex(regex1));

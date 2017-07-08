@@ -23,25 +23,25 @@ namespace PhoneNumbers
         private Regex allRegex_;
         private Regex beginRegex_;
 
-        public PhoneRegex(String pattern)
+        public PhoneRegex(string pattern)
             : this(pattern, RegexOptions.None)
         {
         }
 
-        public PhoneRegex(String pattern, RegexOptions options)
+        public PhoneRegex(string pattern, RegexOptions options)
             : base(pattern, options)
         {
             var o = options | InternalRegexOptions.Default;
-            allRegex_ = new Regex(String.Format("^(?:{0})$", pattern), o);
-            beginRegex_ = new Regex(String.Format("^(?:{0})", pattern), o);
+            allRegex_ = new Regex(string.Format("^(?:{0})$", pattern), o);
+            beginRegex_ = new Regex(string.Format("^(?:{0})", pattern), o);
         }
 
-        public Match MatchAll(String value)
+        public Match MatchAll(string value)
         {
             return allRegex_.Match(value);
         }
 
-        public Match MatchBeginning(String value)
+        public Match MatchBeginning(string value)
         {
             return beginRegex_.Match(value);
         }

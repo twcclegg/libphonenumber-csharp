@@ -32,7 +32,7 @@ namespace PhoneNumbers.Test
 
         public TestAreaCodeMap()
         {
-            SortedDictionary<int, String> sortedMap = new SortedDictionary<int, String>();
+            SortedDictionary<int, string> sortedMap = new SortedDictionary<int, string>();
             sortedMap[1212] = "New York";
             sortedMap[1480] = "Arizona";
             sortedMap[1650] = "California";
@@ -46,7 +46,7 @@ namespace PhoneNumbers.Test
             sortedMap[1972480] = "Richardson, TX";
             areaCodeMapForUS.readAreaCodeMap(sortedMap);
 
-            sortedMap = new SortedDictionary<int, String>();
+            sortedMap = new SortedDictionary<int, string>();
             sortedMap[3902] = "Milan";
             sortedMap[3906] = "Rome";
             sortedMap[39010] = "Genoa";
@@ -56,18 +56,18 @@ namespace PhoneNumbers.Test
             areaCodeMapForIT.readAreaCodeMap(sortedMap);
         }
 
-        private static SortedDictionary<int, String> CreateDefaultStorageMapCandidate()
+        private static SortedDictionary<int, string> CreateDefaultStorageMapCandidate()
         {
-            var sortedMap = new SortedDictionary<int, String>();
+            var sortedMap = new SortedDictionary<int, string>();
             // Make the area codes bigger to store them using integer.
             sortedMap[121212345] = "New York";
             sortedMap[148034434] = "Arizona";
             return sortedMap;
         }
 
-        private static SortedDictionary<int, String> CreateFlyweightStorageMapCandidate()
+        private static SortedDictionary<int, string> CreateFlyweightStorageMapCandidate()
         {
-            var sortedMap = new SortedDictionary<int, String>();
+            var sortedMap = new SortedDictionary<int, string>();
             sortedMap[1212] = "New York";
             sortedMap[1213] = "New York";
             sortedMap[1214] = "New York";

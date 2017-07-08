@@ -31,11 +31,11 @@ namespace PhoneNumbers.Test
 
         public TestMappingFileProvider()
         {
-            var mapping = new SortedDictionary<int, HashSet<String>>();
-            mapping[1] = new HashSet<String>(new[] { "en" });
-            mapping[86] = new HashSet<String>(new[] { "zh", "en", "zh_Hant" });
-            mapping[41] = new HashSet<String>(new[] { "de", "fr", "it", "rm" });
-            mapping[65] = new HashSet<String>(new[] { "en", "zh_Hans", "ms", "ta" });
+            var mapping = new SortedDictionary<int, HashSet<string>>();
+            mapping[1] = new HashSet<string>(new[] { "en" });
+            mapping[86] = new HashSet<string>(new[] { "zh", "en", "zh_Hant" });
+            mapping[41] = new HashSet<string>(new[] { "de", "fr", "it", "rm" });
+            mapping[65] = new HashSet<string>(new[] { "en", "zh_Hans", "ms", "ta" });
             mappingProvider.ReadFileConfigs(mapping);
         }
 

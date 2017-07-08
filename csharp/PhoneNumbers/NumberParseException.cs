@@ -42,7 +42,7 @@ namespace PhoneNumbers
     {
         public readonly ErrorType ErrorType;
 
-        public NumberParseException(ErrorType errorType, String message) :
+        public NumberParseException(ErrorType errorType, string message) :
             base(message)
         {
             ErrorType = errorType;

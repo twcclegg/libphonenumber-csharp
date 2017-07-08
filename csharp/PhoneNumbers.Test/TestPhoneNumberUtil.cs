@@ -330,9 +330,9 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestConvertAlphaCharactersInNumber()
         {
-            String input = "1800-ABC-DEF";
+            string input = "1800-ABC-DEF";
             // Alpha chars are converted to digits; everything else is left untouched.
-            String expectedOutput = "1800-222-333";
+            string expectedOutput = "1800-222-333";
             Assert.Equal(expectedOutput, PhoneNumberUtil.ConvertAlphaCharactersInNumber(input));
         }
 
@@ -340,8 +340,8 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestNormaliseRemovePunctuation()
         {
-            String inputNumber = "034-56&+#2\u00AD34";
-            String expectedOutput = "03456234";
+            string inputNumber = "034-56&+#2\u00AD34";
+            string expectedOutput = "03456234";
             Assert.Equal(expectedOutput,
                 PhoneNumberUtil.Normalize(inputNumber));
         }
@@ -349,8 +349,8 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestNormaliseReplaceAlphaCharacters()
         {
-            String inputNumber = "034-I-am-HUNGRY";
-            String expectedOutput = "034426486479";
+            string inputNumber = "034-I-am-HUNGRY";
+            string expectedOutput = "034426486479";
             Assert.Equal(expectedOutput,
                 PhoneNumberUtil.Normalize(inputNumber));
         }
@@ -358,8 +358,8 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestNormaliseOtherDigits()
         {
-            String inputNumber = "\uFF125\u0665";
-            String expectedOutput = "255";
+            string inputNumber = "\uFF125\u0665";
+            string expectedOutput = "255";
             Assert.Equal(expectedOutput,
                 PhoneNumberUtil.Normalize(inputNumber));
             // Eastern-Arabic digits.
@@ -372,8 +372,8 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestNormaliseStripAlphaCharacters()
         {
-            String inputNumber = "034-56&+a#234";
-            String expectedOutput = "03456234";
+            string inputNumber = "034-56&+a#234";
+            string expectedOutput = "03456234";
             Assert.Equal(expectedOutput,
                 PhoneNumberUtil.NormalizeDigitsOnly(inputNumber));
         }
@@ -1421,7 +1421,7 @@ namespace PhoneNumbers.Test
                 .SetGeneralDesc(new PhoneNumberDesc.Builder().SetNationalNumberPattern("\\d{4,8}").Build())
                 .BuildPartial();
             StringBuilder numberToStrip = new StringBuilder("34356778");
-            String strippedNumber = "356778";
+            string strippedNumber = "356778";
             Assert.True(phoneUtil.MaybeStripNationalPrefixAndCarrierCode(numberToStrip, metadata, null));
             Assert.Equal(strippedNumber, numberToStrip.ToString());
             // Retry stripping - now the number should not start with the national prefix, so no more
@@ -1452,7 +1452,7 @@ namespace PhoneNumbers.Test
             metadata = Update(metadata).SetNationalPrefixTransformRule("5${1}5")
                 .SetNationalPrefixForParsing("0(\\d{2})").BuildPartial();
             numberToStrip = new StringBuilder("031123");
-            String transformedNumber = "5315123";
+            string transformedNumber = "5315123";
             Assert.True(phoneUtil.MaybeStripNationalPrefixAndCarrierCode(numberToStrip, metadata, null));
             Assert.Equal(transformedNumber, numberToStrip.ToString());
         }
@@ -1460,7 +1460,7 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestMaybeStripInternationalPrefix()
         {
-            String internationalPrefix = "00[39]";
+            string internationalPrefix = "00[39]";
             StringBuilder numberToStrip = new StringBuilder("0034567700-3898003");
             // Note the dash is removed as part of the normalization.
             StringBuilder strippedNumber = new StringBuilder("45677003898003");
@@ -1522,8 +1522,8 @@ namespace PhoneNumbers.Test
             // Note that for the US, the IDD is 011.
             try
             {
-                String phoneNumber = "011112-3456789";
-                String strippedNumber = "123456789";
+                string phoneNumber = "011112-3456789";
+                string strippedNumber = "123456789";
                 int countryCallingCode = 1;
                 StringBuilder numberToFill = new StringBuilder();
                 Assert.Equal(countryCallingCode,
@@ -1540,7 +1540,7 @@ namespace PhoneNumbers.Test
             number = new PhoneNumber.Builder();
             try
             {
-                String phoneNumber = "+6423456789";
+                string phoneNumber = "+6423456789";
                 int countryCallingCode = 64;
                 StringBuilder numberToFill = new StringBuilder();
                 Assert.Equal(countryCallingCode,
@@ -1554,7 +1554,7 @@ namespace PhoneNumbers.Test
             number = new PhoneNumber.Builder();
             try
             {
-                String phoneNumber = "+80012345678";
+                string phoneNumber = "+80012345678";
                 int countryCallingCode = 800;
                 StringBuilder numberToFill = new StringBuilder();
                 Assert.Equal(countryCallingCode,
@@ -1568,7 +1568,7 @@ namespace PhoneNumbers.Test
             number = new PhoneNumber.Builder();
             try
             {
-                String phoneNumber = "2345-6789";
+                string phoneNumber = "2345-6789";
                 StringBuilder numberToFill = new StringBuilder();
                 Assert.Equal(0,
                 phoneUtil.MaybeExtractCountryCode(phoneNumber, metadata, numberToFill, true, number));
@@ -1581,7 +1581,7 @@ namespace PhoneNumbers.Test
             number = new PhoneNumber.Builder();
             try
             {
-                String phoneNumber = "0119991123456789";
+                string phoneNumber = "0119991123456789";
                 StringBuilder numberToFill = new StringBuilder();
                 phoneUtil.MaybeExtractCountryCode(phoneNumber, metadata, numberToFill, true, number);
                 Assert.True(false);
@@ -1595,7 +1595,7 @@ namespace PhoneNumbers.Test
             number = new PhoneNumber.Builder();
             try
             {
-                String phoneNumber = "(1 610) 619 4466";
+                string phoneNumber = "(1 610) 619 4466";
                 int countryCallingCode = 1;
                 StringBuilder numberToFill = new StringBuilder();
                 Assert.Equal(countryCallingCode,
@@ -1611,7 +1611,7 @@ namespace PhoneNumbers.Test
             number = new PhoneNumber.Builder();
             try
             {
-                String phoneNumber = "(1 610) 619 4466";
+                string phoneNumber = "(1 610) 619 4466";
                 int countryCallingCode = 1;
                 StringBuilder numberToFill = new StringBuilder();
                 Assert.Equal(countryCallingCode,
@@ -1626,7 +1626,7 @@ namespace PhoneNumbers.Test
             number = new PhoneNumber.Builder();
             try
             {
-                String phoneNumber = "(1 610) 619 446";
+                string phoneNumber = "(1 610) 619 446";
                 StringBuilder numberToFill = new StringBuilder();
                 Assert.Equal(0,
                 phoneUtil.MaybeExtractCountryCode(phoneNumber, metadata, numberToFill, false,
@@ -1640,7 +1640,7 @@ namespace PhoneNumbers.Test
             number = new PhoneNumber.Builder();
             try
             {
-                String phoneNumber = "(1 610) 619";
+                string phoneNumber = "(1 610) 619";
                 StringBuilder numberToFill = new StringBuilder();
                 Assert.Equal(0,
                 phoneUtil.MaybeExtractCountryCode(phoneNumber, metadata, numberToFill, true,
@@ -1896,7 +1896,7 @@ namespace PhoneNumbers.Test
         {
             try
             {
-                String sentencePhoneNumber = "This is not a phone number";
+                string sentencePhoneNumber = "This is not a phone number";
                 phoneUtil.Parse(sentencePhoneNumber, RegionCode.NZ);
                 Assert.True(false);
             }
@@ -1907,7 +1907,7 @@ namespace PhoneNumbers.Test
             }
             try
             {
-                String sentencePhoneNumber = "1 Still not a number";
+                string sentencePhoneNumber = "1 Still not a number";
                 phoneUtil.Parse(sentencePhoneNumber, RegionCode.NZ);
                 Assert.True(false);
             }
@@ -1918,7 +1918,7 @@ namespace PhoneNumbers.Test
             }
             try
             {
-                String sentencePhoneNumber = "1 MICROSOFT";
+                string sentencePhoneNumber = "1 MICROSOFT";
                 phoneUtil.Parse(sentencePhoneNumber, RegionCode.NZ);
                 Assert.True(false);
             }
@@ -1929,7 +1929,7 @@ namespace PhoneNumbers.Test
             }
             try
             {
-                String sentencePhoneNumber = "12 MICROSOFT";
+                string sentencePhoneNumber = "12 MICROSOFT";
                 phoneUtil.Parse(sentencePhoneNumber, RegionCode.NZ);
                 Assert.True(false);
             }
@@ -1940,7 +1940,7 @@ namespace PhoneNumbers.Test
             }
             try
             {
-                String tooLongPhoneNumber = "01495 72553301873 810104";
+                string tooLongPhoneNumber = "01495 72553301873 810104";
                 phoneUtil.Parse(tooLongPhoneNumber, RegionCode.GB);
                 Assert.True(false);
             }
@@ -1951,7 +1951,7 @@ namespace PhoneNumbers.Test
             }
             try
             {
-                String plusMinusPhoneNumber = "+---";
+                string plusMinusPhoneNumber = "+---";
                 phoneUtil.Parse(plusMinusPhoneNumber, RegionCode.DE);
                 Assert.True(false);
             }
@@ -1962,7 +1962,7 @@ namespace PhoneNumbers.Test
             }
             try
             {
-                String plusStar = "+***";
+                string plusStar = "+***";
                 phoneUtil.Parse(plusStar, RegionCode.DE);
                 Assert.True(false);
             }
@@ -1973,7 +1973,7 @@ namespace PhoneNumbers.Test
             }
             try
             {
-                String plusStarPhoneNumber = "+*******91";
+                string plusStarPhoneNumber = "+*******91";
                 phoneUtil.Parse(plusStarPhoneNumber, RegionCode.DE);
                 Assert.True(false);
             }
@@ -1984,7 +1984,7 @@ namespace PhoneNumbers.Test
             }
             try
             {
-                String tooShortPhoneNumber = "+49 0";
+                string tooShortPhoneNumber = "+49 0";
                 phoneUtil.Parse(tooShortPhoneNumber, RegionCode.DE);
                 Assert.True(false);
             }
@@ -1995,7 +1995,7 @@ namespace PhoneNumbers.Test
             }
             try
             {
-                String invalidCountryCode = "+210 3456 56789";
+                string invalidCountryCode = "+210 3456 56789";
                 phoneUtil.Parse(invalidCountryCode, RegionCode.NZ);
                 Assert.True(false);
             }
@@ -2006,7 +2006,7 @@ namespace PhoneNumbers.Test
             }
             try
             {
-                String plusAndIddAndInvalidCountryCode = "+ 00 210 3 331 6005";
+                string plusAndIddAndInvalidCountryCode = "+ 00 210 3 331 6005";
                 phoneUtil.Parse(plusAndIddAndInvalidCountryCode, RegionCode.NZ);
                 Assert.True(false);
             }
@@ -2017,7 +2017,7 @@ namespace PhoneNumbers.Test
             }
             try
             {
-                String someNumber = "123 456 7890";
+                string someNumber = "123 456 7890";
                 phoneUtil.Parse(someNumber, RegionCode.ZZ);
                 Assert.True(false);
             }
@@ -2028,7 +2028,7 @@ namespace PhoneNumbers.Test
             }
             try
             {
-                String someNumber = "123 456 7890";
+                string someNumber = "123 456 7890";
                 phoneUtil.Parse(someNumber, RegionCode.CS);
                 Assert.True(false);
             }
@@ -2039,7 +2039,7 @@ namespace PhoneNumbers.Test
             }
             try
             {
-                String someNumber = "123 456 7890";
+                string someNumber = "123 456 7890";
                 phoneUtil.Parse(someNumber, null);
                 Assert.True(false);
             }
@@ -2050,7 +2050,7 @@ namespace PhoneNumbers.Test
             }
             try
             {
-                String someNumber = "0044------";
+                string someNumber = "0044------";
                 phoneUtil.Parse(someNumber, RegionCode.GB);
                 Assert.True(false);
             }
@@ -2061,7 +2061,7 @@ namespace PhoneNumbers.Test
             }
             try
             {
-                String someNumber = "0044";
+                string someNumber = "0044";
                 phoneUtil.Parse(someNumber, RegionCode.GB);
                 Assert.True(false);
             }
@@ -2072,7 +2072,7 @@ namespace PhoneNumbers.Test
             }
             try
             {
-                String someNumber = "011";
+                string someNumber = "011";
                 phoneUtil.Parse(someNumber, RegionCode.US);
                 Assert.True(false);
             }
@@ -2083,7 +2083,7 @@ namespace PhoneNumbers.Test
             }
             try
             {
-                String someNumber = "0119";
+                string someNumber = "0119";
                 phoneUtil.Parse(someNumber, RegionCode.US);
                 Assert.True(false);
             }
@@ -2094,7 +2094,7 @@ namespace PhoneNumbers.Test
             }
             try
             {
-                String emptyNumber = "";
+                string emptyNumber = "";
                 // Invalid region.
                 phoneUtil.Parse(emptyNumber, RegionCode.ZZ);
                 Assert.True(false);
@@ -2106,7 +2106,7 @@ namespace PhoneNumbers.Test
             }
             try
             {
-                String nullNumber = null;
+                string nullNumber = null;
                 // Invalid region.
                 phoneUtil.Parse(nullNumber, RegionCode.ZZ);
                 Assert.True(false);
@@ -2122,7 +2122,7 @@ namespace PhoneNumbers.Test
             }
             try
             {
-                String nullNumber = null;
+                string nullNumber = null;
                 phoneUtil.Parse(nullNumber, RegionCode.US);
                 Assert.True(false);
             }
@@ -2137,7 +2137,7 @@ namespace PhoneNumbers.Test
             }
             try
             {
-                String domainRfcPhoneContext = "tel:555-1234;phone-context=www.google.com";
+                string domainRfcPhoneContext = "tel:555-1234;phone-context=www.google.com";
                 phoneUtil.Parse(domainRfcPhoneContext, RegionCode.ZZ);
                 Assert.True(false);
             }
@@ -2154,7 +2154,7 @@ namespace PhoneNumbers.Test
             {
                 // This is invalid because no "+" sign is present as part of phone-context. This should not
                 // succeed in being parsed.
-                String invalidRfcPhoneContext = "tel:555-1234;phone-context=1-331";
+                string invalidRfcPhoneContext = "tel:555-1234;phone-context=1-331";
                 phoneUtil.Parse(invalidRfcPhoneContext, RegionCode.ZZ);
                 Assert.True(false);
             }

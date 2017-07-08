@@ -24,10 +24,10 @@ namespace PhoneNumbers
     {
         public int Start { get; private set; }
         public int Length { get { return RawString.Length; } }
-        public String RawString { get; private set; }
+        public string RawString { get; private set; }
         public PhoneNumber Number { get; private set; }
 
-        public PhoneNumberMatch(int start, String rawString, PhoneNumber number)
+        public PhoneNumberMatch(int start, string rawString, PhoneNumber number)
         {
             if (start < 0)
                 throw new ArgumentException("Start index must be >= 0.");
@@ -55,7 +55,7 @@ namespace PhoneNumbers
             return hash;
         }
 
-        public override String ToString()
+        public override string ToString()
         {
             return "PhoneNumberMatch [" + Start + "," + Length + ") " + RawString;
         }

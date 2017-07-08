@@ -23,7 +23,7 @@ namespace PhoneNumbers.Test
     public class TestBuildMetadataFromXml
     {
         // Helper method that outputs a DOM element from a XML string.
-        private static XElement ParseXmlString(String xmlString)
+        private static XElement ParseXmlString(string xmlString)
         {
             using (var reader = new StringReader(xmlString))
             {
@@ -209,7 +209,7 @@ namespace PhoneNumbers.Test
         public void TestLoadNationalFormat()
         {
             var nationalFormat = "$1 $2";
-            var xmlInput = String.Format("<numberFormat><format>{0}</format></numberFormat>",
+            var xmlInput = string.Format("<numberFormat><format>{0}</format></numberFormat>",
                                             nationalFormat);
             var numberFormatElement = ParseXmlString(xmlInput);
             var metadata = new PhoneMetadata.Builder();

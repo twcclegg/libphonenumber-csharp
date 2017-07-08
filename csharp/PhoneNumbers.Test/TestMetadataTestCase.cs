@@ -28,7 +28,7 @@ namespace PhoneNumbers.Test
     */
     public class TestMetadataTestCase
     {
-        public const String TEST_META_DATA_FILE_PREFIX = "PhoneNumberMetaDataForTesting.xml";
+        public const string TEST_META_DATA_FILE_PREFIX = "PhoneNumberMetaDataForTesting.xml";
 
         public PhoneNumberUtil phoneUtil;
 

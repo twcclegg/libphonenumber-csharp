@@ -87,7 +87,7 @@ namespace PhoneNumbers
         private ByteBuffer descriptionIndexes;
 
         // Sorted string array of unique description strings.
-        private String[] descriptionPool;
+        private string[] descriptionPool;
 
         public FlyweightMapStorage()
         {
@@ -108,16 +108,16 @@ namespace PhoneNumbers
         * This implementation returns the same string (same identity) when called for multiple indexes
         * corresponding to prefixes that have the same description.
         */
-        public override String getDescription(int index)
+        public override string getDescription(int index)
         {
             int indexInDescriptionPool =
                 readWordFromBuffer(descriptionIndexes, descIndexSizeInBytes, index);
             return descriptionPool[indexInDescriptionPool];
         }
 
-        public override void readFromSortedMap(SortedDictionary<int, String> areaCodeMap)
+        public override void readFromSortedMap(SortedDictionary<int, string> areaCodeMap)
         {
-            var descriptionsSet = new HashSet<String>();
+            var descriptionsSet = new HashSet<string>();
             numOfEntries = areaCodeMap.Count;
             prefixSizeInBytes = getOptimalNumberOfBytesForValue(areaCodeMap.Keys.Last());
             phoneNumberPrefixes = new ByteBuffer(numOfEntries * prefixSizeInBytes);
@@ -144,7 +144,7 @@ namespace PhoneNumbers
         /**
         * Creates the description pool from the provided set of string descriptions and area code map.
         */
-        private void createDescriptionPool(HashSet<String> descriptionsSet, SortedDictionary<int, String> areaCodeMap)
+        private void createDescriptionPool(HashSet<string> descriptionsSet, SortedDictionary<int, string> areaCodeMap)
         {
             // Create the description pool.
             descIndexSizeInBytes = getOptimalNumberOfBytesForValue(descriptionsSet.Count - 1);
@@ -157,7 +157,7 @@ namespace PhoneNumbers
             for (int i = 0; i < numOfEntries; i++)
             {
                 int prefix = readWordFromBuffer(phoneNumberPrefixes, prefixSizeInBytes, i);
-                String description = areaCodeMap[prefix];
+                string description = areaCodeMap[prefix];
                 int positionInDescriptionPool = Array.BinarySearch(descriptionPool, description);
                 storeWordInBuffer(descriptionIndexes, descIndexSizeInBytes, index,
                                   positionInDescriptionPool);

@@ -24,7 +24,7 @@ namespace PhoneNumbers.Test
         // country/region represented by that country code. In the case of multiple
         // countries sharing a calling code, such as the NANPA countries, the one
         // indicated with "isMainCountryForCode" in the metadata should be first.
-        internal static Dictionary<int, List<String>> GetCountryCodeToRegionCodeMap()
+        internal static Dictionary<int, List<string>> GetCountryCodeToRegionCodeMap()
         {
             return BuildMetadataFromXml.GetCountryCodeToRegionCodeMap(
                 TestMetadataTestCase.TEST_META_DATA_FILE_PREFIX);

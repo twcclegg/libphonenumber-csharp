@@ -31,12 +31,12 @@ namespace PhoneNumbers
     {
         private int numOfEntries = 0;
         private int[] countryCallingCodes;
-        private List<HashSet<String>> availableLanguages;
-        private static readonly Dictionary<String, String> LOCALE_NORMALIZATION_MAP;
+        private List<HashSet<string>> availableLanguages;
+        private static readonly Dictionary<string, string> LOCALE_NORMALIZATION_MAP;
 
         static MappingFileProvider()
         {
-            var normalizationMap = new Dictionary<String, String>();
+            var normalizationMap = new Dictionary<string, string>();
             normalizationMap["zh_TW"] = "zh_Hant";
             normalizationMap["zh_HK"] = "zh_Hant";
             normalizationMap["zh_MO"] = "zh_Hant";
@@ -59,16 +59,16 @@ namespace PhoneNumbers
          *     files are available for the specific country calling code. The map is sorted in ascending
          *     order of the country calling codes as integers.
          */
-        public void ReadFileConfigs(SortedDictionary<int, HashSet<String>> availableDataFiles)
+        public void ReadFileConfigs(SortedDictionary<int, HashSet<string>> availableDataFiles)
         {
             numOfEntries = availableDataFiles.Count;
             countryCallingCodes = new int[numOfEntries];
-            availableLanguages = new List<HashSet<String>>(numOfEntries);
+            availableLanguages = new List<HashSet<string>>(numOfEntries);
             int index = 0;
             foreach (int countryCallingCode in availableDataFiles.Keys)
             {
                 countryCallingCodes[index++] = countryCallingCode;
-                availableLanguages.Add(new HashSet<String>(availableDataFiles[countryCallingCode]));
+                availableLanguages.Add(new HashSet<string>(availableDataFiles[countryCallingCode]));
             }
         }
 
@@ -77,7 +77,7 @@ namespace PhoneNumbers
          * country calling code. The country calling code is followed by a '|' and then a list of
          * comma-separated languages sorted in ascending order.
          */
-        public override String ToString()
+        public override string ToString()
         {
             StringBuilder output = new StringBuilder();
             for (int i = 0; i < numOfEntries; i++)
@@ -106,7 +106,7 @@ namespace PhoneNumbers
          * @param region  two-letter uppercase ISO country codes as defined by ISO 3166-1
          * @return  the name of the file, or empty string if no such file can be found
          */
-        public String GetFileName(int countryCallingCode, String language, String script, String region)
+        public string GetFileName(int countryCallingCode, string language, string script, string region)
         {
             if (language.Length == 0)
             {
@@ -120,7 +120,7 @@ namespace PhoneNumbers
             var setOfLangs = availableLanguages[index];
             if (setOfLangs.Count > 0)
             {
-                String languageCode = FindBestMatchingLanguageCode(setOfLangs, language, script, region);
+                string languageCode = FindBestMatchingLanguageCode(setOfLangs, language, script, region);
                 if (languageCode.Length > 0)
                 {
                     StringBuilder fileName = new StringBuilder();
@@ -131,12 +131,12 @@ namespace PhoneNumbers
             return "";
         }
 
-        private String FindBestMatchingLanguageCode(
-            HashSet<String> setOfLangs, String language, String script, String region)
+        private string FindBestMatchingLanguageCode(
+            HashSet<string> setOfLangs, string language, string script, string region)
         {
             StringBuilder fullLocale = ConstructFullLocale(language, script, region);
-            String fullLocaleStr = fullLocale.ToString();
-            String normalizedLocale;
+            string fullLocaleStr = fullLocale.ToString();
+            string normalizedLocale;
             if (LOCALE_NORMALIZATION_MAP.TryGetValue(fullLocaleStr, out normalizedLocale))
             {
                 if (setOfLangs.Contains(normalizedLocale))
@@ -159,14 +159,14 @@ namespace PhoneNumbers
             else if (script.Length > 0 && region.Length > 0)
             {
                 StringBuilder langWithScript = new StringBuilder(language).Append('_').Append(script);
-                String langWithScriptStr = langWithScript.ToString();
+                string langWithScriptStr = langWithScript.ToString();
                 if (setOfLangs.Contains(langWithScriptStr))
                 {
                     return langWithScriptStr;
                 }
 
                 StringBuilder langWithRegion = new StringBuilder(language).Append('_').Append(region);
-                String langWithRegionStr = langWithRegion.ToString();
+                string langWithRegionStr = langWithRegion.ToString();
                 if (setOfLangs.Contains(langWithRegionStr))
                 {
                     return langWithRegionStr;
@@ -180,13 +180,13 @@ namespace PhoneNumbers
             return "";
         }
 
-        private bool OnlyOneOfScriptOrRegionIsEmpty(String script, String region)
+        private bool OnlyOneOfScriptOrRegionIsEmpty(string script, string region)
         {
             return (script.Length == 0 && region.Length > 0) ||
                     (region.Length == 0 && script.Length > 0);
         }
 
-        private StringBuilder ConstructFullLocale(String language, String script, String region)
+        private StringBuilder ConstructFullLocale(string language, string script, string region)
         {
             StringBuilder fullLocale = new StringBuilder(language);
             AppendSubsequentLocalePart(script, fullLocale);
@@ -194,7 +194,7 @@ namespace PhoneNumbers
             return fullLocale;
         }
 
-        private void AppendSubsequentLocalePart(String subsequentLocalePart, StringBuilder fullLocale)
+        private void AppendSubsequentLocalePart(string subsequentLocalePart, StringBuilder fullLocale)
         {
             if (subsequentLocalePart.Length > 0)
             {

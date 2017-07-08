@@ -34,7 +34,7 @@ namespace PhoneNumbers
         }
 
         private int[] phoneNumberPrefixes;
-        private String[] descriptions;
+        private string[] descriptions;
 
         public override int getPrefix(int index)
         {
@@ -47,16 +47,16 @@ namespace PhoneNumbers
                 + descriptions.Sum(d => d.Length);
         }
 
-        public override String getDescription(int index)
+        public override string getDescription(int index)
         {
             return descriptions[index];
         }
 
-        public override void readFromSortedMap(SortedDictionary<int, String> sortedAreaCodeMap)
+        public override void readFromSortedMap(SortedDictionary<int, string> sortedAreaCodeMap)
         {
             numOfEntries = sortedAreaCodeMap.Count;
             phoneNumberPrefixes = new int[numOfEntries];
-            descriptions = new String[numOfEntries];
+            descriptions = new string[numOfEntries];
             int index = 0;
             var possibleLengthsSet = new HashSet<int>();
             foreach (int prefix in sortedAreaCodeMap.Keys)

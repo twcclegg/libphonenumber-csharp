@@ -50,7 +50,7 @@ namespace PhoneNumbers
          * @param index  the index of the phone number prefix that needs to be returned
          * @return  the description corresponding to the phone number prefix at the provided index
          */
-        public abstract String getDescription(int index);
+        public abstract string getDescription(int index);
 
         /**
          * Sets the internal state of the underlying storage implementation from the provided {@code
@@ -59,7 +59,7 @@ namespace PhoneNumbers
          * @param sortedAreaCodeMap  a sorted map that maps phone number prefixes including country
          *    calling code to description strings
          */
-        public abstract void readFromSortedMap(SortedDictionary<int, String> sortedAreaCodeMap);
+        public abstract void readFromSortedMap(SortedDictionary<int, string> sortedAreaCodeMap);
 
         /**
          * @return  the number of entries contained in the area code map
@@ -77,7 +77,7 @@ namespace PhoneNumbers
             return possibleLengths;
         }
 
-        public override String ToString()
+        public override string ToString()
         {
             StringBuilder output = new StringBuilder();
             int numOfEntries = getNumOfEntries();

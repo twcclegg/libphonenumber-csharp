@@ -30,21 +30,21 @@ namespace PhoneNumbers
     */
     public class MetadataManager
     {
-        internal const String ALTERNATE_FORMATS_FILE_PREFIX = "PhoneNumberAlternateFormats.xml";
+        internal const string ALTERNATE_FORMATS_FILE_PREFIX = "PhoneNumberAlternateFormats.xml";
 
         private static readonly Dictionary<int, PhoneMetadata> callingCodeToAlternateFormatsMap =
             new Dictionary<int, PhoneMetadata>();
 
         // A set of which country calling codes there are alternate format data for. If the set has an
         // entry for a code, then there should be data for that code linked into the resources.
-        private static readonly Dictionary<int, List<String>> countryCodeSet =
+        private static readonly Dictionary<int, List<string>> countryCodeSet =
             BuildMetadataFromXml.GetCountryCodeToRegionCodeMap(ALTERNATE_FORMATS_FILE_PREFIX);
 
         private MetadataManager()
         {
         }
 
-        private static void LoadMedataFromFile(String filePrefix)
+        private static void LoadMedataFromFile(string filePrefix)
         {
 #if NET40
             var asm = Assembly.GetExecutingAssembly();

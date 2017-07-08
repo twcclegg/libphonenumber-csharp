@@ -49,7 +49,7 @@ namespace PhoneNumbers
          * as a result.
          */
         private static int getSizeOfAreaCodeMapStorage(AreaCodeMapStorageStrategy mapStorage,
-            SortedDictionary<int, String> areaCodeMap)
+            SortedDictionary<int, string> areaCodeMap)
         {
             mapStorage.readFromSortedMap(areaCodeMap);
             return mapStorage.getStorageSize();
@@ -71,7 +71,7 @@ namespace PhoneNumbers
          * make this method quite expensive.
          */
         // @VisibleForTesting
-        public AreaCodeMapStorageStrategy getSmallerMapStorage(SortedDictionary<int, String> areaCodeMap)
+        public AreaCodeMapStorageStrategy getSmallerMapStorage(SortedDictionary<int, string> areaCodeMap)
         {
             AreaCodeMapStorageStrategy flyweightMapStorage = createFlyweightMapStorage();
             int sizeOfFlyweightMapStorage = getSizeOfAreaCodeMapStorage(flyweightMapStorage, areaCodeMap);
@@ -91,7 +91,7 @@ namespace PhoneNumbers
          * @param sortedAreaCodeMap  a map from phone number prefixes to descriptions of corresponding
          *     geographical areas, sorted in ascending order of the phone number prefixes as integers.
          */
-        public void readAreaCodeMap(SortedDictionary<int, String> sortedAreaCodeMap)
+        public void readAreaCodeMap(SortedDictionary<int, string> sortedAreaCodeMap)
         {
             areaCodeMapStorage = getSmallerMapStorage(sortedAreaCodeMap);
         }
@@ -105,7 +105,7 @@ namespace PhoneNumbers
          * @param number  the phone number to look up
          * @return  the description of the geographical area
          */
-        public String Lookup(PhoneNumber number)
+        public string Lookup(PhoneNumber number)
         {
             int numOfEntries = areaCodeMapStorage.getNumOfEntries();
             if (numOfEntries == 0)
@@ -120,7 +120,7 @@ namespace PhoneNumbers
             while (length > 0)
             {
                 int possibleLength = currentSetOfLengths[length - 1];
-                String phonePrefixStr = phonePrefix.ToString();
+                string phonePrefixStr = phonePrefix.ToString();
                 if (phonePrefixStr.Length > possibleLength)
                 {
                     phonePrefix = long.Parse(phonePrefixStr.Substring(0, possibleLength));
@@ -174,7 +174,7 @@ namespace PhoneNumbers
         /**
          * Dumps the mappings contained in the area code map.
          */
-        public override String ToString()
+        public override string ToString()
         {
             return areaCodeMapStorage.ToString();
         }
