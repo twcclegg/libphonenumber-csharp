@@ -350,18 +350,6 @@ namespace PhoneNumbers.Test
             Assert.Equal("$1-$2", metadata.NumberFormatList[1].Format);
         }
 
-        [Fact]
-        public void TestLoadInternationalFormatDoesNotSetIntlFormatWhenNA()
-        {
-            var xmlInput = "<numberFormat><intlFormat>NA</intlFormat></numberFormat>";
-            var numberFormatElement = ParseXmlString(xmlInput);
-            var metadata = new PhoneMetadata.Builder();
-            var nationalFormat = "$1 $2";
-
-            BuildMetadataFromXml.LoadInternationalFormat(metadata, numberFormatElement, nationalFormat);
-            Assert.Equal(0, metadata.IntlNumberFormatCount);
-        }
-
         // Tests setLeadingDigitsPatterns().
         [Fact]
         public void TestSetLeadingDigitsPatterns()

@@ -241,10 +241,7 @@ namespace PhoneNumbers
             else
             {
                 var intlFormatPatternValue = intlFormatPattern.First().Value;
-                if (!intlFormatPatternValue.Equals("NA"))
-                {
-                    intlFormat.SetFormat(intlFormatPatternValue);
-                }
+                intlFormat.SetFormat(intlFormatPatternValue);
                 hasExplicitIntlFormatDefined = true;
             }
 
