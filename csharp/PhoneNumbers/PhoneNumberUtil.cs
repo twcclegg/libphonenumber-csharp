@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
+
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using CountryCodeSource = PhoneNumbers.PhoneNumber.Types.CountryCodeSource;
 
 namespace PhoneNumbers
 {
@@ -42,7 +41,7 @@ namespace PhoneNumbers
         INTERNATIONAL,
         NATIONAL,
         RFC3966
-    };
+    }
 
     // Type of phone numbers.
     public enum PhoneNumberType
@@ -113,7 +112,7 @@ namespace PhoneNumbers
         // by that country calling code. In the case of multiple regions sharing a calling code, such as
         // the NANPA regions, the one indicated with "isMainCountryForCode" in the metadata should be
         // first.
-        private Dictionary<int, List<string>> countryCallingCodeToRegionCodeMap_ = null;
+        private Dictionary<int, List<string>> countryCallingCodeToRegionCodeMap_;
 
         // The set of regions the library supports.
         // There are roughly 240 of them and we set the initial capacity of the HashSet to 320 to offer a
@@ -296,7 +295,7 @@ namespace PhoneNumbers
                 {'6', '6'},
                 {'7', '7'},
                 {'8', '8'},
-                {'9', '9'},
+                {'9', '9'}
             };
 
             var alphaMap = new Dictionary<char, char>();
@@ -401,7 +400,7 @@ namespace PhoneNumbers
                 new PhoneRegex(VALID_PHONE_NUMBER + "(?:" + EXTN_PATTERNS_FOR_PARSING + ")?", REGEX_FLAGS);
         }
 
-        private static PhoneNumberUtil instance_ = null;
+        private static PhoneNumberUtil instance_;
 
         // A mapping from a region code to the PhoneMetadata for that region.
         private Dictionary<string, PhoneMetadata> regionToMetadataMap = new Dictionary<string, PhoneMetadata>();
@@ -426,8 +425,8 @@ namespace PhoneNumbers
             NO_MATCH,
             SHORT_NSN_MATCH,
             NSN_MATCH,
-            EXACT_MATCH,
-        };
+            EXACT_MATCH
+        }
 
         // Possible outcomes when testing if a PhoneNumber is possible.
         public enum ValidationResult
@@ -453,8 +452,8 @@ namespace PhoneNumbers
              */
             INVALID_LENGTH,
             /** The number is longer than all valid numbers for this region. */
-            TOO_LONG,
-        };
+            TOO_LONG
+        }
 
         /**
         * Leniency when {@linkplain PhoneNumberUtil#findNumbers finding} potential phone numbers in text
@@ -497,8 +496,8 @@ namespace PhoneNumbers
             * code "+1". If you are not sure about which level to use, email the discussion group
             * libphonenumber-discuss@googlegroups.com.
             */
-            EXACT_GROUPING,
-        };
+            EXACT_GROUPING
+        }
 
         public bool Verify(Leniency leniency, PhoneNumber number, string candidate, PhoneNumberUtil util)
         {
@@ -523,9 +522,7 @@ namespace PhoneNumbers
                             return false;
                         }
                         return PhoneNumberMatcher.CheckNumberGroupingIsValid(
-                            number, candidate, util, (PhoneNumberUtil u, PhoneNumber n,
-                                         StringBuilder nc,
-                                         string[] eg) =>
+                            number, candidate, util, (u, n, nc, eg) =>
                                 {
                                     return PhoneNumberMatcher.AllNumberGroupsRemainGrouped(u, n, nc, eg);
                                 }
@@ -542,9 +539,7 @@ namespace PhoneNumbers
                             return false;
                         }
                         return PhoneNumberMatcher.CheckNumberGroupingIsValid(
-                            number, candidate, util, (PhoneNumberUtil u, PhoneNumber n,
-                                    StringBuilder normalizedCandidate,
-                                    string[] expectedNumberGroups) =>
+                            number, candidate, util, (u, n, normalizedCandidate, expectedNumberGroups) =>
                                 {
                                     return PhoneNumberMatcher.AllNumberGroupsAreExactlyPresent(
                                         u, n, normalizedCandidate, expectedNumberGroups);
@@ -666,8 +661,7 @@ namespace PhoneNumbers
         {
             if (VALID_ALPHA_PHONE_PATTERN.MatchAll(number).Success)
                 return NormalizeHelper(number, ALPHA_PHONE_MAPPINGS, true);
-            else
-                return NormalizeDigitsOnly(number);
+            return NormalizeDigitsOnly(number);
         }
 
         static void Normalize(StringBuilder number)
@@ -692,7 +686,7 @@ namespace PhoneNumbers
         internal static StringBuilder NormalizeDigits(string number, bool keepNonDigits)
         {
             StringBuilder normalizedDigits = new StringBuilder(number.Length);
-            foreach (char c in number.ToCharArray())
+            foreach (char c in number)
             {
                 int digit = (int)char.GetNumericValue(c);
                 if (digit != -1)
@@ -1345,16 +1339,16 @@ namespace PhoneNumbers
             string formattedNumber;
             switch (number.CountryCodeSource)
             {
-                case CountryCodeSource.FROM_NUMBER_WITH_PLUS_SIGN:
+                case PhoneNumber.Types.CountryCodeSource.FROM_NUMBER_WITH_PLUS_SIGN:
                     formattedNumber = Format(number, PhoneNumberFormat.INTERNATIONAL);
                     break;
-                case CountryCodeSource.FROM_NUMBER_WITH_IDD:
+                case PhoneNumber.Types.CountryCodeSource.FROM_NUMBER_WITH_IDD:
                     formattedNumber = FormatOutOfCountryCallingNumber(number, regionCallingFrom);
                     break;
-                case CountryCodeSource.FROM_NUMBER_WITHOUT_PLUS_SIGN:
+                case PhoneNumber.Types.CountryCodeSource.FROM_NUMBER_WITHOUT_PLUS_SIGN:
                     formattedNumber = Format(number, PhoneNumberFormat.INTERNATIONAL).Substring(1);
                     break;
-                case CountryCodeSource.FROM_DEFAULT_COUNTRY:
+                case PhoneNumber.Types.CountryCodeSource.FROM_DEFAULT_COUNTRY:
                     // Fall-through to default case.
                 default:
                     string regionCode = GetRegionCodeForCountryCode(number.CountryCode);
@@ -1810,11 +1804,6 @@ namespace PhoneNumbers
                     }
                 }
             }
-            else
-            {
-                //LOGGER.log(Level.WARNING,
-                //  "Invalid or unknown country calling code provided: " + countryCallingCode);
-            }
             return null;
         }
 
@@ -1923,7 +1912,7 @@ namespace PhoneNumbers
             {
                 if (metadata.SameMobileAndFixedLinePattern)
                     return PhoneNumberType.FIXED_LINE_OR_MOBILE;
-                else if (IsNumberMatchingDesc(nationalNumber, metadata.Mobile))
+                if (IsNumberMatchingDesc(nationalNumber, metadata.Mobile))
                     return PhoneNumberType.FIXED_LINE_OR_MOBILE;
                 return PhoneNumberType.FIXED_LINE;
             }
@@ -2263,30 +2252,27 @@ namespace PhoneNumbers
                     // non-geographical entities), so we just check mobile.
                     return TestNumberLength(number, metadata, PhoneNumberType.MOBILE);
                 }
-                else
+                PhoneNumberDesc mobileDesc = GetNumberDescByType(metadata, PhoneNumberType.MOBILE);
+                if (DescHasPossibleNumberData(mobileDesc))
                 {
-                    PhoneNumberDesc mobileDesc = GetNumberDescByType(metadata, PhoneNumberType.MOBILE);
-                    if (DescHasPossibleNumberData(mobileDesc))
-                    {
-                        // Note that when adding the possible lengths from mobile, we have to again check they
-                        // aren't empty since if they are this indicates they are the same as the general desc and
-                        // should be obtained from there.
-                        possibleLengths = possibleLengths.Union(mobileDesc.PossibleLengthList.Count == 0
-                            ? metadata.GeneralDesc.PossibleLengthList
-                            : mobileDesc.PossibleLengthList).ToList();
-                        // The current list is sorted; we need to merge in the new list and re-sort (duplicates
-                        // are okay). Sorting isn't so expensive because the lists are very small.
-                        possibleLengths.Sort();
+                    // Note that when adding the possible lengths from mobile, we have to again check they
+                    // aren't empty since if they are this indicates they are the same as the general desc and
+                    // should be obtained from there.
+                    possibleLengths = possibleLengths.Union(mobileDesc.PossibleLengthList.Count == 0
+                        ? metadata.GeneralDesc.PossibleLengthList
+                        : mobileDesc.PossibleLengthList).ToList();
+                    // The current list is sorted; we need to merge in the new list and re-sort (duplicates
+                    // are okay). Sorting isn't so expensive because the lists are very small.
+                    possibleLengths.Sort();
 
-                        if (localLengths.Count == 0)
-                        {
-                            localLengths = mobileDesc.PossibleLengthLocalOnlyList.ToList();
-                        }
-                        else
-                        {
-                            localLengths = localLengths.Union(mobileDesc.PossibleLengthLocalOnlyList).ToList();
-                            localLengths.Sort();
-                        }
+                    if (localLengths.Count == 0)
+                    {
+                        localLengths = mobileDesc.PossibleLengthLocalOnlyList.ToList();
+                    }
+                    else
+                    {
+                        localLengths = localLengths.Union(mobileDesc.PossibleLengthLocalOnlyList).ToList();
+                        localLengths.Sort();
                     }
                 }
             }
@@ -2537,13 +2523,13 @@ namespace PhoneNumbers
                 possibleCountryIddPrefix = defaultRegionMetadata.InternationalPrefix;
             }
 
-            CountryCodeSource countryCodeSource =
+            PhoneNumber.Types.CountryCodeSource countryCodeSource =
                 MaybeStripInternationalPrefixAndNormalize(fullNumber, possibleCountryIddPrefix);
             if (keepRawInput)
             {
                 phoneNumber.SetCountryCodeSource(countryCodeSource);
             }
-            if (countryCodeSource != CountryCodeSource.FROM_DEFAULT_COUNTRY)
+            if (countryCodeSource != PhoneNumber.Types.CountryCodeSource.FROM_DEFAULT_COUNTRY)
             {
                 if (fullNumber.Length <= MIN_LENGTH_FOR_NSN)
                 {
@@ -2563,7 +2549,7 @@ namespace PhoneNumbers
                 throw new NumberParseException(ErrorType.INVALID_COUNTRY_CODE,
                     "Country calling code supplied was not recognised.");
             }
-            else if (defaultRegionMetadata != null)
+            if (defaultRegionMetadata != null)
             {
                 // Check to see if the number starts with the country calling code for the default region. If
                 // so, we remove the country calling code, and do some checks on the validity of the number
@@ -2584,12 +2570,12 @@ namespace PhoneNumbers
                     // consider the number with the country calling code stripped to be a better result and
                     // keep that instead.
                     if ((!validNumberPattern.MatchAll(fullNumber.ToString()).Success &&             //XXX: ToString
-                     validNumberPattern.MatchAll(potentialNationalNumber.ToString()).Success) ||    //XXX: ToString
-                     TestNumberLength(fullNumber.ToString(), defaultRegionMetadata) == ValidationResult.TOO_LONG)
+                         validNumberPattern.MatchAll(potentialNationalNumber.ToString()).Success) ||    //XXX: ToString
+                        TestNumberLength(fullNumber.ToString(), defaultRegionMetadata) == ValidationResult.TOO_LONG)
                     {
                         nationalNumber.Append(potentialNationalNumber);
                         if (keepRawInput)
-                            phoneNumber.SetCountryCodeSource(CountryCodeSource.FROM_NUMBER_WITHOUT_PLUS_SIGN);
+                            phoneNumber.SetCountryCodeSource(PhoneNumber.Types.CountryCodeSource.FROM_NUMBER_WITHOUT_PLUS_SIGN);
                         phoneNumber.SetCountryCode(defaultCountryCode);
                         return defaultCountryCode;
                     }
@@ -2637,11 +2623,11 @@ namespace PhoneNumbers
         *     removed from the number, otherwise CountryCodeSource.FROM_DEFAULT_COUNTRY if the number did
         *     not seem to be in international format.
         */
-        public CountryCodeSource MaybeStripInternationalPrefixAndNormalize(StringBuilder number,
+        public PhoneNumber.Types.CountryCodeSource MaybeStripInternationalPrefixAndNormalize(StringBuilder number,
           string possibleIddPrefix)
         {
             if (number.Length == 0)
-                return CountryCodeSource.FROM_DEFAULT_COUNTRY;
+                return PhoneNumber.Types.CountryCodeSource.FROM_DEFAULT_COUNTRY;
             // Check to see if the number begins with one or more plus signs.
             var m = PLUS_CHARS_PATTERN.MatchBeginning(number.ToString()); //XXX: ToString
             if (m.Success)
@@ -2649,14 +2635,14 @@ namespace PhoneNumbers
                 number.Remove(0, m.Index + m.Length);
                 // Can now normalize the rest of the number since we've consumed the "+" sign at the start.
                 Normalize(number);
-                return CountryCodeSource.FROM_NUMBER_WITH_PLUS_SIGN;
+                return PhoneNumber.Types.CountryCodeSource.FROM_NUMBER_WITH_PLUS_SIGN;
             }
             // Attempt to parse the first digits as an international prefix.
             var iddPattern = regexCache.GetPatternForRegex(possibleIddPrefix);
             Normalize(number);
             return ParsePrefixAsIdd(iddPattern, number)
-                ? CountryCodeSource.FROM_NUMBER_WITH_IDD
-                : CountryCodeSource.FROM_DEFAULT_COUNTRY;
+                ? PhoneNumber.Types.CountryCodeSource.FROM_NUMBER_WITH_IDD
+                : PhoneNumber.Types.CountryCodeSource.FROM_DEFAULT_COUNTRY;
         }
 
         /**
@@ -2704,21 +2690,18 @@ namespace PhoneNumbers
                     number.Remove(0, prefixMatch.Index + prefixMatch.Length);
                     return true;
                 }
-                else
-                {
-                    // Check that the resultant number is still viable. If not, return. Check this by copying
-                    // the string buffer and making the transformation on the copy first.
-                    StringBuilder transformedNumber = new StringBuilder(
-                        prefixMatcher.Replace(number.ToString(), transformRule, 1)); //XXX: ToString
-                    if (isViableOriginalNumber &&
-                        !nationalNumberRule.MatchAll(transformedNumber.ToString()).Success)
-                        return false;
-                    if (carrierCode != null && numOfGroups > 2)
-                        carrierCode.Append(prefixMatcher.Match(number.ToString()).Groups[1].Value);
-                    number.Length = 0;
-                    number.Append(transformedNumber.ToString());
-                    return true;
-                }
+                // Check that the resultant number is still viable. If not, return. Check this by copying
+                // the string buffer and making the transformation on the copy first.
+                StringBuilder transformedNumber = new StringBuilder(
+                    prefixMatcher.Replace(number.ToString(), transformRule, 1)); //XXX: ToString
+                if (isViableOriginalNumber &&
+                    !nationalNumberRule.MatchAll(transformedNumber.ToString()).Success)
+                    return false;
+                if (carrierCode != null && numOfGroups > 2)
+                    carrierCode.Append(prefixMatcher.Match(number.ToString()).Groups[1].Value);
+                number.Length = 0;
+                number.Append(transformedNumber);
+                return true;
             }
             return false;
         }
@@ -2889,7 +2872,7 @@ namespace PhoneNumbers
             if (numberToParse == null)
                 throw new NumberParseException(ErrorType.NOT_A_NUMBER,
                     "The phone number supplied was null.");
-            else if (numberToParse.Length > MAX_INPUT_STRING_LENGTH)
+            if (numberToParse.Length > MAX_INPUT_STRING_LENGTH)
                 throw new NumberParseException(ErrorType.TOO_LONG,
                     "The string supplied was too long to parse.");
 
@@ -3110,7 +3093,7 @@ namespace PhoneNumbers
             {
                 if (AreEqual(firstNumber, secondNumber))
                     return MatchType.EXACT_MATCH;
-                else if (firstNumberCountryCode == secondNumberCountryCode &&
+                if (firstNumberCountryCode == secondNumberCountryCode &&
                     IsNationalNumberSuffixOfTheOther(firstNumber, secondNumber))
                 {
                     // A SHORT_NSN_MATCH occurs if there is a difference because of the presence or absence of
@@ -3231,14 +3214,11 @@ namespace PhoneNumbers
                                 return MatchType.NSN_MATCH;
                             return match;
                         }
-                        else
-                        {
-                            // If the first number didn't have a valid country calling code, then we parse the
-                            // second number without one as well.
-                            var secondNumberProto = new PhoneNumber.Builder();
-                            ParseHelper(secondNumber, null, false, false, secondNumberProto);
-                            return IsNumberMatch(firstNumber, secondNumberProto.Build());
-                        }
+                        // If the first number didn't have a valid country calling code, then we parse the
+                        // second number without one as well.
+                        var secondNumberProto = new PhoneNumber.Builder();
+                        ParseHelper(secondNumber, null, false, false, secondNumberProto);
+                        return IsNumberMatch(firstNumber, secondNumberProto.Build());
                     }
                     catch (NumberParseException)
                     {

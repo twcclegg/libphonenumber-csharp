@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Xml;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
-using System.Diagnostics;
+
 namespace PhoneNumbers
 {
     public class BuildMetadataFromXml
@@ -233,7 +232,7 @@ namespace PhoneNumbers
                 throw new Exception("Invalid number of intlFormat patterns for country: " +
                                     metadata.Id);
             }
-            else if (intlFormatPattern.Count == 0)
+            if (intlFormatPattern.Count == 0)
             {
                 // Default to use the same as the national pattern if none is defined.
                 intlFormat.SetFormat(nationalFormat);
@@ -534,7 +533,7 @@ namespace PhoneNumbers
                     throw new Exception("Leading, trailing or adjacent commas in possible " +
                                         $"length string {possibleLengthString}, these should only separate numbers or ranges.");
                 }
-                else if (lengthSubstring[0] == '[')
+                if (lengthSubstring[0] == '[')
                 {
                     if (lengthSubstring[lengthSubstring.Length - 1] != ']')
                     {
@@ -594,7 +593,7 @@ namespace PhoneNumbers
             var possibleLengths = data.GetElementsByTagName(POSSIBLE_LENGTHS).ToArray();
             for (int i = 0; i < possibleLengths.Count(); i++)
             {
-                XElement element = (XElement)possibleLengths[i];
+                XElement element = possibleLengths[i];
                 string nationalLengths = element.GetAttribute(NATIONAL);
                 // We don't add to the phone metadata yet, since we want to sort length elements found under
                 // different nodes first, make sure there are no duplicates between them and that the
@@ -645,7 +644,7 @@ namespace PhoneNumbers
             var generalDescNodes = data.GetElementsByTagName(GENERAL_DESC);
             if (generalDescNodes.Any())
             {
-                XElement generalDescNode = (XElement)generalDescNodes.ElementAt(0);
+                XElement generalDescNode = generalDescNodes.ElementAt(0);
                 PopulatePossibleLengthSets(generalDescNode, lengths, localOnlyLengths);
                 if (lengths.Count != 0 || localOnlyLengths.Count != 0)
                 {
@@ -681,7 +680,7 @@ namespace PhoneNumbers
                 var shortCodeDescList = data.GetElementsByTagName(SHORT_CODE);
                 if (shortCodeDescList.Any())
                 {
-                    XElement shortCodeDesc = (XElement)shortCodeDescList.ElementAt(0);
+                    XElement shortCodeDesc = shortCodeDescList.ElementAt(0);
                     PopulatePossibleLengthSets(shortCodeDesc, lengths, localOnlyLengths);
                 }
                 if (localOnlyLengths.Count > 0)

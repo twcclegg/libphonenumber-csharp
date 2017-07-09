@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
+
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace PhoneNumbers
 {
@@ -42,7 +40,6 @@ namespace PhoneNumbers
          * {@link Externalizable}. The empty map could later be populated by
          * {@link #readAreaCodeMap(java.util.SortedMap)} or {@link #readExternal(java.io.ObjectInput)}.
          */
-        public AreaCodeMap() {}
 
         /**
          * Gets the size of the provided area code map storage. The map storage passed-in will be filled
@@ -158,7 +155,7 @@ namespace PhoneNumbers
                 {
                     return current;
                 }
-                else if (currentValue > value)
+                if (currentValue > value)
                 {
                     current--;
                     end = current;

@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace PhoneNumbers
 {
@@ -29,10 +29,6 @@ namespace PhoneNumbers
     */
     public class DefaultMapStorage : AreaCodeMapStorageStrategy
     {
-        public DefaultMapStorage()
-        {
-        }
-
         private int[] phoneNumberPrefixes;
         private string[] descriptions;
 

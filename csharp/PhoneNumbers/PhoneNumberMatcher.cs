@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -160,9 +161,9 @@ namespace PhoneNumbers
         private long maxTries;
 
         /** The last successful match, null unless in {@link State#READY}. */
-        private PhoneNumberMatch lastMatch = null;
+        private PhoneNumberMatch lastMatch;
         /** The next index to start searching at. Undefined in {@link State#DONE}. */
-        private int searchIndex = 0;
+        private int searchIndex;
 
         /**
         * Creates a new instance. See the factory methods in {@link PhoneNumberUtil} on how to obtain a
@@ -188,9 +189,9 @@ namespace PhoneNumbers
             if (maxTries < 0)
                 throw new ArgumentOutOfRangeException();
 
-            this.phoneUtil = util;
+            phoneUtil = util;
             this.text = (text != null) ? text : "";
-            this.preferredRegion = country;
+            preferredRegion = country;
             this.leniency = leniency;
             this.maxTries = maxTries;
         }
@@ -310,7 +311,7 @@ namespace PhoneNumbers
             // Skip potential time-stamps.
             if (TIME_STAMPS.Match(candidate).Success)
             {
-                string followingText = text.ToString().Substring(offset + candidate.Length);
+                string followingText = text.Substring(offset + candidate.Length);
                 if (TIME_STAMPS_SUFFIX.MatchBeginning(followingText).Success)
                     return null;
             }
@@ -557,15 +558,12 @@ namespace PhoneNumbers
                 }
                 // The country-code will have a '-' following it.
                 int startIndex = rfc3966Format.IndexOf('-') + 1;
-                return rfc3966Format.Substring(startIndex, endIndex - startIndex).Split(new []{'-'});
+                return rfc3966Format.Substring(startIndex, endIndex - startIndex).Split('-');
             }
-            else
-            {
-                // We format the NSN only, and split that according to the separator.
-                string nationalSignificantNumber = util.GetNationalSignificantNumber(number);
-                return util.FormatNsnUsingPattern(nationalSignificantNumber,
-                    formattingPattern, PhoneNumberFormat.RFC3966).Split(new []{'-'});
-            }
+            // We format the NSN only, and split that according to the separator.
+            string nationalSignificantNumber = util.GetNationalSignificantNumber(number);
+            return util.FormatNsnUsingPattern(nationalSignificantNumber,
+                formattingPattern, PhoneNumberFormat.RFC3966).Split('-');
         }
 
         public static bool CheckNumberGroupingIsValid(
@@ -575,7 +573,7 @@ namespace PhoneNumbers
             // and optimise if necessary.
             StringBuilder normalizedCandidate =
                 PhoneNumberUtil.NormalizeDigits(candidate, true /* keep non-digits */);
-            string[] formattedNumberGroups = PhoneNumberMatcher.GetNationalNumberGroups(util, number, null);
+            string[] formattedNumberGroups = GetNationalNumberGroups(util, number, null);
             if (checker(util, number, normalizedCandidate, formattedNumberGroups))
             {
                 return true;

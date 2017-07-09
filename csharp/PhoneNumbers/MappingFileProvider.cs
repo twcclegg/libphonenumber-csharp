@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +30,7 @@ namespace PhoneNumbers
     */
     public class MappingFileProvider
     {
-        private int numOfEntries = 0;
+        private int numOfEntries;
         private int[] countryCallingCodes;
         private List<HashSet<string>> availableLanguages;
         private static readonly Dictionary<string, string> LOCALE_NORMALIZATION_MAP;
@@ -48,9 +49,6 @@ namespace PhoneNumbers
         * implementing {@link Externalizable}. The empty provider could later be populated by
         * {@link #readFileConfigs(java.util.SortedMap)} or {@link #readExternal(java.io.ObjectInput)}.
         */
-        public MappingFileProvider()
-        {
-        }
 
         /**
          * Initializes an {@link MappingFileProvider} with {@code availableDataFiles}.

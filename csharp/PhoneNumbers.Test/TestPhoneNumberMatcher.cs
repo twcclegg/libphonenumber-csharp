@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -410,7 +411,7 @@ namespace PhoneNumbers.Test
     new NumberTest("650x2531234", RegionCode.US),
     new NumberTest("2012-01-02 08:00", RegionCode.US),
     new NumberTest("2012/01/02 08:00", RegionCode.US),
-    new NumberTest("20120102 08:00", RegionCode.US),
+    new NumberTest("20120102 08:00", RegionCode.US)
   };
 
         /**
@@ -423,7 +424,7 @@ namespace PhoneNumbers.Test
     // a carrier code or extension.
     new NumberTest("1650 x 253 - 1234", "US"),
     new NumberTest("650 x 253 - 1234", "US"),
-    new NumberTest("(20) 3346 1234", RegionCode.GB),  // Non-optional NP omitted
+    new NumberTest("(20) 3346 1234", RegionCode.GB)  // Non-optional NP omitted
   };
 
         /**
@@ -449,7 +450,7 @@ namespace PhoneNumbers.Test
     new NumberTest("030-3-2 23 12 34", RegionCode.DE),
     new NumberTest("03 0 -3 2 23 12 34", RegionCode.DE),
     new NumberTest("(0)3 0 -3 2 23 12 34", RegionCode.DE),
-    new NumberTest("0 3 0 -3 2 23 12 34", RegionCode.DE),
+    new NumberTest("0 3 0 -3 2 23 12 34", RegionCode.DE)
   };
 
         /**
@@ -466,7 +467,7 @@ namespace PhoneNumbers.Test
     // last two groups have been squashed together here).
     new NumberTest("0900-1 123123", RegionCode.DE),
     new NumberTest("(0)900-1 123123", RegionCode.DE),
-    new NumberTest("0 900-1 123123", RegionCode.DE),
+    new NumberTest("0 900-1 123123", RegionCode.DE)
   };
 
         /**
@@ -497,7 +498,7 @@ namespace PhoneNumbers.Test
             // Doesn't match any formatting in the test file, but matches an alternate format exactly.
             new NumberTest("0900-1 123 123", RegionCode.DE),
             new NumberTest("(0)900-1 123 123", RegionCode.DE),
-            new NumberTest("0 900-1 123 123", RegionCode.DE),
+            new NumberTest("0 900-1 123 123", RegionCode.DE)
         };
 
         [Fact]

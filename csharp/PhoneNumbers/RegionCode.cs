@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace PhoneNumbers
+﻿namespace PhoneNumbers
 {
     // Class containing string constants of region codes for easier testing.
     public class RegionCode

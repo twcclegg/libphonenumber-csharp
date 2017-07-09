@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
-using System.Text;
-using System.Globalization;
 
 namespace PhoneNumbers
 {
@@ -85,7 +83,7 @@ namespace PhoneNumbers
      */
     public class PhoneNumberOfflineGeocoder
     {
-        private static PhoneNumberOfflineGeocoder instance = null;
+        private static PhoneNumberOfflineGeocoder instance;
         private const string MAPPING_DATA_DIRECTORY = "res.prod_";
         private static object thisLock = new object();
 

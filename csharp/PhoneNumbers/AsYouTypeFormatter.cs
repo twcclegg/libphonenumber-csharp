@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
+
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -46,9 +45,9 @@ namespace PhoneNumbers
         private bool ableToFormat = true;
         // Set to true when users enter their own formatting. AsYouTypeFormatter will do no formatting at
         // all when this is set to true.
-        private bool inputHasFormatting = false;
-        private bool isInternationalFormatting = false;
-        private bool isExpectingCountryCallingCode = false;
+        private bool inputHasFormatting;
+        private bool isInternationalFormatting;
+        private bool isExpectingCountryCallingCode;
         private readonly PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
         private string defaultCountry;
 
@@ -86,13 +85,13 @@ namespace PhoneNumbers
         // space.
         private string digitPlaceholder = "\u2008";
         private Regex digitPattern;
-        private int lastMatchPosition = 0;
+        private int lastMatchPosition;
         // The position of a digit upon which inputDigitAndRememberPosition is most recently invoked, as
         // found in the original sequence of characters the user entered.
-        private int originalPosition = 0;
+        private int originalPosition;
         // The position of a digit upon which inputDigitAndRememberPosition is most recently invoked, as
         // found in accruedInputWithoutFormatting.
-        private int positionToRemember = 0;
+        private int positionToRemember;
         // This contains anything that has been entered so far preceding the national significant number,
         // and it is formatted (e.g. with space inserted). For example, this can contain IDD, country
         // code, and/or NDD, etc.
@@ -153,10 +152,7 @@ namespace PhoneNumbers
                     lastMatchPosition = 0;
                     return true;
                 }
-                else
-                {
-                    possibleFormats.RemoveAt(0);
-                }
+                possibleFormats.RemoveAt(0);
             }
             ableToFormat = false;
             return false;
@@ -334,7 +330,7 @@ namespace PhoneNumbers
                 {
                     return accruedInput.ToString();
                 }
-                else if (AttemptToExtractIdd())
+                if (AttemptToExtractIdd())
                 {
                     if (AttemptToExtractCountryCallingCode())
                     {
@@ -485,10 +481,7 @@ namespace PhoneNumbers
                 GetAvailableFormats(nationalNumber.ToString().Substring(0, MIN_LEADING_DIGITS_LENGTH));
                 return MaybeCreateNewTemplate() ? InputAccruedNationalNumber() : accruedInput.ToString();
             }
-            else
-            {
-                return prefixBeforeNationalNumber + nationalNumber.ToString();
-            }
+            return prefixBeforeNationalNumber + nationalNumber.ToString();
         }
 
         // Invokes inputDigitHelper on each digit of the national number accrued, and returns a formatted
@@ -507,10 +500,7 @@ namespace PhoneNumbers
                     ? prefixBeforeNationalNumber + tempNationalNumber
                     : accruedInput.ToString();
             }
-            else
-            {
-                return prefixBeforeNationalNumber.ToString();
-            }
+            return prefixBeforeNationalNumber.ToString();
         }
 
         // Returns the national prefix extracted, or an empty string if it is not present.
@@ -647,17 +637,14 @@ namespace PhoneNumbers
                 lastMatchPosition = digitMatcher.Groups[0].Index;
                 return formattingTemplate.ToString().Substring(0, lastMatchPosition + 1);
             }
-            else
+            if (possibleFormats.Count == 1)
             {
-                if (possibleFormats.Count == 1)
-                {
-                    // More digits are entered than we could handle, and there are no other valid patterns to
-                    // try.
-                    ableToFormat = false;
-                }  // else, we just reset the formatting pattern.
-                currentFormattingPattern = "";
-                return accruedInput.ToString();
-            }
+                // More digits are entered than we could handle, and there are no other valid patterns to
+                // try.
+                ableToFormat = false;
+            }  // else, we just reset the formatting pattern.
+            currentFormattingPattern = "";
+            return accruedInput.ToString();
         }
     }
 }
