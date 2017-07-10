@@ -13,12 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using NUnit.Framework;
+using Xunit;
 
 namespace PhoneNumbers.Test
 {
@@ -27,10 +22,9 @@ namespace PhoneNumbers.Test
     *
     * @author Lara Rennie
     */
-    [TestFixture]
     public class TestMedataManager
     {
-        [Test]
+        [Fact]
         public void TestAlternateFormatsContainsData()
         {
             // We should have some data for Germany.
@@ -39,7 +33,7 @@ namespace PhoneNumbers.Test
             Assert.True(germanyAlternateFormats.NumberFormatList.Count > 0);
         }
 
-        [Test]
+        [Fact]
         public void TestAlternateFormatsFailsGracefully()
         {
             var noAlternateFormats = MetadataManager.GetAlternateFormatsForCountry(999);

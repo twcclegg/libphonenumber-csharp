@@ -14,65 +14,38 @@
  * limitations under the License.
  */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NUnit.Framework;
+using Xunit;
 
 namespace PhoneNumbers.Test
 {
-    [TestFixture]
-    class TestPhoneNumberMatch
+    public class TestPhoneNumberMatch
     {
-        [Test]
+        [Fact]
         public void TestValueTypeSemantics()
         {
             PhoneNumber number = new PhoneNumber();
             PhoneNumberMatch match1 = new PhoneNumberMatch(10, "1 800 234 45 67", number);
             PhoneNumberMatch match2 = new PhoneNumberMatch(10, "1 800 234 45 67", number);
 
-            Assert.AreEqual(match1, match2);
-            Assert.AreEqual(match1.GetHashCode(), match2.GetHashCode());
-            Assert.AreEqual(match1.Start, match2.Start);
-            Assert.AreEqual(match1.Length, match2.Length);
-            Assert.AreEqual(match1.Number, match2.Number);
-            Assert.AreEqual(match1.RawString, match2.RawString);
-            Assert.AreEqual("1 800 234 45 67", match1.RawString);
+            Assert.Equal(match1, match2);
+            Assert.Equal(match1.GetHashCode(), match2.GetHashCode());
+            Assert.Equal(match1.Start, match2.Start);
+            Assert.Equal(match1.Length, match2.Length);
+            Assert.Equal(match1.Number, match2.Number);
+            Assert.Equal(match1.RawString, match2.RawString);
+            Assert.Equal("1 800 234 45 67", match1.RawString);
         }
 
         /**
         * Tests the value type semantics for matches with a null number.
         */
-        [Test]
+        [Fact]
         public void TestIllegalArguments()
         {
-            try
-            {
-                new PhoneNumberMatch(-110, "1 800 234 45 67", new PhoneNumber());
-                Assert.Fail();
-            }
-            catch (ArgumentException) { /* success */ }
-
-            try
-            {
-                new PhoneNumberMatch(10, "1 800 234 45 67", null);
-                Assert.Fail();
-            }
-            catch (ArgumentNullException) { /* success */ }
-
-            try
-            {
-                new PhoneNumberMatch(10, null, new PhoneNumber());
-                Assert.Fail();
-            }
-            catch (ArgumentNullException) { /* success */ }
-
-            try
-            {
-                new PhoneNumberMatch(10, null, null);
-                Assert.Fail();
-            }
-            catch (ArgumentNullException) { /* success */ }
+            Assert.Throws<ArgumentException>(() => new PhoneNumberMatch(-110, "1 800 234 45 67", new PhoneNumber()));
+            Assert.Throws<ArgumentNullException>(() => new PhoneNumberMatch(10, "1 800 234 45 67", null));
+            Assert.Throws<ArgumentNullException>(() => new PhoneNumberMatch(10, null, new PhoneNumber()));
+            Assert.Throws<ArgumentNullException>(() => new PhoneNumberMatch(10, null, null));
         }
     }
 }

@@ -432,9 +432,27 @@ namespace PhoneNumbers
         // Possible outcomes when testing if a PhoneNumber is possible.
         public enum ValidationResult
         {
+            /** The number length matches that of valid numbers for this region. */
             IS_POSSIBLE,
+            /**
+             * The number length matches that of local numbers for this region only (i.e. numbers that may
+             * be able to be dialled within an area, but do not have all the information to be dialled from
+             * anywhere inside or outside the country).
+             */
+            IS_POSSIBLE_LOCAL_ONLY,
+            /** The number has an invalid country calling code. */
             INVALID_COUNTRY_CODE,
+            /** The number is shorter than all valid numbers for this region. */
             TOO_SHORT,
+            /**
+             * The number is longer than the shortest valid numbers for this region, shorter than the
+             * longest valid numbers for this region, and does not itself have a number length that matches
+             * valid numbers for this region. This can also be returned in the case where
+             * isPossibleNumberForTypeWithReason was called, and there are no numbers of this type at all
+             * for this region.
+             */
+            INVALID_LENGTH,
+            /** The number is longer than all valid numbers for this region. */
             TOO_LONG,
         };
 
@@ -556,12 +574,12 @@ namespace PhoneNumbers
         {
             var asm = typeof(PhoneNumberUtil).GetTypeInfo().Assembly;
             bool isNonGeoRegion = REGION_CODE_FOR_NON_GEO_ENTITY.Equals(regionCode);
-            var name = asm.GetManifestResourceNames().Where(n => n.EndsWith(filePrefix)).FirstOrDefault() ?? "missing";
+            var name = asm.GetManifestResourceNames().FirstOrDefault(n => n.EndsWith(filePrefix)) ?? "missing";
             using (var stream = asm.GetManifestResourceStream(name))
             {
                 try
                 {
-                    var meta = BuildMetadataFromXml.BuildPhoneMetadataCollection(stream, false);
+                    var meta = BuildMetadataFromXml.BuildPhoneMetadataCollection(stream, false, false); // todo lite/special builds
                     foreach (var m in meta.MetadataList)
                     {
                         if(isNonGeoRegion)
@@ -890,6 +908,16 @@ namespace PhoneNumbers
         public Dictionary<int, PhoneMetadata>.KeyCollection GetSupportedGlobalNetworkCallingCodes()
         {
             return countryCodeToNonGeographicalMetadataMap.Keys;
+        }
+
+        /**
+        * Returns true if there is any possible number data set for a particular PhoneNumberDesc.
+        */
+        private static bool DescHasPossibleNumberData(PhoneNumberDesc desc)
+        {
+            // If this is empty, it means numbers of this type inherit from the "general desc" -> the value
+            // "-1" means that no numbers exist for this type.
+            return desc.PossibleLengthCount != 1 || desc.PossibleLengthList[0] != -1;
         }
 
         /**
@@ -1753,17 +1781,29 @@ namespace PhoneNumbers
             PhoneMetadata metadata = GetMetadataForNonGeographicalRegion(countryCallingCode);
             if (metadata != null)
             {
-                PhoneNumberDesc desc = metadata.GeneralDesc;
-                try
+
+                foreach (var desc in new List<PhoneNumberDesc>
                 {
-                    if (desc.HasExampleNumber)
+                    metadata.Mobile,
+                    metadata.TollFree,
+                    metadata.SharedCost,
+                    metadata.Voip,
+                    metadata.Voicemail,
+                    metadata.Uan,
+                    metadata.PremiumRate
+                })
+                {
+                    try
                     {
-                        return Parse("+" + countryCallingCode + desc.ExampleNumber, "ZZ");
+                        if (desc != null && desc.HasExampleNumber)
+                        {
+                            return Parse("+" + countryCallingCode + desc.ExampleNumber, UNKNOWN_REGION);
+                        }
                     }
-                }
-                catch (NumberParseException)
-                {
-                    //LOGGER.log(Level.SEVERE, e.toString());
+                    catch (NumberParseException)
+                    {
+                        //LOGGER.log(Level.SEVERE, e.toString());
+                    }
                 }
             }
             else
@@ -1930,11 +1970,18 @@ namespace PhoneNumbers
 
         private bool IsNumberMatchingDesc(String nationalNumber, PhoneNumberDesc numberDesc)
         {
-            var possibleNumberPatternMatch = regexCache.GetPatternForRegex(
-                numberDesc.PossibleNumberPattern).MatchAll(nationalNumber);
+            // Check if any possible number lengths are present; if so, we use them to avoid checking the
+            // validation pattern if they don't match. If they are absent, this means they match the general
+            // description, which we have already checked before checking a specific number type.
+            int actualLength = nationalNumber.Length;
+            IList<int> possibleLengths = numberDesc.PossibleLengthList;
+            if (possibleLengths.Count > 0 && !possibleLengths.Contains(actualLength))
+            {
+                return false;
+            }
             var nationalNumberPatternMatch = regexCache.GetPatternForRegex(
                 numberDesc.NationalNumberPattern).MatchAll(nationalNumber);
-            return possibleNumberPatternMatch.Success && nationalNumberPatternMatch.Success;
+            return nationalNumberPatternMatch.Success;
         }
 
         /**
@@ -2174,67 +2221,175 @@ namespace PhoneNumbers
         }
 
         /**
-        * Helper method to check a number against a particular pattern and determine whether it matches,
-        * or is too short or too long. Currently, if a number pattern suggests that numbers of length 7
-        * and 10 are possible, and a number in between these possible lengths is entered, such as of
-        * length 8, this will return TOO_LONG.
+        * Helper method to check a number against possible lengths for this region, based on the metadata
+        * being passed in, and determine whether it matches, or is too short or too long. Currently, if a
+        * number pattern suggests that numbers of length 7 and 10 are possible, and a number in between
+        * these possible lengths is entered, such as of length 8, this will return TOO_LONG.
         */
-        private ValidationResult TestNumberLengthAgainstPattern(PhoneRegex numberPattern, String number)
+        private ValidationResult TestNumberLength(String number, PhoneMetadata metadata)
         {
-            if (numberPattern.MatchAll(number).Success)
+            return TestNumberLength(number, metadata, PhoneNumberType.UNKNOWN);
+        }
+
+        /**
+        * Helper method to check a number against possible lengths for this number, and determine
+        * whether it matches, or is too short or too long. Currently, if a number pattern suggests that
+        * numbers of length 7 and 10 are possible, and a number in between these possible lengths is
+        * entered, such as of length 8, this will return TOO_LONG.
+        */
+        private ValidationResult TestNumberLength(String number, PhoneMetadata metadata, PhoneNumberType type)
+        {
+            PhoneNumberDesc descForType = GetNumberDescByType(metadata, type);
+            // There should always be "possibleLengths" set for every element. This is declared in the XML
+            // schema which is verified by PhoneNumberMetadataSchemaTest.
+            // For size efficiency, where a sub-description (e.g. fixed-line) has the same possibleLengths
+            // as the parent, this is missing, so we fall back to the general desc (where no numbers of the
+            // type exist at all, there is one possible length (-1) which is guaranteed not to match the
+            // length of any real phone number).
+            var possibleLengths = (descForType.PossibleLengthList.Count == 0
+                ? metadata.GeneralDesc.PossibleLengthList : descForType.PossibleLengthList).ToList();
+
+            var localLengths = descForType.PossibleLengthLocalOnlyList.ToList();
+
+            if (type == PhoneNumberType.FIXED_LINE_OR_MOBILE)
+            {
+                if (!DescHasPossibleNumberData(GetNumberDescByType(metadata, PhoneNumberType.FIXED_LINE)))
+                {
+                    // The rare case has been encountered where no fixedLine data is available (true for some
+                    // non-geographical entities), so we just check mobile.
+                    return TestNumberLength(number, metadata, PhoneNumberType.MOBILE);
+                }
+                else
+                {
+                    PhoneNumberDesc mobileDesc = GetNumberDescByType(metadata, PhoneNumberType.MOBILE);
+                    if (DescHasPossibleNumberData(mobileDesc))
+                    {
+                        // Note that when adding the possible lengths from mobile, we have to again check they
+                        // aren't empty since if they are this indicates they are the same as the general desc and
+                        // should be obtained from there.
+                        possibleLengths = possibleLengths.Union(mobileDesc.PossibleLengthList.Count == 0
+                            ? metadata.GeneralDesc.PossibleLengthList
+                            : mobileDesc.PossibleLengthList).ToList();
+                        // The current list is sorted; we need to merge in the new list and re-sort (duplicates
+                        // are okay). Sorting isn't so expensive because the lists are very small.
+                        possibleLengths.Sort();
+
+                        if (localLengths.Count == 0)
+                        {
+                            localLengths = mobileDesc.PossibleLengthLocalOnlyList.ToList();
+                        }
+                        else
+                        {
+                            localLengths = localLengths.Union(mobileDesc.PossibleLengthLocalOnlyList).ToList();
+                            localLengths.Sort();
+                        }
+                    }
+                }
+            }
+
+            // If the type is not supported at all (indicated by the possible lengths containing -1 at this
+            // point) we return invalid length.
+            if (possibleLengths.ElementAt(0) == -1)
+            {
+                return ValidationResult.INVALID_LENGTH;
+            }
+
+            int actualLength = number.Length;
+            // This is safe because there is never an overlap beween the possible lengths and the local-only
+            // lengths; this is checked at build time.
+            if (localLengths.Contains(actualLength))
+            {
+                return ValidationResult.IS_POSSIBLE_LOCAL_ONLY;
+            }
+
+            int minimumLength = possibleLengths.ElementAt(0);
+            if (minimumLength == actualLength)
+            {
                 return ValidationResult.IS_POSSIBLE;
-            if (numberPattern.MatchBeginning(number).Success)
+            }
+            if (minimumLength > actualLength)
+            {
+                return ValidationResult.TOO_SHORT;
+            }
+            if (possibleLengths.ElementAt(possibleLengths.Count - 1) < actualLength)
+            {
                 return ValidationResult.TOO_LONG;
-            return ValidationResult.TOO_SHORT;
+            }
+            return possibleLengths.Contains(actualLength)
+                ? ValidationResult.IS_POSSIBLE : ValidationResult.INVALID_LENGTH;
         }
 
         /**
         * Check whether a phone number is a possible number. It provides a more lenient check than
         * {@link #isValidNumber} in the following sense:
-        *<ol>
-        * <li> It only checks the length of phone numbers. In particular, it doesn't check starting
-        *      digits of the number.
-        * <li> It doesn't attempt to figure out the type of the number, but uses general rules which
-        *      applies to all types of phone numbers in a region. Therefore, it is much faster than
-        *      isValidNumber.
-        * <li> For fixed line numbers, many regions have the concept of area code, which together with
-        *      subscriber number constitute the national significant number. It is sometimes okay to dial
-        *      the subscriber number only when dialing in the same area. This function will return
-        *      true if the subscriber-number-only version is passed in. On the other hand, because
-        *      isValidNumber validates using information on both starting digits (for fixed line
-        *      numbers, that would most likely be area codes) and length (obviously includes the
-        *      length of area codes for fixed line numbers), it will return false for the
-        *      subscriber-number-only version.
-        * </ol
+        * <ol>
+        *   <li> It only checks the length of phone numbers. In particular, it doesn't check starting
+        *        digits of the number.
+        *   <li> It doesn't attempt to figure out the type of the number, but uses general rules which
+        *        applies to all types of phone numbers in a region. Therefore, it is much faster than
+        *        isValidNumber.
+        *   <li> For some numbers (particularly fixed-line), many regions have the concept of area code,
+        *        which together with subscriber number constitute the national significant number. It is
+        *        sometimes okay to dial only the subscriber number when dialing in the same area. This
+        *        function will return IS_POSSIBLE_LOCAL_ONLY if the subscriber-number-only version is
+        *        passed in. On the other hand, because isValidNumber validates using information on both
+        *        starting digits (for fixed line numbers, that would most likely be area codes) and
+        *        length (obviously includes the length of area codes for fixed line numbers), it will
+        *        return false for the subscriber-number-only version.
+        * </ol>
         * @param number  the number that needs to be checked
         * @return  a ValidationResult object which indicates whether the number is possible
         */
         public ValidationResult IsPossibleNumberWithReason(PhoneNumber number)
         {
-            var nationalNumber = GetNationalSignificantNumber(number);
+            return IsPossibleNumberForTypeWithReason(number, PhoneNumberType.UNKNOWN);
+        }
+
+        /**
+        * Check whether a phone number is a possible number of a particular type. For types that don't
+        * exist in a particular region, this will return a result that isn't so useful; it is recommended
+        * that you use {@link #getSupportedTypesForRegion} or {@link #getSupportedTypesForNonGeoEntity}
+        * respectively before calling this method to determine whether you should call it for this number
+        * at all.
+        *
+        * This provides a more lenient check than {@link #isValidNumber} in the following sense:
+        *
+        * <ol>
+        *   <li> It only checks the length of phone numbers. In particular, it doesn't check starting
+        *        digits of the number.
+        *   <li> For some numbers (particularly fixed-line), many regions have the concept of area code,
+        *        which together with subscriber number constitute the national significant number. It is
+        *        sometimes okay to dial only the subscriber number when dialing in the same area. This
+        *        function will return IS_POSSIBLE_LOCAL_ONLY if the subscriber-number-only version is
+        *        passed in. On the other hand, because isValidNumber validates using information on both
+        *        starting digits (for fixed line numbers, that would most likely be area codes) and
+        *        length (obviously includes the length of area codes for fixed line numbers), it will
+        *        return false for the subscriber-number-only version.
+        * </ol>
+        *
+        * @param number  the number that needs to be checked
+        * @param type  the type we are interested in
+        * @return  a ValidationResult object which indicates whether the number is possible
+        */
+        public ValidationResult IsPossibleNumberForTypeWithReason(
+            PhoneNumber number, PhoneNumberType type)
+        {
+            String nationalNumber = GetNationalSignificantNumber(number);
             int countryCode = number.CountryCode;
-            // Note: For Russian Fed and NANPA numbers, we just use the rules from the default region (US or
-            // Russia) since the getRegionCodeForNumber will not work if the number is possible but not
-            // valid. This would need to be revisited if the possible number pattern ever differed between
-            // various regions within those plans.
-             if (!HasValidCountryCallingCode(countryCode))
-                return ValidationResult.INVALID_COUNTRY_CODE;
-            String regionCode = GetRegionCodeForCountryCode(countryCode);
-            PhoneMetadata metadata = GetMetadataForRegionOrCallingCode(countryCode, regionCode);
-            PhoneNumberDesc generalNumDesc = metadata.GeneralDesc;
-            // Handling case of numbers with no metadata.
-            if (!generalNumDesc.HasNationalNumberPattern)
+            // Note: For regions that share a country calling code, like NANPA numbers, we just use the
+            // rules from the default region (US in this case) since the getRegionCodeForNumber will not
+            // work if the number is possible but not valid. There is in fact one country calling code (290)
+            // where the possible number pattern differs between various regions (Saint Helena and Tristan
+            // da Cuñha), but this is handled by putting all possible lengths for any country with this
+            // country calling code in the metadata for the default region in this case.
+            if (!HasValidCountryCallingCode(countryCode))
             {
-                int numberLength = nationalNumber.Length;
-                if (numberLength < MIN_LENGTH_FOR_NSN)
-                    return ValidationResult.TOO_SHORT;
-                if (numberLength > MAX_LENGTH_FOR_NSN)
-                    return ValidationResult.TOO_LONG;
-                return ValidationResult.IS_POSSIBLE;
+                return ValidationResult.INVALID_COUNTRY_CODE;
             }
-            var possibleNumberPattern =
-                regexCache.GetPatternForRegex(generalNumDesc.PossibleNumberPattern);
-            return TestNumberLengthAgainstPattern(possibleNumberPattern, nationalNumber);
+            String regionCode = GetRegionCodeForCountryCode(countryCode);
+            // Metadata cannot be null because the country calling code is valid.
+            PhoneMetadata metadata = GetMetadataForRegionOrCallingCode(countryCode, regionCode);
+            return TestNumberLength(nationalNumber, metadata, type);
         }
 
         /**
@@ -2421,15 +2576,12 @@ namespace PhoneNumbers
                         regexCache.GetPatternForRegex(generalDesc.NationalNumberPattern);
                     MaybeStripNationalPrefixAndCarrierCode(
                         potentialNationalNumber, defaultRegionMetadata, null /* Don't need the carrier code */);
-                    var possibleNumberPattern =
-                        regexCache.GetPatternForRegex(generalDesc.PossibleNumberPattern);
                     // If the number was not valid before but is valid now, or if it was too long before, we
                     // consider the number with the country calling code stripped to be a better result and
                     // keep that instead.
                     if ((!validNumberPattern.MatchAll(fullNumber.ToString()).Success &&             //XXX: ToString
                      validNumberPattern.MatchAll(potentialNationalNumber.ToString()).Success) ||    //XXX: ToString
-                     TestNumberLengthAgainstPattern(possibleNumberPattern, fullNumber.ToString())
-                          == ValidationResult.TOO_LONG)
+                     TestNumberLength(fullNumber.ToString(), defaultRegionMetadata) == ValidationResult.TOO_LONG)
                     {
                         nationalNumber.Append(potentialNationalNumber);
                         if (keepRawInput)

@@ -15,10 +15,7 @@
  */
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using NUnit.Framework;
+using Xunit;
 
 namespace PhoneNumbers.Test
 {
@@ -27,13 +24,12 @@ namespace PhoneNumbers.Test
     *
     * @author Shaopeng Jia
     */
-    [TestFixture]
-    class TestMappingFileProvider
+    [Collection("TestMetadataTestCase")]
+    public class TestMappingFileProvider
     {
         private readonly MappingFileProvider mappingProvider = new MappingFileProvider();
 
-        [TestFixtureSetUp]
-        public void SetupFixture()
+        public TestMappingFileProvider()
         {
             var mapping = new SortedDictionary<int, HashSet<String>>();
             mapping[1] = new HashSet<String>(new[] { "en" });
@@ -43,24 +39,24 @@ namespace PhoneNumbers.Test
             mappingProvider.ReadFileConfigs(mapping);
         }
 
-        [Test]
+        [Fact]
         public void TestGetFileName()
         {
-            Assert.AreEqual("1_en", mappingProvider.GetFileName(1, "en", "", ""));
-            Assert.AreEqual("1_en", mappingProvider.GetFileName(1, "en", "", "US"));
-            Assert.AreEqual("1_en", mappingProvider.GetFileName(1, "en", "", "GB"));
-            Assert.AreEqual("41_de", mappingProvider.GetFileName(41, "de", "", "CH"));
-            Assert.AreEqual("", mappingProvider.GetFileName(44, "en", "", "GB"));
-            Assert.AreEqual("86_zh", mappingProvider.GetFileName(86, "zh", "", ""));
-            Assert.AreEqual("86_zh", mappingProvider.GetFileName(86, "zh", "Hans", ""));
-            Assert.AreEqual("86_zh", mappingProvider.GetFileName(86, "zh", "", "CN"));
-            Assert.AreEqual("", mappingProvider.GetFileName(86, "", "", "CN"));
-            Assert.AreEqual("86_zh", mappingProvider.GetFileName(86, "zh", "Hans", "CN"));
-            Assert.AreEqual("86_zh", mappingProvider.GetFileName(86, "zh", "Hans", "SG"));
-            Assert.AreEqual("86_zh", mappingProvider.GetFileName(86, "zh", "", "SG"));
-            Assert.AreEqual("86_zh_Hant", mappingProvider.GetFileName(86, "zh", "", "TW"));
-            Assert.AreEqual("86_zh_Hant", mappingProvider.GetFileName(86, "zh", "", "HK"));
-            Assert.AreEqual("86_zh_Hant", mappingProvider.GetFileName(86, "zh", "Hant", "TW"));
+            Assert.Equal("1_en", mappingProvider.GetFileName(1, "en", "", ""));
+            Assert.Equal("1_en", mappingProvider.GetFileName(1, "en", "", "US"));
+            Assert.Equal("1_en", mappingProvider.GetFileName(1, "en", "", "GB"));
+            Assert.Equal("41_de", mappingProvider.GetFileName(41, "de", "", "CH"));
+            Assert.Equal("", mappingProvider.GetFileName(44, "en", "", "GB"));
+            Assert.Equal("86_zh", mappingProvider.GetFileName(86, "zh", "", ""));
+            Assert.Equal("86_zh", mappingProvider.GetFileName(86, "zh", "Hans", ""));
+            Assert.Equal("86_zh", mappingProvider.GetFileName(86, "zh", "", "CN"));
+            Assert.Equal("", mappingProvider.GetFileName(86, "", "", "CN"));
+            Assert.Equal("86_zh", mappingProvider.GetFileName(86, "zh", "Hans", "CN"));
+            Assert.Equal("86_zh", mappingProvider.GetFileName(86, "zh", "Hans", "SG"));
+            Assert.Equal("86_zh", mappingProvider.GetFileName(86, "zh", "", "SG"));
+            Assert.Equal("86_zh_Hant", mappingProvider.GetFileName(86, "zh", "", "TW"));
+            Assert.Equal("86_zh_Hant", mappingProvider.GetFileName(86, "zh", "", "HK"));
+            Assert.Equal("86_zh_Hant", mappingProvider.GetFileName(86, "zh", "Hant", "TW"));
         }
     }
 }

@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NUnit.Framework;
 
 namespace PhoneNumbers.Test
 {
@@ -30,14 +26,13 @@ namespace PhoneNumbers.Test
     * @author Shaopeng Jia
     * @author Lara Rennie
     */
-    class TestMetadataTestCase
+    public class TestMetadataTestCase
     {
         public const String TEST_META_DATA_FILE_PREFIX = "PhoneNumberMetaDataForTesting.xml";
 
-        protected PhoneNumberUtil phoneUtil;
+        public PhoneNumberUtil phoneUtil;
 
-        [TestFixtureSetUp]
-        public void SetupFixture()
+        public TestMetadataTestCase()
         {
             phoneUtil = InitializePhoneUtilForTesting();
         }
