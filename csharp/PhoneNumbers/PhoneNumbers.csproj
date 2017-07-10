@@ -3,30 +3,21 @@
   <PropertyGroup>
     <Description>C# port of Google's common Java, C++ and Javascript library for parsing, formatting, storing and validating international phone numbers. For usage samples: http: //code.google.com/p/libphonenumber/A port of Google's libphonenumber for .NET Core</Description>
     <AssemblyTitle>libphonenumber-csharp</AssemblyTitle>
-    <VersionPrefix>8.3.1</VersionPrefix>
+    <VersionPrefix>8.6.0</VersionPrefix>
     <Authors>Patrick M�zard;Jarrod Alexander;Google;libphonenumber;contributors</Authors>
-    <TargetFrameworks>net45;netstandard1.0</TargetFrameworks>
+    <TargetFrameworks>net45;netstandard1.1</TargetFrameworks>
     <AssemblyName>PhoneNumbers</AssemblyName>
     <PackageId>PhoneNumbers</PackageId>
     <PackageTags>phonenumber phone libphonenumber e164 e.164 international</PackageTags>
-    <PackageProjectUrl>https://bitbucket.org/pmezard/libphonenumber-csharp/wiki/Home</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/aidanbebbington/libphonenumber-csharp</PackageProjectUrl>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/jarroda/libphonenumber-dotnet</RepositoryUrl>
-    <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.0' ">1.6.0</NetStandardImplicitPackageVersion>
-    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
-    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
-    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
-    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <RepositoryUrl>https://github.com/aidanbebbington/libphonenumber-csharp</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="res\**\*.*;PhoneNumberAlternateFormats.xml;PhoneNumberMetaData.xml;PhoneNumberMetaDataForTesting.xml" Exclude="bin\**;obj\**;**\*.xproj;packages\**;@(EmbeddedResource)" />
+    <EmbeddedResource Include="res\**\*.*;PhoneNumberAlternateFormats.xml;PhoneNumberMetaData.xml;PhoneNumberMetaDataForTesting.xml;ShortNumberMetadata.xml" Exclude="bin\**;obj\**;**\*.xproj;packages\**;@(EmbeddedResource)" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
@@ -39,7 +30,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.0' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.1' ">
     <PackageReference Include="System.Runtime.Serialization.Json" Version="4.0.2" />
   </ItemGroup>
 
