@@ -33,7 +33,7 @@ namespace PhoneNumbers.Test
 
         public TestAsYouTypeFormatter(TestMetadataTestCase metadata)
         {
-            phoneUtil = metadata.phoneUtil;
+            phoneUtil = metadata.PhoneUtil;
         }
 
         [Fact]
@@ -83,7 +83,7 @@ namespace PhoneNumbers.Test
         public void TestTooLongNumberMatchingMultipleLeadingDigits()
         {
             // See http://code.google.com/p/libphonenumber/issues/detail?id=36
-            // The bug occurred last time for countries which have two formatting rules with exactly the
+            // This occurred last time for countries which have two formatting rules with exactly the
             // same leading digits pattern but differ in length.
             AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter("ZZ");
             Assert.Equal("+", formatter.InputDigit('+'));

@@ -33,15 +33,17 @@ namespace PhoneNumbers
         private int numOfEntries;
         private int[] countryCallingCodes;
         private List<HashSet<string>> availableLanguages;
-        private static readonly Dictionary<string, string> LOCALE_NORMALIZATION_MAP;
+        private static readonly Dictionary<string, string> LocaleNormalizationMap;
 
         static MappingFileProvider()
         {
-            var normalizationMap = new Dictionary<string, string>();
-            normalizationMap["zh_TW"] = "zh_Hant";
-            normalizationMap["zh_HK"] = "zh_Hant";
-            normalizationMap["zh_MO"] = "zh_Hant";
-            LOCALE_NORMALIZATION_MAP = normalizationMap;
+            var normalizationMap = new Dictionary<string, string>
+            {
+                ["zh_TW"] = "zh_Hant",
+                ["zh_HK"] = "zh_Hant",
+                ["zh_MO"] = "zh_Hant"
+            };
+            LocaleNormalizationMap = normalizationMap;
         }
 
         /**
@@ -135,7 +137,7 @@ namespace PhoneNumbers
             StringBuilder fullLocale = ConstructFullLocale(language, script, region);
             string fullLocaleStr = fullLocale.ToString();
             string normalizedLocale;
-            if (LOCALE_NORMALIZATION_MAP.TryGetValue(fullLocaleStr, out normalizedLocale))
+            if (LocaleNormalizationMap.TryGetValue(fullLocaleStr, out normalizedLocale))
             {
                 if (setOfLangs.Contains(normalizedLocale))
                 {

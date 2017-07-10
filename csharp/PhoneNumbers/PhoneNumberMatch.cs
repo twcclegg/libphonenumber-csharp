@@ -20,10 +20,10 @@ namespace PhoneNumbers
 {
     public class PhoneNumberMatch
     {
-        public int Start { get; private set; }
-        public int Length { get { return RawString.Length; } }
-        public string RawString { get; private set; }
-        public PhoneNumber Number { get; private set; }
+        public int Start { get; }
+        public int Length => RawString.Length;
+        public string RawString { get; }
+        public PhoneNumber Number { get; }
 
         public PhoneNumberMatch(int start, string rawString, PhoneNumber number)
         {

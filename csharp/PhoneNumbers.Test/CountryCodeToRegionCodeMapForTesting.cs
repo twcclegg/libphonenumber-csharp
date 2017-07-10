@@ -27,7 +27,7 @@ namespace PhoneNumbers.Test
         internal static Dictionary<int, List<string>> GetCountryCodeToRegionCodeMap()
         {
             return BuildMetadataFromXml.GetCountryCodeToRegionCodeMap(
-                TestMetadataTestCase.TEST_META_DATA_FILE_PREFIX);
+                TestMetadataTestCase.TestMetaDataFilePrefix);
         }
     }
 }

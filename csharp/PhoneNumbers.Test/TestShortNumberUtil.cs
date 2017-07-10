@@ -30,7 +30,7 @@ namespace PhoneNumbers.Test
 
         public TestShortNumberUtil(TestMetadataTestCase metadata)
         {
-            shortUtil = new ShortNumberUtil(metadata.phoneUtil);
+            shortUtil = new ShortNumberUtil(metadata.PhoneUtil);
         }
 
         [Fact(Skip = "todo fix short numbers")]

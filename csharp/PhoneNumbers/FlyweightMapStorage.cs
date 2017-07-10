@@ -32,9 +32,9 @@ namespace PhoneNumbers
     {
         class ByteBuffer
         {
-            private MemoryStream stream;
-            private BinaryReader reader;
-            private BinaryWriter writer;
+            private readonly MemoryStream stream;
+            private readonly BinaryReader reader;
+            private readonly BinaryWriter writer;
 
             public ByteBuffer(int size)
             {
@@ -43,39 +43,39 @@ namespace PhoneNumbers
                 writer = new BinaryWriter(stream);
             }
 
-            public void putShort(int offset, short value)
+            public void PutShort(int offset, short value)
             {
                 stream.Seek(offset, SeekOrigin.Begin);
                 writer.Write(value);
             }
 
-            public void putInt(int offset, int value)
+            public void PutInt(int offset, int value)
             {
                 stream.Seek(offset, SeekOrigin.Begin);
                 writer.Write(value);
             }
 
-            public short getShort(int offset)
+            public short GetShort(int offset)
             {
                 stream.Seek(offset, SeekOrigin.Begin);
                 return reader.ReadInt16();
             }
 
-            public int getInt(int offset)
+            public int GetInt(int offset)
             {
                 stream.Seek(offset, SeekOrigin.Begin);
                 return reader.ReadInt32();
             }
 
-            public int getCapacity()
+            public int GetCapacity()
             {
                 return stream.Capacity;
             }
         }
 
         // Size of short and integer types in bytes.
-        private static readonly int SHORT_NUM_BYTES = sizeof(short);
-        private static readonly int INT_NUM_BYTES = sizeof(int);
+        private static readonly int ShortNumBytes = sizeof(short);
+        private static readonly int IntNumBytes = sizeof(int);
 
         // The number of bytes used to store a phone number prefix.
         private int prefixSizeInBytes;
@@ -89,14 +89,14 @@ namespace PhoneNumbers
         // Sorted string array of unique description strings.
         private string[] descriptionPool;
 
-        public override int getPrefix(int index)
+        public override int GetPrefix(int index)
         {
-            return readWordFromBuffer(phoneNumberPrefixes, prefixSizeInBytes, index);
+            return ReadWordFromBuffer(phoneNumberPrefixes, prefixSizeInBytes, index);
         }
 
-        public override int getStorageSize()
+        public override int GetStorageSize()
         {
-            return phoneNumberPrefixes.getCapacity() + descriptionIndexes.getCapacity()
+            return phoneNumberPrefixes.GetCapacity() + descriptionIndexes.GetCapacity()
                 + descriptionPool.Sum(d => d.Length);
         }
 
@@ -104,19 +104,19 @@ namespace PhoneNumbers
         * This implementation returns the same string (same identity) when called for multiple indexes
         * corresponding to prefixes that have the same description.
         */
-        public override string getDescription(int index)
+        public override string GetDescription(int index)
         {
             int indexInDescriptionPool =
-                readWordFromBuffer(descriptionIndexes, descIndexSizeInBytes, index);
+                ReadWordFromBuffer(descriptionIndexes, descIndexSizeInBytes, index);
             return descriptionPool[indexInDescriptionPool];
         }
 
-        public override void readFromSortedMap(SortedDictionary<int, string> areaCodeMap)
+        public override void ReadFromSortedMap(SortedDictionary<int, string> areaCodeMap)
         {
             var descriptionsSet = new HashSet<string>();
-            numOfEntries = areaCodeMap.Count;
-            prefixSizeInBytes = getOptimalNumberOfBytesForValue(areaCodeMap.Keys.Last());
-            phoneNumberPrefixes = new ByteBuffer(numOfEntries * prefixSizeInBytes);
+            NumOfEntries = areaCodeMap.Count;
+            prefixSizeInBytes = GetOptimalNumberOfBytesForValue(areaCodeMap.Keys.Last());
+            phoneNumberPrefixes = new ByteBuffer(NumOfEntries * prefixSizeInBytes);
 
             // Fill the phone number prefixes byte buffer, the set of possible lengths of prefixes and the
             // description set.
@@ -125,37 +125,37 @@ namespace PhoneNumbers
             foreach (var entry in areaCodeMap)
             {
                 int prefix = entry.Key;
-                storeWordInBuffer(phoneNumberPrefixes, prefixSizeInBytes, index, prefix);
+                StoreWordInBuffer(phoneNumberPrefixes, prefixSizeInBytes, index, prefix);
                 var lengthOfPrefixRef = (int)Math.Log10(prefix) + 1;
                 possibleLengthsSet.Add(lengthOfPrefixRef);
                 descriptionsSet.Add(entry.Value);
                 index++;
             }
-            possibleLengths.Clear();
-            possibleLengths.AddRange(possibleLengthsSet);
-            possibleLengths.Sort();
-            createDescriptionPool(descriptionsSet, areaCodeMap);
+            PossibleLengths.Clear();
+            PossibleLengths.AddRange(possibleLengthsSet);
+            PossibleLengths.Sort();
+            CreateDescriptionPool(descriptionsSet, areaCodeMap);
         }
 
         /**
         * Creates the description pool from the provided set of string descriptions and area code map.
         */
-        private void createDescriptionPool(HashSet<string> descriptionsSet, SortedDictionary<int, string> areaCodeMap)
+        private void CreateDescriptionPool(HashSet<string> descriptionsSet, SortedDictionary<int, string> areaCodeMap)
         {
             // Create the description pool.
-            descIndexSizeInBytes = getOptimalNumberOfBytesForValue(descriptionsSet.Count - 1);
-            descriptionIndexes = new ByteBuffer(numOfEntries * descIndexSizeInBytes);
+            descIndexSizeInBytes = GetOptimalNumberOfBytesForValue(descriptionsSet.Count - 1);
+            descriptionIndexes = new ByteBuffer(NumOfEntries * descIndexSizeInBytes);
             descriptionPool = descriptionsSet.ToArray();
             Array.Sort(descriptionPool);
 
             // Map the phone number prefixes to the descriptions.
             int index = 0;
-            for (int i = 0; i < numOfEntries; i++)
+            for (int i = 0; i < NumOfEntries; i++)
             {
-                int prefix = readWordFromBuffer(phoneNumberPrefixes, prefixSizeInBytes, i);
+                int prefix = ReadWordFromBuffer(phoneNumberPrefixes, prefixSizeInBytes, i);
                 string description = areaCodeMap[prefix];
                 int positionInDescriptionPool = Array.BinarySearch(descriptionPool, description);
-                storeWordInBuffer(descriptionIndexes, descIndexSizeInBytes, index,
+                StoreWordInBuffer(descriptionIndexes, descIndexSizeInBytes, index,
                                   positionInDescriptionPool);
                 index++;
             }
@@ -164,9 +164,9 @@ namespace PhoneNumbers
         /**
          * Gets the minimum number of bytes that can be used to store the provided {@code value}.
          */
-        private static int getOptimalNumberOfBytesForValue(int value)
+        private static int GetOptimalNumberOfBytesForValue(int value)
         {
-            return value <= short.MaxValue ? SHORT_NUM_BYTES : INT_NUM_BYTES;
+            return value <= short.MaxValue ? ShortNumBytes : IntNumBytes;
         }
 
         /**
@@ -180,16 +180,16 @@ namespace PhoneNumbers
          * @param value  the value that is stored assuming it does not require more than the specified
          *    number of bytes.
          */
-        private static void storeWordInBuffer(ByteBuffer buffer, int wordSize, int index, int value)
+        private static void StoreWordInBuffer(ByteBuffer buffer, int wordSize, int index, int value)
         {
             index *= wordSize;
-            if (wordSize == SHORT_NUM_BYTES)
+            if (wordSize == ShortNumBytes)
             {
-                buffer.putShort(index, (short)value);
+                buffer.PutShort(index, (short)value);
             }
             else
             {
-                buffer.putInt(index, value);
+                buffer.PutInt(index, value);
             }
         }
 
@@ -203,10 +203,10 @@ namespace PhoneNumbers
          *
          * @return  the value read from the buffer
          */
-        private static int readWordFromBuffer(ByteBuffer buffer, int wordSize, int index)
+        private static int ReadWordFromBuffer(ByteBuffer buffer, int wordSize, int index)
         {
             index *= wordSize;
-            return wordSize == SHORT_NUM_BYTES ? buffer.getShort(index) : buffer.getInt(index);
+            return wordSize == ShortNumBytes ? buffer.GetShort(index) : buffer.GetInt(index);
         }
     }
 }

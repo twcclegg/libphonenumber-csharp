@@ -22,21 +22,21 @@ namespace PhoneNumbers
 {
     internal class EnumerableFromConstructor<T> : IEnumerable<T>
     {
-        private Func<IEnumerator<T>> fn_;
+        private readonly Func<IEnumerator<T>> fn;
 
         public EnumerableFromConstructor(Func<IEnumerator<T>> fn)
         {
-            fn_ = fn;
+            this.fn = fn;
         }
 
         public IEnumerator<T> GetEnumerator()
         {
-            return fn_();
+            return fn();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return fn_();
+            return fn();
         }
     }
 }

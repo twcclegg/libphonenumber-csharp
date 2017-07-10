@@ -16,8 +16,9 @@ namespace PhoneNumbers {
             => element.Attribute(attribute) != null;
 
         internal static string GetAttribute(this XElement element, string attribute) 
-            => element.HasAttribute(attribute) ? element.Attribute(attribute).Value : string.Empty;
+            => element.Attribute(attribute)?.Value ?? string.Empty;
+
         internal static List<TOutput> ConvertAll<TOutput>(this List<char> list, Func<char, TOutput> converter)
-            => list.Select(x => converter(x)).ToList();
+            => list.Select(converter).ToList();
     }
 }

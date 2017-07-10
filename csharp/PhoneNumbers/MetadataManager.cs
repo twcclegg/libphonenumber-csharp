@@ -29,15 +29,15 @@ namespace PhoneNumbers
     */
     public class MetadataManager
     {
-        internal const string ALTERNATE_FORMATS_FILE_PREFIX = "PhoneNumberAlternateFormats.xml";
+        internal const string AlternateFormatsFilePrefix = "PhoneNumberAlternateFormats.xml";
 
-        private static readonly Dictionary<int, PhoneMetadata> callingCodeToAlternateFormatsMap =
+        private static readonly Dictionary<int, PhoneMetadata> CallingCodeToAlternateFormatsMap =
             new Dictionary<int, PhoneMetadata>();
 
         // A set of which country calling codes there are alternate format data for. If the set has an
         // entry for a code, then there should be data for that code linked into the resources.
-        private static readonly Dictionary<int, List<string>> countryCodeSet =
-            BuildMetadataFromXml.GetCountryCodeToRegionCodeMap(ALTERNATE_FORMATS_FILE_PREFIX);
+        private static readonly Dictionary<int, List<string>> CountryCodeSet =
+            BuildMetadataFromXml.GetCountryCodeToRegionCodeMap(AlternateFormatsFilePrefix);
 
         private MetadataManager()
         {
@@ -56,21 +56,21 @@ namespace PhoneNumbers
                 var meta = BuildMetadataFromXml.BuildPhoneMetadataCollection(stream, false, false); // todo lite/special build
                 foreach (var m in meta.MetadataList)
                 {
-                    callingCodeToAlternateFormatsMap[m.CountryCode] = m;
+                    CallingCodeToAlternateFormatsMap[m.CountryCode] = m;
                 }
             }
         }
 
         public static PhoneMetadata GetAlternateFormatsForCountry(int countryCallingCode)
         {
-            lock(callingCodeToAlternateFormatsMap)
+            lock(CallingCodeToAlternateFormatsMap)
             {
-                if(!countryCodeSet.ContainsKey(countryCallingCode))
+                if(!CountryCodeSet.ContainsKey(countryCallingCode))
                     return null;
-                if(!callingCodeToAlternateFormatsMap.ContainsKey(countryCallingCode))
-                    LoadMedataFromFile(ALTERNATE_FORMATS_FILE_PREFIX);
-                return callingCodeToAlternateFormatsMap.ContainsKey(countryCallingCode)
-                    ? callingCodeToAlternateFormatsMap[countryCallingCode]
+                if(!CallingCodeToAlternateFormatsMap.ContainsKey(countryCallingCode))
+                    LoadMedataFromFile(AlternateFormatsFilePrefix);
+                return CallingCodeToAlternateFormatsMap.ContainsKey(countryCallingCode)
+                    ? CallingCodeToAlternateFormatsMap[countryCallingCode]
                     : null;
             }
         }

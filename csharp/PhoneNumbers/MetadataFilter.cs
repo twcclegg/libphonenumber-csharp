@@ -34,14 +34,14 @@ namespace PhoneNumbers
         // The following 3 sets comprise all the PhoneMetadata fields as defined at phonemetadata.proto
         // which may be excluded from customized serializations of the binary metadata. Fields that are
         // core to the library functionality may not be listed here.
-        // excludableParentFields are PhoneMetadata fields of type PhoneNumberDesc.
-        // excludableChildFields are PhoneNumberDesc fields of primitive type.
-        // excludableChildlessFields are PhoneMetadata fields of primitive type.
+        // ExcludableParentFields are PhoneMetadata fields of type PhoneNumberDesc.
+        // ExcludableChildFields are PhoneNumberDesc fields of primitive type.
+        // ExcludableChildlessFields are PhoneMetadata fields of primitive type.
         // Currently we support only one non-primitive type and the depth of the "family tree" is 2,
         // meaning a field may have only direct descendants, who may not have descendants of their own. If
         // this changes, the blacklist handling in this class should also change.
         // @VisibleForTesting
-        private static readonly SortedSet<string> excludableParentFields = new SortedSet<string>
+        private static readonly SortedSet<string> ExcludableParentFields = new SortedSet<string>
         {
             "fixedLine",
             "mobile",
@@ -65,7 +65,7 @@ namespace PhoneNumbers
         // "clears" a PhoneNumberDesc field by simply clearing all of the fields under it. See the comment
         // above, about all 3 sets, for more about these fields.
         // @VisibleForTesting
-        private static readonly SortedSet<string> excludableChildFields = new SortedSet<string>
+        private static readonly SortedSet<string> ExcludableChildFields = new SortedSet<string>
         {
             "nationalNumberPattern",
             "possibleLength",
@@ -74,7 +74,7 @@ namespace PhoneNumbers
         };
 
         // @VisibleForTesting
-        private static readonly SortedSet<string> excludableChildlessFields = new SortedSet<string>
+        private static readonly SortedSet<string> ExcludableChildlessFields = new SortedSet<string>
         {
             "preferredInternationalPrefix",
             "nationalPrefix",
@@ -86,7 +86,7 @@ namespace PhoneNumbers
             "mobileNumberPortableRegion"
         };
 
-        private Dictionary<string, SortedSet<string>> blacklist;
+        private readonly Dictionary<string, SortedSet<string>> blacklist;
 
         // Note: If changing the blacklist here or the name of the method, update documentation about
         // affected methods at the same time:
@@ -259,15 +259,15 @@ namespace PhoneNumbers
                 int rightParenIndex = group.IndexOf(')');
                 if (leftParenIndex < 0 && rightParenIndex < 0)
                 {
-                    if (excludableParentFields.Contains(group))
+                    if (ExcludableParentFields.Contains(group))
                     {
                         if (fieldMap.ContainsKey(group))
                         {
                             throw new Exception(group + " given more than once in " + str);
                         }
-                        fieldMap.Add(group, new SortedSet<string>(excludableChildFields));
+                        fieldMap.Add(group, new SortedSet<string>(ExcludableChildFields));
                     }
-                    else if (excludableChildlessFields.Contains(group))
+                    else if (ExcludableChildlessFields.Contains(group))
                     {
                         if (fieldMap.ContainsKey(group))
                         {
@@ -275,7 +275,7 @@ namespace PhoneNumbers
                         }
                         fieldMap.Add(group, new SortedSet<string>());
                     }
-                    else if (excludableChildFields.Contains(group))
+                    else if (ExcludableChildFields.Contains(group))
                     {
                         if (wildcardChildren.Contains(group))
                         {
@@ -293,7 +293,7 @@ namespace PhoneNumbers
                     // We don't check for duplicate parentheses or illegal characters since these will be caught
                     // as not being part of valid field tokens.
                     string parent = group.Substring(0, leftParenIndex);
-                    if (!excludableParentFields.Contains(parent))
+                    if (!ExcludableParentFields.Contains(parent))
                     {
                         throw new Exception(parent + " is not a valid parent token");
                     }
@@ -305,7 +305,7 @@ namespace PhoneNumbers
                     foreach (string child in group.Substring(leftParenIndex + 1, rightParenIndex - leftParenIndex)
                         .Split(','))
                     {
-                        if (!excludableChildFields.Contains(child))
+                        if (!ExcludableChildFields.Contains(child))
                         {
                             throw new Exception(child + " is not a valid child token");
                         }
@@ -323,7 +323,7 @@ namespace PhoneNumbers
             }
             foreach (string wildcardChild in wildcardChildren)
             {
-                foreach (string parent in excludableParentFields)
+                foreach (string parent in ExcludableParentFields)
                 {
                     SortedSet<string> children = fieldMap[parent];
                     if (children == null)
@@ -332,7 +332,7 @@ namespace PhoneNumbers
                         fieldMap.Add(parent, children);
                     }
                     if (!children.Add(wildcardChild)
-                        && fieldMap[parent].Count != excludableChildFields.Count)
+                        && fieldMap[parent].Count != ExcludableChildFields.Count)
                     {
                         // The map already Contains parent -> wildcardChild but not all possible children.
                         // So wildcardChild was given explicitly as a child of parent, which is a duplication
@@ -353,21 +353,21 @@ namespace PhoneNumbers
             Dictionary<string, SortedSet<string>> fieldMap)
         {
             Dictionary<string, SortedSet<string>> complement = new Dictionary<string, SortedSet<string>>();
-            foreach (string parent in excludableParentFields)
+            foreach (string parent in ExcludableParentFields)
             {
                 if (!fieldMap.ContainsKey(parent))
                 {
-                    complement.Add(parent, new SortedSet<string>(excludableChildFields));
+                    complement.Add(parent, new SortedSet<string>(ExcludableChildFields));
                 }
                 else
                 {
                     SortedSet<string> otherChildren = fieldMap[parent];
                     // If the other map has all the children for this parent then we don't want to include the
                     // parent as a key.
-                    if (otherChildren.Count != excludableChildFields.Count)
+                    if (otherChildren.Count != ExcludableChildFields.Count)
                     {
                         SortedSet<string> children = new SortedSet<string>();
-                        foreach (string child in excludableChildFields)
+                        foreach (string child in ExcludableChildFields)
                         {
                             if (!otherChildren.Contains(child))
                             {
@@ -378,7 +378,7 @@ namespace PhoneNumbers
                     }
                 }
             }
-            foreach (string childlessField in excludableChildlessFields)
+            foreach (string childlessField in ExcludableChildlessFields)
             {
                 if (!fieldMap.ContainsKey(childlessField))
                 {
@@ -391,11 +391,11 @@ namespace PhoneNumbers
         // @VisibleForTesting
         bool ShouldDrop(string parent, string child)
         {
-            if (!excludableParentFields.Contains(parent))
+            if (!ExcludableParentFields.Contains(parent))
             {
                 throw new Exception(parent + " is not an excludable parent field");
             }
-            if (!excludableChildFields.Contains(child))
+            if (!ExcludableChildFields.Contains(child))
             {
                 throw new Exception(child + " is not an excludable child field");
             }
@@ -405,7 +405,7 @@ namespace PhoneNumbers
         // @VisibleForTesting
         bool ShouldDrop(string childlessField)
         {
-            if (!excludableChildlessFields.Contains(childlessField))
+            if (!ExcludableChildlessFields.Contains(childlessField))
             {
                 throw new Exception(childlessField + " is not an excludable childless field");
             }

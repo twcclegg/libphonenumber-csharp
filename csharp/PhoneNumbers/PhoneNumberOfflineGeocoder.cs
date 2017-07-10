@@ -25,12 +25,12 @@ namespace PhoneNumbers
 
     public class Locale
     {
-        public static readonly Locale ENGLISH = new Locale("en", "GB");
-        public static readonly Locale FRENCH = new Locale("fr", "FR");
-        public static readonly Locale GERMAN = new Locale("de", "DE");
-        public static readonly Locale ITALIAN = new Locale("it", "IT");
-        public static readonly Locale KOREAN = new Locale("ko", "KR");
-        public static readonly Locale SIMPLIFIED_CHINESE = new Locale("zh", "CN");
+        public static readonly Locale English = new Locale("en", "GB");
+        public static readonly Locale French = new Locale("fr", "FR");
+        public static readonly Locale German = new Locale("de", "DE");
+        public static readonly Locale Italian = new Locale("it", "IT");
+        public static readonly Locale Korean = new Locale("ko", "KR");
+        public static readonly Locale SimplifiedChinese = new Locale("zh", "CN");
 
         public readonly string Language;
         public readonly string Country;
@@ -67,7 +67,7 @@ namespace PhoneNumbers
 
         private string GetCountryName(string country, string language)
         {
-            var names = LocaleData.Data[Country];
+            var names = LocaleData.Data[country];
             string name;
             if(!names.TryGetValue(language, out name))
                 return null;
@@ -85,7 +85,7 @@ namespace PhoneNumbers
     {
         private static PhoneNumberOfflineGeocoder instance;
         private const string MAPPING_DATA_DIRECTORY = "res.prod_";
-        private static object thisLock = new object();
+        private static readonly object ThisLock = new object();
 
         private readonly PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
         private readonly string phonePrefixDataDirectory;
@@ -96,7 +96,7 @@ namespace PhoneNumbers
 
         // A mapping from countryCallingCode_lang to the corresponding phone prefix map that has been
         // loaded.
-        private Dictionary<string, AreaCodeMap> availablePhonePrefixMaps = new Dictionary<string, AreaCodeMap>();
+        private readonly Dictionary<string, AreaCodeMap> availablePhonePrefixMaps = new Dictionary<string, AreaCodeMap>();
 
         // @VisibleForTesting
         public PhoneNumberOfflineGeocoder(string phonePrefixDataDirectory)
@@ -119,7 +119,7 @@ namespace PhoneNumbers
             foreach (var n in names)
             {
                 var name = n.Substring(prefix.Length);
-                var pos = name.IndexOf("_");
+                var pos = name.IndexOf("_", StringComparison.Ordinal);
                 int country;
                 try
                 {
@@ -181,13 +181,9 @@ namespace PhoneNumbers
          */
         public static PhoneNumberOfflineGeocoder GetInstance()
         {
-            lock (thisLock)
+            lock (ThisLock)
             {
-                if (instance == null)
-                {
-                    instance = new PhoneNumberOfflineGeocoder(MAPPING_DATA_DIRECTORY);
-                }
-                return instance;
+                return instance ?? (instance = new PhoneNumberOfflineGeocoder(MAPPING_DATA_DIRECTORY));
             }
         }
 
@@ -221,7 +217,7 @@ namespace PhoneNumbers
         private string GetRegionDisplayName(string regionCode, Locale language)
         {
             return (regionCode == null || regionCode.Equals("ZZ") ||
-                regionCode.Equals(PhoneNumberUtil.REGION_CODE_FOR_NON_GEO_ENTITY))
+                regionCode.Equals(PhoneNumberUtil.RegionCodeForNonGeoEntity))
                 ? "" : new Locale("", regionCode).GetDisplayCountry(language.Language);
         }
 
@@ -337,11 +333,9 @@ namespace PhoneNumbers
 
             AreaCodeMap phonePrefixDescriptions =
                 GetPhonePrefixDescriptions(phonePrefix, lang, script, region);
-            string description = (phonePrefixDescriptions != null)
-                ? phonePrefixDescriptions.Lookup(number)
-                : null;
+            string description = phonePrefixDescriptions?.Lookup(number);
             // When a location is not available in the requested language, fall back to English.
-            if ((description == null || description.Length == 0) && MayFallBackToEnglish(lang))
+            if (string.IsNullOrEmpty(description) && MayFallBackToEnglish(lang))
             {
                 AreaCodeMap defaultMap = GetPhonePrefixDescriptions(phonePrefix, "en", "", "");
                 if (defaultMap == null)
@@ -350,7 +344,7 @@ namespace PhoneNumbers
                 }
                 description = defaultMap.Lookup(number);
             }
-            return description != null ? description : "";
+            return description ?? "";
         }
 
         private bool MayFallBackToEnglish(string lang)

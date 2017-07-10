@@ -55,7 +55,7 @@ namespace PhoneNumbers
                 }
                 // Build the corresponding area code map and serialize it to the binary format.
                 AreaCodeMap areaCodeMap = new AreaCodeMap();
-                areaCodeMap.readAreaCodeMap(areaCodeMapTemp);
+                areaCodeMap.ReadAreaCodeMap(areaCodeMapTemp);
                 return areaCodeMap;
             }
         }

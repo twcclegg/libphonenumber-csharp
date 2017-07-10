@@ -14,9 +14,6 @@
 * limitations under the License.
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace PhoneNumbers
 {
@@ -76,7 +73,7 @@ namespace PhoneNumbers
             bool allowPrefixMatch)
         {
             number = PhoneNumberUtil.ExtractPossibleNumber(number);
-            if (PhoneNumberUtil.PLUS_CHARS_PATTERN.MatchBeginning(number).Success)
+            if (PhoneNumberUtil.PlusCharsPattern.MatchBeginning(number).Success)
             {
                 // Returns false if the number starts with a plus sign. We don't believe dialing the country
                 // code before emergency numbers (e.g. +1911) works, but later, if that proves to work, we can

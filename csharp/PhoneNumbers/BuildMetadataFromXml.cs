@@ -27,48 +27,47 @@ namespace PhoneNumbers
     public class BuildMetadataFromXml
     {
         // String constants used to fetch the XML nodes and attributes.
-        private static readonly string CARRIER_CODE_FORMATTING_RULE = "carrierCodeFormattingRule";
-        private static readonly string CARRIER_SPECIFIC = "carrierSpecific";
-        private static readonly string COUNTRY_CODE = "countryCode";
-        private static readonly string EMERGENCY = "emergency";
-        private static readonly string EXAMPLE_NUMBER = "exampleNumber";
-        private static readonly string FIXED_LINE = "fixedLine";
-        private static readonly string FORMAT = "format";
-        private static readonly string GENERAL_DESC = "generalDesc";
-        private static readonly string INTERNATIONAL_PREFIX = "internationalPrefix";
-        private static readonly string INTL_FORMAT = "intlFormat";
-        private static readonly string LEADING_DIGITS = "leadingDigits";
-        private static readonly string LEADING_ZERO_POSSIBLE = "leadingZeroPossible";
-        private static readonly string MAIN_COUNTRY_FOR_CODE = "mainCountryForCode";
-        private static readonly string MOBILE = "mobile";
-        private static readonly string NATIONAL_NUMBER_PATTERN = "nationalNumberPattern";
-        private static readonly string NATIONAL_PREFIX = "nationalPrefix";
-        private static readonly string NATIONAL_PREFIX_FORMATTING_RULE = "nationalPrefixFormattingRule";
-        private static readonly string NATIONAL_PREFIX_OPTIONAL_WHEN_FORMATTING =
+        private const string CARRIER_CODE_FORMATTING_RULE = "carrierCodeFormattingRule";
+        private const string CARRIER_SPECIFIC = "carrierSpecific";
+        private const string COUNTRY_CODE = "countryCode";
+        private const string EMERGENCY = "emergency";
+        private const string EXAMPLE_NUMBER = "exampleNumber";
+        private const string FIXED_LINE = "fixedLine";
+        private const string FORMAT = "format";
+        private const string GENERAL_DESC = "generalDesc";
+        private const string INTERNATIONAL_PREFIX = "internationalPrefix";
+        private const string INTL_FORMAT = "intlFormat";
+        private const string LEADING_DIGITS = "leadingDigits";
+        private const string LEADING_ZERO_POSSIBLE = "leadingZeroPossible";
+        private const string MAIN_COUNTRY_FOR_CODE = "mainCountryForCode";
+        private const string MOBILE = "mobile";
+        private const string NATIONAL_NUMBER_PATTERN = "nationalNumberPattern";
+        private const string NATIONAL_PREFIX = "nationalPrefix";
+        private const string NATIONAL_PREFIX_FORMATTING_RULE = "nationalPrefixFormattingRule";
+        private const string NATIONAL_PREFIX_OPTIONAL_WHEN_FORMATTING =
             "nationalPrefixOptionalWhenFormatting";
-        private static readonly string NATIONAL_PREFIX_FOR_PARSING = "nationalPrefixForParsing";
-        private static readonly string NATIONAL_PREFIX_TRANSFORM_RULE = "nationalPrefixTransformRule";
-        private static readonly string NO_INTERNATIONAL_DIALLING = "noInternationalDialling";
-        private static readonly string NUMBER_FORMAT = "numberFormat";
-        private static readonly string PAGER = "pager";
-        private static readonly string PATTERN = "pattern";
-        private static readonly string PERSONAL_NUMBER = "personalNumber";
-        private static readonly string POSSIBLE_NUMBER_PATTERN = "possibleNumberPattern";
-        private static readonly string POSSIBLE_LENGTHS = "possibleLengths";
-        private static readonly string NATIONAL = "national";
-        private static readonly string LOCAL_ONLY = "localOnly";
-        private static readonly string PREFERRED_EXTN_PREFIX = "preferredExtnPrefix";
-        private static readonly string PREFERRED_INTERNATIONAL_PREFIX = "preferredInternationalPrefix";
-        private static readonly string PREMIUM_RATE = "premiumRate";
-        private static readonly string SHARED_COST = "sharedCost";
-        private static readonly string SHORT_CODE = "shortCode";
-        private static readonly string STANDARD_RATE = "standardRate";
-        private static readonly string TOLL_FREE = "tollFree";
-        private static readonly string UAN = "uan";
-        private static readonly string VOICEMAIL = "voicemail";
-        private static readonly string VOIP = "voip";
+        private const string NATIONAL_PREFIX_FOR_PARSING = "nationalPrefixForParsing";
+        private const string NATIONAL_PREFIX_TRANSFORM_RULE = "nationalPrefixTransformRule";
+        private const string NO_INTERNATIONAL_DIALLING = "noInternationalDialling";
+        private const string NUMBER_FORMAT = "numberFormat";
+        private const string PAGER = "pager";
+        private const string PATTERN = "pattern";
+        private const string PERSONAL_NUMBER = "personalNumber";
+        private const string POSSIBLE_LENGTHS = "possibleLengths";
+        private const string NATIONAL = "national";
+        private const string LOCAL_ONLY = "localOnly";
+        private const string PREFERRED_EXTN_PREFIX = "preferredExtnPrefix";
+        private const string PREFERRED_INTERNATIONAL_PREFIX = "preferredInternationalPrefix";
+        private const string PREMIUM_RATE = "premiumRate";
+        private const string SHARED_COST = "sharedCost";
+        private const string SHORT_CODE = "shortCode";
+        private const string STANDARD_RATE = "standardRate";
+        private const string TOLL_FREE = "tollFree";
+        private const string UAN = "uan";
+        private const string VOICEMAIL = "voicemail";
+        private const string VOIP = "voip";
 
-        private static readonly HashSet<string> PHONE_NUMBER_DESCS_WITHOUT_MATCHING_TYPES = new HashSet<string>{NO_INTERNATIONAL_DIALLING};
+        private static readonly HashSet<string> PhoneNumberDescsWithoutMatchingTypes = new HashSet<string>{NO_INTERNATIONAL_DIALLING};
 
         // Build the PhoneMetadataCollection from the input XML file.
         public static PhoneMetadataCollection BuildPhoneMetadataCollection(Stream input,
@@ -90,11 +89,9 @@ namespace PhoneNumbers
             var metadataFilter = GetMetadataFilter(liteBuild, specialBuild);
             foreach (XElement territory in document.GetElementsByTagName("territory"))
             {
-                string regionCode = "";
                 // For the main metadata file this should always be set, but for other supplementary data
                 // files the country calling code may be all that is needed.
-                if (territory.HasAttribute("id"))
-                     regionCode = territory.GetAttribute("id");
+                var regionCode = territory.GetAttribute("id");
                 var metadata = LoadCountryMetadata(regionCode, territory,
                     isShortNumberMetadata, isAlternateFormatsMetadata);
                 metadataFilter.FilterMetadata(metadata);
@@ -146,6 +143,7 @@ namespace PhoneNumbers
             // make it work across programming languages.
             if (removeWhitespace)
                 regex = Regex.Replace(regex, "\\s", "");
+            // ReSharper disable once ObjectCreationAsStatement
             new Regex(regex, InternalRegexOptions.Default);
             // return regex itself if it is of correct regex syntax
             // i.e. compile did not fail with a PatternSyntaxException.
@@ -158,7 +156,7 @@ namespace PhoneNumbers
         // @VisibleForTesting
         public static string GetNationalPrefix(XElement element)
         {
-            return element.HasAttribute(NATIONAL_PREFIX) ? element.GetAttribute(NATIONAL_PREFIX) : "";
+            return element.GetAttribute(NATIONAL_PREFIX);
         }
 
         public static PhoneMetadata.Builder LoadTerritoryTagMetadata(string regionCode, XElement element,
@@ -295,10 +293,10 @@ namespace PhoneNumbers
                 carrierCodeFormattingRule = ValidateRE(
                     GetDomesticCarrierCodeFormattingRuleFromElement(element, nationalPrefix));
             }
-            var numberFormatElements = element.GetElementsByTagName(NUMBER_FORMAT);
+            var numberFormatElements = element.GetElementsByTagName(NUMBER_FORMAT).ToList();
             bool hasExplicitIntlFormatDefined = false;
 
-            int numOfFormatElements = numberFormatElements.Count();
+            int numOfFormatElements = numberFormatElements.Count;
             if (numOfFormatElements > 0)
             {
                 foreach (var numberFormatElement in numberFormatElements)
@@ -525,9 +523,8 @@ namespace PhoneNumbers
             }
             string[] lengths = possibleLengthString.Split(',');
             ISet<int> lengthSet = new SortedSet<int>();
-            for (int i = 0; i < lengths.Length; i++)
+            foreach (string lengthSubstring in lengths)
             {
-                string lengthSubstring = lengths[i];
                 if (lengthSubstring.Length == 0)
                 {
                     throw new Exception("Leading, trailing or adjacent commas in possible " +
@@ -591,9 +588,8 @@ namespace PhoneNumbers
              SortedSet<int> localOnlyLengths)
         {
             var possibleLengths = data.GetElementsByTagName(POSSIBLE_LENGTHS).ToArray();
-            for (int i = 0; i < possibleLengths.Count(); i++)
+            foreach (XElement element in possibleLengths)
             {
-                XElement element = possibleLengths[i];
                 string nationalLengths = element.GetAttribute(NATIONAL);
                 // We don't add to the phone metadata yet, since we want to sort length elements found under
                 // different nodes first, make sure there are no duplicates between them and that the
@@ -641,7 +637,7 @@ namespace PhoneNumbers
             // present, aside from in some unit tests.
             // (However, for e.g. formatting metadata in PhoneNumberAlternateFormats, no PhoneNumberDesc
             // elements are present).
-            var generalDescNodes = data.GetElementsByTagName(GENERAL_DESC);
+            var generalDescNodes = data.GetElementsByTagName(GENERAL_DESC).ToList();
             if (generalDescNodes.Any())
             {
                 XElement generalDescNode = generalDescNodes.ElementAt(0);
@@ -659,9 +655,9 @@ namespace PhoneNumbers
                 // Make a copy here since we want to remove some nodes, but we don't want to do that on our
                 // actual data.
                 XElement allDescData = new XElement(data);
-                foreach (string tag in PHONE_NUMBER_DESCS_WITHOUT_MATCHING_TYPES)
+                foreach (string tag in PhoneNumberDescsWithoutMatchingTypes)
                 {
-                    var nodesToRemove = allDescData.GetElementsByTagName(tag);
+                    var nodesToRemove = allDescData.GetElementsByTagName(tag).ToList();
                     if (nodesToRemove.Any())
                     {
                         // We check when we process phone number descriptions that there are only one of each
@@ -677,7 +673,7 @@ namespace PhoneNumbers
                 // This is because it's the more detailed validation pattern, it's not a sub-type of short
                 // codes. The other lengths will be checked later to see that they are a sub-set of these
                 // possible lengths.
-                var shortCodeDescList = data.GetElementsByTagName(SHORT_CODE);
+                var shortCodeDescList = data.GetElementsByTagName(SHORT_CODE).ToList();
                 if (shortCodeDescList.Any())
                 {
                     XElement shortCodeDesc = shortCodeDescList.ElementAt(0);
@@ -751,7 +747,7 @@ namespace PhoneNumbers
 
         private static string ReplaceFirst(string input, string value, string replacement)
         {
-            var p = input.IndexOf(value);
+            var p = input.IndexOf(value, StringComparison.Ordinal);
             if (p >= 0)
                 input = input.Substring(0, p) + replacement + input.Substring(p + value.Length);
             return input;

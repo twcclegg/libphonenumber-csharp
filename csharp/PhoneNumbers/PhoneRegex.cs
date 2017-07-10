@@ -20,8 +20,8 @@ namespace PhoneNumbers
 {
     public class PhoneRegex : Regex
     {
-        private Regex allRegex_;
-        private Regex beginRegex_;
+        private readonly Regex allRegex;
+        private readonly Regex beginRegex;
 
         public PhoneRegex(string pattern)
             : this(pattern, RegexOptions.None)
@@ -32,18 +32,18 @@ namespace PhoneNumbers
             : base(pattern, options)
         {
             var o = options | InternalRegexOptions.Default;
-            allRegex_ = new Regex(string.Format("^(?:{0})$", pattern), o);
-            beginRegex_ = new Regex(string.Format("^(?:{0})", pattern), o);
+            allRegex = new Regex($"^(?:{pattern})$", o);
+            beginRegex = new Regex($"^(?:{pattern})", o);
         }
 
         public Match MatchAll(string value)
         {
-            return allRegex_.Match(value);
+            return allRegex.Match(value);
         }
 
         public Match MatchBeginning(string value)
         {
-            return beginRegex_.Match(value);
+            return beginRegex.Match(value);
         }
     }
 }

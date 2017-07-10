@@ -40,7 +40,7 @@ namespace PhoneNumbers
         *   <li>No alpha digits (vanity numbers such as 1-800-SIX-FLAGS) are currently supported.
         * </ul>
         */
-        private static readonly Regex PATTERN;
+        private static readonly Regex Pattern;
 
         /**
         * Matches strings that look like publication pages. Example:
@@ -49,22 +49,22 @@ namespace PhoneNumbers
         *
         * The string "211-227 (2003)" is not a telephone number.
         */
-        private static readonly Regex PUB_PAGES = new Regex("\\d{1,5}-+\\d{1,5}\\s{0,4}\\(\\d{1,4}", InternalRegexOptions.Default);
+        private static readonly Regex PubPages = new Regex("\\d{1,5}-+\\d{1,5}\\s{0,4}\\(\\d{1,4}", InternalRegexOptions.Default);
 
         /**
         * Matches strings that look like dates using "/" as a separator. Examples: 3/10/2011, 31/10/96 or
         * 08/31/95.
         */
-        private static readonly Regex SLASH_SEPARATED_DATES =
+        private static readonly Regex SlashSeparatedDates =
             new Regex("(?:(?:[0-3]?\\d/[01]?\\d)|(?:[01]?\\d/[0-3]?\\d))/(?:[12]\\d)?\\d{2}", InternalRegexOptions.Default);
 
         /**
         * Matches timestamps. Examples: "2012-01-02 08:00". Note that the reg-ex does not include the
         * trailing ":\d\d" -- that is covered by TIME_STAMPS_SUFFIX.
         */
-        private static readonly Regex TIME_STAMPS =
+        private static readonly Regex TimeStamps =
             new Regex("[12]\\d{3}[-/]?[01]\\d[-/]?[0-3]\\d [0-2]\\d$", InternalRegexOptions.Default);
-        private static readonly PhoneRegex TIME_STAMPS_SUFFIX = new PhoneRegex(":[0-5]\\d", InternalRegexOptions.Default);
+        private static readonly PhoneRegex TimeStampsSuffix = new PhoneRegex(":[0-5]\\d", InternalRegexOptions.Default);
 
 
         /**
@@ -72,19 +72,19 @@ namespace PhoneNumbers
         * This also checks that there is something inside the brackets. Having no brackets at all is also
         * fine.
         */
-        private static readonly PhoneRegex MATCHING_BRACKETS;
+        private static readonly PhoneRegex MatchingBrackets;
 
         /**
         * Punctuation that may be at the start of a phone number - brackets and plus signs.
         */
-        private static readonly PhoneRegex LEAD_CLASS;
+        private static readonly PhoneRegex LeadClass;
 
         /**
         * Matches white-space, which may indicate the end of a phone number and the start of something
         * else (such as a neighbouring zip-code). If white-space is found, continues to match all
         * characters that are not typically used to start a phone number.
         */
-        private static readonly PhoneRegex GROUP_SEPARATOR;
+        private static readonly PhoneRegex GroupSeparator;
 
         static PhoneNumberMatcher()
         {
@@ -102,7 +102,7 @@ namespace PhoneNumbers
             * also possible that the leading bracket was dropped, so we shouldn't be surprised if we see a
             * closing bracket first. We limit the sets of brackets in a phone number to four.
             */
-            MATCHING_BRACKETS = new PhoneRegex(
+            MatchingBrackets = new PhoneRegex(
                 "(?:[" + openingParens + "])?" + "(?:" + nonParens + "+" + "[" + closingParens + "])?" +
                 nonParens + "+" +
                 "(?:[" + openingParens + "]" + nonParens + "+[" + closingParens + "])" + bracketPairLimit +
@@ -116,26 +116,26 @@ namespace PhoneNumbers
             * single block, set high enough to accommodate the entire national number and the international
             * country code. */
             int digitBlockLimit =
-                PhoneNumberUtil.MAX_LENGTH_FOR_NSN + PhoneNumberUtil.MAX_LENGTH_COUNTRY_CODE;
+                PhoneNumberUtil.MaxLengthForNsn + PhoneNumberUtil.MaxLengthCountryCode;
             /* Limit on the number of blocks separated by punctuation. Uses digitBlockLimit since some
             * formats use spaces to separate each digit. */
             string blockLimit = Limit(0, digitBlockLimit);
 
             /* A punctuation sequence allowing white space. */
-            string punctuation = "[" + PhoneNumberUtil.VALID_PUNCTUATION + "]" + punctuationLimit;
+            string punctuation = "[" + PhoneNumberUtil.ValidPunctuation + "]" + punctuationLimit;
             /* A digits block without punctuation. */
             string digitSequence = "\\p{Nd}" + Limit(1, digitBlockLimit);
-            string leadClassChars = openingParens + PhoneNumberUtil.PLUS_CHARS;
+            string leadClassChars = openingParens + PhoneNumberUtil.PlusChars;
             string leadClass = "[" + leadClassChars + "]";
-            LEAD_CLASS = new PhoneRegex(leadClass, InternalRegexOptions.Default);
-            GROUP_SEPARATOR = new PhoneRegex("\\p{Z}" + "[^" + leadClassChars + "\\p{Nd}]*");
+            LeadClass = new PhoneRegex(leadClass, InternalRegexOptions.Default);
+            GroupSeparator = new PhoneRegex("\\p{Z}" + "[^" + leadClassChars + "\\p{Nd}]*");
 
             /* Phone number pattern allowing optional punctuation. */
-            PATTERN = new Regex(
+            Pattern = new Regex(
                 "(?:" + leadClass + punctuation + ")" + leadLimit +
                 digitSequence + "(?:" + punctuation + digitSequence + ")" + blockLimit +
-                "(?:" + PhoneNumberUtil.EXTN_PATTERNS_FOR_MATCHING + ")?",
-                PhoneNumberUtil.REGEX_FLAGS);
+                "(?:" + PhoneNumberUtil.ExtnPatternsForMatching + ")?",
+                PhoneNumberUtil.RegexFlags);
         }
 
         /** Returns a regular expression quantifier with an upper and lower limit. */
@@ -183,14 +183,11 @@ namespace PhoneNumbers
         public PhoneNumberMatcher(PhoneNumberUtil util, string text, string country, PhoneNumberUtil.Leniency leniency,
             long maxTries)
         {
-            if (util == null)
-                throw new ArgumentNullException();
-
             if (maxTries < 0)
                 throw new ArgumentOutOfRangeException();
 
-            phoneUtil = util;
-            this.text = (text != null) ? text : "";
+            phoneUtil = util ?? throw new ArgumentNullException();
+            this.text = text ?? "";
             preferredRegion = country;
             this.leniency = leniency;
             this.maxTries = maxTries;
@@ -205,8 +202,8 @@ namespace PhoneNumbers
         */
         private PhoneNumberMatch Find(int index)
         {
-            Match matched = null;
-            while (maxTries > 0 && (matched = PATTERN.Match(text, index)).Success)
+            Match matched;
+            while (maxTries > 0 && (matched = Pattern.Match(text, index)).Success)
             {
                 int start = matched.Index;
                 string candidate = text.Substring(start, matched.Length);
@@ -214,7 +211,7 @@ namespace PhoneNumbers
                 // Check for extra numbers at the end.
                 // TODO: This is the place to start when trying to support extraction of multiple phone number
                 // from split notations (+41 79 123 45 67 / 68).
-                candidate = TrimAfterFirstMatch(PhoneNumberUtil.SECOND_NUMBER_START_PATTERN, candidate);
+                candidate = TrimAfterFirstMatch(PhoneNumberUtil.SecondNumberStartPattern, candidate);
 
                 PhoneNumberMatch match = ExtractMatch(candidate, start);
                 if (match != null)
@@ -264,24 +261,22 @@ namespace PhoneNumbers
             return character == '%' || CharUnicodeInfo.GetUnicodeCategory(character) == UnicodeCategory.CurrencySymbol;
         }
 
-        public static string TrimAfterUnwantedChars(string s)
+        public static string TrimAfterUnwantedChars(string str)
         {
             int found = -1;
-            char c;
-            UnicodeCategory uc;
-            for (int i = 0; i != s.Length; ++i)
+            for (int i = 0; i != str.Length; ++i)
             {
-                c = s[i];
-                uc = CharUnicodeInfo.GetUnicodeCategory(c);
-                if (c != '#' && (
-                    uc != UnicodeCategory.UppercaseLetter &&
-                    uc != UnicodeCategory.LowercaseLetter &&
-                    uc != UnicodeCategory.TitlecaseLetter &&
-                    uc != UnicodeCategory.ModifierLetter &&
-                    uc != UnicodeCategory.OtherLetter &&
-                    uc != UnicodeCategory.DecimalDigitNumber &&
-                    uc != UnicodeCategory.LetterNumber &&
-                    uc != UnicodeCategory.OtherNumber))
+                var character = str[i];
+                var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(character);
+                if (character != '#' && (
+                    unicodeCategory != UnicodeCategory.UppercaseLetter &&
+                    unicodeCategory != UnicodeCategory.LowercaseLetter &&
+                    unicodeCategory != UnicodeCategory.TitlecaseLetter &&
+                    unicodeCategory != UnicodeCategory.ModifierLetter &&
+                    unicodeCategory != UnicodeCategory.OtherLetter &&
+                    unicodeCategory != UnicodeCategory.DecimalDigitNumber &&
+                    unicodeCategory != UnicodeCategory.LetterNumber &&
+                    unicodeCategory != UnicodeCategory.OtherNumber))
                 {
                     if (found < 0)
                         found = i;
@@ -291,9 +286,7 @@ namespace PhoneNumbers
                     found = -1;
                 }
             }
-            if (found >= 0)
-                return s.Substring(0, found);
-            return s;
+            return found >= 0 ? str.Substring(0, found) : str;
         }
 
         /**
@@ -306,13 +299,13 @@ namespace PhoneNumbers
         private PhoneNumberMatch ExtractMatch(string candidate, int offset)
         {
             // Skip a match that is more likely a publication page reference or a date.
-            if (PUB_PAGES.Match(candidate).Success || SLASH_SEPARATED_DATES.Match(candidate).Success)
+            if (PubPages.Match(candidate).Success || SlashSeparatedDates.Match(candidate).Success)
                 return null;
             // Skip potential time-stamps.
-            if (TIME_STAMPS.Match(candidate).Success)
+            if (TimeStamps.Match(candidate).Success)
             {
                 string followingText = text.Substring(offset + candidate.Length);
-                if (TIME_STAMPS_SUFFIX.MatchBeginning(followingText).Success)
+                if (TimeStampsSuffix.MatchBeginning(followingText).Success)
                     return null;
             }
 
@@ -339,7 +332,7 @@ namespace PhoneNumbers
         {
             // Try removing either the first or last "group" in the number and see if this gives a result.
             // We consider white space to be a possible indications of the start or end of the phone number.
-            var groupMatcher = GROUP_SEPARATOR.Match(candidate);
+            var groupMatcher = GroupSeparator.Match(candidate);
             if (groupMatcher.Success)
             {
                 // Try the first group by itself.
@@ -400,7 +393,7 @@ namespace PhoneNumbers
             {
                 // Check the candidate doesn't contain any formatting which would indicate that it really
                 // isn't a phone number.
-                if (!MATCHING_BRACKETS.MatchAll(candidate).Success)
+                if (!MatchingBrackets.MatchAll(candidate).Success)
                     return null;
 
                 // If leniency is set to VALID or stricter, we also want to skip numbers that are surrounded
@@ -409,7 +402,7 @@ namespace PhoneNumbers
                 {
                     // If the candidate is not at the start of the text, and does not start with phone-number
                     // punctuation, check the previous character.
-                    if (offset > 0 && !LEAD_CLASS.MatchBeginning(candidate).Success)
+                    if (offset > 0 && !LeadClass.MatchBeginning(candidate).Success)
                     {
                         char previousChar = text[offset - 1];
                         // We return null if it is a latin letter or an invalid punctuation symbol.
@@ -474,7 +467,7 @@ namespace PhoneNumbers
             {
                 // Fails if the substring of {@code normalizedCandidate} starting from {@code fromIndex}
                 // doesn't contain the consecutive digits in formattedNumberGroups[i].
-                fromIndex = normalizedCandidate.ToString().IndexOf(formattedNumberGroups[i], fromIndex);
+                fromIndex = normalizedCandidate.ToString().IndexOf(formattedNumberGroups[i], fromIndex, StringComparison.Ordinal);
                 if (fromIndex < 0)
                 {
                     return false;
@@ -507,7 +500,7 @@ namespace PhoneNumbers
             string[] formattedNumberGroups)
         {
             string[] candidateGroups =
-                PhoneNumberUtil.NON_DIGITS_PATTERN.Split(normalizedCandidate.ToString());
+                PhoneNumberUtil.NonDigitsPattern.Split(normalizedCandidate.ToString());
             // Set this to the last group, skipping it if the number has an extension.
             int candidateNumberGroupIndex =
                 number.HasExtension ? candidateGroups.Length - 2 : candidateGroups.Length - 1;
@@ -670,7 +663,7 @@ namespace PhoneNumbers
                 string candidateNationalPrefixRule = formatRule.NationalPrefixFormattingRule;
                 // We assume that the first-group symbol will never be _before_ the national prefix.
                 candidateNationalPrefixRule =
-                    candidateNationalPrefixRule.Substring(0, candidateNationalPrefixRule.IndexOf("${1}"));
+                    candidateNationalPrefixRule.Substring(0, candidateNationalPrefixRule.IndexOf("${1}", StringComparison.Ordinal));
                 candidateNationalPrefixRule =
                     PhoneNumberUtil.NormalizeDigitsOnly(candidateNationalPrefixRule);
                 if (candidateNationalPrefixRule.Length == 0)
@@ -688,15 +681,9 @@ namespace PhoneNumbers
             return true;
         }
 
-        public PhoneNumberMatch Current
-        {
-            get { return lastMatch; }
-        }
+        public PhoneNumberMatch Current => lastMatch;
 
-        object IEnumerator.Current
-        {
-            get { return lastMatch; }
-        }
+        object IEnumerator.Current => lastMatch;
 
         public bool MoveNext()
         {

@@ -32,27 +32,27 @@ namespace PhoneNumbers
         private int[] phoneNumberPrefixes;
         private string[] descriptions;
 
-        public override int getPrefix(int index)
+        public override int GetPrefix(int index)
         {
             return phoneNumberPrefixes[index];
         }
 
-        public override int getStorageSize()
+        public override int GetStorageSize()
         {
             return phoneNumberPrefixes.Length * sizeof(int)
                 + descriptions.Sum(d => d.Length);
         }
 
-        public override string getDescription(int index)
+        public override string GetDescription(int index)
         {
             return descriptions[index];
         }
 
-        public override void readFromSortedMap(SortedDictionary<int, string> sortedAreaCodeMap)
+        public override void ReadFromSortedMap(SortedDictionary<int, string> sortedAreaCodeMap)
         {
-            numOfEntries = sortedAreaCodeMap.Count;
-            phoneNumberPrefixes = new int[numOfEntries];
-            descriptions = new string[numOfEntries];
+            NumOfEntries = sortedAreaCodeMap.Count;
+            phoneNumberPrefixes = new int[NumOfEntries];
+            descriptions = new string[NumOfEntries];
             int index = 0;
             var possibleLengthsSet = new HashSet<int>();
             foreach (int prefix in sortedAreaCodeMap.Keys)
@@ -63,9 +63,9 @@ namespace PhoneNumbers
                 var lengthOfPrefix = (int)Math.Log10(prefix) + 1;
                 possibleLengthsSet.Add(lengthOfPrefix);
             }
-            possibleLengths.Clear();
-            possibleLengths.AddRange(possibleLengthsSet);
-            possibleLengths.Sort();
+            PossibleLengths.Clear();
+            PossibleLengths.AddRange(possibleLengthsSet);
+            PossibleLengths.Sort();
         }
     }
 }
