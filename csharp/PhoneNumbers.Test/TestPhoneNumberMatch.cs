@@ -24,9 +24,9 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestValueTypeSemantics()
         {
-            PhoneNumber number = new PhoneNumber();
-            PhoneNumberMatch match1 = new PhoneNumberMatch(10, "1 800 234 45 67", number);
-            PhoneNumberMatch match2 = new PhoneNumberMatch(10, "1 800 234 45 67", number);
+            var number = new PhoneNumber();
+            var match1 = new PhoneNumberMatch(10, "1 800 234 45 67", number);
+            var match2 = new PhoneNumberMatch(10, "1 800 234 45 67", number);
 
             Assert.Equal(match1, match2);
             Assert.Equal(match1.GetHashCode(), match2.GetHashCode());

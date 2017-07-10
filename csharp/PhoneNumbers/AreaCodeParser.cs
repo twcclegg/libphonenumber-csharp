@@ -35,7 +35,7 @@ namespace PhoneNumbers
     {
         public static AreaCodeMap ParseAreaCodeMap(Stream stream)
         {
-            SortedDictionary<int, string> areaCodeMapTemp = new SortedDictionary<int, string>();
+            var areaCodeMapTemp = new SortedDictionary<int, string>();
             using (var lines = new StreamReader(stream, Encoding.UTF8))
             {
                 string line;
@@ -49,12 +49,12 @@ namespace PhoneNumbers
                     {
                         continue;
                     }
-                    string areaCode = line.Substring(0, indexOfPipe);
-                    string location = line.Substring(indexOfPipe + 1);
+                    var areaCode = line.Substring(0, indexOfPipe);
+                    var location = line.Substring(indexOfPipe + 1);
                     areaCodeMapTemp[int.Parse(areaCode)] = location;
                 }
                 // Build the corresponding area code map and serialize it to the binary format.
-                AreaCodeMap areaCodeMap = new AreaCodeMap();
+                var areaCodeMap = new AreaCodeMap();
                 areaCodeMap.ReadAreaCodeMap(areaCodeMapTemp);
                 return areaCodeMap;
             }

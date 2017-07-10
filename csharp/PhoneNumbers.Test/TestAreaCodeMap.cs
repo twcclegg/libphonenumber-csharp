@@ -32,7 +32,7 @@ namespace PhoneNumbers.Test
 
         public TestAreaCodeMap()
         {
-            SortedDictionary<int, string> sortedMap = new SortedDictionary<int, string>
+            var sortedMap = new SortedDictionary<int, string>
             {
                 [1212] = "New York",
                 [1480] = "Arizona",
@@ -86,7 +86,7 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestGetSmallerMapStorageChoosesDefaultImpl()
         {
-            AreaCodeMapStorageStrategy mapStorage =
+            var mapStorage =
                 new AreaCodeMap().GetSmallerMapStorage(CreateDefaultStorageMapCandidate());
             Assert.False(mapStorage.GetType() == typeof(FlyweightMapStorage));
         }
@@ -94,7 +94,7 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestGetSmallerMapStorageChoosesFlyweightImpl()
         {
-            AreaCodeMapStorageStrategy mapStorage =
+            var mapStorage =
                 new AreaCodeMap().GetSmallerMapStorage(CreateFlyweightStorageMapCandidate());
             Assert.True(mapStorage.GetType() == typeof(FlyweightMapStorage));
         }

@@ -124,9 +124,9 @@ namespace PhoneNumbers
         // code. Therefore, we return the metadata for "main" region for this country calling code.
         private PhoneMetadata GetMetadataForRegion(string regionCode)
         {
-            int countryCallingCode = phoneUtil.GetCountryCodeForRegion(regionCode);
-            string mainCountry = phoneUtil.GetRegionCodeForCountryCode(countryCallingCode);
-            PhoneMetadata metadata = phoneUtil.GetMetadataForRegion(mainCountry);
+            var countryCallingCode = phoneUtil.GetCountryCodeForRegion(regionCode);
+            var mainCountry = phoneUtil.GetRegionCodeForCountryCode(countryCallingCode);
+            var metadata = phoneUtil.GetMetadataForRegion(mainCountry);
             if (metadata != null)
                 return metadata;
             // Set to a default instance of the metadata. This allows us to function with an incorrect
@@ -141,8 +141,8 @@ namespace PhoneNumbers
             // formatting template could be created.
             while (possibleFormats.Count > 0)
             {
-                NumberFormat numberFormat = possibleFormats[0];
-                string pattern = numberFormat.Pattern;
+                var numberFormat = possibleFormats[0];
+                var pattern = numberFormat.Pattern;
                 if (currentFormattingPattern.Equals(pattern))
                     return false;
                 if (CreateFormattingTemplate(numberFormat))
@@ -161,11 +161,11 @@ namespace PhoneNumbers
 
         private void GetAvailableFormats(string leadingThreeDigits)
         {
-            IList<NumberFormat> formatList =
+            var formatList =
                 (isInternationalFormatting && currentMetaData.IntlNumberFormatCount > 0)
                 ? currentMetaData.IntlNumberFormatList
                 : currentMetaData.NumberFormatList;
-            foreach (NumberFormat format in formatList)
+            foreach (var format in formatList)
             {
                 if (IsFormatEligible(format.Format))
                 {
@@ -182,10 +182,10 @@ namespace PhoneNumbers
 
         private void NarrowDownPossibleFormats(string leadingDigits)
         {
-            int indexOfLeadingDigitsPattern = leadingDigits.Length - MinLeadingDigitsLength;
-            for (int i = 0; i != possibleFormats.Count; )
+            var indexOfLeadingDigitsPattern = leadingDigits.Length - MinLeadingDigitsLength;
+            for (var i = 0; i != possibleFormats.Count; )
             {
-                NumberFormat format = possibleFormats[i];
+                var format = possibleFormats[i];
                 if (format.LeadingDigitsPatternCount > indexOfLeadingDigitsPattern)
                 {
                     var leadingDigitsPattern =
@@ -206,7 +206,7 @@ namespace PhoneNumbers
 
         private bool CreateFormattingTemplate(NumberFormat format)
         {
-            string numberPattern = format.Pattern;
+            var numberPattern = format.Pattern;
 
             // The formatter doesn't format numbers when numberPattern contains "|", e.g.
             // (20|3)\d{4}. In those cases we quickly return.
@@ -221,7 +221,7 @@ namespace PhoneNumbers
             // Replace any standalone digit (not the one in d{}) with \d
             numberPattern = StandaloneDigitPattern.Replace(numberPattern, "\\d");
             formattingTemplate.Length = 0;
-            string tempTemplate = GetFormattingTemplate(numberPattern, format.Format);
+            var tempTemplate = GetFormattingTemplate(numberPattern, format.Format);
             if (tempTemplate.Length > 0)
             {
                 formattingTemplate.Append(tempTemplate);
@@ -236,15 +236,15 @@ namespace PhoneNumbers
         {
             // Creates a phone number consisting only of the digit 9 that matches the
             // numberPattern by applying the pattern to the longestPhoneNumber string.
-            string longestPhoneNumber = "999999999999999";
+            var longestPhoneNumber = "999999999999999";
             var m = regexCache.GetPatternForRegex(numberPattern).Match(longestPhoneNumber);
-            string aPhoneNumber = m.Groups[0].Value;
+            var aPhoneNumber = m.Groups[0].Value;
             // No formatting template can be created if the number of digits entered so far is longer than
             // the maximum the current formatting rule can accommodate.
             if (aPhoneNumber.Length < nationalNumber.Length)
                 return "";
             // Formats the number according to numberFormat
-            string template = Regex.Replace(aPhoneNumber, numberPattern, numberFormat);
+            var template = Regex.Replace(aPhoneNumber, numberPattern, numberFormat);
             // Replaces each digit with character digitPlaceholder
             template = template.Replace("9", digitPlaceholder);
             return template;
@@ -378,10 +378,10 @@ namespace PhoneNumbers
                     }
                     if (possibleFormats.Count > 0)
                     {  // The formatting pattern is already chosen.
-                        string tempNationalNumber = InputDigitHelper(nextChar);
+                        var tempNationalNumber = InputDigitHelper(nextChar);
                         // See if the accrued digits can be formatted properly already. If not, use the results
                         // from inputDigitHelper, which does formatting based on the formatting pattern chosen.
-                        string formattedNumber = AttemptToFormatAccruedDigits();
+                        var formattedNumber = AttemptToFormatAccruedDigits();
                         if (formattedNumber.Length > 0)
                         {
                             return formattedNumber;
@@ -421,7 +421,7 @@ namespace PhoneNumbers
                 // Remove the previously extracted NDD from prefixBeforeNationalNumber. We cannot simply set
                 // it to empty string because people sometimes enter national prefix after country code, e.g
                 // +44 (0)20-1234-5678.
-                int indexOfPreviousNdd = prefixBeforeNationalNumber.ToString().LastIndexOf(nationalPrefixExtracted, StringComparison.Ordinal);
+                var indexOfPreviousNdd = prefixBeforeNationalNumber.ToString().LastIndexOf(nationalPrefixExtracted, StringComparison.Ordinal);
                 prefixBeforeNationalNumber.Length = indexOfPreviousNdd;
             }
             return !nationalPrefixExtracted.Equals(RemoveNationalPrefixFromNationalNumber());
@@ -436,12 +436,12 @@ namespace PhoneNumbers
 
         string AttemptToFormatAccruedDigits()
         {
-            foreach (NumberFormat numFormat in possibleFormats)
+            foreach (var numFormat in possibleFormats)
             {
                 var m = regexCache.GetPatternForRegex(numFormat.Pattern);
                 if (m.MatchAll(nationalNumber.ToString()).Success)
                 {
-                    string formattedNumber = m.Replace(nationalNumber.ToString(), numFormat.Format);
+                    var formattedNumber = m.Replace(nationalNumber.ToString(), numFormat.Format);
                     return prefixBeforeNationalNumber + formattedNumber;
                 }
             }
@@ -489,11 +489,11 @@ namespace PhoneNumbers
         // string in the end.
         private string InputAccruedNationalNumber()
         {
-            int lengthOfNationalNumber = nationalNumber.Length;
+            var lengthOfNationalNumber = nationalNumber.Length;
             if (lengthOfNationalNumber > 0)
             {
-                string tempNationalNumber = "";
-                for (int i = 0; i < lengthOfNationalNumber; i++)
+                var tempNationalNumber = "";
+                for (var i = 0; i < lengthOfNationalNumber; i++)
                 {
                     tempNationalNumber = InputDigitHelper(nationalNumber[i]);
                 }
@@ -507,7 +507,7 @@ namespace PhoneNumbers
         // Returns the national prefix extracted, or an empty string if it is not present.
         private string RemoveNationalPrefixFromNationalNumber()
         {
-            int startOfNationalNumber = 0;
+            var startOfNationalNumber = 0;
             if (currentMetaData.CountryCode == 1 && nationalNumber[0] == '1')
             {
                 startOfNationalNumber = 1;
@@ -528,7 +528,7 @@ namespace PhoneNumbers
                     prefixBeforeNationalNumber.Append(nationalNumber.ToString().Substring(0, startOfNationalNumber));
                 }
             }
-            string nationalPrefix = nationalNumber.ToString().Substring(0, startOfNationalNumber);
+            var nationalPrefix = nationalNumber.ToString().Substring(0, startOfNationalNumber);
             nationalNumber.Remove(0, startOfNationalNumber);
             return nationalPrefix;
         }
@@ -549,7 +549,7 @@ namespace PhoneNumbers
             if (iddMatcher.Success)
             {
                 isInternationalFormatting = true;
-                int startOfCountryCallingCode = iddMatcher.Groups[0].Index + iddMatcher.Groups[0].Length;
+                var startOfCountryCallingCode = iddMatcher.Groups[0].Index + iddMatcher.Groups[0].Length;
                 nationalNumber.Length = 0;
                 nationalNumber.Append(accruedInputWithoutFormatting.ToString().Substring(startOfCountryCallingCode));
                 prefixBeforeNationalNumber.Length = 0;
@@ -577,15 +577,15 @@ namespace PhoneNumbers
             {
                 return false;
             }
-            StringBuilder numberWithoutCountryCallingCode = new StringBuilder();
-            int countryCode = phoneUtil.ExtractCountryCode(nationalNumber, numberWithoutCountryCallingCode);
+            var numberWithoutCountryCallingCode = new StringBuilder();
+            var countryCode = phoneUtil.ExtractCountryCode(nationalNumber, numberWithoutCountryCallingCode);
             if (countryCode == 0)
             {
                 return false;
             }
             nationalNumber.Length = 0;
             nationalNumber.Append(numberWithoutCountryCallingCode);
-            string newRegionCode = phoneUtil.GetRegionCodeForCountryCode(countryCode);
+            var newRegionCode = phoneUtil.GetRegionCodeForCountryCode(countryCode);
             if (PhoneNumberUtil.RegionCodeForNonGeoEntity.Equals(newRegionCode))
             {
                 currentMetaData = phoneUtil.GetMetadataForNonGeographicalRegion(countryCode);
@@ -594,7 +594,7 @@ namespace PhoneNumbers
             {
                 currentMetaData = GetMetadataForRegion(newRegionCode);
             }
-            string countryCodeString = countryCode.ToString();
+            var countryCodeString = countryCode.ToString();
             prefixBeforeNationalNumber.Append(countryCodeString).Append(" ");
             return true;
         }
@@ -632,7 +632,7 @@ namespace PhoneNumbers
             {
                 //XXX: double match, can we fix that?
                 digitMatcher = digitPattern.Match(formattingTemplate.ToString());
-                string tempTemplate = digitPattern.Replace(formattingTemplate.ToString(), nextChar.ToString(), 1);
+                var tempTemplate = digitPattern.Replace(formattingTemplate.ToString(), nextChar.ToString(), 1);
                 formattingTemplate.Length = 0;
                 formattingTemplate.Append(tempTemplate);
                 lastMatchPosition = digitMatcher.Groups[0].Index;

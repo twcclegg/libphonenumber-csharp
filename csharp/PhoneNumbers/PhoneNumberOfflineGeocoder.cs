@@ -141,7 +141,7 @@ namespace PhoneNumbers
         private AreaCodeMap GetPhonePrefixDescriptions(
             int prefixMapKey, string language, string script, string region)
         {
-            string fileName = mappingFileProvider.GetFileName(prefixMapKey, language, script, region);
+            var fileName = mappingFileProvider.GetFileName(prefixMapKey, language, script, region);
             if (fileName.Length == 0)
             {
                 return null;
@@ -207,7 +207,7 @@ namespace PhoneNumbers
          */
         private string GetCountryNameForNumber(PhoneNumber number, Locale language)
         {
-            string regionCode = phoneUtil.GetRegionCodeForNumber(number);
+            var regionCode = phoneUtil.GetRegionCodeForNumber(number);
             return GetRegionDisplayName(regionCode, language);
         }
 
@@ -235,11 +235,11 @@ namespace PhoneNumbers
         */
         public string GetDescriptionForValidNumber(PhoneNumber number, Locale languageCode)
         {
-            string langStr = languageCode.Language;
-            string scriptStr = "";  // No script is specified
-            string regionStr = languageCode.Country;
+            var langStr = languageCode.Language;
+            var scriptStr = "";  // No script is specified
+            var regionStr = languageCode.Country;
 
-            string areaDescription =
+            var areaDescription =
                 GetAreaDescriptionForNumber(number, langStr, scriptStr, regionStr);
             return (areaDescription.Length > 0)
                 ? areaDescription : GetCountryNameForNumber(number, languageCode);
@@ -272,7 +272,7 @@ namespace PhoneNumbers
             // If the user region matches the number's region, then we just show the lower-level
             // description, if one exists - if no description exists, we will show the region(country) name
             // for the number.
-            string regionCode = phoneUtil.GetRegionCodeForNumber(number);
+            var regionCode = phoneUtil.GetRegionCodeForNumber(number);
             if (userRegion.Equals(regionCode))
             {
                 return GetDescriptionForValidNumber(number, languageCode);
@@ -324,20 +324,20 @@ namespace PhoneNumbers
         private string GetAreaDescriptionForNumber(
             PhoneNumber number, string lang, string script, string region)
         {
-            int countryCallingCode = number.CountryCode;
+            var countryCallingCode = number.CountryCode;
             // As the NANPA data is split into multiple files covering 3-digit areas, use a phone number
             // prefix of 4 digits for NANPA instead, e.g. 1650.
             //int phonePrefix = (countryCallingCode != 1) ?
             //    countryCallingCode : (1000 + (int) (number.NationalNumber / 10000000));
-            int phonePrefix = countryCallingCode;
+            var phonePrefix = countryCallingCode;
 
-            AreaCodeMap phonePrefixDescriptions =
+            var phonePrefixDescriptions =
                 GetPhonePrefixDescriptions(phonePrefix, lang, script, region);
-            string description = phonePrefixDescriptions?.Lookup(number);
+            var description = phonePrefixDescriptions?.Lookup(number);
             // When a location is not available in the requested language, fall back to English.
             if (string.IsNullOrEmpty(description) && MayFallBackToEnglish(lang))
             {
-                AreaCodeMap defaultMap = GetPhonePrefixDescriptions(phonePrefix, "en", "", "");
+                var defaultMap = GetPhonePrefixDescriptions(phonePrefix, "en", "", "");
                 if (defaultMap == null)
                 {
                     return "";

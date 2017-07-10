@@ -251,12 +251,12 @@ namespace PhoneNumbers
                 throw new Exception("Null nor empty string should not be passed to ParseFieldMapFromString");
             }
 
-            Dictionary<string, SortedSet<string>> fieldMap = new Dictionary<string, SortedSet<string>>();
-            SortedSet<string> wildcardChildren = new SortedSet<string>();
-            foreach (string group in str.Split(':'))
+            var fieldMap = new Dictionary<string, SortedSet<string>>();
+            var wildcardChildren = new SortedSet<string>();
+            foreach (var group in str.Split(':'))
             {
-                int leftParenIndex = group.IndexOf('(');
-                int rightParenIndex = group.IndexOf(')');
+                var leftParenIndex = group.IndexOf('(');
+                var rightParenIndex = group.IndexOf(')');
                 if (leftParenIndex < 0 && rightParenIndex < 0)
                 {
                     if (ExcludableParentFields.Contains(group))
@@ -292,7 +292,7 @@ namespace PhoneNumbers
                 {
                     // We don't check for duplicate parentheses or illegal characters since these will be caught
                     // as not being part of valid field tokens.
-                    string parent = group.Substring(0, leftParenIndex);
+                    var parent = group.Substring(0, leftParenIndex);
                     if (!ExcludableParentFields.Contains(parent))
                     {
                         throw new Exception(parent + " is not a valid parent token");
@@ -301,8 +301,8 @@ namespace PhoneNumbers
                     {
                         throw new Exception(parent + " given more than once in " + str);
                     }
-                    SortedSet<string> children = new SortedSet<string>();
-                    foreach (string child in group.Substring(leftParenIndex + 1, rightParenIndex - leftParenIndex)
+                    var children = new SortedSet<string>();
+                    foreach (var child in group.Substring(leftParenIndex + 1, rightParenIndex - leftParenIndex)
                         .Split(','))
                     {
                         if (!ExcludableChildFields.Contains(child))
@@ -321,11 +321,11 @@ namespace PhoneNumbers
                     throw new Exception("Incorrect location of parantheses in " + group);
                 }
             }
-            foreach (string wildcardChild in wildcardChildren)
+            foreach (var wildcardChild in wildcardChildren)
             {
-                foreach (string parent in ExcludableParentFields)
+                foreach (var parent in ExcludableParentFields)
                 {
-                    SortedSet<string> children = fieldMap[parent];
+                    var children = fieldMap[parent];
                     if (children == null)
                     {
                         children = new SortedSet<string>();
@@ -352,8 +352,8 @@ namespace PhoneNumbers
         static Dictionary<string, SortedSet<string>> ComputeComplement(
             Dictionary<string, SortedSet<string>> fieldMap)
         {
-            Dictionary<string, SortedSet<string>> complement = new Dictionary<string, SortedSet<string>>();
-            foreach (string parent in ExcludableParentFields)
+            var complement = new Dictionary<string, SortedSet<string>>();
+            foreach (var parent in ExcludableParentFields)
             {
                 if (!fieldMap.ContainsKey(parent))
                 {
@@ -361,13 +361,13 @@ namespace PhoneNumbers
                 }
                 else
                 {
-                    SortedSet<string> otherChildren = fieldMap[parent];
+                    var otherChildren = fieldMap[parent];
                     // If the other map has all the children for this parent then we don't want to include the
                     // parent as a key.
                     if (otherChildren.Count != ExcludableChildFields.Count)
                     {
-                        SortedSet<string> children = new SortedSet<string>();
-                        foreach (string child in ExcludableChildFields)
+                        var children = new SortedSet<string>();
+                        foreach (var child in ExcludableChildFields)
                         {
                             if (!otherChildren.Contains(child))
                             {
@@ -378,7 +378,7 @@ namespace PhoneNumbers
                     }
                 }
             }
-            foreach (string childlessField in ExcludableChildlessFields)
+            foreach (var childlessField in ExcludableChildlessFields)
             {
                 if (!fieldMap.ContainsKey(childlessField))
                 {
@@ -414,7 +414,7 @@ namespace PhoneNumbers
 
         private PhoneNumberDesc GetFiltered(string type, PhoneNumberDesc desc)
         {
-            PhoneNumberDesc.Builder builder = new PhoneNumberDesc.Builder().MergeFrom(desc);
+            var builder = new PhoneNumberDesc.Builder().MergeFrom(desc);
             if (ShouldDrop(type, "nationalNumberPattern"))
             {
                 builder.ClearNationalNumberPattern();

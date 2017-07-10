@@ -78,8 +78,8 @@ namespace PhoneNumbers
 
         public override string ToString()
         {
-            StringBuilder output = new StringBuilder();
-            for (int i = 0; i < GetNumOfEntries(); i++)
+            var output = new StringBuilder();
+            for (var i = 0; i < GetNumOfEntries(); i++)
             {
                 output.Append(GetPrefix(i))
                     .Append("|")

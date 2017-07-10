@@ -80,14 +80,14 @@ namespace PhoneNumbers
                 // add additional logic here to handle it.
                 return false;
             }
-            PhoneMetadata metadata = phoneUtil.GetMetadataForRegion(regionCode);
+            var metadata = phoneUtil.GetMetadataForRegion(regionCode);
             if (metadata == null || !metadata.HasEmergency)
             {
                 return false;
             }
             var emergencyNumberPattern =
                 new PhoneRegex(metadata.Emergency.NationalNumberPattern);
-            String normalizedNumber = PhoneNumberUtil.NormalizeDigitsOnly(number);
+            var normalizedNumber = PhoneNumberUtil.NormalizeDigitsOnly(number);
             // In Brazil, it is impossible to append additional digits to an emergency number to dial the
             // number.
             return (!allowPrefixMatch || regionCode.Equals("BR"))

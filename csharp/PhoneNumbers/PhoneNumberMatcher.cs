@@ -91,12 +91,12 @@ namespace PhoneNumbers
             /* Builds the MATCHING_BRACKETS and PATTERN regular expressions. The building blocks below exist
             * to make the pattern more easily understood. */
 
-            string openingParens = "(\\[\uFF08\uFF3B";
-            string closingParens = ")\\]\uFF09\uFF3D";
-            string nonParens = "[^" + openingParens + closingParens + "]";
+            var openingParens = "(\\[\uFF08\uFF3B";
+            var closingParens = ")\\]\uFF09\uFF3D";
+            var nonParens = "[^" + openingParens + closingParens + "]";
 
             /* Limit on the number of pairs of brackets in a phone number. */
-            string bracketPairLimit = Limit(0, 3);
+            var bracketPairLimit = Limit(0, 3);
             /*
             * An opening bracket at the beginning may not be closed, but subsequent ones should be.  It's
             * also possible that the leading bracket was dropped, so we shouldn't be surprised if we see a
@@ -109,24 +109,24 @@ namespace PhoneNumbers
                 nonParens + "*", InternalRegexOptions.Default);
 
             /* Limit on the number of leading (plus) characters. */
-            string leadLimit = Limit(0, 2);
+            var leadLimit = Limit(0, 2);
             /* Limit on the number of consecutive punctuation characters. */
-            string punctuationLimit = Limit(0, 4);
+            var punctuationLimit = Limit(0, 4);
             /* The maximum number of digits allowed in a digit-separated block. As we allow all digits in a
             * single block, set high enough to accommodate the entire national number and the international
             * country code. */
-            int digitBlockLimit =
+            var digitBlockLimit =
                 PhoneNumberUtil.MaxLengthForNsn + PhoneNumberUtil.MaxLengthCountryCode;
             /* Limit on the number of blocks separated by punctuation. Uses digitBlockLimit since some
             * formats use spaces to separate each digit. */
-            string blockLimit = Limit(0, digitBlockLimit);
+            var blockLimit = Limit(0, digitBlockLimit);
 
             /* A punctuation sequence allowing white space. */
-            string punctuation = "[" + PhoneNumberUtil.ValidPunctuation + "]" + punctuationLimit;
+            var punctuation = "[" + PhoneNumberUtil.ValidPunctuation + "]" + punctuationLimit;
             /* A digits block without punctuation. */
-            string digitSequence = "\\p{Nd}" + Limit(1, digitBlockLimit);
-            string leadClassChars = openingParens + PhoneNumberUtil.PlusChars;
-            string leadClass = "[" + leadClassChars + "]";
+            var digitSequence = "\\p{Nd}" + Limit(1, digitBlockLimit);
+            var leadClassChars = openingParens + PhoneNumberUtil.PlusChars;
+            var leadClass = "[" + leadClassChars + "]";
             LeadClass = new PhoneRegex(leadClass, InternalRegexOptions.Default);
             GroupSeparator = new PhoneRegex("\\p{Z}" + "[^" + leadClassChars + "\\p{Nd}]*");
 
@@ -205,15 +205,15 @@ namespace PhoneNumbers
             Match matched;
             while (maxTries > 0 && (matched = Pattern.Match(text, index)).Success)
             {
-                int start = matched.Index;
-                string candidate = text.Substring(start, matched.Length);
+                var start = matched.Index;
+                var candidate = text.Substring(start, matched.Length);
 
                 // Check for extra numbers at the end.
                 // TODO: This is the place to start when trying to support extraction of multiple phone number
                 // from split notations (+41 79 123 45 67 / 68).
                 candidate = TrimAfterFirstMatch(PhoneNumberUtil.SecondNumberStartPattern, candidate);
 
-                PhoneNumberMatch match = ExtractMatch(candidate, start);
+                var match = ExtractMatch(candidate, start);
                 if (match != null)
                     return match;
 
@@ -263,8 +263,8 @@ namespace PhoneNumbers
 
         public static string TrimAfterUnwantedChars(string str)
         {
-            int found = -1;
-            for (int i = 0; i != str.Length; ++i)
+            var found = -1;
+            for (var i = 0; i != str.Length; ++i)
             {
                 var character = str[i];
                 var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(character);
@@ -304,14 +304,14 @@ namespace PhoneNumbers
             // Skip potential time-stamps.
             if (TimeStamps.Match(candidate).Success)
             {
-                string followingText = text.Substring(offset + candidate.Length);
+                var followingText = text.Substring(offset + candidate.Length);
                 if (TimeStampsSuffix.MatchBeginning(followingText).Success)
                     return null;
             }
 
             // Try to come up with a valid match given the entire candidate.
-            string rawString = candidate;
-            PhoneNumberMatch match = ParseAndVerify(rawString, offset);
+            var rawString = candidate;
+            var match = ParseAndVerify(rawString, offset);
             if (match != null)
                 return match;
 
@@ -336,16 +336,16 @@ namespace PhoneNumbers
             if (groupMatcher.Success)
             {
                 // Try the first group by itself.
-                string firstGroupOnly = candidate.Substring(0, groupMatcher.Index);
+                var firstGroupOnly = candidate.Substring(0, groupMatcher.Index);
                 firstGroupOnly = TrimAfterUnwantedChars(firstGroupOnly);
-                PhoneNumberMatch match = ParseAndVerify(firstGroupOnly, offset);
+                var match = ParseAndVerify(firstGroupOnly, offset);
                 if (match != null)
                     return match;
                 maxTries--;
 
-                int withoutFirstGroupStart = groupMatcher.Index + groupMatcher.Length;
+                var withoutFirstGroupStart = groupMatcher.Index + groupMatcher.Length;
                 // Try the rest of the candidate without the first group.
-                string withoutFirstGroup = candidate.Substring(withoutFirstGroupStart);
+                var withoutFirstGroup = candidate.Substring(withoutFirstGroupStart);
                 withoutFirstGroup = TrimAfterUnwantedChars(withoutFirstGroup);
                 match = ParseAndVerify(withoutFirstGroup, offset + withoutFirstGroupStart);
                 if (match != null)
@@ -354,13 +354,13 @@ namespace PhoneNumbers
 
                 if (maxTries > 0)
                 {
-                    int lastGroupStart = withoutFirstGroupStart;
+                    var lastGroupStart = withoutFirstGroupStart;
                     while ((groupMatcher = groupMatcher.NextMatch()).Success)
                     {
                         // Find the last group.
                         lastGroupStart = groupMatcher.Index;
                     }
-                    string withoutLastGroup = candidate.Substring(0, lastGroupStart);
+                    var withoutLastGroup = candidate.Substring(0, lastGroupStart);
                     withoutLastGroup = TrimAfterUnwantedChars(withoutLastGroup);
                     if (withoutLastGroup.Equals(firstGroupOnly))
                     {
@@ -404,17 +404,17 @@ namespace PhoneNumbers
                     // punctuation, check the previous character.
                     if (offset > 0 && !LeadClass.MatchBeginning(candidate).Success)
                     {
-                        char previousChar = text[offset - 1];
+                        var previousChar = text[offset - 1];
                         // We return null if it is a latin letter or an invalid punctuation symbol.
                         if (IsInvalidPunctuationSymbol(previousChar) || IsLatinLetter(previousChar))
                         {
                             return null;
                         }
                     }
-                    int lastCharIndex = offset + candidate.Length;
+                    var lastCharIndex = offset + candidate.Length;
                     if (lastCharIndex < text.Length)
                     {
-                        char nextChar = text[lastCharIndex];
+                        var nextChar = text[lastCharIndex];
                         if (IsInvalidPunctuationSymbol(nextChar) || IsLatinLetter(nextChar))
                         {
                             return null;
@@ -422,7 +422,7 @@ namespace PhoneNumbers
                     }
                 }
 
-                PhoneNumber number = phoneUtil.ParseAndKeepRawInput(candidate, preferredRegion);
+                var number = phoneUtil.ParseAndKeepRawInput(candidate, preferredRegion);
                 if (phoneUtil.Verify(leniency, number, candidate, phoneUtil))
                 {
                     // We used parseAndKeepRawInput to create this number, but for now we don't return the extra
@@ -460,10 +460,10 @@ namespace PhoneNumbers
             StringBuilder normalizedCandidate,
             string[] formattedNumberGroups)
         {
-            int fromIndex = 0;
+            var fromIndex = 0;
             // Check each group of consecutive digits are not broken into separate groupings in the
             // {@code normalizedCandidate} string.
-            for (int i = 0; i < formattedNumberGroups.Length; i++)
+            for (var i = 0; i < formattedNumberGroups.Length; i++)
             {
                 // Fails if the substring of {@code normalizedCandidate} starting from {@code fromIndex}
                 // doesn't contain the consecutive digits in formattedNumberGroups[i].
@@ -482,7 +482,7 @@ namespace PhoneNumbers
                         // This means there is no formatting symbol after the NDC. In this case, we only
                         // accept the number if there is no formatting symbol at all in the number, except
                         // for extensions.
-                        string nationalSignificantNumber = util.GetNationalSignificantNumber(number);
+                        var nationalSignificantNumber = util.GetNationalSignificantNumber(number);
                         return normalizedCandidate.ToString().Substring(fromIndex - formattedNumberGroups[i].Length)
                             .StartsWith(nationalSignificantNumber);
                     }
@@ -499,10 +499,10 @@ namespace PhoneNumbers
             StringBuilder normalizedCandidate,
             string[] formattedNumberGroups)
         {
-            string[] candidateGroups =
+            var candidateGroups =
                 PhoneNumberUtil.NonDigitsPattern.Split(normalizedCandidate.ToString());
             // Set this to the last group, skipping it if the number has an extension.
-            int candidateNumberGroupIndex =
+            var candidateNumberGroupIndex =
                 number.HasExtension ? candidateGroups.Length - 2 : candidateGroups.Length - 1;
             // First we check if the national significant number is formatted as a block.
             // We use contains and not equals, since the national significant number may be present with
@@ -515,7 +515,7 @@ namespace PhoneNumbers
             }
             // Starting from the end, go through in reverse, excluding the first group, and check the
             // candidate and number groups are the same.
-            for (int formattedNumberGroupIndex = (formattedNumberGroups.Length - 1);
+            for (var formattedNumberGroupIndex = (formattedNumberGroups.Length - 1);
                 formattedNumberGroupIndex > 0 && candidateNumberGroupIndex >= 0;
                 formattedNumberGroupIndex--, candidateNumberGroupIndex--)
             {
@@ -541,20 +541,20 @@ namespace PhoneNumbers
             if (formattingPattern == null)
             {
                 // This will be in the format +CC-DG;ext=EXT where DG represents groups of digits.
-                string rfc3966Format = util.Format(number, PhoneNumberFormat.RFC3966);
+                var rfc3966Format = util.Format(number, PhoneNumberFormat.RFC3966);
                 // We remove the extension part from the formatted string before splitting it into different
                 // groups.
-                int endIndex = rfc3966Format.IndexOf(';');
+                var endIndex = rfc3966Format.IndexOf(';');
                 if (endIndex < 0)
                 {
                     endIndex = rfc3966Format.Length;
                 }
                 // The country-code will have a '-' following it.
-                int startIndex = rfc3966Format.IndexOf('-') + 1;
+                var startIndex = rfc3966Format.IndexOf('-') + 1;
                 return rfc3966Format.Substring(startIndex, endIndex - startIndex).Split('-');
             }
             // We format the NSN only, and split that according to the separator.
-            string nationalSignificantNumber = util.GetNationalSignificantNumber(number);
+            var nationalSignificantNumber = util.GetNationalSignificantNumber(number);
             return util.FormatNsnUsingPattern(nationalSignificantNumber,
                 formattingPattern, PhoneNumberFormat.RFC3966).Split('-');
         }
@@ -564,9 +564,9 @@ namespace PhoneNumbers
         {
             // TODO: Evaluate how this works for other locales (testing has been limited to NANPA regions)
             // and optimise if necessary.
-            StringBuilder normalizedCandidate =
+            var normalizedCandidate =
                 PhoneNumberUtil.NormalizeDigits(candidate, true /* keep non-digits */);
-            string[] formattedNumberGroups = GetNationalNumberGroups(util, number, null);
+            var formattedNumberGroups = GetNationalNumberGroups(util, number, null);
             if (checker(util, number, normalizedCandidate, formattedNumberGroups))
             {
                 return true;
@@ -590,7 +590,7 @@ namespace PhoneNumbers
 
         public static bool ContainsMoreThanOneSlash(string candidate)
         {
-            int firstSlashIndex = candidate.IndexOf('/');
+            var firstSlashIndex = candidate.IndexOf('/');
             return (firstSlashIndex > 0 && candidate.Substring(firstSlashIndex + 1).Contains("/"));
         }
 
@@ -602,12 +602,12 @@ namespace PhoneNumbers
             // extension number. We assume a carrier code is more than 1 digit, so the first case has to
             // have more than 1 consecutive 'x' or 'X', whereas the second case can only have exactly 1 'x'
             // or 'X'. We ignore the character if it appears as the last character of the string.
-            for (int index = 0; index < candidate.Length - 1; index++)
+            for (var index = 0; index < candidate.Length - 1; index++)
             {
-                char charAtIndex = candidate[index];
+                var charAtIndex = candidate[index];
                 if (charAtIndex == 'x' || charAtIndex == 'X')
                 {
-                    char charAtNextIndex = candidate[index + 1];
+                    var charAtNextIndex = candidate[index + 1];
                     if (charAtNextIndex == 'x' || charAtNextIndex == 'X')
                     {
                         // This is the carrier code case, in which the 'X's always precede the national
@@ -638,16 +638,16 @@ namespace PhoneNumbers
             {
                 return true;
             }
-            string phoneNumberRegion =
+            var phoneNumberRegion =
                 util.GetRegionCodeForCountryCode(number.CountryCode);
-            PhoneMetadata metadata = util.GetMetadataForRegion(phoneNumberRegion);
+            var metadata = util.GetMetadataForRegion(phoneNumberRegion);
             if (metadata == null)
             {
                 return true;
             }
             // Check if a national prefix should be present when formatting this number.
-            string nationalNumber = util.GetNationalSignificantNumber(number);
-            NumberFormat formatRule =
+            var nationalNumber = util.GetNationalSignificantNumber(number);
+            var formatRule =
                 util.ChooseFormattingPatternForNumber(metadata.NumberFormatList, nationalNumber);
             // To do this, we check that a national prefix formatting rule was present and that it wasn't
             // just the first-group symbol ($1) with punctuation.
@@ -660,7 +660,7 @@ namespace PhoneNumbers
                     return true;
                 }
                 // Remove the first-group symbol.
-                string candidateNationalPrefixRule = formatRule.NationalPrefixFormattingRule;
+                var candidateNationalPrefixRule = formatRule.NationalPrefixFormattingRule;
                 // We assume that the first-group symbol will never be _before_ the national prefix.
                 candidateNationalPrefixRule =
                     candidateNationalPrefixRule.Substring(0, candidateNationalPrefixRule.IndexOf("${1}", StringComparison.Ordinal));
@@ -672,8 +672,8 @@ namespace PhoneNumbers
                     return true;
                 }
                 // Normalize the remainder.
-                string rawInputCopy = PhoneNumberUtil.NormalizeDigitsOnly(number.RawInput);
-                StringBuilder rawInput = new StringBuilder(rawInputCopy);
+                var rawInputCopy = PhoneNumberUtil.NormalizeDigitsOnly(number.RawInput);
+                var rawInput = new StringBuilder(rawInputCopy);
                 // Check if we found a national prefix and/or carrier code at the start of the raw input, and
                 // return the result.
                 return util.MaybeStripNationalPrefixAndCarrierCode(rawInput, metadata, null);

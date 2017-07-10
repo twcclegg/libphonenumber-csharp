@@ -64,8 +64,8 @@ namespace PhoneNumbers
             numOfEntries = availableDataFiles.Count;
             countryCallingCodes = new int[numOfEntries];
             availableLanguages = new List<HashSet<string>>(numOfEntries);
-            int index = 0;
-            foreach (int countryCallingCode in availableDataFiles.Keys)
+            var index = 0;
+            foreach (var countryCallingCode in availableDataFiles.Keys)
             {
                 countryCallingCodes[index++] = countryCallingCode;
                 availableLanguages.Add(new HashSet<string>(availableDataFiles[countryCallingCode]));
@@ -79,8 +79,8 @@ namespace PhoneNumbers
          */
         public override string ToString()
         {
-            StringBuilder output = new StringBuilder();
-            for (int i = 0; i < numOfEntries; i++)
+            var output = new StringBuilder();
+            for (var i = 0; i < numOfEntries; i++)
             {
                 output.Append(countryCallingCodes[i]);
                 output.Append('|');
@@ -112,7 +112,7 @@ namespace PhoneNumbers
             {
                 return "";
             }
-            int index = Array.BinarySearch(countryCallingCodes, countryCallingCode);
+            var index = Array.BinarySearch(countryCallingCodes, countryCallingCode);
             if (index < 0)
             {
                 return "";
@@ -120,10 +120,10 @@ namespace PhoneNumbers
             var setOfLangs = availableLanguages[index];
             if (setOfLangs.Count > 0)
             {
-                string languageCode = FindBestMatchingLanguageCode(setOfLangs, language, script, region);
+                var languageCode = FindBestMatchingLanguageCode(setOfLangs, language, script, region);
                 if (languageCode.Length > 0)
                 {
-                    StringBuilder fileName = new StringBuilder();
+                    var fileName = new StringBuilder();
                     fileName.Append(countryCallingCode).Append('_').Append(languageCode);
                     return fileName.ToString();
                 }
@@ -134,8 +134,8 @@ namespace PhoneNumbers
         private string FindBestMatchingLanguageCode(
             HashSet<string> setOfLangs, string language, string script, string region)
         {
-            StringBuilder fullLocale = ConstructFullLocale(language, script, region);
-            string fullLocaleStr = fullLocale.ToString();
+            var fullLocale = ConstructFullLocale(language, script, region);
+            var fullLocaleStr = fullLocale.ToString();
             string normalizedLocale;
             if (LocaleNormalizationMap.TryGetValue(fullLocaleStr, out normalizedLocale))
             {
@@ -158,15 +158,15 @@ namespace PhoneNumbers
             }
             else if (script.Length > 0 && region.Length > 0)
             {
-                StringBuilder langWithScript = new StringBuilder(language).Append('_').Append(script);
-                string langWithScriptStr = langWithScript.ToString();
+                var langWithScript = new StringBuilder(language).Append('_').Append(script);
+                var langWithScriptStr = langWithScript.ToString();
                 if (setOfLangs.Contains(langWithScriptStr))
                 {
                     return langWithScriptStr;
                 }
 
-                StringBuilder langWithRegion = new StringBuilder(language).Append('_').Append(region);
-                string langWithRegionStr = langWithRegion.ToString();
+                var langWithRegion = new StringBuilder(language).Append('_').Append(region);
+                var langWithRegionStr = langWithRegion.ToString();
                 if (setOfLangs.Contains(langWithRegionStr))
                 {
                     return langWithRegionStr;
@@ -188,7 +188,7 @@ namespace PhoneNumbers
 
         private StringBuilder ConstructFullLocale(string language, string script, string region)
         {
-            StringBuilder fullLocale = new StringBuilder(language);
+            var fullLocale = new StringBuilder(language);
             AppendSubsequentLocalePart(script, fullLocale);
             AppendSubsequentLocalePart(region, fullLocale);
             return fullLocale;

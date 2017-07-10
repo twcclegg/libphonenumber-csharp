@@ -70,11 +70,11 @@ namespace PhoneNumbers
         // @VisibleForTesting
         public AreaCodeMapStorageStrategy GetSmallerMapStorage(SortedDictionary<int, string> areaCodeMap)
         {
-            AreaCodeMapStorageStrategy flyweightMapStorage = CreateFlyweightMapStorage();
-            int sizeOfFlyweightMapStorage = GetSizeOfAreaCodeMapStorage(flyweightMapStorage, areaCodeMap);
+            var flyweightMapStorage = CreateFlyweightMapStorage();
+            var sizeOfFlyweightMapStorage = GetSizeOfAreaCodeMapStorage(flyweightMapStorage, areaCodeMap);
 
-            AreaCodeMapStorageStrategy defaultMapStorage = CreateDefaultMapStorage();
-            int sizeOfDefaultMapStorage = GetSizeOfAreaCodeMapStorage(defaultMapStorage, areaCodeMap);
+            var defaultMapStorage = CreateDefaultMapStorage();
+            var sizeOfDefaultMapStorage = GetSizeOfAreaCodeMapStorage(defaultMapStorage, areaCodeMap);
 
             return sizeOfFlyweightMapStorage < sizeOfDefaultMapStorage
                 ? flyweightMapStorage : defaultMapStorage;
@@ -104,20 +104,20 @@ namespace PhoneNumbers
          */
         public string Lookup(PhoneNumber number)
         {
-            int numOfEntries = areaCodeMapStorage.GetNumOfEntries();
+            var numOfEntries = areaCodeMapStorage.GetNumOfEntries();
             if (numOfEntries == 0)
             {
                 return null;
             }
-            long phonePrefix =
+            var phonePrefix =
                 long.Parse(number.CountryCode + phoneUtil.GetNationalSignificantNumber(number));
-            int currentIndex = numOfEntries - 1;
-            List<int> currentSetOfLengths = areaCodeMapStorage.GetPossibleLengths();
+            var currentIndex = numOfEntries - 1;
+            var currentSetOfLengths = areaCodeMapStorage.GetPossibleLengths();
             var length = currentSetOfLengths.Count;
             while (length > 0)
             {
-                int possibleLength = currentSetOfLengths[length - 1];
-                string phonePrefixStr = phonePrefix.ToString();
+                var possibleLength = currentSetOfLengths[length - 1];
+                var phonePrefixStr = phonePrefix.ToString();
                 if (phonePrefixStr.Length > possibleLength)
                 {
                     phonePrefix = long.Parse(phonePrefixStr.Substring(0, possibleLength));
@@ -127,7 +127,7 @@ namespace PhoneNumbers
                 {
                     return null;
                 }
-                int currentPrefix = areaCodeMapStorage.GetPrefix(currentIndex);
+                var currentPrefix = areaCodeMapStorage.GetPrefix(currentIndex);
                 if (phonePrefix == currentPrefix)
                 {
                     return areaCodeMapStorage.GetDescription(currentIndex);
@@ -146,11 +146,11 @@ namespace PhoneNumbers
          */
         private int BinarySearch(int start, int end, long value)
         {
-            int current = 0;
+            var current = 0;
             while (start <= end)
             {
                 current = (start + end) / 2;
-                int currentValue = areaCodeMapStorage.GetPrefix(current);
+                var currentValue = areaCodeMapStorage.GetPrefix(current);
                 if (currentValue == value)
                 {
                     return current;

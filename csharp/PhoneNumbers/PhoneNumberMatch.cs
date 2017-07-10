@@ -46,7 +46,7 @@ namespace PhoneNumbers
 
         public override int GetHashCode()
         {
-            int hash = GetType().GetHashCode();
+            var hash = GetType().GetHashCode();
             hash ^= Start.GetHashCode();
             hash ^= RawString.GetHashCode();
             hash ^= Number.GetHashCode();

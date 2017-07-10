@@ -106,7 +106,7 @@ namespace PhoneNumbers
         */
         public override string GetDescription(int index)
         {
-            int indexInDescriptionPool =
+            var indexInDescriptionPool =
                 ReadWordFromBuffer(descriptionIndexes, descIndexSizeInBytes, index);
             return descriptionPool[indexInDescriptionPool];
         }
@@ -120,11 +120,11 @@ namespace PhoneNumbers
 
             // Fill the phone number prefixes byte buffer, the set of possible lengths of prefixes and the
             // description set.
-            int index = 0;
+            var index = 0;
             var possibleLengthsSet = new HashSet<int>();
             foreach (var entry in areaCodeMap)
             {
-                int prefix = entry.Key;
+                var prefix = entry.Key;
                 StoreWordInBuffer(phoneNumberPrefixes, prefixSizeInBytes, index, prefix);
                 var lengthOfPrefixRef = (int)Math.Log10(prefix) + 1;
                 possibleLengthsSet.Add(lengthOfPrefixRef);
@@ -149,12 +149,12 @@ namespace PhoneNumbers
             Array.Sort(descriptionPool);
 
             // Map the phone number prefixes to the descriptions.
-            int index = 0;
-            for (int i = 0; i < NumOfEntries; i++)
+            var index = 0;
+            for (var i = 0; i < NumOfEntries; i++)
             {
-                int prefix = ReadWordFromBuffer(phoneNumberPrefixes, prefixSizeInBytes, i);
-                string description = areaCodeMap[prefix];
-                int positionInDescriptionPool = Array.BinarySearch(descriptionPool, description);
+                var prefix = ReadWordFromBuffer(phoneNumberPrefixes, prefixSizeInBytes, i);
+                var description = areaCodeMap[prefix];
+                var positionInDescriptionPool = Array.BinarySearch(descriptionPool, description);
                 StoreWordInBuffer(descriptionIndexes, descIndexSizeInBytes, index,
                                   positionInDescriptionPool);
                 index++;

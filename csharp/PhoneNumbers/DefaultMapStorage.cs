@@ -53,9 +53,9 @@ namespace PhoneNumbers
             NumOfEntries = sortedAreaCodeMap.Count;
             phoneNumberPrefixes = new int[NumOfEntries];
             descriptions = new string[NumOfEntries];
-            int index = 0;
+            var index = 0;
             var possibleLengthsSet = new HashSet<int>();
-            foreach (int prefix in sortedAreaCodeMap.Keys)
+            foreach (var prefix in sortedAreaCodeMap.Keys)
             {
                 phoneNumberPrefixes[index] = prefix;
                 descriptions[index] = sortedAreaCodeMap[prefix];
