@@ -7,7 +7,7 @@
     <Authors>Patrick M�zard;Jarrod Alexander;Google;libphonenumber;contributors</Authors>
     <TargetFrameworks>net45;netstandard1.1</TargetFrameworks>
     <AssemblyName>PhoneNumbers</AssemblyName>
-    <PackageId>PhoneNumbers</PackageId>
+    <PackageId>libphonenumber-csharp</PackageId>
     <PackageTags>phonenumber phone libphonenumber e164 e.164 international</PackageTags>
     <PackageProjectUrl>https://github.com/aidanbebbington/libphonenumber-csharp</PackageProjectUrl>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
