@@ -52,12 +52,12 @@ namespace PhoneNumbers
             return mapStorage.GetStorageSize();
         }
 
-        private AreaCodeMapStorageStrategy CreateDefaultMapStorage()
+        private static AreaCodeMapStorageStrategy CreateDefaultMapStorage()
         {
             return new DefaultMapStorage();
         }
 
-        private AreaCodeMapStorageStrategy CreateFlyweightMapStorage()
+        private static AreaCodeMapStorageStrategy CreateFlyweightMapStorage()
         {
             return new FlyweightMapStorage();
         }
@@ -98,6 +98,8 @@ namespace PhoneNumbers
          * distinguishes the case of an invalid prefix and a prefix for which the name is not available in
          * the current language. If the description is not available in the current language an empty
          * string is returned. If no description was found for the provided number, null is returned.
+         * 
+         * todo use native lookup
          *
          * @param number  the phone number to look up
          * @return  the description of the geographical area

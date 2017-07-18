@@ -65,13 +65,12 @@ namespace PhoneNumbers
             return name ?? "";
         }
 
-        private string GetCountryName(string country, string language)
+        private static string GetCountryName(string country, string language)
         {
             var names = LocaleData.Data[country];
-            string name;
-            if(!names.TryGetValue(language, out name))
+            if (!names.TryGetValue(language, out string name))
                 return null;
-            if(name.Length > 0 && name[0] == '*')
+            if (name.Length > 0 && name[0] == '*')
                 return names[name.Substring(1)];
             return name;
         }
@@ -150,8 +149,7 @@ namespace PhoneNumbers
             {
                 LoadAreaCodeMapFromFile(fileName);
             }
-            AreaCodeMap map;
-            return availablePhonePrefixMaps.TryGetValue(fileName, out map) ? map : null;
+            return availablePhonePrefixMaps.TryGetValue(fileName, out AreaCodeMap map) ? map : null;
         }
 
         private void LoadAreaCodeMapFromFile(string fileName)
@@ -216,8 +214,8 @@ namespace PhoneNumbers
         */
         private string GetRegionDisplayName(string regionCode, Locale language)
         {
-            return (regionCode == null || regionCode.Equals("ZZ") ||
-                regionCode.Equals(PhoneNumberUtil.RegionCodeForNonGeoEntity))
+            return regionCode == null || regionCode.Equals("ZZ") ||
+                   regionCode.Equals(PhoneNumberUtil.RegionCodeForNonGeoEntity)
                 ? "" : new Locale("", regionCode).GetDisplayCountry(language.Language);
         }
 
@@ -241,7 +239,7 @@ namespace PhoneNumbers
 
             var areaDescription =
                 GetAreaDescriptionForNumber(number, langStr, scriptStr, regionStr);
-            return (areaDescription.Length > 0)
+            return areaDescription.Length > 0
                 ? areaDescription : GetCountryNameForNumber(number, languageCode);
         }
 
@@ -294,9 +292,7 @@ namespace PhoneNumbers
         */
         public string GetDescriptionForNumber(PhoneNumber number, Locale languageCode)
         {
-            if (!phoneUtil.IsValidNumber(number))
-                return "";
-            return GetDescriptionForValidNumber(number, languageCode);
+            return !phoneUtil.IsValidNumber(number) ? "" : GetDescriptionForValidNumber(number, languageCode);
         }
 
         /**
@@ -314,11 +310,7 @@ namespace PhoneNumbers
         public string GetDescriptionForNumber(PhoneNumber number, Locale languageCode,
             string userRegion)
         {
-            if (!phoneUtil.IsValidNumber(number))
-            {
-                return "";
-            }
-            return GetDescriptionForValidNumber(number, languageCode, userRegion);
+            return !phoneUtil.IsValidNumber(number) ? "" : GetDescriptionForValidNumber(number, languageCode, userRegion);
         }
 
         private string GetAreaDescriptionForNumber(
@@ -347,7 +339,7 @@ namespace PhoneNumbers
             return description ?? "";
         }
 
-        private bool MayFallBackToEnglish(string lang)
+        private static bool MayFallBackToEnglish(string lang)
         {
             // Don't fall back to English if the requested language is among the following:
             // - Chinese
