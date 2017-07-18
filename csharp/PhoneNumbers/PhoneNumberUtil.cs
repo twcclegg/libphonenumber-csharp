@@ -572,7 +572,11 @@ namespace PhoneNumbers
 
         private void LoadMetadataFromFile(String filePrefix, String regionCode, int countryCallingCode)
         {
+#if NET40
+            var asm = Assembly.GetExecutingAssembly();
+#else
             var asm = typeof(PhoneNumberUtil).GetTypeInfo().Assembly;
+#endif
             bool isNonGeoRegion = REGION_CODE_FOR_NON_GEO_ENTITY.Equals(regionCode);
             var name = asm.GetManifestResourceNames().FirstOrDefault(n => n.EndsWith(filePrefix)) ?? "missing";
             using (var stream = asm.GetManifestResourceStream(name))

@@ -110,7 +110,11 @@ namespace PhoneNumbers
         private void LoadMappingFileProvider()
         {
             var files = new SortedDictionary<int, HashSet<String>>();
+#if NET40
+            var asm = Assembly.GetExecutingAssembly();
+#else
             var asm = typeof(PhoneNumberOfflineGeocoder).GetTypeInfo().Assembly;
+#endif
             var allNames = asm.GetManifestResourceNames();
             var prefix = asm.GetName().Name + "." + phonePrefixDataDirectory;
             var names = allNames.Where(n => n.StartsWith(prefix));
@@ -154,7 +158,11 @@ namespace PhoneNumbers
 
         private void LoadAreaCodeMapFromFile(String fileName)
         {
+#if NET40
+            var asm = Assembly.GetExecutingAssembly();
+#else
             var asm = typeof(PhoneNumberOfflineGeocoder).GetTypeInfo().Assembly;
+#endif
             var prefix = asm.GetName().Name + "." + phonePrefixDataDirectory;
             var resName = prefix + fileName;
             using (var fp = asm.GetManifestResourceStream(resName))

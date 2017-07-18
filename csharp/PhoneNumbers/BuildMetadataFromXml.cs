@@ -809,7 +809,11 @@ namespace PhoneNumbers
 
         public static Dictionary<int, List<String>> GetCountryCodeToRegionCodeMap(String filePrefix)
         {
+#if NET40
+            var asm = Assembly.GetExecutingAssembly();
+#else
             var asm = typeof(BuildMetadataFromXml).GetTypeInfo().Assembly;
+#endif
             var name = asm.GetManifestResourceNames().FirstOrDefault(n => n.EndsWith(filePrefix)) ?? "missing";
             using (var stream = asm.GetManifestResourceStream(name))
             {
