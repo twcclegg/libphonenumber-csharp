@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -29,7 +30,7 @@ namespace PhoneNumbers.Test
 
         public TestPhoneNumberMatcher(TestMetadataTestCase metadata)
         {
-            phoneUtil = metadata.phoneUtil;
+            phoneUtil = metadata.PhoneUtil;
         }
 
         /** See {@link PhoneNumberUtilTest#testParseNationalNumber()}. */
@@ -166,7 +167,7 @@ namespace PhoneNumbers.Test
             DoTestFindInContext("(1800) 7493.524", "US");
             // Check that the last instance of an extension token is matched.
             DoTestFindInContext("0~0 1800 7493 524 ~1234", "PL");
-            // Verifying bug-fix where the last digit of a number was previously omitted if it was a 0 when
+            // Verifying fix where the last digit of a number was previously omitted if it was a 0 when
             // extracting the extension. Also verifying a few different cases of extensions.
             DoTestFindInContext("+44 2034567890x456", "NZ");
             DoTestFindInContext("+44 2034567890x456", "GB");
@@ -197,30 +198,30 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestIntermediateParsePositions()
         {
-            String text = "Call 033316005  or 032316005!";
-            //             |    |    |    |    |    |
-            //             0    5   10   15   20   25
+            const string text = "Call 033316005  or 032316005!";
+            //                   |    |    |    |    |    |
+            //                   0    5   10   15   20   25
 
             // Iterate over all possible indices.
-            for (int i = 0; i <= 5; i++)
+            for (var i = 0; i <= 5; i++)
                 AssertEqualRange(text, i, 5, 14);
             // 7 and 8 digits in a row are still parsed as number.
             AssertEqualRange(text, 6, 6, 14);
             AssertEqualRange(text, 7, 7, 14);
             // Anything smaller is skipped to the second instance.
-            for (int i = 8; i <= 19; i++)
+            for (var i = 8; i <= 19; i++)
                 AssertEqualRange(text, i, 19, 28);
         }
 
         [Fact]
         public void TestMatchWithSurroundingZipcodes()
         {
-            String number = "415-666-7777";
-            String zipPreceding = "My address is CA 34215 - " + number + " is my number.";
-            PhoneNumber expectedResult = phoneUtil.Parse(number, "US");
+            var number = "415-666-7777";
+            var zipPreceding = "My address is CA 34215 - " + number + " is my number.";
+            var expectedResult = phoneUtil.Parse(number, "US");
 
             var iterator = phoneUtil.FindNumbers(zipPreceding, "US").GetEnumerator();
-            PhoneNumberMatch match = iterator.MoveNext() ? iterator.Current : null;
+            var match = iterator.MoveNext() ? iterator.Current : null;
             Assert.NotNull(match);
             Assert.Equal(expectedResult, match.Number);
             Assert.Equal(number, match.RawString);
@@ -229,10 +230,10 @@ namespace PhoneNumbers.Test
             // Now repeat, but this time the phone number has spaces in it. It should still be found.
             number = "(415) 666 7777";
 
-            String zipFollowing = "My number is " + number + ". 34215 is my zip-code.";
+            var zipFollowing = "My number is " + number + ". 34215 is my zip-code.";
             iterator = phoneUtil.FindNumbers(zipFollowing, "US").GetEnumerator();
 
-            PhoneNumberMatch matchWithSpaces = iterator.MoveNext() ? iterator.Current : null;
+            var matchWithSpaces = iterator.MoveNext() ? iterator.Current : null;
             Assert.NotNull(matchWithSpaces);
             Assert.Equal(expectedResult, matchWithSpaces.Number);
             Assert.Equal(number, matchWithSpaces.RawString);
@@ -259,14 +260,14 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestMatchesWithSurroundingLatinChars()
         {
-            List<NumberContext> possibleOnlyContexts = new List<NumberContext>(5);
-            possibleOnlyContexts.Add(new NumberContext("abc", "def"));
-            possibleOnlyContexts.Add(new NumberContext("abc", ""));
-            possibleOnlyContexts.Add(new NumberContext("", "def"));
-            // Latin capital letter e with an acute accent.
-            possibleOnlyContexts.Add(new NumberContext("\u00C9", ""));
-            // e with an acute accent decomposed (with combining mark)
-            possibleOnlyContexts.Add(new NumberContext("e\u0301", ""));
+            var possibleOnlyContexts = new List<NumberContext>(5)
+            {
+                new NumberContext("abc", "def"),
+                new NumberContext("abc", ""),
+                new NumberContext("", "def"),
+                new NumberContext("\u00C9", ""), // Latin capital letter e with an acute accent.
+                new NumberContext("e\u0301", "") // e with an acute accent decomposed (with combining mark)
+            };
 
             // Numbers should not be considered valid, if they are surrounded by Latin characters, but
             // should be considered possible.
@@ -276,19 +277,20 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestMoneyNotSeenAsPhoneNumber()
         {
-            List<NumberContext> possibleOnlyContexts = new List<NumberContext>();
-            possibleOnlyContexts.Add(new NumberContext("$", ""));
-            possibleOnlyContexts.Add(new NumberContext("", "$"));
-            possibleOnlyContexts.Add(new NumberContext("\u00A3", ""));  // Pound sign
-            possibleOnlyContexts.Add(new NumberContext("\u00A5", ""));  // Yen sign
+            var possibleOnlyContexts = new List<NumberContext>
+            {
+                new NumberContext("$", ""),
+                new NumberContext("", "$"),
+                new NumberContext("\u00A3", ""), // Pound sign
+                new NumberContext("\u00A5", "")  // Yen sign
+            };
             FindMatchesInContexts(possibleOnlyContexts, false, true);
         }
 
         [Fact]
         public void TestPercentageNotSeenAsPhoneNumber()
         {
-            List<NumberContext> possibleOnlyContexts = new List<NumberContext>();
-            possibleOnlyContexts.Add(new NumberContext("", "%"));
+            var possibleOnlyContexts = new List<NumberContext> {new NumberContext("", "%")};
             // Numbers followed by % should be dropped.
             FindMatchesInContexts(possibleOnlyContexts, false, true);
         }
@@ -299,9 +301,8 @@ namespace PhoneNumbers.Test
         {
             // Because of the space after the 20 (or before the 100) these dollar amounts should not stop
             // the actual number from being found.
-            List<NumberContext> contexts = new List<NumberContext>();
-            contexts.Add(new NumberContext("$20 ", ""));
-            contexts.Add(new NumberContext("", " 100$"));
+            var contexts =
+                new List<NumberContext> {new NumberContext("$20 ", ""), new NumberContext("", " 100$")};
             FindMatchesInContexts(contexts, true, true);
         }
 
@@ -310,23 +311,27 @@ namespace PhoneNumbers.Test
         {
             // Contexts with trailing characters. Leading characters are okay here since the numbers we will
             // insert start with punctuation, but trailing characters are still not allowed.
-            List<NumberContext> possibleOnlyContexts = new List<NumberContext>();
-            possibleOnlyContexts.Add(new NumberContext("abc", "def"));
-            possibleOnlyContexts.Add(new NumberContext("", "def"));
-            possibleOnlyContexts.Add(new NumberContext("", "\u00C9"));
+            var possibleOnlyContexts = new List<NumberContext>
+            {
+                new NumberContext("abc", "def"),
+                new NumberContext("", "def"),
+                new NumberContext("", "\u00C9")
+            };
 
             // Numbers should not be considered valid, if they have trailing Latin characters, but should be
             // considered possible.
-            String numberWithPlus = "+14156667777";
-            String numberWithBrackets = "(415)6667777";
+            const string numberWithPlus = "+14156667777";
+            const string numberWithBrackets = "(415)6667777";
             FindMatchesInContexts(possibleOnlyContexts, false, true, "US", numberWithPlus);
             FindMatchesInContexts(possibleOnlyContexts, false, true, "US", numberWithBrackets);
 
-            List<NumberContext> validContexts = new List<NumberContext>();
-            validContexts.Add(new NumberContext("abc", ""));
-            validContexts.Add(new NumberContext("\u00C9", ""));
-            validContexts.Add(new NumberContext("\u00C9", "."));  // Trailing punctuation.
-            validContexts.Add(new NumberContext("\u00C9", " def"));  // Trailing white-space.
+            var validContexts = new List<NumberContext>
+            {
+                new NumberContext("abc", ""),
+                new NumberContext("\u00C9", ""),
+                new NumberContext("\u00C9", "."),   // Trailing punctuation.
+                new NumberContext("\u00C9", " def") // Trailing white-space.
+            };
 
             // Numbers should be considered valid, since they start with punctuation.
             FindMatchesInContexts(validContexts, true, true, "US", numberWithPlus);
@@ -336,10 +341,12 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestMatchesWithSurroundingChineseChars()
         {
-            List<NumberContext> validContexts = new List<NumberContext>();
-            validContexts.Add(new NumberContext("\u6211\u7684\u7535\u8BDD\u53F7\u7801\u662F", ""));
-            validContexts.Add(new NumberContext("", "\u662F\u6211\u7684\u7535\u8BDD\u53F7\u7801"));
-            validContexts.Add(new NumberContext("\u8BF7\u62E8\u6253", "\u6211\u5728\u660E\u5929"));
+            var validContexts = new List<NumberContext>
+            {
+                new NumberContext("\u6211\u7684\u7535\u8BDD\u53F7\u7801\u662F", ""),
+                new NumberContext("", "\u662F\u6211\u7684\u7535\u8BDD\u53F7\u7801"),
+                new NumberContext("\u8BF7\u62E8\u6253", "\u6211\u5728\u660E\u5929")
+            };
 
             // Numbers should be considered valid, since they are surrounded by Chinese.
             FindMatchesInContexts(validContexts, true, true);
@@ -348,11 +355,13 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestMatchesWithSurroundingPunctuation()
         {
-            List<NumberContext> validContexts = new List<NumberContext>();
-            validContexts.Add(new NumberContext("My number-", ""));  // At end of text.
-            validContexts.Add(new NumberContext("", ".Nice day."));  // At start of text.
-            validContexts.Add(new NumberContext("Tel:", "."));  // Punctuation surrounds number.
-            validContexts.Add(new NumberContext("Tel: ", " on Saturdays."));  // White-space is also fine.
+            var validContexts = new List<NumberContext>
+            {
+                new NumberContext("My number-", ""), // At end of text.
+                new NumberContext("", ".Nice day."), // At start of text.
+                new NumberContext("Tel:", "."),      // Punctuation surrounds number.
+                new NumberContext("Tel: ", " on Saturdays.") // White-space is also fine.
+            };
 
             // Numbers should be considered valid, since they are surrounded by punctuation.
             FindMatchesInContexts(validContexts, true, true);
@@ -361,20 +370,20 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestMatchesMultiplePhoneNumbersSeparatedByPhoneNumberPunctuation()
         {
-            String text = "Call 650-253-4561 -- 455-234-3451";
-            String region = "US";
+            const string text = "Call 650-253-4561 -- 455-234-3451";
+            const string region = "US";
 
-            PhoneNumber number1 = new PhoneNumber.Builder()
+            var number1 = new PhoneNumber.Builder()
                 .SetCountryCode(phoneUtil.GetCountryCodeForRegion(region))
                 .SetNationalNumber(6502534561L)
                 .Build();
-            PhoneNumberMatch match1 = new PhoneNumberMatch(5, "650-253-4561", number1);
+            var match1 = new PhoneNumberMatch(5, "650-253-4561", number1);
 
-            PhoneNumber number2 = new PhoneNumber.Builder()
+            var number2 = new PhoneNumber.Builder()
                 .SetCountryCode(phoneUtil.GetCountryCodeForRegion(region))
                 .SetNationalNumber(4552343451L)
                 .Build();
-            PhoneNumberMatch match2 = new PhoneNumberMatch(21, "455-234-3451", number2);
+            var match2 = new PhoneNumberMatch(21, "455-234-3451", number2);
 
             var matches = phoneUtil.FindNumbers(text, region).GetEnumerator();
             matches.MoveNext();
@@ -388,8 +397,8 @@ namespace PhoneNumbers.Test
         public void TestDoesNotMatchMultiplePhoneNumbersSeparatedWithNoWhiteSpace()
         {
             // No white-space found between numbers - neither is found.
-            String text = "Call 650-253-4561--455-234-3451";
-            String region = "US";
+            const string text = "Call 650-253-4561--455-234-3451";
+            const string region = "US";
 
             Assert.True(HasNoMatches(phoneUtil.FindNumbers(text, region)));
         }
@@ -397,82 +406,86 @@ namespace PhoneNumbers.Test
         /**
          * Strings with number-like things that shouldn't be found under any level.
          */
-        private static readonly NumberTest[] IMPOSSIBLE_CASES = {
-    new NumberTest("12345", "US"),
-    new NumberTest("23456789", "US"),
-    new NumberTest("234567890112", "US"),
-    new NumberTest("650+253+1234", "US"),
-    new NumberTest("3/10/1984", "CA"),
-    new NumberTest("03/27/2011", "US"),
-    new NumberTest("31/8/2011", "US"),
-    new NumberTest("1/12/2011", "US"),
-    new NumberTest("10/12/82", "DE"),
-    new NumberTest("650x2531234", RegionCode.US),
-    new NumberTest("2012-01-02 08:00", RegionCode.US),
-    new NumberTest("2012/01/02 08:00", RegionCode.US),
-    new NumberTest("20120102 08:00", RegionCode.US),
-  };
+        private static readonly NumberTest[] ImpossibleCases =
+        {
+            new NumberTest("12345", "US"),
+            new NumberTest("23456789", "US"),
+            new NumberTest("234567890112", "US"),
+            new NumberTest("650+253+1234", "US"),
+            new NumberTest("3/10/1984", "CA"),
+            new NumberTest("03/27/2011", "US"),
+            new NumberTest("31/8/2011", "US"),
+            new NumberTest("1/12/2011", "US"),
+            new NumberTest("10/12/82", "DE"),
+            new NumberTest("650x2531234", RegionCode.US),
+            new NumberTest("2012-01-02 08:00", RegionCode.US),
+            new NumberTest("2012/01/02 08:00", RegionCode.US),
+            new NumberTest("20120102 08:00", RegionCode.US)
+        };
 
         /**
          * Strings with number-like things that should only be found under "possible".
          */
-        private static readonly NumberTest[] POSSIBLE_ONLY_CASES = {
-    // US numbers cannot start with 7 in the test metadata to be valid.
-    new NumberTest("7121115678", "US"),
-    // 'X' should not be found in numbers at leniencies stricter than POSSIBLE, unless it represents
-    // a carrier code or extension.
-    new NumberTest("1650 x 253 - 1234", "US"),
-    new NumberTest("650 x 253 - 1234", "US"),
-    new NumberTest("(20) 3346 1234", RegionCode.GB),  // Non-optional NP omitted
-  };
+        private static readonly NumberTest[] PossibleOnlyCases =
+        {
+            // US numbers cannot start with 7 in the test metadata to be valid.
+            new NumberTest("7121115678", "US"),
+            // 'X' should not be found in numbers at leniencies stricter than POSSIBLE, unless it represents
+            // a carrier code or extension.
+            new NumberTest("1650 x 253 - 1234", "US"),
+            new NumberTest("650 x 253 - 1234", "US"),
+            new NumberTest("(20) 3346 1234", RegionCode.GB) // Non-optional NP omitted
+        };
 
         /**
          * Strings with number-like things that should only be found up to and including the "valid"
          * leniency level.
          */
-        private static readonly NumberTest[] VALID_CASES = {
-    new NumberTest("65 02 53 00 00", "US"),
-    new NumberTest("6502 538365", "US"),
-    new NumberTest("650//253-1234", "US"),  // 2 slashes are illegal at higher levels
-    new NumberTest("650/253/1234", "US"),
-    new NumberTest("9002309. 158", "US"),
-    new NumberTest("12 7/8 - 14 12/34 - 5", "US"),
-    new NumberTest("12.1 - 23.71 - 23.45", "US"),
-    new NumberTest("800 234 1 111x1111", "US"),
-    new NumberTest("1979-2011 100", RegionCode.US),
-    new NumberTest("+494949-4-94", "DE"),  // National number in wrong format
-    new NumberTest("\uFF14\uFF11\uFF15\uFF16\uFF16\uFF16\uFF16-\uFF17\uFF17\uFF17", RegionCode.US),
-    new NumberTest("2012-0102 08", RegionCode.US),  // Very strange formatting.
-    new NumberTest("2012-01-02 08", RegionCode.US),
-     // Breakdown assistance number with unexpected formatting.
-    new NumberTest("1800-1-0-10 22", RegionCode.AU),
-    new NumberTest("030-3-2 23 12 34", RegionCode.DE),
-    new NumberTest("03 0 -3 2 23 12 34", RegionCode.DE),
-    new NumberTest("(0)3 0 -3 2 23 12 34", RegionCode.DE),
-    new NumberTest("0 3 0 -3 2 23 12 34", RegionCode.DE),
-  };
+        private static readonly NumberTest[] ValidCases =
+        {
+            new NumberTest("65 02 53 00 00", "US"),
+            new NumberTest("6502 538365", "US"),
+            new NumberTest("650//253-1234", "US"), // 2 slashes are illegal at higher levels
+            new NumberTest("650/253/1234", "US"),
+            new NumberTest("9002309. 158", "US"),
+            new NumberTest("12 7/8 - 14 12/34 - 5", "US"),
+            new NumberTest("12.1 - 23.71 - 23.45", "US"),
+            new NumberTest("800 234 1 111x1111", "US"),
+            new NumberTest("1979-2011 100", RegionCode.US),
+            new NumberTest("+494949-4-94", "DE"), // National number in wrong format
+            new NumberTest("\uFF14\uFF11\uFF15\uFF16\uFF16\uFF16\uFF16-\uFF17\uFF17\uFF17", RegionCode.US),
+            new NumberTest("2012-0102 08", RegionCode.US), // Very strange formatting.
+            new NumberTest("2012-01-02 08", RegionCode.US),
+            // Breakdown assistance number with unexpected formatting.
+            new NumberTest("1800-1-0-10 22", RegionCode.AU),
+            new NumberTest("030-3-2 23 12 34", RegionCode.DE),
+            new NumberTest("03 0 -3 2 23 12 34", RegionCode.DE),
+            new NumberTest("(0)3 0 -3 2 23 12 34", RegionCode.DE),
+            new NumberTest("0 3 0 -3 2 23 12 34", RegionCode.DE)
+        };
 
         /**
          * Strings with number-like things that should only be found up to and including the
          * "strict_grouping" leniency level.
          */
-        private static readonly NumberTest[] STRICT_GROUPING_CASES = {
-    new NumberTest("(415) 6667777", "US"),
-    new NumberTest("415-6667777", "US"),
-    // Should be found by strict grouping but not exact grouping, as the last two groups are
-    // formatted together as a block.
-    new NumberTest("0800-2491234", "DE"),
-    // Doesn't match any formatting in the test file, but almost matches an alternate format (the
-    // last two groups have been squashed together here).
-    new NumberTest("0900-1 123123", RegionCode.DE),
-    new NumberTest("(0)900-1 123123", RegionCode.DE),
-    new NumberTest("0 900-1 123123", RegionCode.DE),
-  };
+        private static readonly NumberTest[] StrictGroupingCases =
+        {
+            new NumberTest("(415) 6667777", "US"),
+            new NumberTest("415-6667777", "US"),
+            // Should be found by strict grouping but not exact grouping, as the last two groups are
+            // formatted together as a block.
+            new NumberTest("0800-2491234", "DE"),
+            // Doesn't match any formatting in the test file, but almost matches an alternate format (the
+            // last two groups have been squashed together here).
+            new NumberTest("0900-1 123123", RegionCode.DE),
+            new NumberTest("(0)900-1 123123", RegionCode.DE),
+            new NumberTest("0 900-1 123123", RegionCode.DE)
+        };
 
         /**
          * Strings with number-like things that should be found at all levels.
          */
-        private static readonly NumberTest[] EXACT_GROUPING_CASES = {
+        private static readonly NumberTest[] ExactGroupingCases = {
             new NumberTest("\uFF14\uFF11\uFF15\uFF16\uFF16\uFF16\uFF17\uFF17\uFF17\uFF17", "US"),
             new NumberTest("\uFF14\uFF11\uFF15-\uFF16\uFF16\uFF16-\uFF17\uFF17\uFF17\uFF17", "US"),
             new NumberTest("4156667777", "US"),
@@ -497,108 +510,106 @@ namespace PhoneNumbers.Test
             // Doesn't match any formatting in the test file, but matches an alternate format exactly.
             new NumberTest("0900-1 123 123", RegionCode.DE),
             new NumberTest("(0)900-1 123 123", RegionCode.DE),
-            new NumberTest("0 900-1 123 123", RegionCode.DE),
+            new NumberTest("0 900-1 123 123", RegionCode.DE)
         };
 
         [Fact]
         public void TestMatchesWithPossibleLeniency()
         {
-            List<NumberTest> testCases = new List<NumberTest>();
-            testCases.AddRange(STRICT_GROUPING_CASES);
-            testCases.AddRange(EXACT_GROUPING_CASES);
-            testCases.AddRange(VALID_CASES);
-            testCases.AddRange(POSSIBLE_ONLY_CASES);
+            var testCases = new List<NumberTest>();
+            testCases.AddRange(StrictGroupingCases);
+            testCases.AddRange(ExactGroupingCases);
+            testCases.AddRange(ValidCases);
+            testCases.AddRange(PossibleOnlyCases);
             DoTestNumberMatchesForLeniency(testCases, PhoneNumberUtil.Leniency.POSSIBLE);
         }
 
         [Fact]
         public void TestNonMatchesWithPossibleLeniency()
         {
-            List<NumberTest> testCases = new List<NumberTest>();
-            testCases.AddRange(IMPOSSIBLE_CASES);
+            var testCases = new List<NumberTest>();
+            testCases.AddRange(ImpossibleCases);
             DoTestNumberNonMatchesForLeniency(testCases, PhoneNumberUtil.Leniency.POSSIBLE);
         }
 
         [Fact]
         public void TestMatchesWithValidLeniency()
         {
-            List<NumberTest> testCases = new List<NumberTest>();
-            testCases.AddRange(STRICT_GROUPING_CASES);
-            testCases.AddRange(EXACT_GROUPING_CASES);
-            testCases.AddRange(VALID_CASES);
+            var testCases = new List<NumberTest>();
+            testCases.AddRange(StrictGroupingCases);
+            testCases.AddRange(ExactGroupingCases);
+            testCases.AddRange(ValidCases);
             DoTestNumberMatchesForLeniency(testCases, PhoneNumberUtil.Leniency.VALID);
         }
 
         [Fact]
         public void TestNonMatchesWithValidLeniency()
         {
-            List<NumberTest> testCases = new List<NumberTest>();
-            testCases.AddRange(IMPOSSIBLE_CASES);
-            testCases.AddRange(POSSIBLE_ONLY_CASES);
+            var testCases = new List<NumberTest>();
+            testCases.AddRange(ImpossibleCases);
+            testCases.AddRange(PossibleOnlyCases);
             DoTestNumberNonMatchesForLeniency(testCases, PhoneNumberUtil.Leniency.VALID);
         }
 
         [Fact]
         public void TestMatchesWithStrictGroupingLeniency()
         {
-            List<NumberTest> testCases = new List<NumberTest>();
-            testCases.AddRange(STRICT_GROUPING_CASES);
-            testCases.AddRange(EXACT_GROUPING_CASES);
+            var testCases = new List<NumberTest>();
+            testCases.AddRange(StrictGroupingCases);
+            testCases.AddRange(ExactGroupingCases);
             DoTestNumberMatchesForLeniency(testCases, PhoneNumberUtil.Leniency.STRICT_GROUPING);
         }
 
         [Fact]
         public void TestNonMatchesWithStrictGroupLeniency()
         {
-            List<NumberTest> testCases = new List<NumberTest>();
-            testCases.AddRange(IMPOSSIBLE_CASES);
-            testCases.AddRange(POSSIBLE_ONLY_CASES);
-            testCases.AddRange(VALID_CASES);
+            var testCases = new List<NumberTest>();
+            testCases.AddRange(ImpossibleCases);
+            testCases.AddRange(PossibleOnlyCases);
+            testCases.AddRange(ValidCases);
             DoTestNumberNonMatchesForLeniency(testCases, PhoneNumberUtil.Leniency.STRICT_GROUPING);
         }
 
         [Fact]
         public void TestMatchesWithExactGroupingLeniency()
         {
-            List<NumberTest> testCases = new List<NumberTest>();
-            testCases.AddRange(EXACT_GROUPING_CASES);
+            var testCases = new List<NumberTest>();
+            testCases.AddRange(ExactGroupingCases);
             DoTestNumberMatchesForLeniency(testCases, PhoneNumberUtil.Leniency.EXACT_GROUPING);
         }
 
         [Fact]
         public void TestNonMatchesExactGroupLeniency()
         {
-            List<NumberTest> testCases = new List<NumberTest>();
-            testCases.AddRange(IMPOSSIBLE_CASES);
-            testCases.AddRange(POSSIBLE_ONLY_CASES);
-            testCases.AddRange(VALID_CASES);
-            testCases.AddRange(STRICT_GROUPING_CASES);
+            var testCases = new List<NumberTest>();
+            testCases.AddRange(ImpossibleCases);
+            testCases.AddRange(PossibleOnlyCases);
+            testCases.AddRange(ValidCases);
+            testCases.AddRange(StrictGroupingCases);
             DoTestNumberNonMatchesForLeniency(testCases, PhoneNumberUtil.Leniency.EXACT_GROUPING);
         }
 
         private void DoTestNumberMatchesForLeniency(List<NumberTest> testCases,
                                                     PhoneNumberUtil.Leniency leniency)
         {
-            int noMatchFoundCount = 0;
-            int wrongMatchFoundCount = 0;
-            foreach (NumberTest test in testCases)
+            var noMatchFoundCount = 0;
+            var wrongMatchFoundCount = 0;
+            foreach (var test in testCases)
             {
                 var iterator =
-                    FindNumbersForLeniency(test.rawString, test.region, leniency);
-                PhoneNumberMatch match = iterator.FirstOrDefault();
+                    FindNumbersForLeniency(test.RawString, test.Region, leniency);
+                var match = iterator.FirstOrDefault();
                 if (match == null)
                 {
                     noMatchFoundCount++;
                     Console.WriteLine("No match found in " + test + " for leniency: " + leniency);
                 }
-                else
+                else if (!test.RawString.Equals(match.RawString))
                 {
-                    if (!test.rawString.Equals(match.RawString))
-                    {
-                        wrongMatchFoundCount++;
-                        Console.WriteLine("Found wrong match in test " + test +
-                                          ". Found " + match.RawString);
-                    }
+                    wrongMatchFoundCount++;
+                    Console.WriteLine("Found wrong match in test " + test +
+                                      ". Found " + match.RawString);
+
                 }
             }
             Assert.Equal(0, noMatchFoundCount);
@@ -608,12 +619,12 @@ namespace PhoneNumbers.Test
         private void DoTestNumberNonMatchesForLeniency(List<NumberTest> testCases,
                                                        PhoneNumberUtil.Leniency leniency)
         {
-            int matchFoundCount = 0;
-            foreach (NumberTest test in testCases)
+            var matchFoundCount = 0;
+            foreach (var test in testCases)
             {
                 var iterator =
-                    FindNumbersForLeniency(test.rawString, test.region, leniency);
-                PhoneNumberMatch match = iterator.FirstOrDefault();
+                    FindNumbersForLeniency(test.RawString, test.Region, leniency);
+                var match = iterator.FirstOrDefault();
                 if (match != null)
                 {
                     matchFoundCount++;
@@ -631,7 +642,7 @@ namespace PhoneNumbers.Test
          *  matching is set to POSSIBLE; else no test number should be extracted at that leniency level
          */
         private void FindMatchesInContexts(List<NumberContext> contexts, bool isValid,
-                                           bool isPossible, String region, String number)
+                                           bool isPossible, string region, string number)
         {
             if (isValid)
             {
@@ -639,9 +650,9 @@ namespace PhoneNumbers.Test
             }
             else
             {
-                foreach (NumberContext context in contexts)
+                foreach (var context in contexts)
                 {
-                    String text = context.leadingText + number + context.trailingText;
+                    var text = context.LeadingText + number + context.TrailingText;
                     Assert.True(HasNoMatches(phoneUtil.FindNumbers(text, region)),
                         "Should not have found a number in " + text);
                 }
@@ -652,9 +663,9 @@ namespace PhoneNumbers.Test
             }
             else
             {
-                foreach (NumberContext context in contexts)
+                foreach (var context in contexts)
                 {
-                    String text = context.leadingText + number + context.trailingText;
+                    var text = context.LeadingText + number + context.TrailingText;
                     Assert.True(HasNoMatches(phoneUtil.FindNumbers(text, region, PhoneNumberUtil.Leniency.POSSIBLE,
                                                                   long.MaxValue)),
                                                                   "Should not have found a number in " + text);
@@ -667,8 +678,8 @@ namespace PhoneNumbers.Test
          */
         private void FindMatchesInContexts(List<NumberContext> contexts, bool isValid, bool isPossible)
         {
-            String region = "US";
-            String number = "415-666-7777";
+            const string region = "US";
+            const string number = "415-666-7777";
 
             FindMatchesInContexts(contexts, isValid, isPossible, region, number);
         }
@@ -721,18 +732,18 @@ namespace PhoneNumbers.Test
         public void TestSequences()
         {
             // Test multiple occurrences.
-            String text = "Call 033316005  or 032316005!";
-            String region = "NZ";
+            var text = "Call 033316005  or 032316005!";
+            var region = "NZ";
 
-            PhoneNumber number1 = new PhoneNumber.Builder()
+            var number1 = new PhoneNumber.Builder()
                 .SetCountryCode(phoneUtil.GetCountryCodeForRegion(region))
                 .SetNationalNumber(33316005).Build();
-            PhoneNumberMatch match1 = new PhoneNumberMatch(5, "033316005", number1);
+            var match1 = new PhoneNumberMatch(5, "033316005", number1);
 
-            PhoneNumber number2 = new PhoneNumber.Builder()
+            var number2 = new PhoneNumber.Builder()
                 .SetCountryCode(phoneUtil.GetCountryCodeForRegion(region))
                 .SetNationalNumber(32316005).Build();
-            PhoneNumberMatch match2 = new PhoneNumberMatch(19, "032316005", number2);
+            var match2 = new PhoneNumberMatch(19, "032316005", number2);
 
             var matches = phoneUtil.FindNumbers(text, region, PhoneNumberUtil.Leniency.POSSIBLE, long.MaxValue).GetEnumerator();
             matches.MoveNext();
@@ -753,18 +764,18 @@ namespace PhoneNumbers.Test
         public void TestMaxMatches()
         {
             // Set up text with 100 valid phone numbers.
-            StringBuilder numbers = new StringBuilder();
-            for (int i = 0; i < 100; i++)
+            var numbers = new StringBuilder();
+            for (var i = 0; i < 100; i++)
                 numbers.Append("My info: 415-666-7777,");
 
             // Matches all 100. Max only applies to failed cases.
-            List<PhoneNumber> expected = new List<PhoneNumber>(100);
-            PhoneNumber number = phoneUtil.Parse("+14156667777", null);
-            for (int i = 0; i < 100; i++)
+            var expected = new List<PhoneNumber>(100);
+            var number = phoneUtil.Parse("+14156667777", null);
+            for (var i = 0; i < 100; i++)
                 expected.Add(number);
 
             var iterable = phoneUtil.FindNumbers(numbers.ToString(), "US", PhoneNumberUtil.Leniency.VALID, 10);
-            List<PhoneNumber> actual = new List<PhoneNumber>(100);
+            var actual = new List<PhoneNumber>(100);
             foreach (var match in iterable)
                 actual.Add(match.Number);
             Assert.Equal(expected, actual);
@@ -774,10 +785,10 @@ namespace PhoneNumbers.Test
         public void TestMaxMatchesInvalid()
         {
             // Set up text with 10 invalid phone numbers followed by 100 valid.
-            StringBuilder numbers = new StringBuilder();
-            for (int i = 0; i < 10; i++)
+            var numbers = new StringBuilder();
+            for (var i = 0; i < 10; i++)
                 numbers.Append("My address 949-8945-0");
-            for (int i = 0; i < 100; i++)
+            for (var i = 0; i < 100; i++)
                 numbers.Append("My info: 415-666-7777,");
 
             var iterable = phoneUtil.FindNumbers(numbers.ToString(), "US", PhoneNumberUtil.Leniency.VALID, 10);
@@ -788,18 +799,18 @@ namespace PhoneNumbers.Test
         public void TestMaxMatchesMixed()
         {
             // Set up text with 100 valid numbers inside an invalid number.
-            StringBuilder numbers = new StringBuilder();
-            for (int i = 0; i < 100; i++)
+            var numbers = new StringBuilder();
+            for (var i = 0; i < 100; i++)
                 numbers.Append("My info: 415-666-7777 123 fake street");
 
             // Only matches the first 10 despite there being 100 numbers due to max matches.
-            List<PhoneNumber> expected = new List<PhoneNumber>(100);
-            PhoneNumber number = phoneUtil.Parse("+14156667777", null);
-            for (int i = 0; i < 10; i++)
+            var expected = new List<PhoneNumber>(100);
+            var number = phoneUtil.Parse("+14156667777", null);
+            for (var i = 0; i < 10; i++)
                 expected.Add(number);
 
             var iterable = phoneUtil.FindNumbers(numbers.ToString(), "US", PhoneNumberUtil.Leniency.VALID, 10);
-            List<PhoneNumber> actual = new List<PhoneNumber>(100);
+            var actual = new List<PhoneNumber>(100);
             foreach (var match in iterable)
                 actual.Add(match.Number);
             Assert.Equal(expected, actual);
@@ -854,13 +865,14 @@ namespace PhoneNumbers.Test
         * Asserts that another number can be found in {@code text} starting at {@code index}, and that
         * its corresponding range is {@code [start, end)}.
         */
-        private void AssertEqualRange(String text, int index, int start, int end)
+        [SuppressMessage("ReSharper", "UnusedParameter.Local")]
+        private void AssertEqualRange(string text, int index, int start, int end)
         {
-            String sub = text.Substring(index);
+            var sub = text.Substring(index);
             var matches =
                 phoneUtil.FindNumbers(sub, "NZ", PhoneNumberUtil.Leniency.POSSIBLE, long.MaxValue).GetEnumerator();
             Assert.True(matches.MoveNext());
-            PhoneNumberMatch match = matches.Current;
+            var match = matches.Current;
             Assert.Equal(start - index, match.Start);
             Assert.Equal(end - start, match.Length);
             Assert.Equal(sub.Substring(match.Start, match.Length), match.RawString);
@@ -873,45 +885,47 @@ namespace PhoneNumbers.Test
         *
         * @param number the number to test and the corresponding region code to use
         */
-        private void DoTestFindInContext(String number, String defaultCountry)
+        private void DoTestFindInContext(string number, string defaultCountry)
         {
             FindPossibleInContext(number, defaultCountry);
 
-            PhoneNumber parsed = phoneUtil.Parse(number, defaultCountry);
+            var parsed = phoneUtil.Parse(number, defaultCountry);
             if (phoneUtil.IsValidNumber(parsed))
                 FindValidInContext(number, defaultCountry);
         }
 
-        private void FindPossibleInContext(String number, String defaultCountry)
+        private void FindPossibleInContext(string number, string defaultCountry)
         {
-            List<NumberContext> contextPairs = new List<NumberContext>();
-            contextPairs.Add(new NumberContext("", ""));  // no context
-            contextPairs.Add(new NumberContext("   ", "\t"));  // whitespace only
-            contextPairs.Add(new NumberContext("Hello ", ""));  // no context at end
-            contextPairs.Add(new NumberContext("", " to call me!"));  // no context at start
-            contextPairs.Add(new NumberContext("Hi there, call ", " to reach me!"));  // no context at start
-            contextPairs.Add(new NumberContext("Hi there, call ", ", or don't"));  // with commas
-            // Three examples without whitespace around the number.
-            contextPairs.Add(new NumberContext("Hi call", ""));
-            contextPairs.Add(new NumberContext("", "forme"));
-            contextPairs.Add(new NumberContext("Hi call", "forme"));
-            // With other small numbers.
-            contextPairs.Add(new NumberContext("It's cheap! Call ", " before 6:30"));
-            // With a second number later.
-            contextPairs.Add(new NumberContext("Call ", " or +1800-123-4567!"));
-            contextPairs.Add(new NumberContext("Call me on June 2 at", ""));  // with a Month-Day date
-            // With publication pages.
-            contextPairs.Add(new NumberContext(
-            "As quoted by Alfonso 12-15 (2009), you may call me at ", ""));
-            contextPairs.Add(new NumberContext(
-            "As quoted by Alfonso et al. 12-15 (2009), you may call me at ", ""));
-            // With dates, written in the American style.
-            contextPairs.Add(new NumberContext(
-            "As I said on 03/10/2011, you may call me at ", ""));
-            // With trailing numbers after a comma. The 45 should not be considered an extension.
-            contextPairs.Add(new NumberContext("", ", 45 days a year"));
-            // With a postfix stripped off as it looks like the start of another number.
-            contextPairs.Add(new NumberContext("Call ", "/x12 more"));
+            var contextPairs = new List<NumberContext>
+            {
+                new NumberContext("", ""), // no context
+                new NumberContext("   ", "\t"), // whitespace only
+                new NumberContext("Hello ", ""), // no context at end
+                new NumberContext("", " to call me!"), // no context at start
+                new NumberContext("Hi there, call ", " to reach me!"), // no context at start
+                new NumberContext("Hi there, call ", ", or don't"), // with commas
+                // Three examples without whitespace around the number.
+                new NumberContext("Hi call", ""),
+                new NumberContext("", "forme"),
+                new NumberContext("Hi call", "forme"),
+                // With other small numbers.
+                new NumberContext("It's cheap! Call ", " before 6:30"),
+                // With a second number later.
+                new NumberContext("Call ", " or +1800-123-4567!"),
+                new NumberContext("Call me on June 2 at", ""), // with a Month-Day date
+                // With publication pages.
+                new NumberContext(
+                    "As quoted by Alfonso 12-15 (2009), you may call me at ", ""),
+                new NumberContext(
+                    "As quoted by Alfonso et al. 12-15 (2009), you may call me at ", ""),
+                // With dates, written in the American style.
+                new NumberContext(
+                    "As I said on 03/10/2011, you may call me at ", ""),
+                // With trailing numbers after a comma. The 45 should not be considered an extension.
+                new NumberContext("", ", 45 days a year"),
+                // With a postfix stripped off as it looks like the start of another number.
+                new NumberContext("Call ", "/x12 more")
+            };
 
             DoTestInContext(number, defaultCountry, contextPairs, PhoneNumberUtil.Leniency.POSSIBLE);
         }
@@ -919,36 +933,36 @@ namespace PhoneNumbers.Test
         /**
         * Tests valid numbers in contexts that fail for {@link Leniency#POSSIBLE}.
         */
-        private void FindValidInContext(String number, String defaultCountry)
+        private void FindValidInContext(string number, string defaultCountry)
         {
-            List<NumberContext> contextPairs = new List<NumberContext>();
+            var contextPairs = new List<NumberContext> {
             // With other small numbers.
-            contextPairs.Add(new NumberContext("It's only 9.99! Call ", " to buy"));
+            new NumberContext("It's only 9.99! Call ", " to buy"),
             // With a number Month/Day date.
-            contextPairs.Add(new NumberContext("Call me on 06/21 at ", ""));
+            new NumberContext("Call me on 06/21 at ", ""),
             // With a number Day.Month date.
-            contextPairs.Add(new NumberContext("Call me on 21.6. at ", ""));
+            new NumberContext("Call me on 21.6. at ", ""),
             // With a number Month/Day/Year date.
-            contextPairs.Add(new NumberContext("Call me on 06/21/84 at ", ""));
+            new NumberContext("Call me on 06/21/84 at ", "")};
             DoTestInContext(number, defaultCountry, contextPairs, PhoneNumberUtil.Leniency.VALID);
         }
 
-        private void DoTestInContext(String number, String defaultCountry,
+        private void DoTestInContext(string number, string defaultCountry,
             List<NumberContext> contextPairs, PhoneNumberUtil.Leniency leniency)
         {
             foreach (var context in contextPairs)
             {
-                String prefix = context.leadingText;
-                String text = prefix + number + context.trailingText;
+                var prefix = context.LeadingText;
+                var text = prefix + number + context.TrailingText;
 
-                int start = prefix.Length;
-                int length = number.Length;
+                var start = prefix.Length;
+                var length = number.Length;
                 var iterator = phoneUtil.FindNumbers(text, defaultCountry, leniency, long.MaxValue);
 
-                PhoneNumberMatch match = iterator.First();
+                var match = iterator.First();
                 Assert.NotNull(match);
 
-                String extracted = text.Substring(match.Start, match.Length);
+                var extracted = text.Substring(match.Start, match.Length);
                 Assert.True(start == match.Start && length == match.Length,
                     "Unexpected phone region in '" + text + "'; extracted '" + extracted + "'");
                 Assert.Equal(number, extracted);
@@ -962,12 +976,12 @@ namespace PhoneNumbers.Test
         * Exhaustively searches for phone numbers from each index within {@code text} to test that
         * finding matches always terminates.
         */
-        private void EnsureTermination(String text, String defaultCountry, PhoneNumberUtil.Leniency leniency)
+        private void EnsureTermination(string text, string defaultCountry, PhoneNumberUtil.Leniency leniency)
         {
-            for (int index = 0; index <= text.Length; index++)
+            for (var index = 0; index <= text.Length; index++)
             {
-                String sub = text.Substring(index);
-                StringBuilder matches = new StringBuilder();
+                var sub = text.Substring(index);
+                var matches = new StringBuilder();
                 // Iterates over all matches.
                 foreach (var match in phoneUtil.FindNumbers(sub, defaultCountry, leniency, long.MaxValue))
                     matches.Append(", ").Append(match);
@@ -975,7 +989,7 @@ namespace PhoneNumbers.Test
         }
 
         private IEnumerable<PhoneNumberMatch> FindNumbersForLeniency(
-      String text, String defaultCountry, PhoneNumberUtil.Leniency leniency)
+      string text, string defaultCountry, PhoneNumberUtil.Leniency leniency)
         {
             return phoneUtil.FindNumbers(text, defaultCountry, leniency, long.MaxValue);
         }
@@ -994,13 +1008,13 @@ namespace PhoneNumbers.Test
         */
         private class NumberContext
         {
-            public readonly String leadingText;
-            public readonly String trailingText;
+            public readonly string LeadingText;
+            public readonly string TrailingText;
 
-            public NumberContext(String leadingText, String trailingText)
+            public NumberContext(string leadingText, string trailingText)
             {
-                this.leadingText = leadingText;
-                this.trailingText = trailingText;
+                LeadingText = leadingText;
+                TrailingText = trailingText;
             }
         }
 
@@ -1009,18 +1023,18 @@ namespace PhoneNumbers.Test
            */
         private class NumberTest
         {
-            public readonly String rawString;
-            public readonly String region;
+            public readonly string RawString;
+            public readonly string Region;
 
-            public NumberTest(String rawString, String region)
+            public NumberTest(string rawString, string region)
             {
-                this.rawString = rawString;
-                this.region = region;
+                RawString = rawString;
+                Region = region;
             }
 
-            public override String ToString()
+            public override string ToString()
             {
-                return rawString + " (" + region + ")";
+                return RawString + " (" + Region + ")";
             }
         }
 

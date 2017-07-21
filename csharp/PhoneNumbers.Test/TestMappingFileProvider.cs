@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
+
 using System.Collections.Generic;
 using Xunit;
 
@@ -31,11 +31,13 @@ namespace PhoneNumbers.Test
 
         public TestMappingFileProvider()
         {
-            var mapping = new SortedDictionary<int, HashSet<String>>();
-            mapping[1] = new HashSet<String>(new[] { "en" });
-            mapping[86] = new HashSet<String>(new[] { "zh", "en", "zh_Hant" });
-            mapping[41] = new HashSet<String>(new[] { "de", "fr", "it", "rm" });
-            mapping[65] = new HashSet<String>(new[] { "en", "zh_Hans", "ms", "ta" });
+            var mapping = new SortedDictionary<int, HashSet<string>>
+            {
+                [1] = new HashSet<string>(new[] {"en"}),
+                [86] = new HashSet<string>(new[] {"zh", "en", "zh_Hant"}),
+                [41] = new HashSet<string>(new[] {"de", "fr", "it", "rm"}),
+                [65] = new HashSet<string>(new[] {"en", "zh_Hans", "ms", "ta"})
+            };
             mappingProvider.ReadFileConfigs(mapping);
         }
 

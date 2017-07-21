@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 using Xunit;
 
 namespace PhoneNumbers.Test
@@ -32,13 +33,13 @@ namespace PhoneNumbers.Test
 
         public TestAsYouTypeFormatter(TestMetadataTestCase metadata)
         {
-            phoneUtil = metadata.phoneUtil;
+            phoneUtil = metadata.PhoneUtil;
         }
 
         [Fact]
         public void TestInvalidRegion()
         {
-            AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter("ZZ");
+            var formatter = phoneUtil.GetAsYouTypeFormatter("ZZ");
             Assert.Equal("+", formatter.InputDigit('+'));
             Assert.Equal("+4", formatter.InputDigit('4'));
             Assert.Equal("+48 ", formatter.InputDigit('8'));
@@ -62,7 +63,7 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestInvalidPlusSign()
         {
-            AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter("ZZ");
+            var formatter = phoneUtil.GetAsYouTypeFormatter("ZZ");
             Assert.Equal("+", formatter.InputDigit('+'));
             Assert.Equal("+4", formatter.InputDigit('4'));
             Assert.Equal("+48 ", formatter.InputDigit('8'));
@@ -82,9 +83,9 @@ namespace PhoneNumbers.Test
         public void TestTooLongNumberMatchingMultipleLeadingDigits()
         {
             // See http://code.google.com/p/libphonenumber/issues/detail?id=36
-            // The bug occurred last time for countries which have two formatting rules with exactly the
+            // This occurred last time for countries which have two formatting rules with exactly the
             // same leading digits pattern but differ in length.
-            AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter("ZZ");
+            var formatter = phoneUtil.GetAsYouTypeFormatter("ZZ");
             Assert.Equal("+", formatter.InputDigit('+'));
             Assert.Equal("+8", formatter.InputDigit('8'));
             Assert.Equal("+81 ", formatter.InputDigit('1'));
@@ -107,7 +108,7 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestAYTFUS()
         {
-            AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter("US");
+            var formatter = phoneUtil.GetAsYouTypeFormatter("US");
             Assert.Equal("6", formatter.InputDigit('6'));
             Assert.Equal("65", formatter.InputDigit('5'));
             Assert.Equal("650", formatter.InputDigit('0'));
@@ -203,7 +204,7 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestAYTFUSFullWidthCharacters()
         {
-            AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter("US");
+            var formatter = phoneUtil.GetAsYouTypeFormatter("US");
             Assert.Equal("\uFF16", formatter.InputDigit('\uFF16'));
             Assert.Equal("\uFF16\uFF15", formatter.InputDigit('\uFF15'));
             Assert.Equal("650", formatter.InputDigit('\uFF10'));
@@ -219,7 +220,7 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestAYTFUSMobileShortCode()
         {
-            AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter("US");
+            var formatter = phoneUtil.GetAsYouTypeFormatter("US");
             Assert.Equal("*", formatter.InputDigit('*'));
             Assert.Equal("*1", formatter.InputDigit('1'));
             Assert.Equal("*12", formatter.InputDigit('2'));
@@ -230,7 +231,7 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestAYTFUSVanityNumber()
         {
-            AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter("US");
+            var formatter = phoneUtil.GetAsYouTypeFormatter("US");
             Assert.Equal("8", formatter.InputDigit('8'));
             Assert.Equal("80", formatter.InputDigit('0'));
             Assert.Equal("800", formatter.InputDigit('0'));
@@ -248,7 +249,7 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestAYTFAndRememberPositionUS()
         {
-            AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter("US");
+            var formatter = phoneUtil.GetAsYouTypeFormatter("US");
             Assert.Equal("1", formatter.InputDigitAndRememberPosition('1'));
             Assert.Equal(1, formatter.GetRememberedPosition());
             Assert.Equal("16", formatter.InputDigit('6'));
@@ -386,7 +387,7 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestAYTFGBFixedLine()
         {
-            AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter("GB");
+            var formatter = phoneUtil.GetAsYouTypeFormatter("GB");
             Assert.Equal("0", formatter.InputDigit('0'));
             Assert.Equal("02", formatter.InputDigit('2'));
             Assert.Equal("020", formatter.InputDigit('0'));
@@ -405,7 +406,7 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestAYTFGBTollFree()
         {
-            AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter("GB");
+            var formatter = phoneUtil.GetAsYouTypeFormatter("GB");
             Assert.Equal("0", formatter.InputDigit('0'));
             Assert.Equal("08", formatter.InputDigit('8'));
             Assert.Equal("080", formatter.InputDigit('0'));
@@ -422,7 +423,7 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestAYTFGBPremiumRate()
         {
-            AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter("GB");
+            var formatter = phoneUtil.GetAsYouTypeFormatter("GB");
             Assert.Equal("0", formatter.InputDigit('0'));
             Assert.Equal("09", formatter.InputDigit('9'));
             Assert.Equal("090", formatter.InputDigit('0'));
@@ -439,7 +440,7 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestAYTFNZMobile()
         {
-            AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter("NZ");
+            var formatter = phoneUtil.GetAsYouTypeFormatter("NZ");
             Assert.Equal("0", formatter.InputDigit('0'));
             Assert.Equal("02", formatter.InputDigit('2'));
             Assert.Equal("021", formatter.InputDigit('1'));
@@ -455,7 +456,7 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestAYTFDE()
         {
-            AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter("DE");
+            var formatter = phoneUtil.GetAsYouTypeFormatter("DE");
             Assert.Equal("0", formatter.InputDigit('0'));
             Assert.Equal("03", formatter.InputDigit('3'));
             Assert.Equal("030", formatter.InputDigit('0'));
@@ -508,7 +509,7 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestAYTFAR()
         {
-            AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter("AR");
+            var formatter = phoneUtil.GetAsYouTypeFormatter("AR");
             Assert.Equal("0", formatter.InputDigit('0'));
             Assert.Equal("01", formatter.InputDigit('1'));
             Assert.Equal("011", formatter.InputDigit('1'));
@@ -525,7 +526,7 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestAYTFARMobile()
         {
-            AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter("AR");
+            var formatter = phoneUtil.GetAsYouTypeFormatter("AR");
             Assert.Equal("+", formatter.InputDigit('+'));
             Assert.Equal("+5", formatter.InputDigit('5'));
             Assert.Equal("+54 ", formatter.InputDigit('4'));
@@ -546,7 +547,7 @@ namespace PhoneNumbers.Test
         public void TestAYTFKR()
         {
             // +82 51 234 5678
-            AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter("KR");
+            var formatter = phoneUtil.GetAsYouTypeFormatter("KR");
             Assert.Equal("+", formatter.InputDigit('+'));
             Assert.Equal("+8", formatter.InputDigit('8'));
             Assert.Equal("+82 ", formatter.InputDigit('2'));
@@ -637,7 +638,7 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestAYTF_MX()
         {
-            AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter("MX");
+            var formatter = phoneUtil.GetAsYouTypeFormatter("MX");
 
             // +52 800 123 4567
             Assert.Equal("+", formatter.InputDigit('+'));
@@ -724,7 +725,7 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestAYTF_International_Toll_Free()
         {
-            AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter(RegionCode.US);
+            var formatter = phoneUtil.GetAsYouTypeFormatter(RegionCode.US);
             // +800 1234 5678
             Assert.Equal("+", formatter.InputDigit('+'));
             Assert.Equal("+8", formatter.InputDigit('8'));
@@ -745,7 +746,7 @@ namespace PhoneNumbers.Test
         public void TestAYTFMultipleLeadingDigitPatterns()
         {
             // +81 50 2345 6789
-            AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter("JP");
+            var formatter = phoneUtil.GetAsYouTypeFormatter("JP");
             Assert.Equal("+", formatter.InputDigit('+'));
             Assert.Equal("+8", formatter.InputDigit('8'));
             Assert.Equal("+81 ", formatter.InputDigit('1'));
@@ -803,7 +804,7 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestAYTFLongIDD_AU()
         {
-            AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter("AU");
+            var formatter = phoneUtil.GetAsYouTypeFormatter("AU");
             // 0011 1 650 253 2250
             Assert.Equal("0", formatter.InputDigit('0'));
             Assert.Equal("00", formatter.InputDigit('0'));
@@ -862,7 +863,7 @@ namespace PhoneNumbers.Test
         [Fact]
         public void testAYTFLongIDD_KR()
         {
-            AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter("KR");
+            var formatter = phoneUtil.GetAsYouTypeFormatter("KR");
             // 00300 1 650 253 2222
             Assert.Equal("0", formatter.InputDigit('0'));
             Assert.Equal("00", formatter.InputDigit('0'));
@@ -885,7 +886,7 @@ namespace PhoneNumbers.Test
         [Fact]
         public void testAYTFLongNDD_KR()
         {
-            AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter("KR");
+            var formatter = phoneUtil.GetAsYouTypeFormatter("KR");
             // 08811-9876-7890
             Assert.Equal("0", formatter.InputDigit('0'));
             Assert.Equal("08", formatter.InputDigit('8'));
@@ -923,7 +924,7 @@ namespace PhoneNumbers.Test
         [Fact]
         public void testAYTFLongNDD_SG()
         {
-            AsYouTypeFormatter formatter = phoneUtil.GetAsYouTypeFormatter("SG");
+            var formatter = phoneUtil.GetAsYouTypeFormatter("SG");
             // 777777 9876 7890
             Assert.Equal("7", formatter.InputDigit('7'));
             Assert.Equal("77", formatter.InputDigit('7'));

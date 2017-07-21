@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 using System;
 using System.IO;
 using System.Xml.Linq;
@@ -23,7 +24,7 @@ namespace PhoneNumbers.Test
     public class TestBuildMetadataFromXml
     {
         // Helper method that outputs a DOM element from a XML string.
-        private static XElement ParseXmlString(String xmlString)
+        private static XElement ParseXmlString(string xmlString)
         {
             using (var reader = new StringReader(xmlString))
             {
@@ -209,7 +210,7 @@ namespace PhoneNumbers.Test
         public void TestLoadNationalFormat()
         {
             var nationalFormat = "$1 $2";
-            var xmlInput = String.Format("<numberFormat><format>{0}</format></numberFormat>",
+            var xmlInput = string.Format("<numberFormat><format>{0}</format></numberFormat>",
                                             nationalFormat);
             var numberFormatElement = ParseXmlString(xmlInput);
             var metadata = new PhoneMetadata.Builder();
@@ -348,18 +349,6 @@ namespace PhoneNumbers.Test
                 metadata, element, "0", "($1)", false /* NP not optional */);
             Assert.Equal("$1 $2 $3", metadata.NumberFormatList[0].Format);
             Assert.Equal("$1-$2", metadata.NumberFormatList[1].Format);
-        }
-
-        [Fact]
-        public void TestLoadInternationalFormatDoesNotSetIntlFormatWhenNA()
-        {
-            var xmlInput = "<numberFormat><intlFormat>NA</intlFormat></numberFormat>";
-            var numberFormatElement = ParseXmlString(xmlInput);
-            var metadata = new PhoneMetadata.Builder();
-            var nationalFormat = "$1 $2";
-
-            BuildMetadataFromXml.LoadInternationalFormat(metadata, numberFormatElement, nationalFormat);
-            Assert.Equal(0, metadata.IntlNumberFormatCount);
         }
 
         // Tests setLeadingDigitsPatterns().

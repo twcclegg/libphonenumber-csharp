@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace PhoneNumbers
 {
@@ -29,37 +29,32 @@ namespace PhoneNumbers
     */
     public class DefaultMapStorage : AreaCodeMapStorageStrategy
     {
-        public DefaultMapStorage()
-        {
-        }
-
         private int[] phoneNumberPrefixes;
-        private String[] descriptions;
+        private string[] descriptions;
 
-        public override int getPrefix(int index)
+        public override int GetPrefix(int index)
         {
             return phoneNumberPrefixes[index];
         }
 
-        public override int getStorageSize()
+        public override int GetStorageSize()
         {
-            return phoneNumberPrefixes.Length * sizeof(int)
-                + descriptions.Sum(d => d.Length);
+            return phoneNumberPrefixes.Length * sizeof(int) + descriptions.Sum(d => d.Length);
         }
 
-        public override String getDescription(int index)
+        public override string GetDescription(int index)
         {
             return descriptions[index];
         }
 
-        public override void readFromSortedMap(SortedDictionary<int, String> sortedAreaCodeMap)
+        public override void ReadFromSortedMap(SortedDictionary<int, string> sortedAreaCodeMap)
         {
-            numOfEntries = sortedAreaCodeMap.Count;
-            phoneNumberPrefixes = new int[numOfEntries];
-            descriptions = new String[numOfEntries];
-            int index = 0;
+            NumOfEntries = sortedAreaCodeMap.Count;
+            phoneNumberPrefixes = new int[NumOfEntries];
+            descriptions = new string[NumOfEntries];
+            var index = 0;
             var possibleLengthsSet = new HashSet<int>();
-            foreach (int prefix in sortedAreaCodeMap.Keys)
+            foreach (var prefix in sortedAreaCodeMap.Keys)
             {
                 phoneNumberPrefixes[index] = prefix;
                 descriptions[index] = sortedAreaCodeMap[prefix];
@@ -67,9 +62,9 @@ namespace PhoneNumbers
                 var lengthOfPrefix = (int)Math.Log10(prefix) + 1;
                 possibleLengthsSet.Add(lengthOfPrefix);
             }
-            possibleLengths.Clear();
-            possibleLengths.AddRange(possibleLengthsSet);
-            possibleLengths.Sort();
+            PossibleLengths.Clear();
+            PossibleLengths.AddRange(possibleLengthsSet);
+            PossibleLengths.Sort();
         }
     }
 }

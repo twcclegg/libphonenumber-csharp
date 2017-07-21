@@ -9,7 +9,7 @@ namespace PhoneNumbers
     /// <threadsafety static="true" instance="false"/>
     internal static class InternalRegexOptions
     {
-        public static RegexOptions Default { get; private set; }
+        public static RegexOptions Default { get; }
 
         static InternalRegexOptions()
         {

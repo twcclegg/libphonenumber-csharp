@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace PhoneNumbers
 {
@@ -35,14 +33,14 @@ namespace PhoneNumbers
         // valid phone number could have.
         TOO_SHORT_NSN,
         // This indicates the string had more digits than any valid phone number could have.
-        TOO_LONG,
+        TOO_LONG
     }
 
     public class NumberParseException : Exception
     {
         public readonly ErrorType ErrorType;
 
-        public NumberParseException(ErrorType errorType, String message) :
+        public NumberParseException(ErrorType errorType, string message) :
             base(message)
         {
             ErrorType = errorType;

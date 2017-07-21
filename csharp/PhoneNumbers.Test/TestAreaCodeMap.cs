@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
+
 using System.Collections.Generic;
 using Xunit;
 
@@ -32,62 +32,70 @@ namespace PhoneNumbers.Test
 
         public TestAreaCodeMap()
         {
-            SortedDictionary<int, String> sortedMap = new SortedDictionary<int, String>();
-            sortedMap[1212] = "New York";
-            sortedMap[1480] = "Arizona";
-            sortedMap[1650] = "California";
-            sortedMap[1907] = "Alaska";
-            sortedMap[1201664] = "Westwood, NJ";
-            sortedMap[1480893] = "Phoenix, AZ";
-            sortedMap[1501372] = "Little Rock, AR";
-            sortedMap[1626308] = "Alhambra, CA";
-            sortedMap[1650345] = "San Mateo, CA";
-            sortedMap[1867993] = "Dawson, YT";
-            sortedMap[1972480] = "Richardson, TX";
-            areaCodeMapForUS.readAreaCodeMap(sortedMap);
+            var sortedMap = new SortedDictionary<int, string>
+            {
+                [1212] = "New York",
+                [1480] = "Arizona",
+                [1650] = "California",
+                [1907] = "Alaska",
+                [1201664] = "Westwood, NJ",
+                [1480893] = "Phoenix, AZ",
+                [1501372] = "Little Rock, AR",
+                [1626308] = "Alhambra, CA",
+                [1650345] = "San Mateo, CA",
+                [1867993] = "Dawson, YT",
+                [1972480] = "Richardson, TX"
+            };
+            areaCodeMapForUS.ReadAreaCodeMap(sortedMap);
 
-            sortedMap = new SortedDictionary<int, String>();
-            sortedMap[3902] = "Milan";
-            sortedMap[3906] = "Rome";
-            sortedMap[39010] = "Genoa";
-            sortedMap[390131] = "Alessandria";
-            sortedMap[390321] = "Novara";
-            sortedMap[390975] = "Potenza";
-            areaCodeMapForIT.readAreaCodeMap(sortedMap);
+            sortedMap = new SortedDictionary<int, string>
+            {
+                [3902] = "Milan",
+                [3906] = "Rome",
+                [39010] = "Genoa",
+                [390131] = "Alessandria",
+                [390321] = "Novara",
+                [390975] = "Potenza"
+            };
+            areaCodeMapForIT.ReadAreaCodeMap(sortedMap);
         }
 
-        private static SortedDictionary<int, String> CreateDefaultStorageMapCandidate()
+        private static SortedDictionary<int, string> CreateDefaultStorageMapCandidate()
         {
-            var sortedMap = new SortedDictionary<int, String>();
             // Make the area codes bigger to store them using integer.
-            sortedMap[121212345] = "New York";
-            sortedMap[148034434] = "Arizona";
+            var sortedMap = new SortedDictionary<int, string>
+            {
+                [121212345] = "New York",
+                [148034434] = "Arizona"
+            };
             return sortedMap;
         }
 
-        private static SortedDictionary<int, String> CreateFlyweightStorageMapCandidate()
+        private static SortedDictionary<int, string> CreateFlyweightStorageMapCandidate()
         {
-            var sortedMap = new SortedDictionary<int, String>();
-            sortedMap[1212] = "New York";
-            sortedMap[1213] = "New York";
-            sortedMap[1214] = "New York";
-            sortedMap[1480] = "Arizona";
+            var sortedMap = new SortedDictionary<int, string>
+            {
+                [1212] = "New York",
+                [1213] = "New York",
+                [1214] = "New York",
+                [1480] = "Arizona"
+            };
             return sortedMap;
         }
 
         [Fact]
         public void TestGetSmallerMapStorageChoosesDefaultImpl()
         {
-            AreaCodeMapStorageStrategy mapStorage =
-                new AreaCodeMap().getSmallerMapStorage(CreateDefaultStorageMapCandidate());
+            var mapStorage =
+                new AreaCodeMap().GetSmallerMapStorage(CreateDefaultStorageMapCandidate());
             Assert.False(mapStorage.GetType() == typeof(FlyweightMapStorage));
         }
 
         [Fact]
         public void TestGetSmallerMapStorageChoosesFlyweightImpl()
         {
-            AreaCodeMapStorageStrategy mapStorage =
-                new AreaCodeMap().getSmallerMapStorage(CreateFlyweightStorageMapCandidate());
+            var mapStorage =
+                new AreaCodeMap().GetSmallerMapStorage(CreateFlyweightStorageMapCandidate());
             Assert.True(mapStorage.GetType() == typeof(FlyweightMapStorage));
         }
 

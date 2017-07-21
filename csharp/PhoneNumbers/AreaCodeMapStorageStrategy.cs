@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
+
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace PhoneNumbers
@@ -29,8 +28,8 @@ namespace PhoneNumbers
     */
     public abstract class AreaCodeMapStorageStrategy
     {
-        protected int numOfEntries = 0;
-        protected readonly List<int> possibleLengths = new List<int>();
+        protected int NumOfEntries = 0;
+        protected readonly List<int> PossibleLengths = new List<int>();
 
         /**
          * Gets the phone number prefix located at the provided {@code index}.
@@ -38,9 +37,9 @@ namespace PhoneNumbers
          * @param index  the index of the prefix that needs to be returned
          * @return  the phone number prefix at the provided index
          */
-        public abstract int getPrefix(int index);
+        public abstract int GetPrefix(int index);
 
-        public abstract int getStorageSize();
+        public abstract int GetStorageSize();
 
         /**
          * Gets the description corresponding to the phone number prefix located at the provided {@code
@@ -50,7 +49,7 @@ namespace PhoneNumbers
          * @param index  the index of the phone number prefix that needs to be returned
          * @return  the description corresponding to the phone number prefix at the provided index
          */
-        public abstract String getDescription(int index);
+        public abstract string GetDescription(int index);
 
         /**
          * Sets the internal state of the underlying storage implementation from the provided {@code
@@ -59,33 +58,32 @@ namespace PhoneNumbers
          * @param sortedAreaCodeMap  a sorted map that maps phone number prefixes including country
          *    calling code to description strings
          */
-        public abstract void readFromSortedMap(SortedDictionary<int, String> sortedAreaCodeMap);
+        public abstract void ReadFromSortedMap(SortedDictionary<int, string> sortedAreaCodeMap);
 
         /**
          * @return  the number of entries contained in the area code map
          */
-        public int getNumOfEntries()
+        public int GetNumOfEntries()
         {
-            return numOfEntries;
+            return NumOfEntries;
         }
 
         /**
          * @return  the set containing the possible lengths of prefixes
          */
-        public List<int> getPossibleLengths()
+        public List<int> GetPossibleLengths()
         {
-            return possibleLengths;
+            return PossibleLengths;
         }
 
-        public override String ToString()
+        public override string ToString()
         {
-            StringBuilder output = new StringBuilder();
-            int numOfEntries = getNumOfEntries();
-            for (int i = 0; i < numOfEntries; i++)
+            var output = new StringBuilder();
+            for (var i = 0; i < GetNumOfEntries(); i++)
             {
-                output.Append(getPrefix(i))
+                output.Append(GetPrefix(i))
                     .Append("|")
-                    .Append(getDescription(i))
+                    .Append(GetDescription(i))
                     .Append("\n");
             }
             return output.ToString();

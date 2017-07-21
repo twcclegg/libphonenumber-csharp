@@ -13,58 +13,55 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
+
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 
 namespace PhoneNumbers
 {
     public class RegexCache
     {
-        class Entry
+        private class Entry
         {
             public PhoneRegex Regex;
-            public LinkedListNode<String> Node;
+            public LinkedListNode<string> Node;
         }
 
-        private int size_;
-        private LinkedList<String> lru_;
-        private Dictionary<String, Entry> cache_;
+        private readonly int size;
+        private readonly LinkedList<string> lru;
+        private readonly Dictionary<string, Entry> cache;
 
         public RegexCache(int size)
         {
-            size_ = size;
-            cache_ = new Dictionary<String, Entry>(size);
-            lru_ = new LinkedList<String>();
+            this.size = size;
+            cache = new Dictionary<string, Entry>(size);
+            lru = new LinkedList<string>();
         }
 
-        public PhoneRegex GetPatternForRegex(String regex)
+        public PhoneRegex GetPatternForRegex(string regex)
         {
             lock (this)
             {
-                Entry e = null;
-                if (!cache_.TryGetValue(regex, out e))
+                Entry e;
+                if (!cache.TryGetValue(regex, out e))
                 {
                     // Insert new node
                     var r = new PhoneRegex(regex);
-                    var n = lru_.AddFirst(regex);
-                    cache_[regex] = e = new Entry { Regex = r, Node = n };
+                    var n = lru.AddFirst(regex);
+                    cache[regex] = e = new Entry { Regex = r, Node = n };
                     // Check cache size
-                    if (lru_.Count > size_)
+                    if (lru.Count > size)
                     {
-                        var o = lru_.Last.Value;
-                        cache_.Remove(o);
-                        lru_.RemoveLast();
+                        var o = lru.Last.Value;
+                        cache.Remove(o);
+                        lru.RemoveLast();
                     }
                 }
                 else
                 {
-                    if (e.Node != lru_.First)
+                    if (e.Node != lru.First)
                     {
-                        lru_.Remove(e.Node);
-                        lru_.AddFirst(e.Node);
+                        lru.Remove(e.Node);
+                        lru.AddFirst(e.Node);
                     }
                 }
                 return e.Regex;
@@ -72,11 +69,11 @@ namespace PhoneNumbers
         }
 
         // This method is used for testing.
-        public bool ContainsRegex(String regex)
+        public bool ContainsRegex(string regex)
         {
             lock (this)
             {
-                return cache_.ContainsKey(regex);
+                return cache.ContainsKey(regex);
             }
         }
     }

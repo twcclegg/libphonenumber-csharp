@@ -14,9 +14,6 @@
 * limitations under the License.
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace PhoneNumbers
 {
@@ -76,21 +73,21 @@ namespace PhoneNumbers
             bool allowPrefixMatch)
         {
             number = PhoneNumberUtil.ExtractPossibleNumber(number);
-            if (PhoneNumberUtil.PLUS_CHARS_PATTERN.MatchBeginning(number).Success)
+            if (PhoneNumberUtil.PlusCharsPattern.MatchBeginning(number).Success)
             {
                 // Returns false if the number starts with a plus sign. We don't believe dialing the country
                 // code before emergency numbers (e.g. +1911) works, but later, if that proves to work, we can
                 // add additional logic here to handle it.
                 return false;
             }
-            PhoneMetadata metadata = phoneUtil.GetMetadataForRegion(regionCode);
+            var metadata = phoneUtil.GetMetadataForRegion(regionCode);
             if (metadata == null || !metadata.HasEmergency)
             {
                 return false;
             }
             var emergencyNumberPattern =
                 new PhoneRegex(metadata.Emergency.NationalNumberPattern);
-            String normalizedNumber = PhoneNumberUtil.NormalizeDigitsOnly(number);
+            var normalizedNumber = PhoneNumberUtil.NormalizeDigitsOnly(number);
             // In Brazil, it is impossible to append additional digits to an emergency number to dial the
             // number.
             return (!allowPrefixMatch || regionCode.Equals("BR"))

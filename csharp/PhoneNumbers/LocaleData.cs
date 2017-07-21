@@ -11,16 +11,17 @@
 //
 // Auto-generated file, do not edit by hand.
 //
-using System;
+
 using System.Collections.Generic;
+
 //
 namespace PhoneNumbers
 {
   public class LocaleData
   {
-    public static readonly Dictionary<String, Dictionary<String, String>> Data = new Dictionary<String, Dictionary<String, String>>
+    public static readonly Dictionary<string, Dictionary<string, string>> Data = new Dictionary<string, Dictionary<string, string>>
     {
-      {"AD", new Dictionary<String, String>
+      {"AD", new Dictionary<string, string>
       {
         {"aa", "Andorra"},
         {"ab", "*aa"},
@@ -209,9 +210,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5b89\u9053\u5c14"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"AE", new Dictionary<String, String>
+      {"AE", new Dictionary<string, string>
       {
         {"aa", "United Arab Emirates"},
         {"ab", "*aa"},
@@ -400,9 +401,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u963f\u62c9\u4f2f\u8054\u5408\u914b\u957f\u56fd"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"AF", new Dictionary<String, String>
+      {"AF", new Dictionary<string, string>
       {
         {"aa", "Afghanistan"},
         {"ab", "*aa"},
@@ -591,9 +592,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u963f\u5bcc\u6c57"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"AG", new Dictionary<String, String>
+      {"AG", new Dictionary<string, string>
       {
         {"aa", "Antigua and Barbuda"},
         {"ab", "*aa"},
@@ -782,9 +783,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5b89\u63d0\u74dc\u548c\u5df4\u5e03\u8fbe"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"AI", new Dictionary<String, String>
+      {"AI", new Dictionary<string, string>
       {
         {"aa", "Anguilla"},
         {"ab", "*aa"},
@@ -973,9 +974,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5b89\u572d\u62c9"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"AL", new Dictionary<String, String>
+      {"AL", new Dictionary<string, string>
       {
         {"aa", "Albania"},
         {"ab", "*aa"},
@@ -1164,9 +1165,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u963f\u5c14\u5df4\u5c3c\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"AM", new Dictionary<String, String>
+      {"AM", new Dictionary<string, string>
       {
         {"aa", "Armenia"},
         {"ab", "*aa"},
@@ -1355,9 +1356,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u4e9a\u7f8e\u5c3c\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"AN", new Dictionary<String, String>
+      {"AN", new Dictionary<string, string>
       {
         {"aa", "Netherlands Antilles"},
         {"ab", "*aa"},
@@ -1546,9 +1547,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u8377\u5c5e\u5b89\u7684\u5217\u65af\u7fa4\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"AO", new Dictionary<String, String>
+      {"AO", new Dictionary<string, string>
       {
         {"aa", "Angola"},
         {"ab", "*aa"},
@@ -1737,9 +1738,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5b89\u54e5\u62c9"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"AQ", new Dictionary<String, String>
+      {"AQ", new Dictionary<string, string>
       {
         {"aa", "Antarctica"},
         {"ab", "*aa"},
@@ -1928,9 +1929,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5357\u6781\u6d32"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"AR", new Dictionary<String, String>
+      {"AR", new Dictionary<string, string>
       {
         {"aa", "Argentina"},
         {"ab", "*aa"},
@@ -2119,9 +2120,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u963f\u6839\u5ef7"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"AS", new Dictionary<String, String>
+      {"AS", new Dictionary<string, string>
       {
         {"aa", "American Samoa"},
         {"ab", "*aa"},
@@ -2310,9 +2311,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u4e1c\u8428\u6469\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"AT", new Dictionary<String, String>
+      {"AT", new Dictionary<string, string>
       {
         {"aa", "Austria"},
         {"ab", "*aa"},
@@ -2501,9 +2502,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5965\u5730\u5229"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"AU", new Dictionary<String, String>
+      {"AU", new Dictionary<string, string>
       {
         {"aa", "Australia"},
         {"ab", "*aa"},
@@ -2692,9 +2693,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u6fb3\u5927\u5229\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"AW", new Dictionary<String, String>
+      {"AW", new Dictionary<string, string>
       {
         {"aa", "Aruba"},
         {"ab", "*aa"},
@@ -2883,9 +2884,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u963f\u9c81\u5df4"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"AX", new Dictionary<String, String>
+      {"AX", new Dictionary<string, string>
       {
         {"aa", "\u00c5land Islands"},
         {"ab", "*aa"},
@@ -3074,9 +3075,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5965\u5170\u7fa4\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"AZ", new Dictionary<String, String>
+      {"AZ", new Dictionary<string, string>
       {
         {"aa", "Azerbaijan"},
         {"ab", "*aa"},
@@ -3265,9 +3266,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u963f\u585e\u62dc\u7586"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"BA", new Dictionary<String, String>
+      {"BA", new Dictionary<string, string>
       {
         {"aa", "Bosnia and Herzegovina"},
         {"ab", "*aa"},
@@ -3456,9 +3457,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u6ce2\u65af\u5c3c\u4e9a\u548c\u9ed1\u5c71\u5171\u548c\u56fd"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"BB", new Dictionary<String, String>
+      {"BB", new Dictionary<string, string>
       {
         {"aa", "Barbados"},
         {"ab", "*aa"},
@@ -3647,9 +3648,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5df4\u5df4\u591a\u65af"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"BD", new Dictionary<String, String>
+      {"BD", new Dictionary<string, string>
       {
         {"aa", "Bangladesh"},
         {"ab", "*aa"},
@@ -3838,9 +3839,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5b5f\u52a0\u62c9"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"BE", new Dictionary<String, String>
+      {"BE", new Dictionary<string, string>
       {
         {"aa", "Belgium"},
         {"ab", "*aa"},
@@ -4029,9 +4030,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u6bd4\u5229\u65f6"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"BF", new Dictionary<String, String>
+      {"BF", new Dictionary<string, string>
       {
         {"aa", "Burkina Faso"},
         {"ab", "*aa"},
@@ -4220,9 +4221,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5e03\u57fa\u7eb3\u6cd5\u7d22"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"BG", new Dictionary<String, String>
+      {"BG", new Dictionary<string, string>
       {
         {"aa", "Bulgaria"},
         {"ab", "*aa"},
@@ -4411,9 +4412,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u4fdd\u52a0\u5229\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"BH", new Dictionary<String, String>
+      {"BH", new Dictionary<string, string>
       {
         {"aa", "Bahrain"},
         {"ab", "*aa"},
@@ -4602,9 +4603,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5df4\u6797"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"BI", new Dictionary<String, String>
+      {"BI", new Dictionary<string, string>
       {
         {"aa", "Burundi"},
         {"ab", "*aa"},
@@ -4793,9 +4794,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5e03\u9686\u8fea"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"BJ", new Dictionary<String, String>
+      {"BJ", new Dictionary<string, string>
       {
         {"aa", "Benin"},
         {"ab", "*aa"},
@@ -4984,9 +4985,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u8d1d\u5b81"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"BL", new Dictionary<String, String>
+      {"BL", new Dictionary<string, string>
       {
         {"aa", "Saint Barth\u00e9lemy"},
         {"ab", "*aa"},
@@ -5175,9 +5176,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "*aa"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"BM", new Dictionary<String, String>
+      {"BM", new Dictionary<string, string>
       {
         {"aa", "Bermuda"},
         {"ab", "*aa"},
@@ -5366,9 +5367,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u767e\u6155\u5927"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"BN", new Dictionary<String, String>
+      {"BN", new Dictionary<string, string>
       {
         {"aa", "Brunei"},
         {"ab", "*aa"},
@@ -5557,9 +5558,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u6587\u83b1"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"BO", new Dictionary<String, String>
+      {"BO", new Dictionary<string, string>
       {
         {"aa", "Bolivia"},
         {"ab", "*aa"},
@@ -5748,9 +5749,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u73bb\u5229\u7ef4\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"BR", new Dictionary<String, String>
+      {"BR", new Dictionary<string, string>
       {
         {"aa", "Brazil"},
         {"ab", "*aa"},
@@ -5939,9 +5940,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5df4\u897f"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"BS", new Dictionary<String, String>
+      {"BS", new Dictionary<string, string>
       {
         {"aa", "Bahamas"},
         {"ab", "*aa"},
@@ -6130,9 +6131,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5df4\u54c8\u9a6c"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"BT", new Dictionary<String, String>
+      {"BT", new Dictionary<string, string>
       {
         {"aa", "Bhutan"},
         {"ab", "*aa"},
@@ -6321,9 +6322,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u4e0d\u4e39"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"BV", new Dictionary<String, String>
+      {"BV", new Dictionary<string, string>
       {
         {"aa", "Bouvet Island"},
         {"ab", "*aa"},
@@ -6512,9 +6513,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5e03\u97e6\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"BW", new Dictionary<String, String>
+      {"BW", new Dictionary<string, string>
       {
         {"aa", "Botswana"},
         {"ab", "*aa"},
@@ -6703,9 +6704,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u535a\u8328\u74e6\u7eb3"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"BY", new Dictionary<String, String>
+      {"BY", new Dictionary<string, string>
       {
         {"aa", "Belarus"},
         {"ab", "*aa"},
@@ -6894,9 +6895,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u767d\u4fc4\u7f57\u65af"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"BZ", new Dictionary<String, String>
+      {"BZ", new Dictionary<string, string>
       {
         {"aa", "Belize"},
         {"ab", "*aa"},
@@ -7085,9 +7086,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u4f2f\u91cc\u5179"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"CA", new Dictionary<String, String>
+      {"CA", new Dictionary<string, string>
       {
         {"aa", "Canada"},
         {"ab", "*aa"},
@@ -7276,9 +7277,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u52a0\u62ff\u5927"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"CC", new Dictionary<String, String>
+      {"CC", new Dictionary<string, string>
       {
         {"aa", "Cocos Islands"},
         {"ab", "*aa"},
@@ -7467,9 +7468,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u79d1\u5e93\u65af\u7fa4\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"CD", new Dictionary<String, String>
+      {"CD", new Dictionary<string, string>
       {
         {"aa", "The Democratic Republic Of Congo"},
         {"ab", "*aa"},
@@ -7658,9 +7659,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u521a\u679c\u6c11\u4e3b\u5171\u548c\u56fd"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"CF", new Dictionary<String, String>
+      {"CF", new Dictionary<string, string>
       {
         {"aa", "Central African Republic"},
         {"ab", "*aa"},
@@ -7849,9 +7850,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u4e2d\u975e\u5171\u548c\u56fd"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"CG", new Dictionary<String, String>
+      {"CG", new Dictionary<string, string>
       {
         {"aa", "Congo"},
         {"ab", "*aa"},
@@ -8040,9 +8041,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u521a\u679c"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"CH", new Dictionary<String, String>
+      {"CH", new Dictionary<string, string>
       {
         {"aa", "Switzerland"},
         {"ab", "*aa"},
@@ -8231,9 +8232,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u745e\u58eb"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"CI", new Dictionary<String, String>
+      {"CI", new Dictionary<string, string>
       {
         {"aa", "C\u00f4te d\"Ivoire"},
         {"ab", "*aa"},
@@ -8422,9 +8423,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u8c61\u7259\u6d77\u5cb8"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"CK", new Dictionary<String, String>
+      {"CK", new Dictionary<string, string>
       {
         {"aa", "Cook Islands"},
         {"ab", "*aa"},
@@ -8613,9 +8614,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5e93\u514b\u7fa4\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"CL", new Dictionary<String, String>
+      {"CL", new Dictionary<string, string>
       {
         {"aa", "Chile"},
         {"ab", "*aa"},
@@ -8804,9 +8805,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u667a\u5229"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"CM", new Dictionary<String, String>
+      {"CM", new Dictionary<string, string>
       {
         {"aa", "Cameroon"},
         {"ab", "*aa"},
@@ -8995,9 +8996,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5580\u9ea6\u9686"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"CN", new Dictionary<String, String>
+      {"CN", new Dictionary<string, string>
       {
         {"aa", "China"},
         {"ab", "*aa"},
@@ -9186,9 +9187,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u4e2d\u56fd"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"CO", new Dictionary<String, String>
+      {"CO", new Dictionary<string, string>
       {
         {"aa", "Colombia"},
         {"ab", "*aa"},
@@ -9377,9 +9378,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u54e5\u4f26\u6bd4\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"CR", new Dictionary<String, String>
+      {"CR", new Dictionary<string, string>
       {
         {"aa", "Costa Rica"},
         {"ab", "*aa"},
@@ -9568,9 +9569,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u54e5\u65af\u8fbe\u9ece\u52a0"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"CS", new Dictionary<String, String>
+      {"CS", new Dictionary<string, string>
       {
         {"aa", "Serbia and Montenegro"},
         {"ab", "*aa"},
@@ -9759,9 +9760,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u585e\u5c14\u7ef4\u4e9a\u53ca\u9ed1\u5c71"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"CU", new Dictionary<String, String>
+      {"CU", new Dictionary<string, string>
       {
         {"aa", "Cuba"},
         {"ab", "*aa"},
@@ -9950,9 +9951,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u53e4\u5df4"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"CV", new Dictionary<String, String>
+      {"CV", new Dictionary<string, string>
       {
         {"aa", "Cape Verde"},
         {"ab", "*aa"},
@@ -10141,9 +10142,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u4f5b\u5f97\u89d2"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"CX", new Dictionary<String, String>
+      {"CX", new Dictionary<string, string>
       {
         {"aa", "Christmas Island"},
         {"ab", "*aa"},
@@ -10332,9 +10333,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5723\u8bde\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"CY", new Dictionary<String, String>
+      {"CY", new Dictionary<string, string>
       {
         {"aa", "Cyprus"},
         {"ab", "*aa"},
@@ -10523,9 +10524,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u585e\u6d66\u8def\u65af"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"CZ", new Dictionary<String, String>
+      {"CZ", new Dictionary<string, string>
       {
         {"aa", "Czech Republic"},
         {"ab", "*aa"},
@@ -10714,9 +10715,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u6377\u514b\u5171\u548c\u56fd"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"DE", new Dictionary<String, String>
+      {"DE", new Dictionary<string, string>
       {
         {"aa", "Germany"},
         {"ab", "*aa"},
@@ -10905,9 +10906,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5fb7\u56fd"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"DJ", new Dictionary<String, String>
+      {"DJ", new Dictionary<string, string>
       {
         {"aa", "Djibouti"},
         {"ab", "*aa"},
@@ -11096,9 +11097,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5409\u5e03\u63d0"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"DK", new Dictionary<String, String>
+      {"DK", new Dictionary<string, string>
       {
         {"aa", "Denmark"},
         {"ab", "*aa"},
@@ -11287,9 +11288,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u4e39\u9ea6"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"DM", new Dictionary<String, String>
+      {"DM", new Dictionary<string, string>
       {
         {"aa", "Dominica"},
         {"ab", "*aa"},
@@ -11478,9 +11479,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u591a\u7c73\u5c3c\u52a0\u8054\u90a6"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"DO", new Dictionary<String, String>
+      {"DO", new Dictionary<string, string>
       {
         {"aa", "Dominican Republic"},
         {"ab", "*aa"},
@@ -11669,9 +11670,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u591a\u7c73\u5c3c\u52a0\u5171\u548c\u56fd"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"DZ", new Dictionary<String, String>
+      {"DZ", new Dictionary<string, string>
       {
         {"aa", "Algeria"},
         {"ab", "*aa"},
@@ -11860,9 +11861,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u963f\u5c14\u53ca\u5229\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"EC", new Dictionary<String, String>
+      {"EC", new Dictionary<string, string>
       {
         {"aa", "Ecuador"},
         {"ab", "*aa"},
@@ -12051,9 +12052,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5384\u74dc\u591a\u5c14"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"EE", new Dictionary<String, String>
+      {"EE", new Dictionary<string, string>
       {
         {"aa", "Estonia"},
         {"ab", "*aa"},
@@ -12242,9 +12243,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u7231\u6c99\u5c3c\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"EG", new Dictionary<String, String>
+      {"EG", new Dictionary<string, string>
       {
         {"aa", "Egypt"},
         {"ab", "*aa"},
@@ -12433,9 +12434,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u57c3\u53ca"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"EH", new Dictionary<String, String>
+      {"EH", new Dictionary<string, string>
       {
         {"aa", "Western Sahara"},
         {"ab", "*aa"},
@@ -12624,9 +12625,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u897f\u6492\u54c8\u62c9"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"ER", new Dictionary<String, String>
+      {"ER", new Dictionary<string, string>
       {
         {"aa", "Eritrea"},
         {"ab", "*aa"},
@@ -12815,9 +12816,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5384\u91cc\u7279\u5c3c\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"ES", new Dictionary<String, String>
+      {"ES", new Dictionary<string, string>
       {
         {"aa", "Spain"},
         {"ab", "*aa"},
@@ -13006,9 +13007,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u897f\u73ed\u7259"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"ET", new Dictionary<String, String>
+      {"ET", new Dictionary<string, string>
       {
         {"aa", "Ethiopia"},
         {"ab", "*aa"},
@@ -13197,9 +13198,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u57c3\u585e\u4fc4\u6bd4\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"FI", new Dictionary<String, String>
+      {"FI", new Dictionary<string, string>
       {
         {"aa", "Finland"},
         {"ab", "*aa"},
@@ -13388,9 +13389,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u82ac\u5170"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"FJ", new Dictionary<String, String>
+      {"FJ", new Dictionary<string, string>
       {
         {"aa", "Fiji"},
         {"ab", "*aa"},
@@ -13579,9 +13580,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u6590\u6d4e"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"FK", new Dictionary<String, String>
+      {"FK", new Dictionary<string, string>
       {
         {"aa", "Falkland Islands"},
         {"ab", "*aa"},
@@ -13770,9 +13771,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5bcc\u514b\u5170\u7fa4\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"FM", new Dictionary<String, String>
+      {"FM", new Dictionary<string, string>
       {
         {"aa", "Micronesia"},
         {"ab", "*aa"},
@@ -13961,9 +13962,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5bc6\u514b\u7f57\u5c3c\u897f\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"FO", new Dictionary<String, String>
+      {"FO", new Dictionary<string, string>
       {
         {"aa", "Faroe Islands"},
         {"ab", "*aa"},
@@ -14152,9 +14153,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u6cd5\u7f57\u7fa4\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"FR", new Dictionary<String, String>
+      {"FR", new Dictionary<string, string>
       {
         {"aa", "France"},
         {"ab", "*aa"},
@@ -14343,9 +14344,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u6cd5\u56fd"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"GA", new Dictionary<String, String>
+      {"GA", new Dictionary<string, string>
       {
         {"aa", "Gabon"},
         {"ab", "*aa"},
@@ -14534,9 +14535,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u52a0\u84ec"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"GB", new Dictionary<String, String>
+      {"GB", new Dictionary<string, string>
       {
         {"aa", "United Kingdom"},
         {"ab", "*aa"},
@@ -14725,9 +14726,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u82f1\u56fd"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"GD", new Dictionary<String, String>
+      {"GD", new Dictionary<string, string>
       {
         {"aa", "Grenada"},
         {"ab", "*aa"},
@@ -14916,9 +14917,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u683c\u6797\u7eb3\u8fbe"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"GE", new Dictionary<String, String>
+      {"GE", new Dictionary<string, string>
       {
         {"aa", "Georgia"},
         {"ab", "*aa"},
@@ -15107,9 +15108,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u683c\u9c81\u5409\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"GF", new Dictionary<String, String>
+      {"GF", new Dictionary<string, string>
       {
         {"aa", "French Guiana"},
         {"ab", "*aa"},
@@ -15298,9 +15299,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u6cd5\u5c5e\u572d\u4e9a\u90a3"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"GG", new Dictionary<String, String>
+      {"GG", new Dictionary<string, string>
       {
         {"aa", "Guernsey"},
         {"ab", "*aa"},
@@ -15489,9 +15490,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "*aa"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"GH", new Dictionary<String, String>
+      {"GH", new Dictionary<string, string>
       {
         {"aa", "Ghana"},
         {"ab", "*aa"},
@@ -15680,9 +15681,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u52a0\u7eb3"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"GI", new Dictionary<String, String>
+      {"GI", new Dictionary<string, string>
       {
         {"aa", "Gibraltar"},
         {"ab", "*aa"},
@@ -15871,9 +15872,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u76f4\u5e03\u7f57\u9640"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"GL", new Dictionary<String, String>
+      {"GL", new Dictionary<string, string>
       {
         {"aa", "Greenland"},
         {"ab", "*aa"},
@@ -16062,9 +16063,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u683c\u9675\u5170"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"GM", new Dictionary<String, String>
+      {"GM", new Dictionary<string, string>
       {
         {"aa", "Gambia"},
         {"ab", "*aa"},
@@ -16253,9 +16254,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5188\u6bd4\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"GN", new Dictionary<String, String>
+      {"GN", new Dictionary<string, string>
       {
         {"aa", "Guinea"},
         {"ab", "*aa"},
@@ -16444,9 +16445,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u51e0\u5185\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"GP", new Dictionary<String, String>
+      {"GP", new Dictionary<string, string>
       {
         {"aa", "Guadeloupe"},
         {"ab", "*aa"},
@@ -16635,9 +16636,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u74dc\u5fb7\u7f57\u666e\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"GQ", new Dictionary<String, String>
+      {"GQ", new Dictionary<string, string>
       {
         {"aa", "Equatorial Guinea"},
         {"ab", "*aa"},
@@ -16826,9 +16827,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u8d64\u9053\u51e0\u5185\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"GR", new Dictionary<String, String>
+      {"GR", new Dictionary<string, string>
       {
         {"aa", "Greece"},
         {"ab", "*aa"},
@@ -17017,9 +17018,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5e0c\u814a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"GS", new Dictionary<String, String>
+      {"GS", new Dictionary<string, string>
       {
         {"aa", "South Georgia And The South Sandwich Islands"},
         {"ab", "*aa"},
@@ -17208,9 +17209,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5357\u4e54\u6cbb\u4e9a\u5c9b\u548c\u5357\u6851\u5fb7\u97e6\u5947\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"GT", new Dictionary<String, String>
+      {"GT", new Dictionary<string, string>
       {
         {"aa", "Guatemala"},
         {"ab", "*aa"},
@@ -17399,9 +17400,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5371\u5730\u9a6c\u62c9"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"GU", new Dictionary<String, String>
+      {"GU", new Dictionary<string, string>
       {
         {"aa", "Guam"},
         {"ab", "*aa"},
@@ -17590,9 +17591,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5173\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"GW", new Dictionary<String, String>
+      {"GW", new Dictionary<string, string>
       {
         {"aa", "Guinea-Bissau"},
         {"ab", "*aa"},
@@ -17781,9 +17782,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u51e0\u5185\u4e9a\u6bd4\u7ecd\u5171\u548c\u56fd"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"GY", new Dictionary<String, String>
+      {"GY", new Dictionary<string, string>
       {
         {"aa", "Guyana"},
         {"ab", "*aa"},
@@ -17972,9 +17973,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u572d\u4e9a\u90a3"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"HK", new Dictionary<String, String>
+      {"HK", new Dictionary<string, string>
       {
         {"aa", "Hong Kong"},
         {"ab", "*aa"},
@@ -18163,9 +18164,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "*ja"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"HM", new Dictionary<String, String>
+      {"HM", new Dictionary<string, string>
       {
         {"aa", "Heard Island And McDonald Islands"},
         {"ab", "*aa"},
@@ -18354,9 +18355,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u8d6b\u5fb7\u548c\u9ea6\u514b\u5510\u7eb3\u7fa4\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"HN", new Dictionary<String, String>
+      {"HN", new Dictionary<string, string>
       {
         {"aa", "Honduras"},
         {"ab", "*aa"},
@@ -18545,9 +18546,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u6d2a\u90fd\u62c9\u65af"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"HR", new Dictionary<String, String>
+      {"HR", new Dictionary<string, string>
       {
         {"aa", "Croatia"},
         {"ab", "*aa"},
@@ -18736,9 +18737,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u514b\u7f57\u5730\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"HT", new Dictionary<String, String>
+      {"HT", new Dictionary<string, string>
       {
         {"aa", "Haiti"},
         {"ab", "*aa"},
@@ -18927,9 +18928,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u6d77\u5730"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"HU", new Dictionary<String, String>
+      {"HU", new Dictionary<string, string>
       {
         {"aa", "Hungary"},
         {"ab", "*aa"},
@@ -19118,9 +19119,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5308\u7259\u5229"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"ID", new Dictionary<String, String>
+      {"ID", new Dictionary<string, string>
       {
         {"aa", "Indonesia"},
         {"ab", "*aa"},
@@ -19309,9 +19310,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5370\u5ea6\u5c3c\u897f\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"IE", new Dictionary<String, String>
+      {"IE", new Dictionary<string, string>
       {
         {"aa", "Ireland"},
         {"ab", "*aa"},
@@ -19500,9 +19501,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u7231\u5c14\u5170"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"IL", new Dictionary<String, String>
+      {"IL", new Dictionary<string, string>
       {
         {"aa", "Israel"},
         {"ab", "*aa"},
@@ -19691,9 +19692,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u4ee5\u8272\u5217"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"IM", new Dictionary<String, String>
+      {"IM", new Dictionary<string, string>
       {
         {"aa", "Isle Of Man"},
         {"ab", "*aa"},
@@ -19882,9 +19883,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "*aa"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"IN", new Dictionary<String, String>
+      {"IN", new Dictionary<string, string>
       {
         {"aa", "India"},
         {"ab", "*aa"},
@@ -20073,9 +20074,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5370\u5ea6"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"IO", new Dictionary<String, String>
+      {"IO", new Dictionary<string, string>
       {
         {"aa", "British Indian Ocean Territory"},
         {"ab", "*aa"},
@@ -20264,9 +20265,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u82f1\u5c5e\u5370\u5ea6\u6d0b\u9886\u5730"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"IQ", new Dictionary<String, String>
+      {"IQ", new Dictionary<string, string>
       {
         {"aa", "Iraq"},
         {"ab", "*aa"},
@@ -20455,9 +20456,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u4f0a\u62c9\u514b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"IR", new Dictionary<String, String>
+      {"IR", new Dictionary<string, string>
       {
         {"aa", "Iran"},
         {"ab", "*aa"},
@@ -20646,9 +20647,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u4f0a\u6717"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"IS", new Dictionary<String, String>
+      {"IS", new Dictionary<string, string>
       {
         {"aa", "Iceland"},
         {"ab", "*aa"},
@@ -20837,9 +20838,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u51b0\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"IT", new Dictionary<String, String>
+      {"IT", new Dictionary<string, string>
       {
         {"aa", "Italy"},
         {"ab", "*aa"},
@@ -21028,9 +21029,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u610f\u5927\u5229"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"JE", new Dictionary<String, String>
+      {"JE", new Dictionary<string, string>
       {
         {"aa", "Jersey"},
         {"ab", "*aa"},
@@ -21219,9 +21220,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "*aa"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"JM", new Dictionary<String, String>
+      {"JM", new Dictionary<string, string>
       {
         {"aa", "Jamaica"},
         {"ab", "*aa"},
@@ -21410,9 +21411,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u7259\u4e70\u52a0"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"JO", new Dictionary<String, String>
+      {"JO", new Dictionary<string, string>
       {
         {"aa", "Jordan"},
         {"ab", "*aa"},
@@ -21601,9 +21602,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u7ea6\u65e6"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"JP", new Dictionary<String, String>
+      {"JP", new Dictionary<string, string>
       {
         {"aa", "Japan"},
         {"ab", "*aa"},
@@ -21792,9 +21793,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "*ja"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"KE", new Dictionary<String, String>
+      {"KE", new Dictionary<string, string>
       {
         {"aa", "Kenya"},
         {"ab", "*aa"},
@@ -21983,9 +21984,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u80af\u5c3c\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"KG", new Dictionary<String, String>
+      {"KG", new Dictionary<string, string>
       {
         {"aa", "Kyrgyzstan"},
         {"ab", "*aa"},
@@ -22174,9 +22175,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5409\u5c14\u5409\u514b\u65af\u5766"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"KH", new Dictionary<String, String>
+      {"KH", new Dictionary<string, string>
       {
         {"aa", "Cambodia"},
         {"ab", "*aa"},
@@ -22365,9 +22366,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u67ec\u57d4\u5be8"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"KI", new Dictionary<String, String>
+      {"KI", new Dictionary<string, string>
       {
         {"aa", "Kiribati"},
         {"ab", "*aa"},
@@ -22556,9 +22557,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u57fa\u91cc\u5df4\u65af"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"KM", new Dictionary<String, String>
+      {"KM", new Dictionary<string, string>
       {
         {"aa", "Comoros"},
         {"ab", "*aa"},
@@ -22747,9 +22748,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u79d1\u6469\u7f57"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"KN", new Dictionary<String, String>
+      {"KN", new Dictionary<string, string>
       {
         {"aa", "Saint Kitts And Nevis"},
         {"ab", "*aa"},
@@ -22938,9 +22939,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5723\u57fa\u8328\u548c\u5c3c\u7ef4\u65af"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"KP", new Dictionary<String, String>
+      {"KP", new Dictionary<string, string>
       {
         {"aa", "North Korea"},
         {"ab", "*aa"},
@@ -23129,9 +23130,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u671d\u9c9c"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"KR", new Dictionary<String, String>
+      {"KR", new Dictionary<string, string>
       {
         {"aa", "South Korea"},
         {"ab", "*aa"},
@@ -23320,9 +23321,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u97e9\u56fd"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"KW", new Dictionary<String, String>
+      {"KW", new Dictionary<string, string>
       {
         {"aa", "Kuwait"},
         {"ab", "*aa"},
@@ -23511,9 +23512,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u79d1\u5a01\u7279"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"KY", new Dictionary<String, String>
+      {"KY", new Dictionary<string, string>
       {
         {"aa", "Cayman Islands"},
         {"ab", "*aa"},
@@ -23702,9 +23703,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5f00\u66fc\u7fa4\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"KZ", new Dictionary<String, String>
+      {"KZ", new Dictionary<string, string>
       {
         {"aa", "Kazakhstan"},
         {"ab", "*aa"},
@@ -23893,9 +23894,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u54c8\u8428\u514b\u65af\u5766"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"LA", new Dictionary<String, String>
+      {"LA", new Dictionary<string, string>
       {
         {"aa", "Laos"},
         {"ab", "*aa"},
@@ -24084,9 +24085,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u8001\u631d"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"LB", new Dictionary<String, String>
+      {"LB", new Dictionary<string, string>
       {
         {"aa", "Lebanon"},
         {"ab", "*aa"},
@@ -24275,9 +24276,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u9ece\u5df4\u5ae9"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"LC", new Dictionary<String, String>
+      {"LC", new Dictionary<string, string>
       {
         {"aa", "Saint Lucia"},
         {"ab", "*aa"},
@@ -24466,9 +24467,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5723\u5362\u897f\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"LI", new Dictionary<String, String>
+      {"LI", new Dictionary<string, string>
       {
         {"aa", "Liechtenstein"},
         {"ab", "*aa"},
@@ -24657,9 +24658,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5217\u652f\u6566\u58eb\u767b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"LK", new Dictionary<String, String>
+      {"LK", new Dictionary<string, string>
       {
         {"aa", "Sri Lanka"},
         {"ab", "*aa"},
@@ -24848,9 +24849,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u65af\u91cc\u5170\u5361"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"LR", new Dictionary<String, String>
+      {"LR", new Dictionary<string, string>
       {
         {"aa", "Liberia"},
         {"ab", "*aa"},
@@ -25039,9 +25040,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5229\u6bd4\u91cc\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"LS", new Dictionary<String, String>
+      {"LS", new Dictionary<string, string>
       {
         {"aa", "Lesotho"},
         {"ab", "*aa"},
@@ -25230,9 +25231,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u83b1\u7d22\u6258"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"LT", new Dictionary<String, String>
+      {"LT", new Dictionary<string, string>
       {
         {"aa", "Lithuania"},
         {"ab", "*aa"},
@@ -25421,9 +25422,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u7acb\u9676\u5b9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"LU", new Dictionary<String, String>
+      {"LU", new Dictionary<string, string>
       {
         {"aa", "Luxembourg"},
         {"ab", "*aa"},
@@ -25612,9 +25613,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5362\u68ee\u5821"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"LV", new Dictionary<String, String>
+      {"LV", new Dictionary<string, string>
       {
         {"aa", "Latvia"},
         {"ab", "*aa"},
@@ -25803,9 +25804,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u62c9\u8131\u7ef4\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"LY", new Dictionary<String, String>
+      {"LY", new Dictionary<string, string>
       {
         {"aa", "Libya"},
         {"ab", "*aa"},
@@ -25994,9 +25995,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5229\u6bd4\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"MA", new Dictionary<String, String>
+      {"MA", new Dictionary<string, string>
       {
         {"aa", "Morocco"},
         {"ab", "*aa"},
@@ -26185,9 +26186,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u6469\u6d1b\u54e5"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"MC", new Dictionary<String, String>
+      {"MC", new Dictionary<string, string>
       {
         {"aa", "Monaco"},
         {"ab", "*aa"},
@@ -26376,9 +26377,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u6469\u7eb3\u54e5"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"MD", new Dictionary<String, String>
+      {"MD", new Dictionary<string, string>
       {
         {"aa", "Moldova"},
         {"ab", "*aa"},
@@ -26567,9 +26568,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u6469\u5c14\u591a\u74e6"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"ME", new Dictionary<String, String>
+      {"ME", new Dictionary<string, string>
       {
         {"aa", "Montenegro"},
         {"ab", "*aa"},
@@ -26758,9 +26759,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u9ed1\u5c71"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"MF", new Dictionary<String, String>
+      {"MF", new Dictionary<string, string>
       {
         {"aa", "Saint Martin"},
         {"ab", "*aa"},
@@ -26949,9 +26950,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "*aa"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"MG", new Dictionary<String, String>
+      {"MG", new Dictionary<string, string>
       {
         {"aa", "Madagascar"},
         {"ab", "*aa"},
@@ -27140,9 +27141,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u9a6c\u8fbe\u52a0\u65af\u52a0"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"MH", new Dictionary<String, String>
+      {"MH", new Dictionary<string, string>
       {
         {"aa", "Marshall Islands"},
         {"ab", "*aa"},
@@ -27331,9 +27332,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u9a6c\u7ecd\u5c14\u7fa4\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"MK", new Dictionary<String, String>
+      {"MK", new Dictionary<string, string>
       {
         {"aa", "Macedonia"},
         {"ab", "*aa"},
@@ -27522,9 +27523,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u9a6c\u5176\u987f\u738b\u56fd"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"ML", new Dictionary<String, String>
+      {"ML", new Dictionary<string, string>
       {
         {"aa", "Mali"},
         {"ab", "*aa"},
@@ -27713,9 +27714,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u9a6c\u91cc"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"MM", new Dictionary<String, String>
+      {"MM", new Dictionary<string, string>
       {
         {"aa", "Myanmar"},
         {"ab", "*aa"},
@@ -27904,9 +27905,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u7f05\u7538"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"MN", new Dictionary<String, String>
+      {"MN", new Dictionary<string, string>
       {
         {"aa", "Mongolia"},
         {"ab", "*aa"},
@@ -28095,9 +28096,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u8499\u53e4"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"MO", new Dictionary<String, String>
+      {"MO", new Dictionary<string, string>
       {
         {"aa", "Macao"},
         {"ab", "*aa"},
@@ -28286,9 +28287,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u6fb3\u95e8\u7279\u533a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"MP", new Dictionary<String, String>
+      {"MP", new Dictionary<string, string>
       {
         {"aa", "Northern Mariana Islands"},
         {"ab", "*aa"},
@@ -28477,9 +28478,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u7f8e\u5c5e\u5317\u9a6c\u91cc\u4e9a\u7eb3\u7fa4\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"MQ", new Dictionary<String, String>
+      {"MQ", new Dictionary<string, string>
       {
         {"aa", "Martinique"},
         {"ab", "*aa"},
@@ -28668,9 +28669,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u9a6c\u63d0\u5c3c\u514b\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"MR", new Dictionary<String, String>
+      {"MR", new Dictionary<string, string>
       {
         {"aa", "Mauritania"},
         {"ab", "*aa"},
@@ -28859,9 +28860,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u6bdb\u91cc\u5854\u5c3c\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"MS", new Dictionary<String, String>
+      {"MS", new Dictionary<string, string>
       {
         {"aa", "Montserrat"},
         {"ab", "*aa"},
@@ -29050,9 +29051,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u8499\u7279\u585e\u62c9\u7fa4\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"MT", new Dictionary<String, String>
+      {"MT", new Dictionary<string, string>
       {
         {"aa", "Malta"},
         {"ab", "*aa"},
@@ -29241,9 +29242,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u9a6c\u8033\u4ed6"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"MU", new Dictionary<String, String>
+      {"MU", new Dictionary<string, string>
       {
         {"aa", "Mauritius"},
         {"ab", "*aa"},
@@ -29432,9 +29433,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u6bdb\u91cc\u6c42\u65af"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"MV", new Dictionary<String, String>
+      {"MV", new Dictionary<string, string>
       {
         {"aa", "Maldives"},
         {"ab", "*aa"},
@@ -29623,9 +29624,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u9a6c\u5c14\u4ee3\u592b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"MW", new Dictionary<String, String>
+      {"MW", new Dictionary<string, string>
       {
         {"aa", "Malawi"},
         {"ab", "*aa"},
@@ -29814,9 +29815,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u9a6c\u62c9\u7ef4"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"MX", new Dictionary<String, String>
+      {"MX", new Dictionary<string, string>
       {
         {"aa", "Mexico"},
         {"ab", "*aa"},
@@ -30005,9 +30006,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u58a8\u897f\u54e5"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"MY", new Dictionary<String, String>
+      {"MY", new Dictionary<string, string>
       {
         {"aa", "Malaysia"},
         {"ab", "*aa"},
@@ -30196,9 +30197,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u9a6c\u6765\u897f\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"MZ", new Dictionary<String, String>
+      {"MZ", new Dictionary<string, string>
       {
         {"aa", "Mozambique"},
         {"ab", "*aa"},
@@ -30387,9 +30388,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u83ab\u6851\u6bd4\u514b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"NA", new Dictionary<String, String>
+      {"NA", new Dictionary<string, string>
       {
         {"aa", "Namibia"},
         {"ab", "*aa"},
@@ -30578,9 +30579,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u7eb3\u7c73\u6bd4\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"NC", new Dictionary<String, String>
+      {"NC", new Dictionary<string, string>
       {
         {"aa", "New Caledonia"},
         {"ab", "*aa"},
@@ -30769,9 +30770,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u65b0\u514b\u91cc\u591a\u5c3c\u4e9a\u7fa4\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"NE", new Dictionary<String, String>
+      {"NE", new Dictionary<string, string>
       {
         {"aa", "Niger"},
         {"ab", "*aa"},
@@ -30960,9 +30961,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5c3c\u65e5\u5c14"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"NF", new Dictionary<String, String>
+      {"NF", new Dictionary<string, string>
       {
         {"aa", "Norfolk Island"},
         {"ab", "*aa"},
@@ -31151,9 +31152,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u8bfa\u798f\u514b\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"NG", new Dictionary<String, String>
+      {"NG", new Dictionary<string, string>
       {
         {"aa", "Nigeria"},
         {"ab", "*aa"},
@@ -31342,9 +31343,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5c3c\u65e5\u5229\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"NI", new Dictionary<String, String>
+      {"NI", new Dictionary<string, string>
       {
         {"aa", "Nicaragua"},
         {"ab", "*aa"},
@@ -31533,9 +31534,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5c3c\u52a0\u62c9\u74dc"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"NL", new Dictionary<String, String>
+      {"NL", new Dictionary<string, string>
       {
         {"aa", "Netherlands"},
         {"ab", "*aa"},
@@ -31724,9 +31725,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u8377\u5170"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"NO", new Dictionary<String, String>
+      {"NO", new Dictionary<string, string>
       {
         {"aa", "Norway"},
         {"ab", "*aa"},
@@ -31915,9 +31916,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u632a\u5a01"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"NP", new Dictionary<String, String>
+      {"NP", new Dictionary<string, string>
       {
         {"aa", "Nepal"},
         {"ab", "*aa"},
@@ -32106,9 +32107,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5c3c\u6cca\u5c14"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"NR", new Dictionary<String, String>
+      {"NR", new Dictionary<string, string>
       {
         {"aa", "Nauru"},
         {"ab", "*aa"},
@@ -32297,9 +32298,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u7459\u9c81"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"NU", new Dictionary<String, String>
+      {"NU", new Dictionary<string, string>
       {
         {"aa", "Niue"},
         {"ab", "*aa"},
@@ -32488,9 +32489,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u7ebd\u57c3\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"NZ", new Dictionary<String, String>
+      {"NZ", new Dictionary<string, string>
       {
         {"aa", "New Zealand"},
         {"ab", "*aa"},
@@ -32679,9 +32680,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u65b0\u897f\u5170"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"OM", new Dictionary<String, String>
+      {"OM", new Dictionary<string, string>
       {
         {"aa", "Oman"},
         {"ab", "*aa"},
@@ -32870,9 +32871,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u963f\u66fc"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"PA", new Dictionary<String, String>
+      {"PA", new Dictionary<string, string>
       {
         {"aa", "Panama"},
         {"ab", "*aa"},
@@ -33061,9 +33062,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5df4\u62ff\u9a6c"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"PE", new Dictionary<String, String>
+      {"PE", new Dictionary<string, string>
       {
         {"aa", "Peru"},
         {"ab", "*aa"},
@@ -33252,9 +33253,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u79d8\u9c81"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"PF", new Dictionary<String, String>
+      {"PF", new Dictionary<string, string>
       {
         {"aa", "French Polynesia"},
         {"ab", "*aa"},
@@ -33443,9 +33444,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u6cd5\u5c5e\u73bb\u5229\u5c3c\u897f\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"PG", new Dictionary<String, String>
+      {"PG", new Dictionary<string, string>
       {
         {"aa", "Papua New Guinea"},
         {"ab", "*aa"},
@@ -33634,9 +33635,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5df4\u5e03\u4e9a\u65b0\u51e0\u5185\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"PH", new Dictionary<String, String>
+      {"PH", new Dictionary<string, string>
       {
         {"aa", "Philippines"},
         {"ab", "*aa"},
@@ -33825,9 +33826,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u83f2\u5f8b\u5bbe"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"PK", new Dictionary<String, String>
+      {"PK", new Dictionary<string, string>
       {
         {"aa", "Pakistan"},
         {"ab", "*aa"},
@@ -34016,9 +34017,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5df4\u57fa\u65af\u5766"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"PL", new Dictionary<String, String>
+      {"PL", new Dictionary<string, string>
       {
         {"aa", "Poland"},
         {"ab", "*aa"},
@@ -34207,9 +34208,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u6ce2\u5170"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"PM", new Dictionary<String, String>
+      {"PM", new Dictionary<string, string>
       {
         {"aa", "Saint Pierre And Miquelon"},
         {"ab", "*aa"},
@@ -34398,9 +34399,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5723\u76ae\u57c3\u5c14\u548c\u5bc6\u514b\u9686\u7fa4\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"PN", new Dictionary<String, String>
+      {"PN", new Dictionary<string, string>
       {
         {"aa", "Pitcairn"},
         {"ab", "*aa"},
@@ -34589,9 +34590,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u76ae\u7279\u514b\u6069\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"PR", new Dictionary<String, String>
+      {"PR", new Dictionary<string, string>
       {
         {"aa", "Puerto Rico"},
         {"ab", "*aa"},
@@ -34780,9 +34781,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u6ce2\u591a\u9ece\u54e5"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"PS", new Dictionary<String, String>
+      {"PS", new Dictionary<string, string>
       {
         {"aa", "Palestine"},
         {"ab", "*aa"},
@@ -34971,9 +34972,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5df4\u52d2\u65af\u5766"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"PT", new Dictionary<String, String>
+      {"PT", new Dictionary<string, string>
       {
         {"aa", "Portugal"},
         {"ab", "*aa"},
@@ -35162,9 +35163,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u8461\u8404\u7259"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"PW", new Dictionary<String, String>
+      {"PW", new Dictionary<string, string>
       {
         {"aa", "Palau"},
         {"ab", "*aa"},
@@ -35353,9 +35354,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5e15\u52b3"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"PY", new Dictionary<String, String>
+      {"PY", new Dictionary<string, string>
       {
         {"aa", "Paraguay"},
         {"ab", "*aa"},
@@ -35544,9 +35545,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5df4\u62c9\u572d"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"QA", new Dictionary<String, String>
+      {"QA", new Dictionary<string, string>
       {
         {"aa", "Qatar"},
         {"ab", "*aa"},
@@ -35735,9 +35736,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5361\u5854\u5c14"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"RE", new Dictionary<String, String>
+      {"RE", new Dictionary<string, string>
       {
         {"aa", "Reunion"},
         {"ab", "*aa"},
@@ -35926,9 +35927,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u7559\u5c3c\u6c6a\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"RO", new Dictionary<String, String>
+      {"RO", new Dictionary<string, string>
       {
         {"aa", "Romania"},
         {"ab", "*aa"},
@@ -36117,9 +36118,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u7f57\u9a6c\u5c3c\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"RS", new Dictionary<String, String>
+      {"RS", new Dictionary<string, string>
       {
         {"aa", "Serbia"},
         {"ab", "*aa"},
@@ -36308,9 +36309,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u585e\u5c14\u7ef4\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"RU", new Dictionary<String, String>
+      {"RU", new Dictionary<string, string>
       {
         {"aa", "Russia"},
         {"ab", "*aa"},
@@ -36499,9 +36500,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u4fc4\u7f57\u65af"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"RW", new Dictionary<String, String>
+      {"RW", new Dictionary<string, string>
       {
         {"aa", "Rwanda"},
         {"ab", "*aa"},
@@ -36690,9 +36691,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5362\u65fa\u8fbe"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"SA", new Dictionary<String, String>
+      {"SA", new Dictionary<string, string>
       {
         {"aa", "Saudi Arabia"},
         {"ab", "*aa"},
@@ -36881,9 +36882,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u6c99\u7279\u963f\u62c9\u4f2f"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"SB", new Dictionary<String, String>
+      {"SB", new Dictionary<string, string>
       {
         {"aa", "Solomon Islands"},
         {"ab", "*aa"},
@@ -37072,9 +37073,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u6240\u7f57\u95e8\u7fa4\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"SC", new Dictionary<String, String>
+      {"SC", new Dictionary<string, string>
       {
         {"aa", "Seychelles"},
         {"ab", "*aa"},
@@ -37263,9 +37264,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u585e\u820c\u5c14\u7fa4\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"SD", new Dictionary<String, String>
+      {"SD", new Dictionary<string, string>
       {
         {"aa", "Sudan"},
         {"ab", "*aa"},
@@ -37454,9 +37455,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u82cf\u4e39"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"SE", new Dictionary<String, String>
+      {"SE", new Dictionary<string, string>
       {
         {"aa", "Sweden"},
         {"ab", "*aa"},
@@ -37645,9 +37646,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u745e\u5178"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"SG", new Dictionary<String, String>
+      {"SG", new Dictionary<string, string>
       {
         {"aa", "Singapore"},
         {"ab", "*aa"},
@@ -37836,9 +37837,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u65b0\u52a0\u5761"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"SH", new Dictionary<String, String>
+      {"SH", new Dictionary<string, string>
       {
         {"aa", "Saint Helena"},
         {"ab", "*aa"},
@@ -38027,9 +38028,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5723\u8d6b\u52d2\u62ff\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"SI", new Dictionary<String, String>
+      {"SI", new Dictionary<string, string>
       {
         {"aa", "Slovenia"},
         {"ab", "*aa"},
@@ -38218,9 +38219,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u65af\u6d1b\u6587\u5c3c\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"SJ", new Dictionary<String, String>
+      {"SJ", new Dictionary<string, string>
       {
         {"aa", "Svalbard And Jan Mayen"},
         {"ab", "*aa"},
@@ -38409,9 +38410,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u65af\u74e6\u5c14\u5df4\u7279\u548c\u626c\u9a6c\u5ef6\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"SK", new Dictionary<String, String>
+      {"SK", new Dictionary<string, string>
       {
         {"aa", "Slovakia"},
         {"ab", "*aa"},
@@ -38600,9 +38601,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u65af\u6d1b\u4f10\u514b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"SL", new Dictionary<String, String>
+      {"SL", new Dictionary<string, string>
       {
         {"aa", "Sierra Leone"},
         {"ab", "*aa"},
@@ -38791,9 +38792,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u585e\u62c9\u91cc\u6602"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"SM", new Dictionary<String, String>
+      {"SM", new Dictionary<string, string>
       {
         {"aa", "San Marino"},
         {"ab", "*aa"},
@@ -38982,9 +38983,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5723\u9a6c\u529b\u8bfa"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"SN", new Dictionary<String, String>
+      {"SN", new Dictionary<string, string>
       {
         {"aa", "Senegal"},
         {"ab", "*aa"},
@@ -39173,9 +39174,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u585e\u5185\u52a0\u5c14"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"SO", new Dictionary<String, String>
+      {"SO", new Dictionary<string, string>
       {
         {"aa", "Somalia"},
         {"ab", "*aa"},
@@ -39364,9 +39365,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u7d22\u9a6c\u91cc"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"SR", new Dictionary<String, String>
+      {"SR", new Dictionary<string, string>
       {
         {"aa", "Suriname"},
         {"ab", "*aa"},
@@ -39555,9 +39556,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u82cf\u91cc\u5357"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"ST", new Dictionary<String, String>
+      {"ST", new Dictionary<string, string>
       {
         {"aa", "Sao Tome And Principe"},
         {"ab", "*aa"},
@@ -39746,9 +39747,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5723\u591a\u7f8e\u548c\u666e\u6797\u897f\u6bd4"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"SV", new Dictionary<String, String>
+      {"SV", new Dictionary<string, string>
       {
         {"aa", "El Salvador"},
         {"ab", "*aa"},
@@ -39937,9 +39938,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u8428\u5c14\u74e6\u591a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"SY", new Dictionary<String, String>
+      {"SY", new Dictionary<string, string>
       {
         {"aa", "Syria"},
         {"ab", "*aa"},
@@ -40128,9 +40129,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u53d9\u5229\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"SZ", new Dictionary<String, String>
+      {"SZ", new Dictionary<string, string>
       {
         {"aa", "Swaziland"},
         {"ab", "*aa"},
@@ -40319,9 +40320,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u65af\u5a01\u58eb\u5170"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"TC", new Dictionary<String, String>
+      {"TC", new Dictionary<string, string>
       {
         {"aa", "Turks And Caicos Islands"},
         {"ab", "*aa"},
@@ -40510,9 +40511,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u7279\u514b\u65af\u7fa4\u5c9b\u548c\u51ef\u79d1\u65af\u7fa4\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"TD", new Dictionary<String, String>
+      {"TD", new Dictionary<string, string>
       {
         {"aa", "Chad"},
         {"ab", "*aa"},
@@ -40701,9 +40702,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u4e4d\u5f97"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"TF", new Dictionary<String, String>
+      {"TF", new Dictionary<string, string>
       {
         {"aa", "French Southern Territories"},
         {"ab", "*aa"},
@@ -40892,9 +40893,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u6cd5\u5c5e\u5357\u7279\u7acb\u5c3c\u8fbe"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"TG", new Dictionary<String, String>
+      {"TG", new Dictionary<string, string>
       {
         {"aa", "Togo"},
         {"ab", "*aa"},
@@ -41083,9 +41084,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u591a\u54e5"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"TH", new Dictionary<String, String>
+      {"TH", new Dictionary<string, string>
       {
         {"aa", "Thailand"},
         {"ab", "*aa"},
@@ -41274,9 +41275,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u6cf0\u56fd"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"TJ", new Dictionary<String, String>
+      {"TJ", new Dictionary<string, string>
       {
         {"aa", "Tajikistan"},
         {"ab", "*aa"},
@@ -41465,9 +41466,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5854\u5409\u514b\u65af\u5766"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"TK", new Dictionary<String, String>
+      {"TK", new Dictionary<string, string>
       {
         {"aa", "Tokelau"},
         {"ab", "*aa"},
@@ -41656,9 +41657,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u8054\u5408\u7fa4\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"TL", new Dictionary<String, String>
+      {"TL", new Dictionary<string, string>
       {
         {"aa", "Timor-Leste"},
         {"ab", "*aa"},
@@ -41847,9 +41848,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u4e1c\u5e1d\u6c76"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"TM", new Dictionary<String, String>
+      {"TM", new Dictionary<string, string>
       {
         {"aa", "Turkmenistan"},
         {"ab", "*aa"},
@@ -42038,9 +42039,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u571f\u5e93\u66fc\u65af\u5766"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"TN", new Dictionary<String, String>
+      {"TN", new Dictionary<string, string>
       {
         {"aa", "Tunisia"},
         {"ab", "*aa"},
@@ -42229,9 +42230,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u7a81\u5c3c\u65af"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"TO", new Dictionary<String, String>
+      {"TO", new Dictionary<string, string>
       {
         {"aa", "Tonga"},
         {"ab", "*aa"},
@@ -42420,9 +42421,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u6c64\u52a0"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"TR", new Dictionary<String, String>
+      {"TR", new Dictionary<string, string>
       {
         {"aa", "Turkey"},
         {"ab", "*aa"},
@@ -42611,9 +42612,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u571f\u8033\u5176"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"TT", new Dictionary<String, String>
+      {"TT", new Dictionary<string, string>
       {
         {"aa", "Trinidad and Tobago"},
         {"ab", "*aa"},
@@ -42802,9 +42803,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u7279\u7acb\u5c3c\u8fbe\u548c\u591a\u5df4\u54e5"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"TV", new Dictionary<String, String>
+      {"TV", new Dictionary<string, string>
       {
         {"aa", "Tuvalu"},
         {"ab", "*aa"},
@@ -42993,9 +42994,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u56fe\u74e6\u5362"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"TW", new Dictionary<String, String>
+      {"TW", new Dictionary<string, string>
       {
         {"aa", "Taiwan"},
         {"ab", "*aa"},
@@ -43184,9 +43185,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u53f0\u6e7e\u5730\u533a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"TZ", new Dictionary<String, String>
+      {"TZ", new Dictionary<string, string>
       {
         {"aa", "Tanzania"},
         {"ab", "*aa"},
@@ -43375,9 +43376,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5766\u6851\u5c3c\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"UA", new Dictionary<String, String>
+      {"UA", new Dictionary<string, string>
       {
         {"aa", "Ukraine"},
         {"ab", "*aa"},
@@ -43566,9 +43567,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u4e4c\u514b\u5170"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"UG", new Dictionary<String, String>
+      {"UG", new Dictionary<string, string>
       {
         {"aa", "Uganda"},
         {"ab", "*aa"},
@@ -43757,9 +43758,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u4e4c\u5e72\u8fbe"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"UM", new Dictionary<String, String>
+      {"UM", new Dictionary<string, string>
       {
         {"aa", "United States Minor Outlying Islands"},
         {"ab", "*aa"},
@@ -43948,9 +43949,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u7f8e\u5c5e\u5c0f\u5965\u7279\u5170\u7fa4\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"US", new Dictionary<String, String>
+      {"US", new Dictionary<string, string>
       {
         {"aa", "United States"},
         {"ab", "*aa"},
@@ -44139,9 +44140,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u7f8e\u56fd"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"UY", new Dictionary<String, String>
+      {"UY", new Dictionary<string, string>
       {
         {"aa", "Uruguay"},
         {"ab", "*aa"},
@@ -44330,9 +44331,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u4e4c\u62c9\u572d"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"UZ", new Dictionary<String, String>
+      {"UZ", new Dictionary<string, string>
       {
         {"aa", "Uzbekistan"},
         {"ab", "*aa"},
@@ -44521,9 +44522,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u4e4c\u5179\u522b\u514b\u65af\u5766"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"VA", new Dictionary<String, String>
+      {"VA", new Dictionary<string, string>
       {
         {"aa", "Vatican"},
         {"ab", "*aa"},
@@ -44712,9 +44713,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u68b5\u8482\u5188"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"VC", new Dictionary<String, String>
+      {"VC", new Dictionary<string, string>
       {
         {"aa", "Saint Vincent And The Grenadines"},
         {"ab", "*aa"},
@@ -44903,9 +44904,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5723\u6587\u68ee\u7279\u548c\u683c\u6797\u7eb3\u4e01\u65af"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"VE", new Dictionary<String, String>
+      {"VE", new Dictionary<string, string>
       {
         {"aa", "Venezuela"},
         {"ab", "*aa"},
@@ -45094,9 +45095,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u59d4\u5185\u745e\u62c9"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"VG", new Dictionary<String, String>
+      {"VG", new Dictionary<string, string>
       {
         {"aa", "British Virgin Islands"},
         {"ab", "*aa"},
@@ -45285,9 +45286,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u82f1\u5c5e\u7ef4\u4eac\u7fa4\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"VI", new Dictionary<String, String>
+      {"VI", new Dictionary<string, string>
       {
         {"aa", "U.S. Virgin Islands"},
         {"ab", "*aa"},
@@ -45476,9 +45477,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u7f8e\u5c5e\u7ef4\u4eac\u7fa4\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"VN", new Dictionary<String, String>
+      {"VN", new Dictionary<string, string>
       {
         {"aa", "Vietnam"},
         {"ab", "*aa"},
@@ -45667,9 +45668,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u8d8a\u5357"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"VU", new Dictionary<String, String>
+      {"VU", new Dictionary<string, string>
       {
         {"aa", "Vanuatu"},
         {"ab", "*aa"},
@@ -45858,9 +45859,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u74e6\u52aa\u963f\u56fe"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"WF", new Dictionary<String, String>
+      {"WF", new Dictionary<string, string>
       {
         {"aa", "Wallis And Futuna"},
         {"ab", "*aa"},
@@ -46049,9 +46050,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u74e6\u5229\u65af\u7fa4\u5c9b\u548c\u5bcc\u56fe\u7eb3\u7fa4\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"WS", new Dictionary<String, String>
+      {"WS", new Dictionary<string, string>
       {
         {"aa", "Samoa"},
         {"ab", "*aa"},
@@ -46240,9 +46241,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "*zh"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"YE", new Dictionary<String, String>
+      {"YE", new Dictionary<string, string>
       {
         {"aa", "Yemen"},
         {"ab", "*aa"},
@@ -46431,9 +46432,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u4e5f\u95e8"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"YT", new Dictionary<String, String>
+      {"YT", new Dictionary<string, string>
       {
         {"aa", "Mayotte"},
         {"ab", "*aa"},
@@ -46622,9 +46623,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u9a6c\u7ea6\u7279\u5c9b"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"ZA", new Dictionary<String, String>
+      {"ZA", new Dictionary<string, string>
       {
         {"aa", "South Africa"},
         {"ab", "*aa"},
@@ -46813,9 +46814,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u5357\u975e"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"ZM", new Dictionary<String, String>
+      {"ZM", new Dictionary<string, string>
       {
         {"aa", "Zambia"},
         {"ab", "*aa"},
@@ -47004,9 +47005,9 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u8d5e\u6bd4\u4e9a"},
-        {"zu", "*aa"},
+        {"zu", "*aa"}
       }},
-      {"ZW", new Dictionary<String, String>
+      {"ZW", new Dictionary<string, string>
       {
         {"aa", "Zimbabwe"},
         {"ab", "*aa"},
@@ -47195,8 +47196,8 @@ namespace PhoneNumbers
         {"yo", "*aa"},
         {"za", "*aa"},
         {"zh", "\u6d25\u5df4\u5e03\u97e6"},
-        {"zu", "*aa"},
-      }},
+        {"zu", "*aa"}
+      }}
     };
   }
 }

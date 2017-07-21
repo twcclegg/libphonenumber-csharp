@@ -13,21 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace PhoneNumbers
 {
     public class PhoneNumberMatch
     {
-        public int Start { get; private set; }
-        public int Length { get { return RawString.Length; } }
-        public String RawString { get; private set; }
-        public PhoneNumber Number { get; private set; }
+        public int Start { get; }
+        public int Length => RawString.Length;
+        public string RawString { get; }
+        public PhoneNumber Number { get; }
 
-        public PhoneNumberMatch(int start, String rawString, PhoneNumber number)
+        public PhoneNumberMatch(int start, string rawString, PhoneNumber number)
         {
             if (start < 0)
                 throw new ArgumentException("Start index must be >= 0.");
@@ -48,14 +46,14 @@ namespace PhoneNumbers
 
         public override int GetHashCode()
         {
-            int hash = GetType().GetHashCode();
+            var hash = GetType().GetHashCode();
             hash ^= Start.GetHashCode();
             hash ^= RawString.GetHashCode();
             hash ^= Number.GetHashCode();
             return hash;
         }
 
-        public override String ToString()
+        public override string ToString()
         {
             return "PhoneNumberMatch [" + Start + "," + Length + ") " + RawString;
         }

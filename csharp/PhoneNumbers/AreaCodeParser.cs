@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
+
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 
 /**
@@ -32,14 +31,14 @@ using System.Text;
  */
 namespace PhoneNumbers
 {
-    class AreaCodeParser
+    internal class AreaCodeParser
     {
         public static AreaCodeMap ParseAreaCodeMap(Stream stream)
         {
-            SortedDictionary<int, String> areaCodeMapTemp = new SortedDictionary<int, String>();
+            var areaCodeMapTemp = new SortedDictionary<int, string>();
             using (var lines = new StreamReader(stream, Encoding.UTF8))
             {
-                String line;
+                string line;
                 while ((line = lines.ReadLine()) != null)
                 {
                     line = line.Trim();
@@ -50,13 +49,13 @@ namespace PhoneNumbers
                     {
                         continue;
                     }
-                    String areaCode = line.Substring(0, indexOfPipe);
-                    String location = line.Substring(indexOfPipe + 1);
+                    var areaCode = line.Substring(0, indexOfPipe);
+                    var location = line.Substring(indexOfPipe + 1);
                     areaCodeMapTemp[int.Parse(areaCode)] = location;
                 }
                 // Build the corresponding area code map and serialize it to the binary format.
-                AreaCodeMap areaCodeMap = new AreaCodeMap();
-                areaCodeMap.readAreaCodeMap(areaCodeMapTemp);
+                var areaCodeMap = new AreaCodeMap();
+                areaCodeMap.ReadAreaCodeMap(areaCodeMapTemp);
                 return areaCodeMap;
             }
         }

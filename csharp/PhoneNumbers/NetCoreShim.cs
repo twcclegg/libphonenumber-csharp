@@ -2,11 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Xml.Linq;
 
 namespace PhoneNumbers {
-    static class NetCoreShim {
+    internal static class NetCoreShim {
         internal static IEnumerable<XElement> GetElementsByTagName(this XDocument document, string tagName)
             => document.Descendants().Where(d => d.Name.LocalName == tagName);
 
@@ -17,8 +16,9 @@ namespace PhoneNumbers {
             => element.Attribute(attribute) != null;
 
         internal static string GetAttribute(this XElement element, string attribute) 
-            => element.HasAttribute(attribute) ? element.Attribute(attribute).Value : string.Empty;
+            => element.Attribute(attribute)?.Value ?? string.Empty;
+
         internal static List<TOutput> ConvertAll<TOutput>(this List<char> list, Func<char, TOutput> converter)
-            => list.Select(x => converter(x)).ToList();
+            => list.Select(converter).ToList();
     }
 }

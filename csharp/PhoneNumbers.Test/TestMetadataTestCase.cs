@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
 
 namespace PhoneNumbers.Test
 {
@@ -28,20 +27,20 @@ namespace PhoneNumbers.Test
     */
     public class TestMetadataTestCase
     {
-        public const String TEST_META_DATA_FILE_PREFIX = "PhoneNumberMetaDataForTesting.xml";
+        public const string TestMetaDataFilePrefix = "PhoneNumberMetaDataForTesting.xml";
 
-        public PhoneNumberUtil phoneUtil;
+        public PhoneNumberUtil PhoneUtil;
 
         public TestMetadataTestCase()
         {
-            phoneUtil = InitializePhoneUtilForTesting();
+            PhoneUtil = InitializePhoneUtilForTesting();
         }
 
         static PhoneNumberUtil InitializePhoneUtilForTesting()
         {
             PhoneNumberUtil.ResetInstance();
             return PhoneNumberUtil.GetInstance(
-                TEST_META_DATA_FILE_PREFIX,
+                TestMetaDataFilePrefix,
                 CountryCodeToRegionCodeMapForTesting.GetCountryCodeToRegionCodeMap());
         }
     }
