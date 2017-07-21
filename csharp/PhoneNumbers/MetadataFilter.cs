@@ -349,8 +349,8 @@ namespace PhoneNumbers
         // ParseFieldMapFromString(String) which does check. If fieldMap Contains illegal tokens or parent
         // fields with no children or other unexpected state, the behavior of this function is undefined.
         // @VisibleForTesting
-        private static Dictionary<string, SortedSet<string>> ComputeComplement(
-            IDictionary<string, SortedSet<string>> fieldMap)
+        static Dictionary<string, SortedSet<string>> ComputeComplement(
+            Dictionary<string, SortedSet<string>> fieldMap)
         {
             var complement = new Dictionary<string, SortedSet<string>>();
             foreach (var parent in ExcludableParentFields)
@@ -389,7 +389,7 @@ namespace PhoneNumbers
         }
 
         // @VisibleForTesting
-        private bool ShouldDrop(string parent, string child)
+        bool ShouldDrop(string parent, string child)
         {
             if (!ExcludableParentFields.Contains(parent))
             {
@@ -403,7 +403,7 @@ namespace PhoneNumbers
         }
 
         // @VisibleForTesting
-        private bool ShouldDrop(string childlessField)
+        bool ShouldDrop(string childlessField)
         {
             if (!ExcludableChildlessFields.Contains(childlessField))
             {

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Description>C# port of Google's common Java, C++ and Javascript library for parsing, formatting, storing and validating international phone numbers. For usage samples: http: //code.google.com/p/libphonenumber/A port of Google's libphonenumber for .NET Core</Description>
     <AssemblyTitle>libphonenumber-csharp</AssemblyTitle>
-    <VersionPrefix>8.7.0</VersionPrefix>
+    <VersionPrefix>8.7.0.1</VersionPrefix>
     <Authors>Patrick Mézard;Jarrod Alexander;Google;libphonenumber;contributors</Authors>
     <TargetFrameworks>net4;netstandard1.1</TargetFrameworks>
     <AssemblyName>PhoneNumbers</AssemblyName>

@@ -141,7 +141,7 @@ namespace PhoneNumbers
         /** Returns a regular expression quantifier with an upper and lower limit. */
         private static string Limit(int lower, int upper)
         {
-            if (lower < 0 || upper <= 0 || upper < lower)
+            if ((lower < 0) || (upper <= 0) || (upper < lower))
                 throw new ArgumentOutOfRangeException();
             return "{" + lower + "," + upper + "}";
         }
@@ -312,10 +312,12 @@ namespace PhoneNumbers
             // Try to come up with a valid match given the entire candidate.
             var rawString = candidate;
             var match = ParseAndVerify(rawString, offset);
-            return match ?? ExtractInnerMatch(rawString, offset);
+            if (match != null)
+                return match;
 
             // If that failed, try to find an "inner match" - there might be a phone number within this
             // candidate.
+            return ExtractInnerMatch(rawString, offset);
         }
 
         /**
@@ -525,8 +527,8 @@ namespace PhoneNumbers
             }
             // Now check the first group. There may be a national prefix at the start, so we only check
             // that the candidate group ends with the formatted number group.
-            return candidateNumberGroupIndex >= 0 &&
-                   candidateGroups[candidateNumberGroupIndex].EndsWith(formattedNumberGroups[0]);
+            return (candidateNumberGroupIndex >= 0 &&
+                candidateGroups[candidateNumberGroupIndex].EndsWith(formattedNumberGroups[0]));
         }
 
         /**
@@ -589,7 +591,7 @@ namespace PhoneNumbers
         public static bool ContainsMoreThanOneSlash(string candidate)
         {
             var firstSlashIndex = candidate.IndexOf('/');
-            return firstSlashIndex > 0 && candidate.Substring(firstSlashIndex + 1).Contains("/");
+            return (firstSlashIndex > 0 && candidate.Substring(firstSlashIndex + 1).Contains("/"));
         }
 
         public static bool ContainsOnlyValidXChars(
@@ -649,7 +651,7 @@ namespace PhoneNumbers
                 util.ChooseFormattingPatternForNumber(metadata.NumberFormatList, nationalNumber);
             // To do this, we check that a national prefix formatting rule was present and that it wasn't
             // just the first-group symbol ($1) with punctuation.
-            if (formatRule != null && formatRule.NationalPrefixFormattingRule.Length > 0)
+            if ((formatRule != null) && formatRule.NationalPrefixFormattingRule.Length > 0)
             {
                 if (formatRule.NationalPrefixOptionalWhenFormatting)
                 {

@@ -31,7 +31,7 @@ using System.Text;
  */
 namespace PhoneNumbers
 {
-    internal class AreaCodeParser
+    class AreaCodeParser
     {
         public static AreaCodeMap ParseAreaCodeMap(Stream stream)
         {

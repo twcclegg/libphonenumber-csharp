@@ -5,7 +5,7 @@ using System.Linq;
 using System.Xml.Linq;
 
 namespace PhoneNumbers {
-    internal static class NetCoreShim {
+    static class NetCoreShim {
         internal static IEnumerable<XElement> GetElementsByTagName(this XDocument document, string tagName)
             => document.Descendants().Where(d => d.Name.LocalName == tagName);
 

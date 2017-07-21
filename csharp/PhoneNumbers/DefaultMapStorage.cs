@@ -39,7 +39,8 @@ namespace PhoneNumbers
 
         public override int GetStorageSize()
         {
-            return phoneNumberPrefixes.Length * sizeof(int) + descriptions.Sum(d => d.Length);
+            return phoneNumberPrefixes.Length * sizeof(int)
+                + descriptions.Sum(d => d.Length);
         }
 
         public override string GetDescription(int index)

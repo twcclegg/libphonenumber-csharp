@@ -81,7 +81,7 @@ namespace PhoneNumbers
         }
 
         // @VisibleForTesting
-        private static PhoneMetadataCollection BuildPhoneMetadataCollection(XDocument document,
+        static PhoneMetadataCollection BuildPhoneMetadataCollection(XDocument document,
             bool liteBuild, bool specialBuild, bool isShortNumberMetadata,
             bool isAlternateFormatsMetadata)
         {
@@ -584,8 +584,8 @@ namespace PhoneNumbers
          * @param localOnlyLengths  a set to which to add possible lengths of phone numbers only diallable
          *     locally (e.g. within a province)
          */
-        private static void PopulatePossibleLengthSets(XElement data, ISet<int> lengths,
-             ISet<int> localOnlyLengths)
+        private static void PopulatePossibleLengthSets(XElement data, SortedSet<int> lengths,
+             SortedSet<int> localOnlyLengths)
         {
             var possibleLengths = data.GetElementsByTagName(POSSIBLE_LENGTHS).ToArray();
             foreach (var element in possibleLengths)
@@ -783,8 +783,10 @@ namespace PhoneNumbers
             bool isAlternateFormatsMetadata)
         {
             var nationalPrefix = GetNationalPrefix(element);
-            var metadata = LoadTerritoryTagMetadata(regionCode, element, nationalPrefix);
-            var nationalPrefixFormattingRule = GetNationalPrefixFormattingRuleFromElement(element, nationalPrefix);
+            var metadata =
+                LoadTerritoryTagMetadata(regionCode, element, nationalPrefix);
+            var nationalPrefixFormattingRule =
+                GetNationalPrefixFormattingRuleFromElement(element, nationalPrefix);
             LoadAvailableFormats(metadata, element, nationalPrefix,
                                  nationalPrefixFormattingRule,
                                  element.HasAttribute(NATIONAL_PREFIX_OPTIONAL_WHEN_FORMATTING));
@@ -830,7 +832,11 @@ namespace PhoneNumbers
                 }
                 return MetadataFilter.ForSpecialBuild();
             }
-            return liteBuild ? MetadataFilter.ForLiteBuild() : MetadataFilter.EmptyFilter();
+            if (liteBuild)
+            {
+                return MetadataFilter.ForLiteBuild();
+            }
+            return MetadataFilter.EmptyFilter();
         }
     }
 }
