@@ -893,6 +893,20 @@ namespace PhoneNumbers
         }
 
         /**
+        * Returns all country calling codes the library has metadata for, covering both non-geographical
+        * entities (global network calling codes) and those used for geographical entities. This could be
+        * used to populate a drop-down box of country calling codes for a phone-number widget, for
+        * instance.
+        *
+        * @return  an unordered set of the country calling codes for every geographical and
+        *     non-geographical entity the library supports
+        */
+         public HashSet<int> GetSupportedCallingCodes()
+         {
+             return new HashSet<int>(countryCallingCodeToRegionCodeMap.Keys);
+         }
+
+        /**
         * Returns true if there is any possible number data set for a particular PhoneNumberDesc.
         */
         private static bool DescHasPossibleNumberData(PhoneNumberDesc desc)
@@ -1302,8 +1316,7 @@ namespace PhoneNumbers
         */
         public string FormatInOriginalFormat(PhoneNumber number, string regionCallingFrom)
         {
-            if (number.HasRawInput &&
-                (HasUnexpectedItalianLeadingZero(number) || !HasFormattingPatternForNumber(number)))
+            if (number.HasRawInput && !HasFormattingPatternForNumber(number))
             {
                 // We check if we have the formatting pattern because without that, we might format the number
                 // as a group without national prefix.
@@ -1417,15 +1430,6 @@ namespace PhoneNumbers
                 }
             }
             return false;
-        }
-
-        /**
-        * Returns true if a number is from a region whose national significant number couldn't contain a
-        * leading zero, but has the italian_leading_zero field set to true.
-        */
-        private bool HasUnexpectedItalianLeadingZero(PhoneNumber number)
-        {
-            return number.ItalianLeadingZero && !IsLeadingZeroPossible(number.CountryCode);
         }
 
         private bool HasFormattingPatternForNumber(PhoneNumber number)
@@ -2120,18 +2124,6 @@ namespace PhoneNumbers
         public bool IsNANPACountry(string regionCode)
         {
             return regionCode != null && nanpaRegions.Contains(regionCode);
-        }
-
-        /**
-        * Checks whether the country calling code is from a region whose national significant number
-        * could contain a leading zero. An example of such a region is Italy. Returns false if no
-        * metadata for the country is found.
-        */
-        public bool IsLeadingZeroPossible(int countryCallingCode)
-        {
-            var mainMetadataForCallingCode = GetMetadataForRegion(
-                GetRegionCodeForCountryCode(countryCallingCode));
-            return mainMetadataForCallingCode != null && mainMetadataForCallingCode.LeadingZeroPossible;
         }
 
         /**
