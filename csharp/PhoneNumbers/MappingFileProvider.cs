@@ -132,7 +132,7 @@ namespace PhoneNumbers
         }
 
         private string FindBestMatchingLanguageCode(
-            HashSet<string> setOfLangs, string language, string script, string region)
+            ICollection<string> setOfLangs, string language, string script, string region)
         {
             var fullLocale = ConstructFullLocale(language, script, region);
             var fullLocaleStr = fullLocale.ToString();
@@ -180,10 +180,9 @@ namespace PhoneNumbers
             return "";
         }
 
-        private bool OnlyOneOfScriptOrRegionIsEmpty(string script, string region)
+        private static bool OnlyOneOfScriptOrRegionIsEmpty(string script, string region)
         {
-            return (script.Length == 0 && region.Length > 0) ||
-                    (region.Length == 0 && script.Length > 0);
+            return script.Length == 0 && region.Length > 0 || region.Length == 0 && script.Length > 0;
         }
 
         private StringBuilder ConstructFullLocale(string language, string script, string region)
@@ -194,7 +193,7 @@ namespace PhoneNumbers
             return fullLocale;
         }
 
-        private void AppendSubsequentLocalePart(string subsequentLocalePart, StringBuilder fullLocale)
+        private static void AppendSubsequentLocalePart(string subsequentLocalePart, StringBuilder fullLocale)
         {
             if (subsequentLocalePart.Length > 0)
             {

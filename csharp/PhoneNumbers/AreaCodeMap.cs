@@ -52,12 +52,12 @@ namespace PhoneNumbers
             return mapStorage.GetStorageSize();
         }
 
-        private AreaCodeMapStorageStrategy CreateDefaultMapStorage()
+        private static AreaCodeMapStorageStrategy CreateDefaultMapStorage()
         {
             return new DefaultMapStorage();
         }
 
-        private AreaCodeMapStorageStrategy CreateFlyweightMapStorage()
+        private static AreaCodeMapStorageStrategy CreateFlyweightMapStorage()
         {
             return new FlyweightMapStorage();
         }

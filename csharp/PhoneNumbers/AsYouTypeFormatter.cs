@@ -127,11 +127,9 @@ namespace PhoneNumbers
             var countryCallingCode = phoneUtil.GetCountryCodeForRegion(regionCode);
             var mainCountry = phoneUtil.GetRegionCodeForCountryCode(countryCallingCode);
             var metadata = phoneUtil.GetMetadataForRegion(mainCountry);
-            if (metadata != null)
-                return metadata;
+            return metadata ?? EmptyMetadata;
             // Set to a default instance of the metadata. This allows us to function with an incorrect
             // region code, even if formatting only works for numbers specified with "+".
-            return EmptyMetadata;
         }
 
         // Returns true if a new template is created as opposed to reusing the existing template.
@@ -162,7 +160,7 @@ namespace PhoneNumbers
         private void GetAvailableFormats(string leadingThreeDigits)
         {
             var formatList =
-                (isInternationalFormatting && currentMetaData.IntlNumberFormatCount > 0)
+                isInternationalFormatting && currentMetaData.IntlNumberFormatCount > 0
                 ? currentMetaData.IntlNumberFormatList
                 : currentMetaData.NumberFormatList;
             foreach (var format in formatList)
@@ -175,7 +173,7 @@ namespace PhoneNumbers
             NarrowDownPossibleFormats(leadingThreeDigits);
         }
 
-        private bool IsFormatEligible(string format)
+        private static bool IsFormatEligible(string format)
         {
             return EligibleFormatPattern.MatchAll(format).Success;
         }
@@ -430,11 +428,11 @@ namespace PhoneNumbers
         private bool IsDigitOrLeadingPlusSign(char nextChar)
         {
             return char.IsDigit(nextChar) ||
-                (accruedInput.Length == 1 &&
-                 PhoneNumberUtil.PlusCharsPattern.MatchAll(char.ToString(nextChar)).Success);
+                accruedInput.Length == 1 &&
+                PhoneNumberUtil.PlusCharsPattern.MatchAll(char.ToString(nextChar)).Success;
         }
 
-        string AttemptToFormatAccruedDigits()
+        private string AttemptToFormatAccruedDigits()
         {
             foreach (var numFormat in possibleFormats)
             {
