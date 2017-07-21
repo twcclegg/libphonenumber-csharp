@@ -769,6 +769,16 @@ namespace PhoneNumbers {
       get { return carrierSpecific_; }
     }
     
+    public const int SmsServicesFieldNumber = 33;
+    private bool hasSmsServices;
+    private global::PhoneNumbers.PhoneNumberDesc smsServices_ = global::PhoneNumbers.PhoneNumberDesc.DefaultInstance;
+    public bool HasSmsServices {
+      get { return hasSmsServices; }
+    }
+    public global::PhoneNumbers.PhoneNumberDesc SmsServices {
+      get { return smsServices_; }
+    }
+    
     public const int NoInternationalDiallingFieldNumber = 24;
     private bool hasNoInternationalDialling;
     private global::PhoneNumbers.PhoneNumberDesc noInternationalDialling_ = global::PhoneNumbers.PhoneNumberDesc.DefaultInstance;
@@ -967,6 +977,7 @@ namespace PhoneNumbers {
       if (hasShortCode) hash ^= shortCode_.GetHashCode();
       if (hasStandardRate) hash ^= standardRate_.GetHashCode();
       if (hasCarrierSpecific) hash ^= carrierSpecific_.GetHashCode();
+      if (hasSmsServices) hash ^= smsServices_.GetHashCode();
       if (hasNoInternationalDialling) hash ^= noInternationalDialling_.GetHashCode();
       if (hasId) hash ^= id_.GetHashCode();
       if (hasCountryCode) hash ^= countryCode_.GetHashCode();
@@ -1006,6 +1017,7 @@ namespace PhoneNumbers {
       if (hasShortCode != other.hasShortCode || (hasShortCode && !shortCode_.Equals(other.shortCode_))) return false;
       if (hasStandardRate != other.hasStandardRate || (hasStandardRate && !standardRate_.Equals(other.standardRate_))) return false;
       if (hasCarrierSpecific != other.hasCarrierSpecific || (hasCarrierSpecific && !carrierSpecific_.Equals(other.carrierSpecific_))) return false;
+      if (hasSmsServices != other.hasSmsServices || (hasSmsServices && !smsServices_.Equals(other.smsServices_))) return false;
       if (hasNoInternationalDialling != other.hasNoInternationalDialling || (hasNoInternationalDialling && !noInternationalDialling_.Equals(other.noInternationalDialling_))) return false;
       if (hasId != other.hasId || (hasId && !id_.Equals(other.id_))) return false;
       if (hasCountryCode != other.hasCountryCode || (hasCountryCode && !countryCode_.Equals(other.countryCode_))) return false;
@@ -1126,6 +1138,9 @@ namespace PhoneNumbers {
         }
         if (other.HasCarrierSpecific) {
           MergeCarrierSpecific(other.CarrierSpecific);
+        }
+        if (other.HasSmsServices) {
+          MergeSmsServices(other.SmsServices);
         }
         if (other.HasNoInternationalDialling) {
           MergeNoInternationalDialling(other.NoInternationalDialling);
@@ -1718,6 +1733,42 @@ namespace PhoneNumbers {
       public Builder ClearCarrierSpecific() {
         result.hasCarrierSpecific = false;
         result.carrierSpecific_ = global::PhoneNumbers.PhoneNumberDesc.DefaultInstance;
+        return this;
+      }
+      
+      public bool HasSmsServices {
+       get { return result.HasSmsServices; }
+      }
+      public global::PhoneNumbers.PhoneNumberDesc SmsServices {
+        get { return result.SmsServices; }
+        set { SetSmsServices(value); }
+      }
+      public Builder SetSmsServices(global::PhoneNumbers.PhoneNumberDesc value) {
+        if(value == null) throw new global::System.ArgumentNullException("value");
+        result.hasSmsServices = true;
+        result.smsServices_ = value;
+        return this;
+      }
+      public Builder SetSmsServices(global::PhoneNumbers.PhoneNumberDesc.Builder builderForValue) {
+        if(builderForValue == null) throw new global::System.ArgumentNullException("builderForValue");
+        result.hasSmsServices = true;
+        result.smsServices_ = builderForValue.Build();
+        return this;
+      }
+      public Builder MergeSmsServices(global::PhoneNumbers.PhoneNumberDesc value) {
+        if(value == null) throw new global::System.ArgumentNullException("value");
+        if (result.HasSmsServices &&
+            result.smsServices_ != global::PhoneNumbers.PhoneNumberDesc.DefaultInstance) {
+            result.smsServices_ = global::PhoneNumbers.PhoneNumberDesc.CreateBuilder(result.smsServices_).MergeFrom(value).BuildPartial();
+        } else {
+          result.smsServices_ = value;
+        }
+        result.hasSmsServices = true;
+        return this;
+      }
+      public Builder ClearSmsServices() {
+        result.hasSmsServices = false;
+        result.smsServices_ = global::PhoneNumbers.PhoneNumberDesc.DefaultInstance;
         return this;
       }
       
