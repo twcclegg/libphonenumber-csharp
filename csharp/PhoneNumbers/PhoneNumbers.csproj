@@ -5,7 +5,7 @@
     <AssemblyTitle>libphonenumber-csharp</AssemblyTitle>
     <VersionPrefix>8.7.0.1</VersionPrefix>
     <Authors>Patrick Mézard;Jarrod Alexander;Google;libphonenumber;contributors</Authors>
-    <TargetFrameworks>net4;netstandard1.1</TargetFrameworks>
+    <TargetFrameworks>net45;netstandard1.1</TargetFrameworks>
     <AssemblyName>PhoneNumbers</AssemblyName>
     <PackageId>libphonenumber-csharp</PackageId>
     <PackageTags>phonenumber phone libphonenumber e164 e.164 international</PackageTags>
@@ -20,7 +20,7 @@
     <EmbeddedResource Include="res\**\*.*;PhoneNumberAlternateFormats.xml;PhoneNumberMetaData.xml;PhoneNumberMetaDataForTesting.xml;ShortNumberMetadata.xml" Exclude="bin\**;obj\**;**\*.xproj;packages\**;@(EmbeddedResource)" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net4' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
     <Reference Include="System.Xml" />
     <Reference Include="System.Linq" />
     <Reference Include="System.Runtime.Serialization" />
