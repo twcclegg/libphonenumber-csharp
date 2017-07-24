@@ -1,0 +1,18 @@
+version: 8.7.0.{build}
+image: Visual Studio 2017
+configuration: Release
+branches:
+  only:
+  - master
+pull_requests:
+  do_not_increment_build_number: true
+before_build:
+  - dotnet restore csharp -s https://api.nuget.org/v3/index.json
+build_script:
+  - cmd: dotnet pack -c Release csharp\PhoneNumbers
+test_script:
+  - cmd: dotnet test csharp\PhoneNumbers.Test\PhoneNumbers.Test.csproj
+artifacts:
+  - path: csharp\PhoneNumbers\bin\Release\libphonenumber-csharp.*
+nuget:
+  account_feed: true
