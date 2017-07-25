@@ -22,3 +22,9 @@ artifacts:
   - path: csharp\PhoneNumbers\bin\Release\libphonenumber-csharp.*
 nuget:
   account_feed: true
+deploy:
+  - provider: NuGet
+    api_key:
+    secure: QB8FoYFBWfFy8cxyScelVPg3X4q2BvLO0VELkUAOKT4ZHp362V7cIRq+nIrkjFJ5
+    on:
+      appveyor_repo_tag: true
