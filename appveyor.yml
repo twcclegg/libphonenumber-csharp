@@ -1,4 +1,4 @@
-version: 8.7.0.{build}
+version: 8.7.1
 image: Visual Studio 2017
 configuration: Release
 branches:
@@ -25,6 +25,6 @@ nuget:
 deploy:
   - provider: NuGet
     api_key:
-    secure: QB8FoYFBWfFy8cxyScelVPg3X4q2BvLO0VELkUAOKT4ZHp362V7cIRq+nIrkjFJ5
+      secure: QB8FoYFBWfFy8cxyScelVPg3X4q2BvLO0VELkUAOKT4ZHp362V7cIRq+nIrkjFJ5
     on:
       appveyor_repo_tag: true
