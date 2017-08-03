@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/76abbk0qveot0mbo/branch/master?svg=true)](https://ci.appveyor.com/project/twcclegg/libphonenumber-csharp/branch/master)
+
 # Overview
 
 # libphonenumber-csharp

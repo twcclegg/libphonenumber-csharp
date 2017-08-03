@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp1.1</TargetFramework>
     <AssemblyName>PhoneNumbers.Test</AssemblyName>
     <PackageId>PhoneNumbers.Test</PackageId>
+    <DebugType>full</DebugType>
   </PropertyGroup>
 
   <ItemGroup>

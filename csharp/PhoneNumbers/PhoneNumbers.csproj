@@ -3,9 +3,9 @@
   <PropertyGroup>
     <Description>C# port of Google's common Java, C++ and Javascript library for parsing, formatting, storing and validating international phone numbers. For usage samples: http: //code.google.com/p/libphonenumber/A port of Google's libphonenumber for .NET Core</Description>
     <AssemblyTitle>libphonenumber-csharp</AssemblyTitle>
-    <VersionPrefix>8.7.0.1</VersionPrefix>
+    <VersionPrefix>$(APPVEYOR_BUILD_VERSION)</VersionPrefix>
     <Authors>Patrick Mézard;Jarrod Alexander;Google;libphonenumber;contributors</Authors>
-    <TargetFrameworks>net4;netstandard1.1</TargetFrameworks>
+    <TargetFrameworks>net40;netstandard1.1</TargetFrameworks>
     <AssemblyName>PhoneNumbers</AssemblyName>
     <PackageId>libphonenumber-csharp</PackageId>
     <PackageTags>phonenumber phone libphonenumber e164 e.164 international</PackageTags>
@@ -14,24 +14,18 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/aidanbebbington/libphonenumber-csharp</RepositoryUrl>
+    <DebugType>full</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="res\**\*.*;PhoneNumberAlternateFormats.xml;PhoneNumberMetaData.xml;PhoneNumberMetaDataForTesting.xml;ShortNumberMetadata.xml" Exclude="bin\**;obj\**;**\*.xproj;packages\**;@(EmbeddedResource)" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net4' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net40' ">
     <Reference Include="System.Xml" />
-    <Reference Include="System.Linq" />
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Runtime.Serialization.Json" />
-    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Core" />
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.1' ">
-    <PackageReference Include="System.Runtime.Serialization.Json" Version="4.0.2" />
-  </ItemGroup>
-
 </Project>
