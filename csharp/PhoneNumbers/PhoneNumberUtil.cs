@@ -1142,7 +1142,11 @@ namespace PhoneNumbers
         public string FormatNationalNumberWithPreferredCarrierCode(PhoneNumber number,
             string fallbackCarrierCode)
         {
-            return FormatNationalNumberWithCarrierCode(number, number.HasPreferredDomesticCarrierCode
+            return FormatNationalNumberWithCarrierCode(number,
+                // Historically, we set this to an empty string when parsing with raw input if none was
+                // found in the input string. However, this doesn't result in a number we can dial. For this
+                // reason, we treat the empty string the same as if it isn't set at all.
+                number.PreferredDomesticCarrierCode.Length > 0
                 ? number.PreferredDomesticCarrierCode
                 : fallbackCarrierCode);
         }
@@ -1189,7 +1193,10 @@ namespace PhoneNumbers
                 ((numberType == PhoneNumberType.FIXED_LINE) || (numberType == PhoneNumberType.MOBILE) ||
                 (numberType == PhoneNumberType.FIXED_LINE_OR_MOBILE)))
             {
-                formattedNumber = numberNoExt.HasPreferredDomesticCarrierCode
+                // Historically, we set this to an empty string when parsing with raw input if none was
+                // found in the input string. However, this doesn't result in a number we can dial. For this
+                // reason, we treat the empty string the same as if it isn't set at all.
+                formattedNumber = numberNoExt.PreferredDomesticCarrierCode.Length > 0
                     ? FormatNationalNumberWithPreferredCarrierCode(numberNoExt, "")
                     // Brazilian fixed line and mobile numbers need to be dialed with a carrier code when
                     // called within Brazil. Without that, most of the carriers won't connect the call.
@@ -2158,9 +2165,7 @@ namespace PhoneNumbers
 
         /**
         * Helper method to check a number against possible lengths for this number, and determine
-        * whether it matches, or is too short or too long. Currently, if a number pattern suggests that
-        * numbers of length 7 and 10 are possible, and a number in between these possible lengths is
-        * entered, such as of length 8, this will return TOO_LONG.
+        * whether it matches, or is too short or too long.
         */
         private static ValidationResult TestNumberLength(string number, PhoneMetadata metadata,
             PhoneNumberType type = PhoneNumberType.UNKNOWN)
@@ -2892,9 +2897,21 @@ namespace PhoneNumbers
             if (regionMetadata != null)
             {
                 var carrierCode = new StringBuilder();
-                MaybeStripNationalPrefixAndCarrierCode(normalizedNationalNumber, regionMetadata, carrierCode);
-                if (keepRawInput)
-                    phoneNumber.SetPreferredDomesticCarrierCode(carrierCode.ToString());
+                var potentialNationalNumber = new StringBuilder(normalizedNationalNumber.ToString());
+                MaybeStripNationalPrefixAndCarrierCode(potentialNationalNumber, regionMetadata, carrierCode);
+                // We require that the NSN remaining after stripping the national prefix and carrier code be
+                // long enough to be a possible length for the region. Otherwise, we don't do the stripping,
+                // since the original number could be a valid short number.
+                var validationResult = TestNumberLength(normalizedNationalNumber.ToString(), regionMetadata);
+                if (validationResult != ValidationResult.TOO_SHORT &&
+                    validationResult != ValidationResult.IS_POSSIBLE_LOCAL_ONLY &&
+                    validationResult != ValidationResult.INVALID_LENGTH)
+                {
+                    normalizedNationalNumber = potentialNationalNumber;
+
+                    if (keepRawInput && carrierCode.Length > 0)
+                        phoneNumber.SetPreferredDomesticCarrierCode(carrierCode.ToString());
+                }
             }
             var lengthOfNationalNumber = normalizedNationalNumber.Length;
             if (lengthOfNationalNumber < MinLengthForNsn)
