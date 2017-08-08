@@ -1719,6 +1719,13 @@ namespace PhoneNumbers.Test
             var shortNumber = new PhoneNumber.Builder()
                 .SetCountryCode(64).SetNationalNumber(12L).Build();
             Assert.Equal(shortNumber, phoneUtil.Parse("12", RegionCode.NZ));
+
+            // Test for short-code with leading zero for a country which has 0 as national prefix. Ensure
+            // it's not interpreted as national prefix if the remaining number length is local-only in
+            // terms of length. Example: In GB, length 6-7 are only possible local-only.
+            shortNumber = new PhoneNumber.Builder().SetCountryCode(44).SetNationalNumber(123456)
+            .SetItalianLeadingZero(true).Build();
+            Assert.Equal(shortNumber, phoneUtil.Parse("0123456", RegionCode.GB));
         }
 
         [Fact]
