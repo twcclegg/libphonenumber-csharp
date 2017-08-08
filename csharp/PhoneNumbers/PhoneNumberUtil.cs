@@ -1142,7 +1142,11 @@ namespace PhoneNumbers
         public string FormatNationalNumberWithPreferredCarrierCode(PhoneNumber number,
             string fallbackCarrierCode)
         {
-            return FormatNationalNumberWithCarrierCode(number, number.HasPreferredDomesticCarrierCode
+            return FormatNationalNumberWithCarrierCode(number,
+                // Historically, we set this to an empty string when parsing with raw input if none was
+                // found in the input string. However, this doesn't result in a number we can dial. For this
+                // reason, we treat the empty string the same as if it isn't set at all.
+                number.PreferredDomesticCarrierCode.Length > 0
                 ? number.PreferredDomesticCarrierCode
                 : fallbackCarrierCode);
         }
@@ -1189,7 +1193,10 @@ namespace PhoneNumbers
                 ((numberType == PhoneNumberType.FIXED_LINE) || (numberType == PhoneNumberType.MOBILE) ||
                 (numberType == PhoneNumberType.FIXED_LINE_OR_MOBILE)))
             {
-                formattedNumber = numberNoExt.HasPreferredDomesticCarrierCode
+                // Historically, we set this to an empty string when parsing with raw input if none was
+                // found in the input string. However, this doesn't result in a number we can dial. For this
+                // reason, we treat the empty string the same as if it isn't set at all.
+                formattedNumber = numberNoExt.PreferredDomesticCarrierCode.Length > 0
                     ? FormatNationalNumberWithPreferredCarrierCode(numberNoExt, "")
                     // Brazilian fixed line and mobile numbers need to be dialed with a carrier code when
                     // called within Brazil. Without that, most of the carriers won't connect the call.
@@ -2902,7 +2909,7 @@ namespace PhoneNumbers
                 {
                     normalizedNationalNumber = potentialNationalNumber;
 
-                    if (keepRawInput)
+                    if (keepRawInput && carrierCode.Length > 0)
                         phoneNumber.SetPreferredDomesticCarrierCode(carrierCode.ToString());
                 }
             }

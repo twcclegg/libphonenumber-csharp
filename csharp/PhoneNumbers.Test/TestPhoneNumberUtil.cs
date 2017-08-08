@@ -714,10 +714,15 @@ namespace PhoneNumbers.Test
                 phoneUtil.FormatNationalNumberWithPreferredCarrierCode(arNumber, "15"));
             Assert.Equal("01234 19 12-5678",
                 phoneUtil.FormatNationalNumberWithPreferredCarrierCode(arNumber, ""));
-            // When the preferred_domestic_carrier_code is present (even when it contains an empty string),
-            // use it instead of the default carrier code passed in.
+            // When the preferred_domestic_carrier_code is present (even when it is just a space), use it
+            // instead of the default carrier code passed in.
+            arNumber = Update(arNumber).SetPreferredDomesticCarrierCode(" ").Build();
+            Assert.Equal("01234   12-5678",
+                phoneUtil.FormatNationalNumberWithPreferredCarrierCode(arNumber, "15"));
+            // When the preferred_domestic_carrier_code is present but empty, treat it as unset and use
+            // instead the default carrier code passed in.
             arNumber = Update(arNumber).SetPreferredDomesticCarrierCode("").Build();
-            Assert.Equal("01234 12-5678",
+            Assert.Equal("01234 15 12-5678",
                 phoneUtil.FormatNationalNumberWithPreferredCarrierCode(arNumber, "15"));
             // We don't support this for the US so there should be no change.
             var usNumber = new PhoneNumber.Builder()
@@ -2189,12 +2194,10 @@ namespace PhoneNumbers.Test
             Assert.Equal(NZNumber, phoneUtil.Parse("tel:03-331-6005;isub=12345;phone-context=+64",
                 RegionCode.ZZ));
 
-            // It is important that we set the carrier code to an empty string, since we used
-            // ParseAndKeepRawInput and no carrier code was found.
             var nzNumberWithRawInput = new PhoneNumber.Builder().MergeFrom(NZNumber)
                 .SetRawInput("+64 3 331 6005")
                 .SetCountryCodeSource(PhoneNumber.Types.CountryCodeSource.FROM_NUMBER_WITH_PLUS_SIGN)
-                .SetPreferredDomesticCarrierCode("").Build();
+                .Build();
             Assert.Equal(nzNumberWithRawInput, phoneUtil.ParseAndKeepRawInput("+64 3 331 6005",
                                                                       RegionCode.ZZ));
             // Null is also allowed for the region code in these cases.
@@ -2282,7 +2285,7 @@ namespace PhoneNumbers.Test
             var alphaNumericNumber = new PhoneNumber.Builder().MergeFrom(AlphaNumericNumber)
                 .SetRawInput("800 six-flags")
                 .SetCountryCodeSource(PhoneNumber.Types.CountryCodeSource.FROM_DEFAULT_COUNTRY)
-                .SetPreferredDomesticCarrierCode("").Build();
+                .Build();
             Assert.Equal(alphaNumericNumber,
                 phoneUtil.ParseAndKeepRawInput("800 six-flags", RegionCode.US));
 
@@ -2291,7 +2294,7 @@ namespace PhoneNumbers.Test
                 .SetNationalNumber(8007493524L)
                 .SetRawInput("1800 six-flag")
                 .SetCountryCodeSource(PhoneNumber.Types.CountryCodeSource.FROM_NUMBER_WITHOUT_PLUS_SIGN)
-                .SetPreferredDomesticCarrierCode("").Build();
+                .Build();
             Assert.Equal(shorterAlphaNumber,
                 phoneUtil.ParseAndKeepRawInput("1800 six-flag", RegionCode.US));
 
