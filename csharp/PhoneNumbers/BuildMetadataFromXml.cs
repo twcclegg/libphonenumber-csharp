@@ -38,9 +38,9 @@ namespace PhoneNumbers
         private const string INTERNATIONAL_PREFIX = "internationalPrefix";
         private const string INTL_FORMAT = "intlFormat";
         private const string LEADING_DIGITS = "leadingDigits";
-        private const string LEADING_ZERO_POSSIBLE = "leadingZeroPossible";
         private const string MAIN_COUNTRY_FOR_CODE = "mainCountryForCode";
         private const string MOBILE = "mobile";
+        private const string MOBILE_NUMBER_PORTABLE_REGION = "mobileNumberPortableRegion";
         private const string NATIONAL_NUMBER_PATTERN = "nationalNumberPattern";
         private const string NATIONAL_PREFIX = "nationalPrefix";
         private const string NATIONAL_PREFIX_FORMATTING_RULE = "nationalPrefixFormattingRule";
@@ -61,6 +61,7 @@ namespace PhoneNumbers
         private const string PREMIUM_RATE = "premiumRate";
         private const string SHARED_COST = "sharedCost";
         private const string SHORT_CODE = "shortCode";
+        private const string SMS_SERVICES = "smsServices";
         private const string STANDARD_RATE = "standardRate";
         private const string TOLL_FREE = "tollFree";
         private const string UAN = "uan";
@@ -197,9 +198,9 @@ namespace PhoneNumbers
             {
                 metadata.SetMainCountryForCode(true);
             }
-            if (element.HasAttribute(LEADING_ZERO_POSSIBLE))
+            if (element.HasAttribute(MOBILE_NUMBER_PORTABLE_REGION))
             {
-                metadata.SetLeadingZeroPossible(true);
+                metadata.SetMobileNumberPortableRegion(true);
             }
             return metadata;
         }
@@ -408,7 +409,9 @@ namespace PhoneNumbers
         * missing. For all other types, the parent description will only be used to fill in missing
         * components if the type has a partial definition. For example, if no "tollFree" element exists,
         * we assume there are no toll free numbers for that locale, and return a phone number description
-        * with "NA" for both the national and possible number patterns.
+        * with no national number data and [-1] for the possible lengths. Note that the parent
+        * description must therefore already be processed before this method is called on any child
+        * elements.
         *
         * @param generalDesc  a generic phone number description that will be used to fill in missing
         *                     parts of the description
@@ -442,14 +445,10 @@ namespace PhoneNumbers
 
                 if (parentDesc != null)
                 {
-                    // New way of handling possible number lengths. We don't do this for the general
-                    // description, since these tags won't be present; instead we will calculate its values
-                    // based on the values for all the other number type descriptions (see
-                    // setPossibleLengthsGeneralDesc).
                     var lengths = new SortedSet<int>();
                     var localOnlyLengths = new SortedSet<int>();
                     PopulatePossibleLengthSets(element, lengths, localOnlyLengths);
-                    SetPossibleLengths(lengths, new SortedSet<int>(), parentDesc, numberDesc);
+                    SetPossibleLengths(lengths, localOnlyLengths, parentDesc, numberDesc);
                 }
 
                 var validPattern = element.GetElementsByTagName(NATIONAL_NUMBER_PATTERN).ToList();
@@ -512,6 +511,7 @@ namespace PhoneNumbers
                 metadata.SetEmergency(ProcessPhoneNumberDescElement(generalDesc, element, EMERGENCY));
                 metadata.SetTollFree(ProcessPhoneNumberDescElement(generalDesc, element, TOLL_FREE));
                 metadata.SetPremiumRate(ProcessPhoneNumberDescElement(generalDesc, element, PREMIUM_RATE));
+                metadata.SetSmsServices(ProcessPhoneNumberDescElement(generalDesc, element, SMS_SERVICES));
             }
         }
 

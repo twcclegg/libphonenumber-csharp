@@ -128,6 +128,40 @@ namespace PhoneNumbers
         // a mobile phone in Colombia.
         private const string COLOMBIA_MOBILE_TO_FIXED_LINE_PREFIX = "3";
 
+
+        // Map of country calling codes that use a mobile token before the area code. One example of when
+        // this is relevant is when determining the length of the national destination code, which should
+        // be the length of the area code plus the length of the mobile token.
+        private static readonly Dictionary<int, string> MOBILE_TOKEN_MAPPINGS = new Dictionary<int, string>
+        {
+            {52, "1" },
+            {54, "9" },
+        };
+
+        // Set of country codes that have geographically assigned mobile numbers (see GEO_MOBILE_COUNTRIES
+        // below) which are not based on *area codes*. For example, in China mobile numbers start with a
+        // carrier indicator, and beyond that are geographically assigned: this carrier indicator is not
+        // considered to be an area code.
+        private static readonly HashSet<int> GEO_MOBILE_COUNTRIES_WITHOUT_MOBILE_AREA_CODES = new HashSet<int>
+        {
+            86,  // China
+        };
+
+        // Set of country calling codes that have geographically assigned mobile numbers. This may not be
+        // complete; we add calling codes case by case, as we find geographical mobile numbers or hear
+        // from user reports. Note that countries like the US, where we can't distinguish between
+        // fixed-line or mobile numbers, are not listed here, since we consider FIXED_LINE_OR_MOBILE to be
+        // a possibly geographically-related type anyway (like FIXED_LINE).
+        private static readonly HashSet<int> GEO_MOBILE_COUNTRIES = new HashSet<int>
+        {
+            52,  // Mexico
+            54,  // Argentina
+            55,  // Brazil
+            62,  // Indonesia: some prefixes only (fixed CMDA wireless)
+            86,  // China
+        };
+
+
         // The PLUS_SIGN signifies the international prefix.
         internal const char PlusSign = '+';
 
@@ -267,9 +301,16 @@ namespace PhoneNumbers
         // correctly.  Therefore, we use \d, so that the first group actually used in the pattern will be
         // matched.
         private static readonly Regex FirstGroupPattern = new Regex("(\\$\\d)", InternalRegexOptions.Default);
+        // Constants used in the formatting rules to represent the national prefix, first group and
+        // carrier code respectively.
         private static readonly Regex NpPattern = new Regex("\\$NP", InternalRegexOptions.Default);
         private static readonly Regex FgPattern = new Regex("\\$FG", InternalRegexOptions.Default);
         private static readonly Regex CcPattern = new Regex("\\$CC", InternalRegexOptions.Default);
+
+        // A pattern that is used to determine if the national prefix formatting rule has the first group
+        // only, i.e., does not start with the national prefix. Note that the pattern explicitly allows
+        // for unbalanced parentheses.
+        private static readonly PhoneRegex FirstGroupOnlyPrefixPattern = new PhoneRegex("\\(?\\$1\\)?", InternalRegexOptions.Default);
 
         static PhoneNumberUtil()
         {
@@ -695,13 +736,13 @@ namespace PhoneNumbers
         }
 
         /**
-        * Gets the length of the geographical area code from the {@code nationalNumber_} field of the
-        * PhoneNumber object passed in, so that clients could use it to split a national significant
-        * number into geographical area code and subscriber number. It works in such a way that the
-        * resultant subscriber number should be diallable, at least on some devices. An example of how
-        * this could be used:
+        * Gets the length of the geographical area code from the
+        * PhoneNumber object passed in, so that clients could use it
+        * to split a national significant number into geographical area code and subscriber number. It
+        * works in such a way that the resultant subscriber number should be diallable, at least on some
+        * devices. An example of how this could be used:
         *
-        * <pre>
+        * <pre>{@code
         * PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
         * PhoneNumber number = phoneUtil.parse("16502530000", "US");
         * String nationalSignificantNumber = phoneUtil.getNationalSignificantNumber(number);
@@ -716,7 +757,7 @@ namespace PhoneNumbers
         *   areaCode = "";
         *   subscriberNumber = nationalSignificantNumber;
         * }
-        * </pre>
+        * }</pre>
         *
         * N.B.: area code is a very ambiguous concept, so the I18N team generally recommends against
         * using it for most purposes, but recommends using the more general {@code national_number}
@@ -730,10 +771,10 @@ namespace PhoneNumbers
         *    entities
         *  <li> some geographical numbers have no area codes.
         * </ul>
-        *
-        * @param number  the PhoneNumber object for which clients want to know the length of the area
-        *     code.
-        * @return  the length of area code of the PhoneNumber object passed in.
+        * @param number  the PhoneNumber object for which clients
+        *     want to know the length of the area code
+        * @return  the length of area code of the PhoneNumber object
+        *     passed in
         */
         public int GetLengthOfGeographicalAreaCode(PhoneNumber number)
         {
@@ -746,10 +787,21 @@ namespace PhoneNumbers
             if (!metadata.HasNationalPrefix && !number.ItalianLeadingZero)
                 return 0;
 
-            var type = GetNumberTypeHelper(GetNationalSignificantNumber(number), metadata);
-            // Most numbers other than the two types below have to be dialled in full.
-            if (type != PhoneNumberType.FIXED_LINE && type != PhoneNumberType.FIXED_LINE_OR_MOBILE)
+            var type = GetNumberType(number);
+            var countryCallingCode = number.CountryCode;
+            if (type == PhoneNumberType.MOBILE
+                // Note this is a rough heuristic; it doesn't cover Indonesia well, for example, where area
+                // codes are present for some mobile phones but not for others. We have no better way of
+                // representing this in the metadata at this point.
+                && GEO_MOBILE_COUNTRIES_WITHOUT_MOBILE_AREA_CODES.Contains(countryCallingCode))
+            {
                 return 0;
+            }
+
+            if (!IsNumberGeographical(type, countryCallingCode))
+            {
+                return 0;
+            }
             return GetLengthOfNationalDestinationCode(number);
         }
 
@@ -808,15 +860,33 @@ namespace PhoneNumbers
             if (numberGroups.Length <= 3)
                 return 0;
 
-            if (GetRegionCodeForCountryCode(number.CountryCode) == "AR" && GetNumberType(number) == PhoneNumberType.MOBILE)
-                // Argentinian mobile numbers, when formatted in the international format, are in the form of
-                // +54 9 NDC XXXX.... As a result, we take the length of the third group (NDC) and add 1 for
-                // the digit 9, which also forms part of the national significant number.
-                //
-                // TODO: Investigate the possibility of better modeling the metadata to make it
-                // easier to obtain the NDC.
-                return numberGroups[3].Length + 1;
+            if (GetNumberType(number) == PhoneNumberType.MOBILE)
+            {
+                // For example Argentinian mobile numbers, when formatted in the international format, are in
+                // the form of +54 9 NDC XXXX.... As a result, we take the length of the third group (NDC) and
+                // add the length of the second group (which is the mobile token), which also forms part of
+                // the national significant number. This assumes that the mobile token is always formatted
+                // separately from the rest of the phone number.
+                var mobileToken = GetCountryMobileToken(number.CountryCode);
+                if (!mobileToken.Equals(""))
+                {
+                    return numberGroups[2].Length + numberGroups[3].Length;
+                }
+            }
             return numberGroups[2].Length;
+        }
+
+        /**
+        * Returns the mobile token for the provided country calling code if it has one, otherwise
+        * returns an empty string. A mobile token is a number inserted before the area code when dialing
+        * a mobile number from that country from abroad.
+        *
+        * @param countryCallingCode  the country calling code for which we want the mobile token
+        * @return  the mobile token, as a string, for the given country calling code
+        */
+        public static string GetCountryMobileToken(int countryCallingCode)
+        {
+            return MOBILE_TOKEN_MAPPINGS.ContainsKey(countryCallingCode) ? MOBILE_TOKEN_MAPPINGS[countryCallingCode] : "";
         }
 
         /**
@@ -877,7 +947,10 @@ namespace PhoneNumbers
         }
 
         /**
-        * Convenience method to get a list of what regions the library has metadata for.
+        * Returns all regions the library has metadata for.
+        *
+        * @return  an unordered set of the two-letter region codes for every geographical region the
+        *     library supports
         */
         public HashSet<string> GetSupportedRegions()
         {
@@ -885,8 +958,10 @@ namespace PhoneNumbers
         }
 
         /**
-        * Convenience method to get a list of what global network calling codes the library has metadata
-        * for.
+        * Returns all global network calling codes the library has metadata for.
+        *
+        * @return  an unordered set of the country calling codes for every non-geographical entity the
+        *     library supports
         */
         public Dictionary<int, PhoneMetadata>.KeyCollection GetSupportedGlobalNetworkCallingCodes()
         {
@@ -918,6 +993,75 @@ namespace PhoneNumbers
         }
 
         /**
+         * Returns true if there is any data set for a particular PhoneNumberDesc.
+         */
+        private static bool DescHasData(PhoneNumberDesc desc)
+        {
+            // Checking most properties since we don't know what's present, since a custom build may have
+            // stripped just one of them (e.g. liteBuild strips exampleNumber). We don't bother checking the
+            // possibleLengthsLocalOnly, since if this is the only thing that's present we don't really
+            // support the type at all: no type-specific methods will work with only this data.
+            return desc.HasExampleNumber
+                   || DescHasPossibleNumberData(desc)
+                   || desc.HasNationalNumberPattern;
+        }
+
+        /**
+         * Returns the types we have metadata for based on the PhoneMetadata object passed in, which must
+         * be non-null.
+         */
+        private HashSet<PhoneNumberType> GetSupportedTypesForMetadata(PhoneMetadata metadata)
+        {
+            var types = new HashSet<PhoneNumberType>();
+            foreach (PhoneNumberType type in Enum.GetValues(typeof(PhoneNumberType)))
+            {
+                if (type == PhoneNumberType.FIXED_LINE_OR_MOBILE || type == PhoneNumberType.UNKNOWN)
+                {
+                    // Never return FIXED_LINE_OR_MOBILE (it is a convenience type, and represents that a
+                    // particular number type can't be determined) or UNKNOWN (the non-type).
+                    continue;
+                }
+                if (DescHasData(GetNumberDescByType(metadata, type)))
+                {
+                    types.Add(type);
+                }
+            }
+            return types;
+        }
+
+        /**
+         * Returns the types for a given region which the library has metadata for. Will not include
+         * FIXED_LINE_OR_MOBILE (if numbers in this region could be classified as FIXED_LINE_OR_MOBILE,
+         * both FIXED_LINE and MOBILE would be present) and UNKNOWN.
+         *
+         * No types will be returned for invalid or unknown region codes.
+         */
+        public HashSet<PhoneNumberType> GetSupportedTypesForRegion(string regionCode)
+        {
+            if (!IsValidRegionCode(regionCode))
+            {
+                return new HashSet<PhoneNumberType>();
+            }
+            var metadata = GetMetadataForRegion(regionCode);
+            return GetSupportedTypesForMetadata(metadata);
+        }
+
+        /**
+         * Returns the types for a country-code belonging to a non-geographical entity which the library
+         * has metadata for. Will not include FIXED_LINE_OR_MOBILE (if numbers for this non-geographical
+         * entity could be classified as FIXED_LINE_OR_MOBILE, both FIXED_LINE and MOBILE would be
+         * present) and UNKNOWN.
+         *
+         * No types will be returned for country calling codes that do not map to a known non-geographical
+         * entity.
+         */
+        public HashSet<PhoneNumberType> GetSupportedTypesForNonGeoEntity(int countryCallingCode)
+        {
+            var metadata = GetMetadataForNonGeographicalRegion(countryCallingCode);
+            return metadata == null ? new HashSet<PhoneNumberType>() : GetSupportedTypesForMetadata(metadata);
+        }
+
+        /**
         * Gets a {@link PhoneNumberUtil} instance to carry out international phone number formatting,
         * parsing, or validation. The instance is loaded with phone number metadata for a number of most
         * commonly used regions.
@@ -937,6 +1081,42 @@ namespace PhoneNumbers
                 return instance;
             }
         }
+
+
+
+
+        /**
+        * Helper function to check if the national prefix formatting rule has the first group only, i.e.,
+        * does not start with the national prefix.
+        */
+        static bool FormattingRuleHasFirstGroupOnly(string nationalPrefixFormattingRule)
+        {
+            return nationalPrefixFormattingRule.Length == 0
+                   || FirstGroupOnlyPrefixPattern.MatchAll(nationalPrefixFormattingRule).Success;
+        }
+
+        /**
+         * Tests whether a phone number has a geographical association. It checks if the number is
+         * associated with a certain region in the country to which it belongs. Note that this doesn't
+         * verify if the number is actually in use.
+         */
+        public bool IsNumberGeographical(PhoneNumber phoneNumber)
+        {
+            return IsNumberGeographical(GetNumberType(phoneNumber), phoneNumber.CountryCode);
+        }
+
+        /**
+         * Overload of isNumberGeographical(PhoneNumber), since calculating the phone number type is
+         * expensive; if we have already done this, we don't want to do it again.
+         */
+        public bool IsNumberGeographical(PhoneNumberType phoneNumberType, int countryCallingCode)
+        {
+            return phoneNumberType == PhoneNumberType.FIXED_LINE
+                   || phoneNumberType == PhoneNumberType.FIXED_LINE_OR_MOBILE
+                   || GEO_MOBILE_COUNTRIES.Contains(countryCallingCode)
+                       && phoneNumberType == PhoneNumberType.MOBILE;
+        }
+
 
         /**
         * Helper function to check region code is not unknown or null.
@@ -1310,9 +1490,8 @@ namespace PhoneNumbers
         * Formats a phone number using the original phone number format that the number is parsed from.
         * The original format is embedded in the country_code_source field of the PhoneNumber object
         * passed in. If such information is missing, the number will be formatted into the NATIONAL
-        * format by default. When the number contains a leading zero and this is unexpected for this
-        * country, or we don't have a formatting pattern for the number, the method returns the raw input
-        * when it is available.
+        * format by default. When we don't have a formatting pattern for the number, the method returns
+        * the raw input when it is available.
         *
         * Note this method guarantees no digit will be inserted, removed or modified as a result of
         * formatting.
@@ -1961,7 +2140,7 @@ namespace PhoneNumbers
         * is actually in use, which is impossible to tell by just looking at a number itself.
         *
         * @param number       the phone number that we want to validate
-        * @return  a boolean that indicates whether the number is of a valid pattern
+        * @return  a bool that indicates whether the number is of a valid pattern
         */
         public bool IsValidNumber(PhoneNumber number)
         {
@@ -1979,7 +2158,7 @@ namespace PhoneNumbers
         *
         * @param number       the phone number that we want to validate
         * @param regionCode   the region that we want to validate the phone number for
-        * @return  a boolean that indicates whether the number is of a valid pattern
+        * @return  a bool that indicates whether the number is of a valid pattern
         */
         public bool IsValidNumberForRegion(PhoneNumber number, string regionCode)
         {
@@ -2154,7 +2333,7 @@ namespace PhoneNumbers
 
         /**
         * Convenience wrapper around {@link #isPossibleNumberWithReason}. Instead of returning the reason
-        * for failure, this method returns a boolean value.
+        * for failure, this method returns a bool value.
         * @param number  the number that needs to be checked
         * @return  true if the number is possible
         */

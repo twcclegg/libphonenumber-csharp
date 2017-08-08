@@ -57,6 +57,7 @@ namespace PhoneNumbers
             "shortCode",
             "standardRate",
             "carrierSpecific",
+            "smsServices",
             "noInternationalDialling"
         };
 
@@ -190,6 +191,10 @@ namespace PhoneNumbers
             if (metadata.HasCarrierSpecific)
             {
                 metadata.SetCarrierSpecific(GetFiltered("carrierSpecific", metadata.CarrierSpecific));
+            }
+            if (metadata.HasSmsServices)
+            {
+                metadata.SetSmsServices(GetFiltered("smsServices", metadata.SmsServices));
             }
             if (metadata.HasNoInternationalDialling)
             {
