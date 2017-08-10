@@ -47,15 +47,19 @@ namespace PhoneNumbers
         // Set to true when users enter their own formatting. AsYouTypeFormatter will do no formatting at
         // all when this is set to true.
         private bool inputHasFormatting;
-        private bool isInternationalFormatting;
+        private bool isCompleteNumber;
         private bool isExpectingCountryCallingCode;
+        private bool shouldAddSpaceAfterNationalPrefix;
         private readonly PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
         private readonly string defaultCountry;
 
+        // Character used when appropriate to separate a prefix, such as a long NDD or a country calling
+        // code, from the national number.
+        private static readonly char SeparatorBeforeNationalNumber = ' ';
         private static readonly PhoneMetadata EmptyMetadata =
             new PhoneMetadata.Builder().SetInternationalPrefix("NA").BuildPartial();
         private readonly PhoneMetadata defaultMetaData;
-        private PhoneMetadata currentMetaData;
+        private PhoneMetadata currentMetadata;
 
         // A pattern that is used to match character classes in regular expressions. An example of a
         // character class is [1-4].
@@ -76,6 +80,9 @@ namespace PhoneNumbers
             new PhoneRegex("[" + PhoneNumberUtil.ValidPunctuation + "]*" +
                 "(\\$\\d" + "[" + PhoneNumberUtil.ValidPunctuation + "]*)+",
                 InternalRegexOptions.Default);
+        // A set of characters that, if found in a national prefix formatting rules, are an indicator to
+        // us that we should separate the national prefix from the number when formatting.
+        private static readonly PhoneRegex NationalPrefixSeparatorsPattern = new PhoneRegex("[- ]", InternalRegexOptions.Default);
 
         // This is the minimum length of national number accrued that is required to trigger the
         // formatter. The first element of the leadingDigitsPattern of each numberFormat contains a
@@ -99,7 +106,7 @@ namespace PhoneNumbers
         private readonly StringBuilder prefixBeforeNationalNumber = new StringBuilder();
         // This contains the national prefix that has been extracted. It contains only digits without
         // formatting.
-        private string nationalPrefixExtracted = "";
+        private string extractedNationalPrefix = "";
         private readonly StringBuilder nationalNumber = new StringBuilder();
         private readonly List<NumberFormat> possibleFormats = new List<NumberFormat>();
 
@@ -116,8 +123,8 @@ namespace PhoneNumbers
         {
             digitPattern = new Regex(digitPlaceholder, InternalRegexOptions.Default);
             defaultCountry = regionCode;
-            currentMetaData = GetMetadataForRegion(defaultCountry);
-            defaultMetaData = currentMetaData;
+            currentMetadata = GetMetadataForRegion(defaultCountry);
+            defaultMetaData = currentMetadata;
         }
 
         // The metadata needed by this class is the same for all regions sharing the same country calling
@@ -146,31 +153,42 @@ namespace PhoneNumbers
                 if (CreateFormattingTemplate(numberFormat))
                 {
                     currentFormattingPattern = pattern;
+                    shouldAddSpaceAfterNationalPrefix =
+                        NationalPrefixSeparatorsPattern.Match(numberFormat.NationalPrefixFormattingRule).Success;
                     // With a new formatting template, the matched position using the old template needs to be
                     // reset.
                     lastMatchPosition = 0;
                     return true;
                 }
+                // Remove the current number format from possibleFormats.
                 possibleFormats.RemoveAt(0);
             }
             ableToFormat = false;
             return false;
         }
 
-        private void GetAvailableFormats(string leadingThreeDigits)
+        private void GetAvailableFormats(string leadingDigits)
         {
             var formatList =
-                isInternationalFormatting && currentMetaData.IntlNumberFormatCount > 0
-                ? currentMetaData.IntlNumberFormatList
-                : currentMetaData.NumberFormatList;
+                isCompleteNumber && currentMetadata.IntlNumberFormatCount > 0
+                ? currentMetadata.IntlNumberFormatList
+                : currentMetadata.NumberFormatList;
+            var nationalPrefixIsUsedByCountry = currentMetadata.HasNationalPrefix;
             foreach (var format in formatList)
             {
-                if (IsFormatEligible(format.Format))
+                if (!nationalPrefixIsUsedByCountry
+                    || isCompleteNumber
+                    || format.NationalPrefixOptionalWhenFormatting
+                    || PhoneNumberUtil.FormattingRuleHasFirstGroupOnly(
+                        format.NationalPrefixFormattingRule))
                 {
-                    possibleFormats.Add(format);
+                    if (IsFormatEligible(format.Format))
+                    {
+                        possibleFormats.Add(format);
+                    }
                 }
             }
-            NarrowDownPossibleFormats(leadingThreeDigits);
+            NarrowDownPossibleFormats(leadingDigits);
         }
 
         private static bool IsFormatEligible(string format)
@@ -184,11 +202,13 @@ namespace PhoneNumbers
             for (var i = 0; i != possibleFormats.Count; )
             {
                 var format = possibleFormats[i];
-                if (format.LeadingDigitsPatternCount > indexOfLeadingDigitsPattern)
+                // Keep everything that isn't restricted by leading digits.
+                if (format.LeadingDigitsPatternCount != 0)
                 {
-                    var leadingDigitsPattern =
-                        regexCache.GetPatternForRegex(
-                            format.LeadingDigitsPatternList[indexOfLeadingDigitsPattern]);
+                    var lastLeadingDigitsPattern =
+                        Math.Min(indexOfLeadingDigitsPattern, format.LeadingDigitsPatternCount - 1);
+                    var leadingDigitsPattern = regexCache.GetPatternForRegex(
+                        format.GetLeadingDigitsPattern(lastLeadingDigitsPattern));
                     var m = leadingDigitsPattern.MatchBeginning(leadingDigits);
                     if (!m.Success)
                     {
@@ -196,8 +216,6 @@ namespace PhoneNumbers
                         continue;
                     }
                 }
-                // else the particular format has no more specific leadingDigitsPattern, and it should be
-                // retained.
                 ++i;
             }
         }
@@ -260,18 +278,19 @@ namespace PhoneNumbers
             lastMatchPosition = 0;
             currentFormattingPattern = "";
             prefixBeforeNationalNumber.Length = 0;
-            nationalPrefixExtracted = "";
+            extractedNationalPrefix = "";
             nationalNumber.Length = 0;
             ableToFormat = true;
             inputHasFormatting = false;
             positionToRemember = 0;
             originalPosition = 0;
-            isInternationalFormatting = false;
+            isCompleteNumber = false;
             isExpectingCountryCallingCode = false;
             possibleFormats.Clear();
-            if (!currentMetaData.Equals(defaultMetaData))
+            shouldAddSpaceAfterNationalPrefix = false;
+            if (!currentMetadata.Equals(defaultMetaData))
             {
-                currentMetaData = GetMetadataForRegion(defaultCountry);
+                currentMetadata = GetMetadataForRegion(defaultCountry);
             }
         }
 
@@ -339,8 +358,9 @@ namespace PhoneNumbers
                 else if (AbleToExtractLongerNdd())
                 {
                     // Add an additional space to separate long NDD and national significant number for
-                    // readability.
-                    prefixBeforeNationalNumber.Append(" ");
+                    // readability. We don't set shouldAddSpaceAfterNationalPrefix to true, since we don't want
+                    // this to change later when we choose formatting templates.
+                    prefixBeforeNationalNumber.Append(SeparatorBeforeNationalNumber);
                     return AttemptToChoosePatternWithPrefixExtracted();
                 }
                 return accruedInput.ToString();
@@ -361,7 +381,7 @@ namespace PhoneNumbers
                     }
                     else
                     {  // No IDD or plus sign is found, might be entering in national format.
-                        nationalPrefixExtracted = RemoveNationalPrefixFromNationalNumber();
+                        extractedNationalPrefix = RemoveNationalPrefixFromNationalNumber();
                         return AttemptToChooseFormattingPattern();
                     }
                     goto default;
@@ -405,6 +425,9 @@ namespace PhoneNumbers
             ableToFormat = true;
             isExpectingCountryCallingCode = false;
             possibleFormats.Clear();
+            lastMatchPosition = 0;
+            formattingTemplate.Length = 0;
+            currentFormattingPattern = "";
             return AttemptToChooseFormattingPattern();
         }
 
@@ -412,17 +435,17 @@ namespace PhoneNumbers
         // in a number we can format, we try to see if we can extract a longer version here.
         private bool AbleToExtractLongerNdd()
         {
-            if (nationalPrefixExtracted.Length > 0)
+            if (extractedNationalPrefix.Length > 0)
             {
                 // Put the extracted NDD back to the national number before attempting to extract a new NDD.
-                nationalNumber.Insert(0, nationalPrefixExtracted);
+                nationalNumber.Insert(0, extractedNationalPrefix);
                 // Remove the previously extracted NDD from prefixBeforeNationalNumber. We cannot simply set
-                // it to empty string because people sometimes enter national prefix after country code, e.g
-                // +44 (0)20-1234-5678.
-                var indexOfPreviousNdd = prefixBeforeNationalNumber.ToString().LastIndexOf(nationalPrefixExtracted, StringComparison.Ordinal);
+                // it to empty string because people sometimes incorrectly enter national prefix after the
+                // country code, e.g +44 (0)20-1234-5678.
+                var indexOfPreviousNdd = prefixBeforeNationalNumber.ToString().LastIndexOf(extractedNationalPrefix, StringComparison.Ordinal);
                 prefixBeforeNationalNumber.Length = indexOfPreviousNdd;
             }
-            return !nationalPrefixExtracted.Equals(RemoveNationalPrefixFromNationalNumber());
+            return !extractedNationalPrefix.Equals(RemoveNationalPrefixFromNationalNumber());
         }
 
         private bool IsDigitOrLeadingPlusSign(char nextChar)
@@ -439,8 +462,10 @@ namespace PhoneNumbers
                 var m = regexCache.GetPatternForRegex(numFormat.Pattern);
                 if (m.MatchAll(nationalNumber.ToString()).Success)
                 {
+                    shouldAddSpaceAfterNationalPrefix =
+                        NationalPrefixSeparatorsPattern.Match(numFormat.NationalPrefixFormattingRule).Success;
                     var formattedNumber = m.Replace(nationalNumber.ToString(), numFormat.Format);
-                    return prefixBeforeNationalNumber + formattedNumber;
+                    return AppendNationalNumber(formattedNumber);
                 }
             }
             return "";
@@ -469,6 +494,31 @@ namespace PhoneNumbers
             return currentOutputIndex;
         }
 
+
+        /**
+         * Combines the national number with any prefix (IDD/+ and country code or national prefix) that
+         * was collected. A space will be inserted between them if the current formatting template
+         * indicates this to be suitable.
+         */
+        private string AppendNationalNumber(string nationalNumberStr)
+        {
+            var prefixBeforeNationalNumberLength = prefixBeforeNationalNumber.Length;
+            if (shouldAddSpaceAfterNationalPrefix && prefixBeforeNationalNumberLength > 0
+                && prefixBeforeNationalNumber[prefixBeforeNationalNumberLength - 1]
+                != SeparatorBeforeNationalNumber)
+            {
+                // We want to add a space after the national prefix if the national prefix formatting rule
+                // indicates that this would normally be done, with the exception of the case where we already
+                // appended a space because the NDD was surprisingly long.
+                return prefixBeforeNationalNumber.ToString() + SeparatorBeforeNationalNumber
+                       + nationalNumberStr;
+            }
+            else
+            {
+                return prefixBeforeNationalNumber + nationalNumberStr;
+            }
+        }
+
         // Attempts to set the formatting template and returns a string which contains the formatted
         // version of the digits entered so far.
         private string AttemptToChooseFormattingPattern()
@@ -477,10 +527,16 @@ namespace PhoneNumbers
             // number (excluding national prefix) have been entered.
             if (nationalNumber.Length >= MinLeadingDigitsLength)
             {
-                GetAvailableFormats(nationalNumber.ToString().Substring(0, MinLeadingDigitsLength));
+                GetAvailableFormats(nationalNumber.ToString());
+                // See if the accrued digits can be formatted properly already.
+                var formattedNumber = AttemptToFormatAccruedDigits();
+                if (formattedNumber.Length > 0)
+                {
+                    return formattedNumber;
+                }
                 return MaybeCreateNewTemplate() ? InputAccruedNationalNumber() : accruedInput.ToString();
             }
-            return prefixBeforeNationalNumber + nationalNumber.ToString();
+            return AppendNationalNumber(nationalNumber.ToString());
         }
 
         // Invokes inputDigitHelper on each digit of the national number accrued, and returns a formatted
@@ -496,33 +552,50 @@ namespace PhoneNumbers
                     tempNationalNumber = InputDigitHelper(nationalNumber[i]);
                 }
                 return ableToFormat
-                    ? prefixBeforeNationalNumber + tempNationalNumber
+                    ? AppendNationalNumber(tempNationalNumber)
                     : accruedInput.ToString();
             }
             return prefixBeforeNationalNumber.ToString();
+        }
+
+        /**
+         * Returns true if the current country is a NANPA country and the national number begins with
+         * the national prefix.
+         */
+        private bool IsNanpaNumberWithNationalPrefix()
+        {
+            // For NANPA numbers beginning with 1[2-9], treat the 1 as the national prefix. The reason is
+            // that national significant numbers in NANPA always start with [2-9] after the national prefix.
+            // Numbers beginning with 1[01] can only be short/emergency numbers, which don't need the
+            // national prefix.
+            return currentMetadata.CountryCode == 1 && nationalNumber[0] == '1'
+                   && nationalNumber[1] != '0' && nationalNumber[1] != '1';
         }
 
         // Returns the national prefix extracted, or an empty string if it is not present.
         private string RemoveNationalPrefixFromNationalNumber()
         {
             var startOfNationalNumber = 0;
-            if (currentMetaData.CountryCode == 1 && nationalNumber[0] == '1')
+            if (IsNanpaNumberWithNationalPrefix())
             {
                 startOfNationalNumber = 1;
-                prefixBeforeNationalNumber.Append("1 ");
-                isInternationalFormatting = true;
+                prefixBeforeNationalNumber.Append('1').Append(SeparatorBeforeNationalNumber);
+                isCompleteNumber = true;
             }
-            else if (currentMetaData.HasNationalPrefixForParsing)
+            else if (currentMetadata.HasNationalPrefixForParsing)
             {
-                var m =
-                  regexCache.GetPatternForRegex(currentMetaData.NationalPrefixForParsing).MatchBeginning(nationalNumber.ToString());
-                if (m.Success)
+                var nationalPrefixForParsing =
+                    regexCache.GetPatternForRegex(currentMetadata.NationalPrefixForParsing);
+                var m = nationalPrefixForParsing.MatchBeginning(nationalNumber.ToString());
+                // Since some national prefix patterns are entirely optional, check that a national prefix
+                // could actually be extracted.
+                if (m.Success && m.Groups[0].Length > 0)
                 {
                     // When the national prefix is detected, we use international formatting rules instead of
                     // national ones, because national formatting rules could contain local formatting rules
                     // for numbers entered without area code.
-                    isInternationalFormatting = true;
-                    startOfNationalNumber = m.Groups[0].Index + m.Groups[0].Length;
+                    isCompleteNumber = true;
+                    startOfNationalNumber = m.Groups[0].Length;
                     prefixBeforeNationalNumber.Append(nationalNumber.ToString().Substring(0, startOfNationalNumber));
                 }
             }
@@ -542,12 +615,12 @@ namespace PhoneNumbers
         {
             var internationalPrefix =
                 regexCache.GetPatternForRegex("\\" + PhoneNumberUtil.PlusSign + "|" +
-                    currentMetaData.InternationalPrefix);
+                    currentMetadata.InternationalPrefix);
             var iddMatcher = internationalPrefix.MatchBeginning(accruedInputWithoutFormatting.ToString());
             if (iddMatcher.Success)
             {
-                isInternationalFormatting = true;
-                var startOfCountryCallingCode = iddMatcher.Groups[0].Index + iddMatcher.Groups[0].Length;
+                isCompleteNumber = true;
+                var startOfCountryCallingCode = iddMatcher.Groups[0].Length;
                 nationalNumber.Length = 0;
                 nationalNumber.Append(accruedInputWithoutFormatting.ToString().Substring(startOfCountryCallingCode));
                 prefixBeforeNationalNumber.Length = 0;
@@ -555,7 +628,7 @@ namespace PhoneNumbers
                     accruedInputWithoutFormatting.ToString().Substring(0, startOfCountryCallingCode));
                 if (accruedInputWithoutFormatting[0] != PhoneNumberUtil.PlusSign)
                 {
-                    prefixBeforeNationalNumber.Append(" ");
+                    prefixBeforeNationalNumber.Append(SeparatorBeforeNationalNumber);
                 }
                 return true;
             }
@@ -586,14 +659,17 @@ namespace PhoneNumbers
             var newRegionCode = phoneUtil.GetRegionCodeForCountryCode(countryCode);
             if (PhoneNumberUtil.RegionCodeForNonGeoEntity.Equals(newRegionCode))
             {
-                currentMetaData = phoneUtil.GetMetadataForNonGeographicalRegion(countryCode);
+                currentMetadata = phoneUtil.GetMetadataForNonGeographicalRegion(countryCode);
             }
             else if (!newRegionCode.Equals(defaultCountry))
             {
-                currentMetaData = GetMetadataForRegion(newRegionCode);
+                currentMetadata = GetMetadataForRegion(newRegionCode);
             }
             var countryCodeString = countryCode.ToString();
-            prefixBeforeNationalNumber.Append(countryCodeString).Append(" ");
+            prefixBeforeNationalNumber.Append(countryCodeString).Append(SeparatorBeforeNationalNumber);
+            // When we have successfully extracted the IDD, the previously extracted NDD should be cleared
+            // because it is no longer valid.
+            extractedNationalPrefix = "";
             return true;
         }
 
@@ -625,6 +701,8 @@ namespace PhoneNumbers
 
         private string InputDigitHelper(char nextChar)
         {
+            // Note that formattingTemplate is not guaranteed to have a value, it could be empty, e.g.
+            // when the next digit is entered after extracting an IDD or NDD.
             var digitMatcher = digitPattern.Match(formattingTemplate.ToString(), lastMatchPosition);
             if (digitMatcher.Success)
             {

@@ -1089,7 +1089,7 @@ namespace PhoneNumbers
         * Helper function to check if the national prefix formatting rule has the first group only, i.e.,
         * does not start with the national prefix.
         */
-        static bool FormattingRuleHasFirstGroupOnly(string nationalPrefixFormattingRule)
+        internal static bool FormattingRuleHasFirstGroupOnly(string nationalPrefixFormattingRule)
         {
             return nationalPrefixFormattingRule.Length == 0
                    || FirstGroupOnlyPrefixPattern.MatchAll(nationalPrefixFormattingRule).Success;
