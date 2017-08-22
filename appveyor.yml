@@ -4,6 +4,7 @@ configuration: Release
 branches:
   only:
   - master
+skip_tags: true
 environment:
   COVERALLS_REPO_TOKEN:
     secure: tHOHVQ3dw2NqnKUW3EQbBIe+ytxPnGjJ13psSpwYhxbWlvtl6CKVmqigzfCR2nSc
@@ -26,5 +27,3 @@ deploy:
   - provider: NuGet
     api_key:
       secure: QB8FoYFBWfFy8cxyScelVPg3X4q2BvLO0VELkUAOKT4ZHp362V7cIRq+nIrkjFJ5
-    on:
-      appveyor_repo_tag: true
