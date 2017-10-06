@@ -5,7 +5,7 @@
     <AssemblyTitle>libphonenumber-csharp</AssemblyTitle>
     <VersionPrefix>$(APPVEYOR_BUILD_VERSION)</VersionPrefix>
     <Authors>Patrick Mézard;Jarrod Alexander;Google;libphonenumber;contributors</Authors>
-    <TargetFrameworks>net40;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net40;netstandard1.3;netstandard2.0</TargetFrameworks>
     <AssemblyName>PhoneNumbers</AssemblyName>
     <PackageId>libphonenumber-csharp</PackageId>
     <PackageTags>phonenumber phone libphonenumber e164 e.164 international</PackageTags>
