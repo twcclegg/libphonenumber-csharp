@@ -2975,6 +2975,28 @@ namespace PhoneNumbers
         }
 
         /**
+        * A helper function to set the values related to leading zeros in a PhoneNumber.
+        */
+        private static void SetItalianLeadingZerosForPhoneNumber(string nationalNumber, PhoneNumber.Builder phoneNumber)
+        {
+            if (nationalNumber.Length > 1 && nationalNumber[0] == '0')
+            {
+                phoneNumber.SetItalianLeadingZero(true);
+                var numberOfLeadingZeros = 1;
+                //Note that if the national number is all "0"s, the last "0" is not counted as a leading zero.
+                while (numberOfLeadingZeros < nationalNumber.Length - 1
+                       && nationalNumber[numberOfLeadingZeros] == '0')
+                {
+                    numberOfLeadingZeros++;
+                }
+                if (numberOfLeadingZeros != 1)
+                {
+                    phoneNumber.SetNumberOfLeadingZeros(numberOfLeadingZeros);
+                }
+            }
+        }
+
+        /**
         * Parses a string and fills up the phoneNumber. This method is the same as the public
         * parse() method, with the exception that it allows the default region to be null, for use by
         * isNumberMatch(). checkRegion should be set to false if it is permitted for the default region
@@ -3081,7 +3103,7 @@ namespace PhoneNumbers
                 // We require that the NSN remaining after stripping the national prefix and carrier code be
                 // long enough to be a possible length for the region. Otherwise, we don't do the stripping,
                 // since the original number could be a valid short number.
-                var validationResult = TestNumberLength(normalizedNationalNumber.ToString(), regionMetadata);
+                var validationResult = TestNumberLength(potentialNationalNumber.ToString(), regionMetadata);
                 if (validationResult != ValidationResult.TOO_SHORT &&
                     validationResult != ValidationResult.IS_POSSIBLE_LOCAL_ONLY &&
                     validationResult != ValidationResult.INVALID_LENGTH)
@@ -3101,8 +3123,7 @@ namespace PhoneNumbers
                 throw new NumberParseException(ErrorType.TOO_LONG,
                     "The string supplied is too long to be a phone number.");
 
-            if (normalizedNationalNumber[0] == '0')
-                phoneNumber.SetItalianLeadingZero(true);
+            SetItalianLeadingZerosForPhoneNumber(normalizedNationalNumber.ToString(), phoneNumber);
             phoneNumber.SetNationalNumber(ulong.Parse(normalizedNationalNumber.ToString()));
         }
 
