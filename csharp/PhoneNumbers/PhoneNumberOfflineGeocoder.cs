@@ -83,11 +83,11 @@ namespace PhoneNumbers
     public class PhoneNumberOfflineGeocoder
     {
         private static PhoneNumberOfflineGeocoder instance;
-        private const string MAPPING_DATA_DIRECTORY = "res.prod_";
+        private const string phonePrefixDataDirectory = "resources.geocoding";
+        private readonly Assembly assembly;
         private static readonly object ThisLock = new object();
 
         private readonly PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
-        private readonly string phonePrefixDataDirectory;
 
         // The mappingFileProvider knows for which combination of countryCallingCode and language a phone
         // prefix mapping file is available in the file system, so that a file can be loaded when needed.
@@ -97,10 +97,10 @@ namespace PhoneNumbers
         // loaded.
         private readonly Dictionary<string, AreaCodeMap> availablePhonePrefixMaps = new Dictionary<string, AreaCodeMap>();
 
-        // @VisibleForTesting
-        public PhoneNumberOfflineGeocoder(string phonePrefixDataDirectory)
+
+        public PhoneNumberOfflineGeocoder(Assembly assembly)
         {
-            this.phonePrefixDataDirectory = phonePrefixDataDirectory;
+            this.assembly = assembly;
             LoadMappingFileProvider();
         }
 
@@ -117,18 +117,18 @@ namespace PhoneNumbers
             var names = allNames.Where(n => n.StartsWith(prefix));
             foreach (var n in names)
             {
-                var name = n.Substring(prefix.Length);
-                var pos = name.IndexOf("_", StringComparison.Ordinal);
+                var name = n.Substring(prefix.Length + 1);
+                var info = name.Split('.');
                 int country;
                 try
                 {
-                    country = int.Parse(name.Substring(0, pos));
+                    country = int.Parse(info[1]);
                 }
                 catch(FormatException)
                 {
                     throw new Exception("Failed to parse geocoding file name: " + name);
                 }
-                var language = name.Substring(pos + 1);
+                var language = info[0];
                 if (!files.ContainsKey(country))
                     files[country] = new HashSet<string>();
                 files[country].Add(language);
@@ -181,7 +181,13 @@ namespace PhoneNumbers
         {
             lock (ThisLock)
             {
-                return instance ?? (instance = new PhoneNumberOfflineGeocoder(MAPPING_DATA_DIRECTORY));
+                return instance ?? (instance = new PhoneNumberOfflineGeocoder(
+#if (NET35 || NET40)
+                    Assembly.GetExecutingAssembly()));
+#else
+                    typeof(PhoneNumberOfflineGeocoder).GetTypeInfo().Assembly));
+#endif
+
             }
         }
 

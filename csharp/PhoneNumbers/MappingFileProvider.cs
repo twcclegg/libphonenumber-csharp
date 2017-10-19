@@ -124,7 +124,7 @@ namespace PhoneNumbers
                 if (languageCode.Length > 0)
                 {
                     var fileName = new StringBuilder();
-                    fileName.Append(countryCallingCode).Append('_').Append(languageCode);
+                    fileName.Append(languageCode).Append('.').Append(countryCallingCode).Append(".txt");
                     return fileName.ToString();
                 }
             }
