@@ -114,8 +114,7 @@ namespace PhoneNumbers
             return new MetadataFilter(new Dictionary<string, SortedSet<string>>());
         }
 
-        // @VisibleForTesting
-        MetadataFilter(Dictionary<string, SortedSet<string>> blacklist)
+        internal MetadataFilter(Dictionary<string, SortedSet<string>> blacklist)
         {
             this.blacklist = blacklist;
         }
