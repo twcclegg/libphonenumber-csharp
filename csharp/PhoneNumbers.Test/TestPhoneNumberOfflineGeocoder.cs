@@ -60,11 +60,7 @@ namespace PhoneNumbers.Test
         public TestPhoneNumberOfflineGeocoder()
         {
             PhoneNumberUtil.ResetInstance();
-#if NET40
-            var assembly = Assembly.GetExecutingAssembly();
-#else
             var assembly = typeof(TestPhoneNumberOfflineGeocoder).GetTypeInfo().Assembly;
-#endif
             geocoder = new PhoneNumberOfflineGeocoder(assembly);
         }
 

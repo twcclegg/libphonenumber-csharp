@@ -41,8 +41,7 @@ namespace PhoneNumbers
         // Currently we support only one non-primitive type and the depth of the "family tree" is 2,
         // meaning a field may have only direct descendants, who may not have descendants of their own. If
         // this changes, the blacklist handling in this class should also change.
-        // @VisibleForTesting
-        private static readonly SortedSet<string> ExcludableParentFields = new SortedSet<string>
+        internal static readonly SortedSet<string> ExcludableParentFields = new SortedSet<string>
         {
             "fixedLine",
             "mobile",
@@ -66,8 +65,7 @@ namespace PhoneNumbers
         // The current implementation assumes that all PhoneNumberDesc fields are present here, since it
         // "clears" a PhoneNumberDesc field by simply clearing all of the fields under it. See the comment
         // above, about all 3 sets, for more about these fields.
-        // @VisibleForTesting
-        private static readonly SortedSet<string> ExcludableChildFields = new SortedSet<string>
+        internal static readonly SortedSet<string> ExcludableChildFields = new SortedSet<string>
         {
             "nationalNumberPattern",
             "possibleLength",
@@ -75,8 +73,7 @@ namespace PhoneNumbers
             "exampleNumber"
         };
 
-        // @VisibleForTesting
-        private static readonly SortedSet<string> ExcludableChildlessFields = new SortedSet<string>
+        internal static readonly SortedSet<string> ExcludableChildlessFields = new SortedSet<string>
         {
             "preferredInternationalPrefix",
             "nationalPrefix",
@@ -111,8 +108,7 @@ namespace PhoneNumbers
             return new MetadataFilter(new Dictionary<string, SortedSet<string>>());
         }
 
-        // @VisibleForTesting
-        MetadataFilter(Dictionary<string, SortedSet<string>> blacklist)
+        internal MetadataFilter(Dictionary<string, SortedSet<string>> blacklist)
         {
             this.blacklist = blacklist;
         }
@@ -245,8 +241,7 @@ namespace PhoneNumbers
          * the sets of excludable fields. We also throw Exception for empty strings since such
          * strings should be treated as a special case by the flag checking code and not passed here.
          */
-        // @VisibleForTesting
-        static Dictionary<string, SortedSet<string>> ParseFieldMapFromString(string str)
+        internal static Dictionary<string, SortedSet<string>> ParseFieldMapFromString(string str)
         {
             if (str == null)
             {
@@ -356,8 +351,7 @@ namespace PhoneNumbers
         // Does not check that legal tokens are used, assuming that fieldMap is constructed using
         // ParseFieldMapFromString(String) which does check. If fieldMap Contains illegal tokens or parent
         // fields with no children or other unexpected state, the behavior of this function is undefined.
-        // @VisibleForTesting
-        private static Dictionary<string, SortedSet<string>> ComputeComplement(
+        internal static Dictionary<string, SortedSet<string>> ComputeComplement(
             IDictionary<string, SortedSet<string>> fieldMap)
         {
             var complement = new Dictionary<string, SortedSet<string>>();
@@ -396,8 +390,7 @@ namespace PhoneNumbers
             return complement;
         }
 
-        // @VisibleForTesting
-        private bool ShouldDrop(string parent, string child)
+        internal bool ShouldDrop(string parent, string child)
         {
             if (!ExcludableParentFields.Contains(parent))
             {
@@ -410,8 +403,7 @@ namespace PhoneNumbers
             return blacklist.ContainsKey(parent) && blacklist[parent].Contains(child);
         }
 
-        // @VisibleForTesting
-        private bool ShouldDrop(string childlessField)
+        internal bool ShouldDrop(string childlessField)
         {
             if (!ExcludableChildlessFields.Contains(childlessField))
             {

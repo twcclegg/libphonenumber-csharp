@@ -2227,13 +2227,26 @@ namespace PhoneNumbers
         /**
         * Returns the region code that matches the specific country calling code. In the case of no
         * region code being found, ZZ will be returned. In the case of multiple regions, the one
-        * designated in the metadata as the "main" region for this calling code will be returned.
+        * designated in the metadata as the "main" region for this calling code will be returned. If the
+        * countryCallingCode entered is valid but doesn't match a specific region (such as in the case of
+        * non-geographical calling codes like 800) the value "001" will be returned (corresponding to
+        * the value for World in the UN M.49 schema).
         */
         public string GetRegionCodeForCountryCode(int countryCallingCode)
         {
             return countryCallingCodeToRegionCodeMap.TryGetValue(countryCallingCode, out List<string> regionCodes)
                 ? regionCodes[0]
                 : UnknownRegion;
+        }
+        
+        /**
+        * Returns a list with the region codes that match the specific country calling code. For
+        * non-geographical country calling codes, the region code 001 is returned. Also, in the case
+        * of no region code being found, an empty list is returned.
+        */
+        public List<string> GetRegionCodesForCountryCode(int countryCallingCode)
+        {
+            return countryCallingCodeToRegionCodeMap[countryCallingCode] ?? new List<string>();
         }
 
         /**
@@ -3393,6 +3406,19 @@ namespace PhoneNumbers
             var metadata = GetMetadataForRegion(regionCode);
             var nationalSignificantNumber = GetNationalSignificantNumber(number);
             return !IsNumberMatchingDesc(nationalSignificantNumber, metadata.NoInternationalDialling);
+        }
+
+        /**
+        * Returns true if the supplied region supports mobile number portability. Returns false for
+        * invalid, unknown or regions that don't support mobile number portability.
+        *
+        * @param regionCode  the region for which we want to know whether it supports mobile number
+        *     portability or not
+        */
+        public bool IsMobileNumberPortableRegion(string regionCode)
+        {
+            var metadata = GetMetadataForRegion(regionCode);
+            return metadata != null && metadata.MobileNumberPortableRegion;
         }
     }
 }
