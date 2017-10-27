@@ -74,15 +74,9 @@ namespace PhoneNumbers
             return new Builder();
         }
 
-        public Builder ToBuilder()
-        {
-            return CreateBuilder(this);
-        }
+        public Builder ToBuilder() => CreateBuilder(this);
 
-        public Builder CreateBuilderForType()
-        {
-            return new Builder();
-        }
+        public Builder CreateBuilderForType() => new Builder();
 
         public static Builder CreateBuilder(NumberFormat prototype)
         {

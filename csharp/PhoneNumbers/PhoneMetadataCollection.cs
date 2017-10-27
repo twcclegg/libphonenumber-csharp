@@ -13,7 +13,7 @@ namespace PhoneNumbers
     public class PhoneMetadataCollection
     {
         public const int MetadataFieldNumber = 1;
-        private readonly List<PhoneMetadata> metadata_ = new List<PhoneMetadata>();
+        private readonly List<PhoneMetadata> metadata = new List<PhoneMetadata>();
 
         public static PhoneMetadataCollection DefaultInstance { get; } = new Builder().BuildPartial();
 
@@ -21,15 +21,15 @@ namespace PhoneNumbers
 
         protected PhoneMetadataCollection ThisMessage => this;
 
-        public IList<PhoneMetadata> MetadataList => metadata_;
+        public IList<PhoneMetadata> MetadataList => metadata;
 
-        public int MetadataCount => metadata_.Count;
+        public int MetadataCount => metadata.Count;
 
         public bool IsInitialized => MetadataList.All(element => element.IsInitialized);
 
         public PhoneMetadata GetMetadata(int index)
         {
-            return metadata_[index];
+            return metadata[index];
         }
 
         public static Builder CreateBuilder()
@@ -64,7 +64,7 @@ namespace PhoneNumbers
             public PhoneMetadataCollection DefaultInstanceForType => DefaultInstance;
 
 
-            public IList<PhoneMetadata> MetadataList => MessageBeingBuilt.metadata_;
+            public IList<PhoneMetadata> MetadataList => MessageBeingBuilt.metadata;
 
             public int MetadataCount => MessageBeingBuilt.MetadataCount;
 
@@ -98,7 +98,7 @@ namespace PhoneNumbers
             public Builder MergeFrom(PhoneMetadataCollection other)
             {
                 if (other == DefaultInstance) return this;
-                if (other.metadata_.Count != 0) MessageBeingBuilt.metadata_.AddRange(other.metadata_);
+                if (other.metadata.Count != 0) MessageBeingBuilt.metadata.AddRange(other.metadata);
                 return this;
             }
 
@@ -110,40 +110,40 @@ namespace PhoneNumbers
             public Builder SetMetadata(int index, PhoneMetadata value)
             {
                 if (value == null) throw new ArgumentNullException(nameof(value));
-                MessageBeingBuilt.metadata_[index] = value;
+                MessageBeingBuilt.metadata[index] = value;
                 return this;
             }
 
             public Builder SetMetadata(int index, PhoneMetadata.Builder builderForValue)
             {
                 if (builderForValue == null) throw new ArgumentNullException(nameof(builderForValue));
-                MessageBeingBuilt.metadata_[index] = builderForValue.Build();
+                MessageBeingBuilt.metadata[index] = builderForValue.Build();
                 return this;
             }
 
             public Builder AddMetadata(PhoneMetadata value)
             {
                 if (value == null) throw new ArgumentNullException(nameof(value));
-                MessageBeingBuilt.metadata_.Add(value);
+                MessageBeingBuilt.metadata.Add(value);
                 return this;
             }
 
             public Builder AddMetadata(PhoneMetadata.Builder builderForValue)
             {
                 if (builderForValue == null) throw new ArgumentNullException(nameof(builderForValue));
-                MessageBeingBuilt.metadata_.Add(builderForValue.Build());
+                MessageBeingBuilt.metadata.Add(builderForValue.Build());
                 return this;
             }
 
             public Builder AddRangeMetadata(IEnumerable<PhoneMetadata> values)
             {
-                MessageBeingBuilt.metadata_.AddRange(values);
+                MessageBeingBuilt.metadata.AddRange(values);
                 return this;
             }
 
             public Builder ClearMetadata()
             {
-                MessageBeingBuilt.metadata_.Clear();
+                MessageBeingBuilt.metadata.Clear();
                 return this;
             }
         }
@@ -154,17 +154,15 @@ namespace PhoneNumbers
         public override int GetHashCode()
         {
             var hash = GetType().GetHashCode();
-            foreach (var i in metadata_)
-                hash ^= i.GetHashCode();
-            return hash;
+            return metadata.Aggregate(hash, (current, i) => current ^ i.GetHashCode());
         }
 
         public override bool Equals(object obj)
         {
             var other = obj as PhoneMetadataCollection;
-            if (metadata_.Count != other?.metadata_.Count) return false;
-            for (var ix = 0; ix < metadata_.Count; ix++)
-                if (!metadata_[ix].Equals(other.metadata_[ix])) return false;
+            if (metadata.Count != other?.metadata.Count) return false;
+            for (var ix = 0; ix < metadata.Count; ix++)
+                if (!metadata[ix].Equals(other.metadata[ix])) return false;
             return true;
         }
 

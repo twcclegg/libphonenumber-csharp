@@ -25,58 +25,6 @@ using System.Text.RegularExpressions;
 namespace PhoneNumbers
 {
     /**
-    * INTERNATIONAL and NATIONAL formats are consistent with the definition in ITU-T Recommendation
-    * E123. For example, the number of the Google Switzerland office will be written as
-    * "+41 44 668 1800" in INTERNATIONAL format, and as "044 668 1800" in NATIONAL format.
-    * E164 format is as per INTERNATIONAL format but with no formatting applied, e.g.
-    * "+41446681800". RFC3966 is as per INTERNATIONAL format, but with all spaces and other
-    * separating symbols replaced with a hyphen, and with any phone number extension appended with
-    * ";ext=". It also will have a prefix of "tel:" added, e.g. "tel:+41-44-668-1800".
-    *
-    * Note: If you are considering storing the number in a neutral format, you are highly advised to
-    * use the PhoneNumber class.
-    */
-    public enum PhoneNumberFormat
-    {
-        E164,
-        INTERNATIONAL,
-        NATIONAL,
-        RFC3966
-    }
-
-    // Type of phone numbers.
-    public enum PhoneNumberType
-    {
-        FIXED_LINE,
-        MOBILE,
-        // In some regions (e.g. the USA), it is impossible to distinguish between fixed-line and
-        // mobile numbers by looking at the phone number itself.
-        FIXED_LINE_OR_MOBILE,
-        // Freephone lines
-        TOLL_FREE,
-        PREMIUM_RATE,
-        // The cost of this call is shared between the caller and the recipient, and is hence typically
-        // less than PREMIUM_RATE calls. See // http://en.wikipedia.org/wiki/Shared_Cost_Service for
-        // more information.
-        SHARED_COST,
-        // Voice over IP numbers. This includes TSoIP (Telephony Service over IP).
-        VOIP,
-        // A personal number is associated with a particular person, and may be routed to either a
-        // MOBILE or FIXED_LINE number. Some more information can be found here:
-        // http://en.wikipedia.org/wiki/Personal_Numbers
-        PERSONAL_NUMBER,
-        PAGER,
-        // Used for "Universal Access Numbers" or "Company Numbers". They may be further routed to
-        // specific offices, but allow one number to be used for a company.
-        UAN,
-        // Used for "Voice Mail Access Numbers".
-        VOICEMAIL,
-        // A phone number is of type UNKNOWN when it does not fit any of the known patterns for a
-        // specific region.
-        UNKNOWN
-    }
-
-    /**
     * Utility for international phone numbers. Functionality includes formatting, parsing and
     * validation.
     *
@@ -224,8 +172,9 @@ namespace PhoneNumbers
         // another number, such as for: (530) 583-6985 x302/x2303 -> the second extension here makes this
         // actually two phone numbers, (530) 583-6985 x302 and (530) 583-6985 x2303. We remove the second
         // extension so that the first number is parsed correctly.
-        private static readonly string SecondNumberStart = "[\\\\/] *x";
-        internal static readonly Regex SecondNumberStartPattern = new Regex(SecondNumberStart, InternalRegexOptions.Default);
+        private const string SECOND_NUMBER_START = "[\\\\/] *x";
+
+        internal static readonly Regex SecondNumberStartPattern = new Regex(SECOND_NUMBER_START, InternalRegexOptions.Default);
 
         // We use this pattern to check if the phone number has at least three letters in it - if so, then
         // we treat it as a number where some phone-number digits are represented by letters.
@@ -1076,8 +1025,7 @@ namespace PhoneNumbers
             lock (ThisLock)
             {
                 if (instance == null)
-                    return GetInstance(MetaDataFilePrefix,
-                        CountryCodeToRegionCodeMap.GetCountryCodeToRegionCodeMap());
+                    return GetInstance(MetaDataFilePrefix, BuildMetadataFromXml.GetCountryCodeToRegionCodeMap(MetaDataFilePrefix));
                 return instance;
             }
         }
@@ -2979,20 +2927,19 @@ namespace PhoneNumbers
         */
         private static void SetItalianLeadingZerosForPhoneNumber(string nationalNumber, PhoneNumber.Builder phoneNumber)
         {
-            if (nationalNumber.Length > 1 && nationalNumber[0] == '0')
+            if (nationalNumber.Length <= 1 || nationalNumber[0] != '0') return;
+
+            phoneNumber.SetItalianLeadingZero(true);
+            var numberOfLeadingZeros = 1;
+            //Note that if the national number is all "0"s, the last "0" is not counted as a leading zero.
+            while (numberOfLeadingZeros < nationalNumber.Length - 1
+                   && nationalNumber[numberOfLeadingZeros] == '0')
             {
-                phoneNumber.SetItalianLeadingZero(true);
-                var numberOfLeadingZeros = 1;
-                //Note that if the national number is all "0"s, the last "0" is not counted as a leading zero.
-                while (numberOfLeadingZeros < nationalNumber.Length - 1
-                       && nationalNumber[numberOfLeadingZeros] == '0')
-                {
-                    numberOfLeadingZeros++;
-                }
-                if (numberOfLeadingZeros != 1)
-                {
-                    phoneNumber.SetNumberOfLeadingZeros(numberOfLeadingZeros);
-                }
+                numberOfLeadingZeros++;
+            }
+            if (numberOfLeadingZeros != 1)
+            {
+                phoneNumber.SetNumberOfLeadingZeros(numberOfLeadingZeros);
             }
         }
 
@@ -3002,8 +2949,7 @@ namespace PhoneNumbers
         * isNumberMatch(). checkRegion should be set to false if it is permitted for the default region
         * to be null or unknown ("ZZ").
         */
-        private void ParseHelper(string numberToParse, string defaultRegion, bool keepRawInput,
-            bool checkRegion, PhoneNumber.Builder phoneNumber)
+        private void ParseHelper(string numberToParse, string defaultRegion, bool keepRawInput, bool checkRegion, PhoneNumber.Builder phoneNumber)
         {
             if (numberToParse == null)
                 throw new NumberParseException(ErrorType.NOT_A_NUMBER,
