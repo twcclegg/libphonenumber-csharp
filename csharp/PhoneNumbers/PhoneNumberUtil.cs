@@ -135,7 +135,7 @@ namespace PhoneNumbers
         private static readonly Dictionary<int, string> MOBILE_TOKEN_MAPPINGS = new Dictionary<int, string>
         {
             {52, "1" },
-            {54, "9" },
+            {54, "9" }
         };
 
         // Set of country codes that have geographically assigned mobile numbers (see GEO_MOBILE_COUNTRIES
@@ -144,7 +144,7 @@ namespace PhoneNumbers
         // considered to be an area code.
         private static readonly HashSet<int> GEO_MOBILE_COUNTRIES_WITHOUT_MOBILE_AREA_CODES = new HashSet<int>
         {
-            86,  // China
+            86  // China
         };
 
         // Set of country calling codes that have geographically assigned mobile numbers. This may not be
@@ -158,7 +158,7 @@ namespace PhoneNumbers
             54,  // Argentina
             55,  // Brazil
             62,  // Indonesia: some prefixes only (fixed CMDA wireless)
-            86,  // China
+            86  // China
         };
 
 
