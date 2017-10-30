@@ -54,25 +54,11 @@ namespace PhoneNumbers
 
         public string DomesticCarrierCodeFormattingRule { get; private set; } = "";
 
-        public bool IsInitialized
-        {
-            get
-            {
-                if (!HasPattern) return false;
-                if (!HasFormat) return false;
-                return true;
-            }
-        }
+        public bool IsInitialized => HasPattern && HasFormat;
 
-        public string GetLeadingDigitsPattern(int index)
-        {
-            return leadingDigitsPattern_[index];
-        }
+        public string GetLeadingDigitsPattern(int index) => leadingDigitsPattern_[index];
 
-        public static Builder CreateBuilder()
-        {
-            return new Builder();
-        }
+        public static Builder CreateBuilder() => new Builder();
 
         public Builder ToBuilder() => CreateBuilder(this);
 
