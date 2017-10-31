@@ -1,10 +1,10 @@
-version: 8.8.4
+version: 8.8.5
 image: Visual Studio 2017
 configuration: Release
 branches:
   only:
   - master
-skip_tags: true
+skip_non_tags: true
 environment:
   COVERALLS_REPO_TOKEN:
     secure: tHOHVQ3dw2NqnKUW3EQbBIe+ytxPnGjJ13psSpwYhxbWlvtl6CKVmqigzfCR2nSc

@@ -2235,6 +2235,7 @@
 1219989|Hammond, IN
 1219996|Hebron, IN
 1220|Ohio
+1223|Pennsylvania
 1224|Illinois
 1224610|North Chicago, IL
 1224653|Schaumburg, IL
@@ -2730,7 +2731,7 @@
 1242326|New Providence
 1242327|New Providence
 1242328|New Providence
-1242329|North Andros
+1242329|Andros
 1242331|Rum Cay & San Sal
 1242332|Eleuthera
 1242333|Eleuthera
@@ -2743,7 +2744,7 @@
 1242340|New Providence
 1242341|New Providence
 1242342|Cat Island
-1242344|Acklins
+1242344|Ragged Island/Crooked Island/Acklins
 1242345|Exuma
 1242346|Grand Bahama
 1242347|Bimini and Cat Cay
@@ -2781,14 +2782,15 @@
 1242396|New Providence
 1242397|New Providence
 1242461|New Providence
+1242502|New Providence
 1242601|New Providence
 1242602|Grand Bahama
 1242676|New Providence
 1242677|New Providence
 1242687|Grand Bahama
 1242688|Grand Bahama
-1242698|Abaco
-1242699|Abaco
+1242698|New Providence
+1242699|Abaco/Eleuthera
 1242702|New Providence
 1248|Michigan
 1248208|Southfield, MI
@@ -7590,6 +7592,7 @@
 1330971|Cuyahoga Falls, OH
 1330995|Aurora, OH
 1331|Illinois
+1332|New York, NY
 1334|Alabama
 1334209|Auburn, AL
 1334213|Montgomery, AL
@@ -16932,6 +16935,7 @@
 1563927|Manchester, IA
 1563928|Edgewood, IA
 1563933|Strawberry Point, IA
+1564|Washington State
 1567|Ohio
 1570|Pennsylvania
 1570207|Scranton, PA
@@ -24762,6 +24766,7 @@
 1724966|Carmichaels, PA
 1724981|Hermitage, PA
 1725|Nevada
+1726|San Antonio, TX
 1727|Florida
 1727298|Clearwater, FL
 1727321|St. Petersburg, FL
@@ -25186,7 +25191,6 @@
 1734998|Ann Arbor, MI
 1737|Texas
 1740|Ohio
-1743|North Carolina
 1740223|Marion, OH
 1740246|Thornville, OH
 1740259|Lucasville, OH
@@ -25336,6 +25340,7 @@
 1740984|Beverly, OH
 1740992|Pomeroy, OH
 1740998|Frankfort, OH
+1743|North Carolina
 1747|California
 1754|Florida
 1757|Virginia
@@ -29512,6 +29517,7 @@
 1832826|Houston, TX
 1832912|Houston, TX
 1832934|Magnolia, TX
+1838|New York
 1843|South Carolina
 1843207|North Charleston, SC
 1843208|Hardeeville, SC
@@ -36128,6 +36134,7 @@
 1985892|Covington, LA
 1985893|Covington, LA
 1985898|Covington, LA
+1986|Idaho
 1989|Michigan
 1989224|St. Johns, MI
 1989227|St. Johns, MI
