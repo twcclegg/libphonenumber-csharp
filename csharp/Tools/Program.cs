@@ -5,12 +5,12 @@
 
 namespace Tools
 {
-    class Program
+    public class Program
     {
         public static void Main()
         {
-            new GeneratePhonePrefixData("fix").Run();
-            new GenerateTimeZonesMapData("fix").Run();
+            new GeneratePhonePrefixData("..\\..\\resources\\carrier").Run();
+            new GenerateTimeZonesMapData("..\\..\\resources\\timezones\\map_data.txt").Run();
         }
     }
 }

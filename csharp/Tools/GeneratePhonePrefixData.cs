@@ -239,7 +239,7 @@ namespace Tools
                     var countryCodeFileName = Path.GetFileName(countryCodeFile);
                     var outputFiles = CreateOutputFiles(
                         File.OpenRead(countryCodeFile), GetCountryCodeFromTextFileName(countryCodeFileName),
-                        Path.GetDirectoryName(languageDirectory));
+                        Path.GetFileName(languageDirectory));
                     mappings.Add(countryCodeFile, outputFiles);
                 }
             }
