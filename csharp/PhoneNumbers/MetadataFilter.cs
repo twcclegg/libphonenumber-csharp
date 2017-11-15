@@ -19,7 +19,6 @@ using System.Collections.Generic;
 
 namespace PhoneNumbers
 {
-
     /**
      * Class to encapsulate the metadata filtering logic and restrict visibility into raw data
      * structures.
@@ -89,42 +88,25 @@ namespace PhoneNumbers
 
         private readonly Dictionary<string, SortedSet<string>> blacklist;
 
-        // Note: If changing the blacklist here or the name of the method, update documentation about
-        // affected methods at the same time:
-        // https://github.com/googlei18n/libphonenumber/blob/master/FAQ.md#what-is-the-metadatalitejsmetadata_lite-option
-        internal static MetadataFilter ForLiteBuild()
-        {
-            // "exampleNumber" is a blacklist.
-            return new MetadataFilter(ParseFieldMapFromString("exampleNumber"));
-        }
-
-        internal static MetadataFilter ForSpecialBuild()
-        {
-            // "mobile" is a whitelist.
-            return new MetadataFilter(ComputeComplement(ParseFieldMapFromString("mobile")));
-        }
-
-        internal static MetadataFilter EmptyFilter()
-        {
-            // Empty blacklist, meaning we filter nothing.
-            return new MetadataFilter(new Dictionary<string, SortedSet<string>>());
-        }
-
         // @VisibleForTesting
-        MetadataFilter(Dictionary<string, SortedSet<string>> blacklist)
+        private MetadataFilter(Dictionary<string, SortedSet<string>> blacklist)
         {
             this.blacklist = blacklist;
         }
 
-        public override bool Equals(object obj)
-        {
-            return blacklist.Equals(((MetadataFilter) obj).blacklist);
-        }
+        // Note: If changing the blacklist here or the name of the method, update documentation about
+        // affected methods at the same time:
+        // https://github.com/googlei18n/libphonenumber/blob/master/FAQ.md#what-is-the-metadatalitejsmetadata_lite-option
+        internal static MetadataFilter ForLiteBuild() => new MetadataFilter(ParseFieldMapFromString("exampleNumber"));
 
-        public override int GetHashCode()
-        {
-            return blacklist.GetHashCode();
-        }
+        internal static MetadataFilter ForSpecialBuild() => new MetadataFilter(ComputeComplement(ParseFieldMapFromString("mobile")));
+
+        // Empty blacklist, meaning we filter nothing.
+        internal static MetadataFilter EmptyFilter() => new MetadataFilter(new Dictionary<string, SortedSet<string>>());
+
+        public override bool Equals(object obj) => blacklist.Equals(((MetadataFilter)obj).blacklist);
+
+        public override int GetHashCode() => blacklist.GetHashCode();
 
         /**
          * Clears certain fields in {@code metadata} as defined by the {@code MetadataFilter} instance.
@@ -137,103 +119,55 @@ namespace PhoneNumbers
         {
             // TODO: Consider clearing if the filtered PhoneNumberDesc is empty.
             if (metadata.HasFixedLine)
-            {
                 metadata.SetFixedLine(GetFiltered("fixedLine", metadata.FixedLine));
-            }
             if (metadata.HasMobile)
-            {
                 metadata.SetMobile(GetFiltered("mobile", metadata.Mobile));
-            }
             if (metadata.HasTollFree)
-            {
                 metadata.SetTollFree(GetFiltered("tollFree", metadata.TollFree));
-            }
             if (metadata.HasPremiumRate)
-            {
                 metadata.SetPremiumRate(GetFiltered("premiumRate", metadata.PremiumRate));
-            }
             if (metadata.HasSharedCost)
-            {
                 metadata.SetSharedCost(GetFiltered("sharedCost", metadata.SharedCost));
-            }
             if (metadata.HasPersonalNumber)
-            {
                 metadata.SetPersonalNumber(GetFiltered("personalNumber", metadata.PersonalNumber));
-            }
             if (metadata.HasVoip)
-            {
                 metadata.SetVoip(GetFiltered("voip", metadata.Voip));
-            }
             if (metadata.HasPager)
-            {
                 metadata.SetPager(GetFiltered("pager", metadata.Pager));
-            }
             if (metadata.HasUan)
-            {
                 metadata.SetUan(GetFiltered("uan", metadata.Uan));
-            }
             if (metadata.HasEmergency)
-            {
                 metadata.SetEmergency(GetFiltered("emergency", metadata.Emergency));
-            }
             if (metadata.HasVoicemail)
-            {
                 metadata.SetVoicemail(GetFiltered("voicemail", metadata.Voicemail));
-            }
             if (metadata.HasShortCode)
-            {
                 metadata.SetShortCode(GetFiltered("shortCode", metadata.ShortCode));
-            }
             if (metadata.HasStandardRate)
-            {
                 metadata.SetStandardRate(GetFiltered("standardRate", metadata.StandardRate));
-            }
             if (metadata.HasCarrierSpecific)
-            {
                 metadata.SetCarrierSpecific(GetFiltered("carrierSpecific", metadata.CarrierSpecific));
-            }
             if (metadata.HasSmsServices)
-            {
                 metadata.SetSmsServices(GetFiltered("smsServices", metadata.SmsServices));
-            }
             if (metadata.HasNoInternationalDialling)
-            {
                 metadata.SetNoInternationalDialling(GetFiltered("noInternationalDialling",
                     metadata.NoInternationalDialling));
-            }
 
             if (ShouldDrop("preferredInternationalPrefix"))
-            {
                 metadata.ClearPreferredInternationalPrefix();
-            }
             if (ShouldDrop("nationalPrefix"))
-            {
                 metadata.ClearNationalPrefix();
-            }
             if (ShouldDrop("preferredExtnPrefix"))
-            {
                 metadata.ClearPreferredExtnPrefix();
-            }
             if (ShouldDrop("nationalPrefixTransformRule"))
-            {
                 metadata.ClearNationalPrefixTransformRule();
-            }
             if (ShouldDrop("sameMobileAndFixedLinePattern"))
-            {
                 metadata.ClearSameMobileAndFixedLinePattern();
-            }
             if (ShouldDrop("mainCountryForCode"))
-            {
                 metadata.ClearMainCountryForCode();
-            }
             if (ShouldDrop("leadingZeroPossible"))
-            {
                 metadata.ClearLeadingZeroPossible();
-            }
             if (ShouldDrop("mobileNumberPortableRegion"))
-            {
                 metadata.ClearMobileNumberPortableRegion();
-            }
         }
 
         /**
@@ -245,16 +179,12 @@ namespace PhoneNumbers
          * strings should be treated as a special case by the flag checking code and not passed here.
          */
         // @VisibleForTesting
-        static Dictionary<string, SortedSet<string>> ParseFieldMapFromString(string str)
+        private static Dictionary<string, SortedSet<string>> ParseFieldMapFromString(string str)
         {
             if (str == null)
-            {
                 throw new Exception("Null string should not be passed to ParseFieldMapFromString");
-            }
             if (string.IsNullOrWhiteSpace(str))
-            {
                 throw new Exception("Null nor empty string should not be passed to ParseFieldMapFromString");
-            }
 
             var fieldMap = new Dictionary<string, SortedSet<string>>();
             var wildcardChildren = new SortedSet<string>();
@@ -267,25 +197,19 @@ namespace PhoneNumbers
                     if (ExcludableParentFields.Contains(group))
                     {
                         if (fieldMap.ContainsKey(group))
-                        {
                             throw new Exception(group + " given more than once in " + str);
-                        }
                         fieldMap.Add(group, new SortedSet<string>(ExcludableChildFields));
                     }
                     else if (ExcludableChildlessFields.Contains(group))
                     {
                         if (fieldMap.ContainsKey(group))
-                        {
                             throw new Exception(group + " given more than once in " + str);
-                        }
                         fieldMap.Add(group, new SortedSet<string>());
                     }
                     else if (ExcludableChildFields.Contains(group))
                     {
                         if (wildcardChildren.Contains(group))
-                        {
                             throw new Exception(group + " given more than once in " + str);
-                        }
                         wildcardChildren.Add(group);
                     }
                     else
@@ -299,25 +223,17 @@ namespace PhoneNumbers
                     // as not being part of valid field tokens.
                     var parent = group.Substring(0, leftParenIndex);
                     if (!ExcludableParentFields.Contains(parent))
-                    {
                         throw new Exception(parent + " is not a valid parent token");
-                    }
                     if (fieldMap.ContainsKey(parent))
-                    {
                         throw new Exception(parent + " given more than once in " + str);
-                    }
                     var children = new SortedSet<string>();
                     foreach (var child in group.Substring(leftParenIndex + 1, rightParenIndex - leftParenIndex)
                         .Split(','))
                     {
                         if (!ExcludableChildFields.Contains(child))
-                        {
                             throw new Exception(child + " is not a valid child token");
-                        }
                         if (!children.Add(child))
-                        {
                             throw new Exception(child + " given more than once in " + group);
-                        }
                     }
                     fieldMap.Add(parent, children);
                 }
@@ -326,27 +242,24 @@ namespace PhoneNumbers
                     throw new Exception("Incorrect location of parantheses in " + group);
                 }
             }
+			
             foreach (var wildcardChild in wildcardChildren)
-            {
-                foreach (var parent in ExcludableParentFields)
-                {
-                    var children = fieldMap[parent];
-                    if (children == null)
-                    {
-                        children = new SortedSet<string>();
-                        fieldMap.Add(parent, children);
-                    }
-                    if (!children.Add(wildcardChild)
-                        && fieldMap[parent].Count != ExcludableChildFields.Count)
-                    {
-                        // The map already Contains parent -> wildcardChild but not all possible children.
-                        // So wildcardChild was given explicitly as a child of parent, which is a duplication
-                        // since it's also given as a wildcard child.
-                        throw new Exception(
-                            wildcardChild + " is present by itself so remove it from " + parent + "'s group");
-                    }
-                }
-            }
+			{
+				foreach (var parent in ExcludableParentFields)
+				{
+					var children = fieldMap[parent];
+					if (children == null)
+					{
+						children = new SortedSet<string>();
+						fieldMap.Add(parent, children);
+					}
+					if (!children.Add(wildcardChild)
+						&& fieldMap[parent].Count != ExcludableChildFields.Count)
+						throw new Exception(
+							wildcardChild + " is present by itself so remove it from " + parent + "'s group");
+				}
+			}
+
             return fieldMap;
         }
 
@@ -359,7 +272,6 @@ namespace PhoneNumbers
         {
             var complement = new Dictionary<string, SortedSet<string>>();
             foreach (var parent in ExcludableParentFields)
-            {
                 if (!fieldMap.ContainsKey(parent))
                 {
                     complement.Add(parent, new SortedSet<string>(ExcludableChildFields));
@@ -373,23 +285,14 @@ namespace PhoneNumbers
                     {
                         var children = new SortedSet<string>();
                         foreach (var child in ExcludableChildFields)
-                        {
                             if (!otherChildren.Contains(child))
-                            {
                                 children.Add(child);
-                            }
-                        }
                         complement.Add(parent, children);
                     }
                 }
-            }
             foreach (var childlessField in ExcludableChildlessFields)
-            {
                 if (!fieldMap.ContainsKey(childlessField))
-                {
                     complement.Add(childlessField, new SortedSet<string>());
-                }
-            }
             return complement;
         }
 
@@ -397,13 +300,9 @@ namespace PhoneNumbers
         private bool ShouldDrop(string parent, string child)
         {
             if (!ExcludableParentFields.Contains(parent))
-            {
                 throw new Exception(parent + " is not an excludable parent field");
-            }
             if (!ExcludableChildFields.Contains(child))
-            {
                 throw new Exception(child + " is not an excludable child field");
-            }
             return blacklist.ContainsKey(parent) && blacklist[parent].Contains(child);
         }
 
@@ -411,9 +310,7 @@ namespace PhoneNumbers
         private bool ShouldDrop(string childlessField)
         {
             if (!ExcludableChildlessFields.Contains(childlessField))
-            {
                 throw new Exception(childlessField + " is not an excludable childless field");
-            }
             return blacklist.ContainsKey(childlessField);
         }
 
@@ -421,21 +318,13 @@ namespace PhoneNumbers
         {
             var builder = new PhoneNumberDesc.Builder().MergeFrom(desc);
             if (ShouldDrop(type, "nationalNumberPattern"))
-            {
                 builder.ClearNationalNumberPattern();
-            }
             if (ShouldDrop(type, "possibleLength"))
-            {
                 builder.ClearPossibleLength();
-            }
             if (ShouldDrop(type, "possibleLengthLocalOnly"))
-            {
                 builder.ClearPossibleLengthLocalOnly();
-            }
             if (ShouldDrop(type, "exampleNumber"))
-            {
                 builder.ClearExampleNumber();
-            }
             return builder.Build();
         }
     }

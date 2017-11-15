@@ -43,5 +43,10 @@ C# port of Google's [libphonenumber library](https://github.com/googlei18n/libph
   * fix short number util port
   * update / add / port new unit tests from java source
 
+## How to unfold automatic generated files
+  * Install Jetbrains - Resharper for Visual Studio
+  * File by file, right click and "Cleanup code"
+  * Check the unfolded file
+
 
 Available on NuGet as package [`libphonenumber-csharp`](https://www.nuget.org/packages/libphonenumber-csharp).
