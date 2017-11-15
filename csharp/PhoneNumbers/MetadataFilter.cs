@@ -242,20 +242,24 @@ namespace PhoneNumbers
                     throw new Exception("Incorrect location of parantheses in " + group);
                 }
             }
+			
             foreach (var wildcardChild in wildcardChildren)
-            foreach (var parent in ExcludableParentFields)
-            {
-                var children = fieldMap[parent];
-                if (children == null)
-                {
-                    children = new SortedSet<string>();
-                    fieldMap.Add(parent, children);
-                }
-                if (!children.Add(wildcardChild)
-                    && fieldMap[parent].Count != ExcludableChildFields.Count)
-                    throw new Exception(
-                        wildcardChild + " is present by itself so remove it from " + parent + "'s group");
-            }
+			{
+				foreach (var parent in ExcludableParentFields)
+				{
+					var children = fieldMap[parent];
+					if (children == null)
+					{
+						children = new SortedSet<string>();
+						fieldMap.Add(parent, children);
+					}
+					if (!children.Add(wildcardChild)
+						&& fieldMap[parent].Count != ExcludableChildFields.Count)
+						throw new Exception(
+							wildcardChild + " is present by itself so remove it from " + parent + "'s group");
+				}
+			}
+
             return fieldMap;
         }
 
