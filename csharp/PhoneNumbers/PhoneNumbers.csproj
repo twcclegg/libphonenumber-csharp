@@ -13,7 +13,7 @@
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/aidanbebbington/libphonenumber-csharp</RepositoryUrl>
+    <RepositoryUrl>https://github.com/twcclegg/libphonenumber-csharp</RepositoryUrl>
     <DebugType>full</DebugType>
   </PropertyGroup>
 
