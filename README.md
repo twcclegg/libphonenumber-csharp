@@ -17,7 +17,7 @@ C# port of Google's [libphonenumber library](https://github.com/googlei18n/libph
 
   The original Apache License 2.0 was preserved.
 
-  See [this](https://github.com/aidanbebbington/libphonenumber-csharp/blob/master/csharp/README.txt "csharp/README.txt") for details about the port.
+  See [this](https://github.com/twcclegg/libphonenumber-csharp/blob/master/csharp/README.txt "csharp/README.txt") for details about the port.
 
 ## Features
 
