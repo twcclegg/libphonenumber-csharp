@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 
 namespace PhoneNumbers
 {
@@ -29,49 +33,237 @@ namespace PhoneNumbers
     */
     public class MetadataManager
     {
+        const string MULTI_FILE_PHONE_NUMBER_METADATA_FILE_PREFIX =
+            "/com/google/i18n/phonenumbers/data/PhoneNumberMetadataProto";
+
+        const string SINGLE_FILE_PHONE_NUMBER_METADATA_FILE_NAME =
+            "/com/google/i18n/phonenumbers/data/SingleFilePhoneNumberMetadataProto";
+
         internal const string AlternateFormatsFilePrefix = "PhoneNumberAlternateFormats.xml";
 
-        private static readonly Dictionary<int, PhoneMetadata> CallingCodeToAlternateFormatsMap =
-            new Dictionary<int, PhoneMetadata>();
+        const string SHORT_NUMBER_METADATA_FILE_PREFIX =
+            "/com/google/i18n/phonenumbers/data/ShortNumberMetadataProto";
 
-        // A set of which country calling codes there are alternate format data for. If the set has an
-        // entry for a code, then there should be data for that code linked into the resources.
-        private static readonly Dictionary<int, List<string>> CountryCodeSet =
-            BuildMetadataFromXml.GetCountryCodeToRegionCodeMap(AlternateFormatsFilePrefix);
+        private sealed class MetadataLoader : IMetadataLoader
+        {
+            public  StreamReader LoadMetadata(string metadataFileName)
+            {
+                return new StreamReader(new FileStream(metadataFileName, FileMode.Open));
+            }
+        }
+
+        private static readonly MetadataLoader DefaultMetadataLoader = new MetadataLoader();
+
+        // A mapping from a country calling code to the alternate formats for that country calling code.
+        private static readonly ConcurrentDictionary<int, PhoneMetadata> AlternateFormatsMap =
+            new ConcurrentDictionary<int, PhoneMetadata>();
+
+        // A mapping from a region code to the short number metadata for that region code.
+        private static readonly ConcurrentDictionary<string, PhoneMetadata> ShortNumberMetadataMap =
+            new ConcurrentDictionary<string, PhoneMetadata>();
+
+        // The set of country calling codes for which there are alternate formats. For every country
+        // calling code in this set there should be metadata linked into the resources.
+        private static readonly HashSet<int> AlternateFormatsCountryCodes =
+            AlternateFormatsCountryCodeSet.CountryCodeSet;
+
+        // The set of region codes for which there are short number metadata. For every region code in
+        // this set there should be metadata linked into the resources.
+        private static readonly HashSet<string> ShortNumberMetadataRegionCodes =
+            ShortNumbersRegionCodeSet.RegionCodeSet;
 
         private MetadataManager()
         {
         }
 
-        private static void LoadMedataFromFile(string filePrefix)
+        internal static PhoneMetadata GetAlternateFormatsForCountry(int countryCallingCode)
         {
-#if (NET35 || NET40)
-            var asm = Assembly.GetExecutingAssembly();
-#else
-            var asm = typeof(MetadataManager).GetTypeInfo().Assembly;
-#endif
-            var name = asm.GetManifestResourceNames().FirstOrDefault(n => n.EndsWith(filePrefix)) ?? "missing";
-            using (var stream = asm.GetManifestResourceStream(name))
+            if (!AlternateFormatsCountryCodes.Contains(countryCallingCode))
             {
-                var meta = BuildMetadataFromXml.BuildPhoneMetadataCollection(stream, false, false); // todo lite/special build
-                foreach (var m in meta.MetadataList)
-                {
-                    CallingCodeToAlternateFormatsMap[m.CountryCode] = m;
-                }
+                return null;
             }
+
+            return GetMetadataFromMultiFilePrefix(countryCallingCode, AlternateFormatsMap, AlternateFormatsFilePrefix,
+                DefaultMetadataLoader);
         }
 
-        public static PhoneMetadata GetAlternateFormatsForCountry(int countryCallingCode)
+        internal static PhoneMetadata GetShortNumberMetadataForRegion(string regionCode)
         {
-            lock(CallingCodeToAlternateFormatsMap)
+            if (!ShortNumberMetadataRegionCodes.Contains(regionCode))
             {
-                if(!CountryCodeSet.ContainsKey(countryCallingCode))
-                    return null;
-                if(!CallingCodeToAlternateFormatsMap.ContainsKey(countryCallingCode))
-                    LoadMedataFromFile(AlternateFormatsFilePrefix);
-                return CallingCodeToAlternateFormatsMap.ContainsKey(countryCallingCode)
-                    ? CallingCodeToAlternateFormatsMap[countryCallingCode]
-                    : null;
+                return null;
+            }
+
+            return GetMetadataFromMultiFilePrefix(regionCode, ShortNumberMetadataMap,
+                SHORT_NUMBER_METADATA_FILE_PREFIX, DefaultMetadataLoader);
+        }
+
+        internal static HashSet<string> GetSupportedShortNumberRegions()
+        {
+            return ShortNumberMetadataRegionCodes;
+        }
+
+        /**
+         * @param key  the lookup key for the provided map, typically a region code or a country calling
+         *     code
+         * @param map  the map containing mappings of already loaded metadata from their {@code key}. If
+         *     this {@code key}'s metadata isn't already loaded, it will be added to this map after
+         *     loading
+         * @param filePrefix  the prefix of the file to load metadata from
+         * @param metadataLoader  the metadata loader used to inject alternative metadata sources
+         */
+        static PhoneMetadata GetMetadataFromMultiFilePrefix<T>(T key,
+            ConcurrentDictionary<T, PhoneMetadata> map, string filePrefix, IMetadataLoader metadataLoader)
+        {
+            map.TryGetValue(key, out var metadata);
+            if (metadata != null)
+            {
+                return metadata;
+            }
+
+            // We assume key.toString() is well-defined.
+            var fileName = filePrefix + "_" + key;
+            var metadataList = GetMetadataFromSingleFileName(fileName, metadataLoader);
+            metadata = metadataList[0];
+            var oldValue = map.GetOrAdd(key, metadata);
+            return oldValue ?? metadata;
+        }
+
+        // Loader and holder for the metadata maps loaded from a single file.
+        class SingleFileMetadataMaps
+        {
+            internal static SingleFileMetadataMaps Load(string fileName, IMetadataLoader metadataLoader)
+            {
+                var metadataList = GetMetadataFromSingleFileName(fileName, metadataLoader);
+                var regionCodeToMetadata = new Dictionary<string, PhoneMetadata>();
+                var countryCallingCodeToMetadata =
+                    new Dictionary<int, PhoneMetadata>();
+                foreach (var metadata in metadataList)
+                {
+                    var regionCode = metadata.Id;
+                    if (PhoneNumberUtil.RegionCodeForNonGeoEntity.Equals(regionCode))
+                    {
+                        // regionCode belongs to a non-geographical entity.
+                        countryCallingCodeToMetadata.Add(metadata.CountryCode, metadata);
+                    }
+                    else
+                    {
+                        regionCodeToMetadata.Add(regionCode, metadata);
+                    }
+                }
+
+                return new SingleFileMetadataMaps(regionCodeToMetadata, countryCallingCodeToMetadata);
+            }
+
+            // A map from a region code to the PhoneMetadata for that region.
+            // For phone number metadata, the region code "001" is excluded, since that is used for the
+            // non-geographical phone number entities.
+            private readonly Dictionary<string, PhoneMetadata> regionCodeToMetadata;
+
+            // A map from a country calling code to the PhoneMetadata for that country calling code.
+            // Examples of the country calling codes include 800 (International Toll Free Service) and 808
+            // (International Shared Cost Service).
+            // For phone number metadata, only the non-geographical phone number entities' country calling
+            // codes are present.
+            private readonly Dictionary<int, PhoneMetadata> countryCallingCodeToMetadata;
+
+            private SingleFileMetadataMaps(Dictionary<string, PhoneMetadata> regionCodeToMetadata,
+                Dictionary<int, PhoneMetadata> countryCallingCodeToMetadata)
+            {
+                this.regionCodeToMetadata = regionCodeToMetadata;
+                this.countryCallingCodeToMetadata = countryCallingCodeToMetadata;
+            }
+
+            public PhoneMetadata this[string regionCode] => regionCodeToMetadata[regionCode];
+
+            public PhoneMetadata this[int countryCallingCode] => countryCallingCodeToMetadata[countryCallingCode];
+        }
+
+
+        // Manages the atomic reference lifecycle of a SingleFileMetadataMaps encapsulation.
+        static SingleFileMetadataMaps GetSingleFileMetadataMaps(
+            SingleFileMetadataMaps atomicReference, string fileName, IMetadataLoader metadataLoader)
+        {
+            var maps = atomicReference;
+            if (maps != null)
+            {
+                return maps;
+            }
+            maps = SingleFileMetadataMaps.Load(fileName, metadataLoader);
+            Interlocked.CompareExchange(ref atomicReference, maps, null);
+            return atomicReference;
+        }
+
+        private static IList<PhoneMetadata> GetMetadataFromSingleFileName(string fileName,
+            IMetadataLoader metadataLoader)
+        {
+            var source = metadataLoader.LoadMetadata(fileName);
+            if (source == null)
+            {
+                // Sanity check; this would only happen if we packaged jars incorrectly.
+                throw new FileNotFoundException("missing metadata: " + fileName);
+            }
+
+            var metadataCollection = LoadMetadataAndCloseInput(source);
+            var metadataList = metadataCollection.MetadataList;
+            if (!metadataList.Any())
+            {
+                // Sanity check; this should not happen since we build with non-empty metadata.
+                throw new InvalidDataException("empty metadata: " + fileName);
+            }
+
+            return metadataList;
+        }
+
+        /**
+         * Loads and returns the metadata from the given stream and closes the stream.
+         *
+         * @param source  the non-null stream from which metadata is to be read
+         * @return  the loaded metadata
+         */
+        private static PhoneMetadataCollection LoadMetadataAndCloseInput(StreamReader source)
+        {
+            ObjectInputStream ois = null;
+            try
+            {
+                try
+                {
+                    ois = new ObjectInputStream(source);
+                }
+                catch (IOException e)
+                {
+                    throw new InvalidDataException("cannot load/parse metadata", e);
+                }
+
+                var metadataCollection = new PhoneMetadataCollection();
+                try
+                {
+                    metadataCollection.ReadExternal(ois);
+                }
+                catch (IOException e)
+                {
+                    throw new InvalidDataException("cannot load/parse metadata", e);
+                }
+
+                return metadataCollection;
+            }
+            finally
+            {
+                try
+                {
+                    if (ois != null)
+                    {
+                        // This will close all underlying streams as well, including source.
+                        ois.close();
+                    }
+                    else
+                    {
+                        source.Close();
+                    }
+                }
+                catch (IOException)
+                {
+                }
             }
         }
     }
