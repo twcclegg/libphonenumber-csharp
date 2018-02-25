@@ -33,10 +33,10 @@ namespace PhoneNumbers
     */
     public class MetadataManager
     {
-        const string MULTI_FILE_PHONE_NUMBER_METADATA_FILE_PREFIX =
+        internal const string MULTI_FILE_PHONE_NUMBER_METADATA_FILE_PREFIX =
             "/com/google/i18n/phonenumbers/data/PhoneNumberMetadataProto";
 
-        const string SINGLE_FILE_PHONE_NUMBER_METADATA_FILE_NAME =
+        internal const string SINGLE_FILE_PHONE_NUMBER_METADATA_FILE_NAME =
             "/com/google/i18n/phonenumbers/data/SingleFilePhoneNumberMetadataProto";
 
         internal const string AlternateFormatsFilePrefix = "PhoneNumberAlternateFormats.xml";
@@ -112,7 +112,7 @@ namespace PhoneNumbers
          * @param filePrefix  the prefix of the file to load metadata from
          * @param metadataLoader  the metadata loader used to inject alternative metadata sources
          */
-        static PhoneMetadata GetMetadataFromMultiFilePrefix<T>(T key,
+        internal static PhoneMetadata GetMetadataFromMultiFilePrefix<T>(T key,
             ConcurrentDictionary<T, PhoneMetadata> map, string filePrefix, IMetadataLoader metadataLoader)
         {
             map.TryGetValue(key, out var metadata);
@@ -130,7 +130,7 @@ namespace PhoneNumbers
         }
 
         // Loader and holder for the metadata maps loaded from a single file.
-        class SingleFileMetadataMaps
+        internal class SingleFileMetadataMaps
         {
             internal static SingleFileMetadataMaps Load(string fileName, IMetadataLoader metadataLoader)
             {
@@ -167,7 +167,7 @@ namespace PhoneNumbers
             // codes are present.
             private readonly Dictionary<int, PhoneMetadata> countryCallingCodeToMetadata;
 
-            private SingleFileMetadataMaps(Dictionary<string, PhoneMetadata> regionCodeToMetadata,
+            internal SingleFileMetadataMaps(Dictionary<string, PhoneMetadata> regionCodeToMetadata,
                 Dictionary<int, PhoneMetadata> countryCallingCodeToMetadata)
             {
                 this.regionCodeToMetadata = regionCodeToMetadata;
@@ -181,8 +181,8 @@ namespace PhoneNumbers
 
 
         // Manages the atomic reference lifecycle of a SingleFileMetadataMaps encapsulation.
-        static SingleFileMetadataMaps GetSingleFileMetadataMaps(
-            SingleFileMetadataMaps atomicReference, string fileName, IMetadataLoader metadataLoader)
+        internal static SingleFileMetadataMaps GetSingleFileMetadataMaps(
+            ref SingleFileMetadataMaps atomicReference, string fileName, IMetadataLoader metadataLoader)
         {
             var maps = atomicReference;
             if (maps != null)
