@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace PhoneNumbers
 {
@@ -26,6 +23,7 @@ namespace PhoneNumbers
             61,
             62,
             63,
+            64,
             66,
             81,
             84,
@@ -51,6 +49,7 @@ namespace PhoneNumbers
             676,
             679,
             855,
+            856,
             971,
             972,
             995
