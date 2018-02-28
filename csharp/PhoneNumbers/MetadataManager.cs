@@ -265,14 +265,14 @@ namespace PhoneNumbers
          * @param source  the non-null stream from which metadata is to be read
          * @return  the loaded metadata
          */
-        private static PhoneMetadataCollection LoadMetadataAndCloseInput(StreamReader source)
+        private static PhoneMetadataCollection LoadMetadataAndCloseInput(Stream source)
         {
-            ObjectInputStream ois = null;
+            BinaryReader ois = null;
             try
             {
                 try
                 {
-                    ois = new ObjectInputStream(source);
+                    ois = new BinaryReader(source);
                 }
                 catch (IOException e)
                 {
@@ -282,7 +282,7 @@ namespace PhoneNumbers
                 var metadataCollection = new PhoneMetadataCollection();
                 try
                 {
-                    metadataCollection.ReadExternal(ois);
+                    metadataCollection.re(ois);
                 }
                 catch (IOException e)
                 {
@@ -298,11 +298,11 @@ namespace PhoneNumbers
                     if (ois != null)
                     {
                         // This will close all underlying streams as well, including source.
-                        ois.close();
+                        ois.Dispose();
                     }
                     else
                     {
-                        source.Close();
+                        source.Dispose();
                     }
                 }
                 catch (IOException)
