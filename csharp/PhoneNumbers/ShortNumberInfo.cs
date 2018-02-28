@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using PhoneNumbers.Internal;
 
 namespace PhoneNumbers
 {
@@ -60,9 +61,9 @@ namespace PhoneNumbers
             return Instance;
         }
 
-        // MatcherApi supports the basic matching method for checking if a given national number matches
+        // IMatcherApi supports the basic matching method for checking if a given national number matches
         // a national number pattern defined in the given {@code PhoneNumberDesc}.
-        private readonly MatcherApi matcherApi;
+        private readonly IMatcherApi matcherApi;
 
         // A mapping from a country calling code to the region codes which denote the region represented
         // by that country calling code. In the case of multiple regions sharing a calling code, such as
@@ -70,7 +71,7 @@ namespace PhoneNumbers
         // first.
         private readonly Dictionary<int, List<string>> countryCallingCodeToRegionCodeMap;
 
-        private ShortNumberInfo(MatcherApi matcherApi)
+        private ShortNumberInfo(IMatcherApi matcherApi)
         {
             this.matcherApi = matcherApi;
             // TODO: Create ShortNumberInfo for a given map
