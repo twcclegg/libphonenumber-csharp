@@ -18,7 +18,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="res\**\*.*;PhoneNumberAlternateFormats.xml;PhoneNumberMetaData.xml;PhoneNumberMetaDataForTesting.xml;ShortNumberMetadata.xml" Exclude="bin\**;obj\**;**\*.xproj;packages\**;@(EmbeddedResource)" />
+    <EmbeddedResource Include="res\*;..\..\resources\*.xml" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net40' ">
