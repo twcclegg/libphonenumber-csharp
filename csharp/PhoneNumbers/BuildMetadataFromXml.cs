@@ -20,6 +20,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace PhoneNumbers
@@ -78,7 +79,11 @@ namespace PhoneNumbers
         public static PhoneMetadataCollection BuildPhoneMetadataCollection(Stream input,
             bool liteBuild, bool specialBuild)
         {
+#if NET35
+            var document = XDocument.Load(new XmlTextReader(input));
+#else
             var document = XDocument.Load(input);
+#endif
             var isShortNumberMetadata = document.GetElementsByTagName("ShortNumberMetadata").Count() != 0;
             var isAlternateFormatsMetadata = document.GetElementsByTagName("PhoneNumberAlternateFormats").Count() != 0;
             return BuildPhoneMetadataCollection(document, liteBuild, specialBuild,
@@ -636,7 +641,11 @@ namespace PhoneNumbers
                         desc.PossibleLengthList.Add(length);
                     else
                         throw new Exception(
+#if NET35
+                            $"Out-of-range possible length found ({length}), parent lengths {string.Join(", ", parentDesc.PossibleLengthList.Select(x => x.ToString()).ToArray())}.");
+#else
                             $"Out-of-range possible length found ({length}), parent lengths {string.Join(", ", parentDesc.PossibleLengthList)}.");
+#endif
             // We check that the local-only length isn't also a normal possible length (only relevant for
             // the general-desc, since within elements such as fixed-line we would throw an exception if we
             // saw this) before adding it to the collection of possible local-only lengths.
@@ -647,7 +656,11 @@ namespace PhoneNumbers
                         desc.PossibleLengthLocalOnlyList.Add(length);
                     else
                         throw new Exception(
+#if NET35
+                            $"Out-of-range local-only possible length found ({length}), parent length {string.Join(", ", parentDesc.PossibleLengthLocalOnlyList.Select(x => x.ToString()).ToArray())}.");
+#else
                             $"Out-of-range local-only possible length found ({length}), parent length {string.Join(", ", parentDesc.PossibleLengthLocalOnlyList)}.");
+#endif
         }
 
 
@@ -703,7 +716,7 @@ namespace PhoneNumbers
 
         public static Dictionary<int, List<string>> GetCountryCodeToRegionCodeMap(string filePrefix)
         {
-#if NET40
+#if (NET35 || NET40)
             var asm = Assembly.GetExecutingAssembly();
 #else
             var asm = typeof(BuildMetadataFromXml).GetTypeInfo().Assembly;

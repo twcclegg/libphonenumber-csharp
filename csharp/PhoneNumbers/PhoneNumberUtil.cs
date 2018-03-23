@@ -541,7 +541,7 @@ namespace PhoneNumbers
 
         private void LoadMetadataFromFile(string filePrefix, string regionCode)
         {
-#if NET40
+#if (NET35 || NET40)
             var asm = Assembly.GetExecutingAssembly();
 #else
             var asm = typeof(PhoneNumberUtil).GetTypeInfo().Assembly;

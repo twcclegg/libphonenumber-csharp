@@ -15,6 +15,7 @@
  */
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace PhoneNumbers
@@ -183,7 +184,11 @@ namespace PhoneNumbers
         {
             if (str == null)
                 throw new Exception("Null string should not be passed to ParseFieldMapFromString");
+#if NET35
+            if (string.IsNullOrEmpty(str) || str.All(char.IsWhiteSpace))
+#else
             if (string.IsNullOrWhiteSpace(str))
+#endif
                 throw new Exception("Null nor empty string should not be passed to ParseFieldMapFromString");
 
             var fieldMap = new Dictionary<string, SortedSet<string>>();

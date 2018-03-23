@@ -45,7 +45,7 @@ namespace PhoneNumbers
 
         private static void LoadMedataFromFile(string filePrefix)
         {
-#if NET40
+#if (NET35 || NET40)
             var asm = Assembly.GetExecutingAssembly();
 #else
             var asm = typeof(MetadataManager).GetTypeInfo().Assembly;
