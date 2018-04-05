@@ -107,7 +107,7 @@ namespace PhoneNumbers
         private void LoadMappingFileProvider()
         {
             var files = new SortedDictionary<int, HashSet<string>>();
-#if NET40
+#if (NET35 || NET40)
             var asm = Assembly.GetExecutingAssembly();
 #else
             var asm = typeof(PhoneNumberOfflineGeocoder).GetTypeInfo().Assembly;
@@ -154,7 +154,7 @@ namespace PhoneNumbers
 
         private void LoadAreaCodeMapFromFile(string fileName)
         {
-#if NET40
+#if (NET35 || NET40)
             var asm = Assembly.GetExecutingAssembly();
 #else
             var asm = typeof(PhoneNumberOfflineGeocoder).GetTypeInfo().Assembly;
