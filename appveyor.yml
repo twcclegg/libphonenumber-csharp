@@ -1,4 +1,4 @@
-version: 8.9.2
+version: 8.9.3
 image: Visual Studio 2017
 configuration: Release
 branches:
