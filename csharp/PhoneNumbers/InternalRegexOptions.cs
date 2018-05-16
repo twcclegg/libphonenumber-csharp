@@ -13,7 +13,7 @@ namespace PhoneNumbers
 
         static InternalRegexOptions()
         {
-#if NETSTANDARD1_1
+#if PORTABLE
             Default = RegexOptions.None;
 #else
             Default = RegexOptions.Compiled;

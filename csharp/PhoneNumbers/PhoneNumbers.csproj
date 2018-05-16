@@ -5,7 +5,7 @@
     <AssemblyTitle>libphonenumber-csharp</AssemblyTitle>
     <VersionPrefix>$(APPVEYOR_BUILD_VERSION)</VersionPrefix>
     <Authors>Patrick Mézard;Tom Clegg;Jarrod Alexander;Google;libphonenumber contributors</Authors>
-    <TargetFrameworks>net35;net40;netstandard1.3;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net35;net40;netstandard1.3;netstandard2.0;portable-net45+win8+wpa81+wp8</TargetFrameworks>
     <AssemblyName>PhoneNumbers</AssemblyName>
     <PackageId>libphonenumber-csharp</PackageId>
     <PackageTags>phonenumber phone libphonenumber e164 e.164 international</PackageTags>
@@ -19,6 +19,15 @@
 
   <PropertyGroup>
     <FrameworkPathOverride Condition=" '$(TargetFramework)' == 'net35' ">$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\v3.5\Profile\Client</FrameworkPathOverride>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'portable-net45+win8+wpa81+wp8'">
+    <TargetFrameworkIdentifier>.NETPortable</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Profile259</TargetFrameworkProfile>
+    <DefineConstants>PORTABLE</DefineConstants>
+    <NugetTargetMoniker>.NETPortable,Version=v0.0,Profile=Profile259</NugetTargetMoniker>
+    <LanguageTargets>$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets</LanguageTargets>
   </PropertyGroup>
 
   <ItemGroup>
