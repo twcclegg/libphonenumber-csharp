@@ -6,7 +6,7 @@ init:
       }
       else
       {
-        Update-AppveyorBuild -Version "$((nuget list libphonenumber-csharp | findstr "libphonenumber.csharp[^-\.]") -split ' ')[1]-$($env:APPVEYOR_REPO_COMMIT.substring(0,7))"
+        Update-AppveyorBuild -Version "$(((nuget list libphonenumber-csharp | findstr "libphonenumber-csharp[^.-]") -split ' ')[1])-$($env:APPVEYOR_REPO_COMMIT.substring(0,7))"
       }
 image: Visual Studio 2017
 configuration: Release
