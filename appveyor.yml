@@ -1,16 +1,22 @@
-version: 8.9.6
+init:
+  - ps: >-
+      if ($env:APPVEYOR_REPO_TAG -eq "true")
+      {
+        Update-AppveyorBuild -Version "$env:APPVEYOR_REPO_TAG_NAME.substring(1)"
+      }
+      else
+      {
+        Update-AppveyorBuild -Version "dev-$($env:APPVEYOR_REPO_COMMIT.substring(0,7))"
+      }
 image: Visual Studio 2017
 configuration: Release
-branches:
-  only:
-  - master
-skip_non_tags: true
 environment:
   COVERALLS_REPO_TOKEN:
     secure: tHOHVQ3dw2NqnKUW3EQbBIe+ytxPnGjJ13psSpwYhxbWlvtl6CKVmqigzfCR2nSc
 pull_requests:
   do_not_increment_build_number: true
 before_build:
+  - xcopy "C:\Program Files (x86)\MSBuild\Microsoft\Portable" "C:\Program Files\dotnet\sdk\2.1.200\Microsoft\Portable\" /S /E
   - dotnet restore csharp -s https://api.nuget.org/v3/index.json
   - choco install opencover.portable
   - choco install codecov
@@ -25,5 +31,7 @@ nuget:
   account_feed: true
 deploy:
   - provider: NuGet
+    on:
+      appveyor_repo_tag: true
     api_key:
       secure: QB8FoYFBWfFy8cxyScelVPg3X4q2BvLO0VELkUAOKT4ZHp362V7cIRq+nIrkjFJ5
