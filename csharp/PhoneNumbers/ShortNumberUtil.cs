@@ -96,5 +96,18 @@ namespace PhoneNumbers
                 : emergencyNumberPattern.MatchBeginning(normalizedNumber).Success;
 
         }
+
+        public bool IsShortcodeNumber(string number, string regionCode)
+        {
+            var phoneMetadetaForRegion = phoneUtil.GetMetadataForRegion(regionCode);
+            if (phoneMetadetaForRegion == null || !phoneMetadetaForRegion.HasShortCode)
+            {
+                return false;
+            }
+
+            var shortCodeNumberPattern = new PhoneRegex(phoneMetadetaForRegion.ShortCode.NationalNumberPattern);
+            var normalizedNumber = PhoneNumberUtil.NormalizeDigitsOnly(number);
+            return shortCodeNumberPattern.MatchAll(normalizedNumber).Success;
+        }
     }
 }
