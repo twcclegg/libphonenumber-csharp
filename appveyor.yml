@@ -2,7 +2,7 @@ init:
   - ps: >-
       if ($env:APPVEYOR_REPO_TAG -eq "true")
       {
-        Update-AppveyorBuild -Version "$env:APPVEYOR_REPO_TAG_NAME.substring(1)"
+        Update-AppveyorBuild -Version "$($env:APPVEYOR_REPO_TAG_NAME.substring(1))"
       }
       else
       {
