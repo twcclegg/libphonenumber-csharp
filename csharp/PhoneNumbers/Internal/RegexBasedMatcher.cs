@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-using System;
 using System.Linq;
 
 namespace PhoneNumbers.Internal
@@ -26,7 +25,7 @@ namespace PhoneNumbers.Internal
             return new RegexBasedMatcher();
         }
 
-        private static readonly RegexCache regexCache = new RegexCache(100);
+        private static readonly RegexCache RegexCache = new RegexCache(100);
 
         private RegexBasedMatcher()
         {
@@ -38,14 +37,18 @@ namespace PhoneNumbers.Internal
             // We don't want to consider it a prefix match when matching non-empty input against an empty
             // pattern.
             return nationalNumberPattern.Any() &&
-                   Match(number, regexCache.GetPatternForRegex(nationalNumberPattern), allowPrefixMatch);
+                   Match(number, RegexCache.GetPatternForRegex(nationalNumberPattern), allowPrefixMatch);
         }
 
         private static bool Match(string number, PhoneRegex pattern, bool allowPrefixMatch)
         {
-            throw new NotImplementedException();
-            var matcher = pattern.MatchAll(number);
-            
+            var matcher = pattern.MatchBeginning(number);
+            if (!matcher.Success)
+            {
+                return false;
+            }
+
+            return pattern.MatchAll(number).Success || allowPrefixMatch;
         }
     }
 }
