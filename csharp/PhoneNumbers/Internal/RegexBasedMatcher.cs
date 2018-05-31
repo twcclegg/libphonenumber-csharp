@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+using System.Linq;
+
 namespace PhoneNumbers.Internal
 {
     public sealed class RegexBasedMatcher : IMatcherApi
@@ -34,7 +36,7 @@ namespace PhoneNumbers.Internal
             var nationalNumberPattern = numberDesc.NationalNumberPattern;
             // We don't want to consider it a prefix match when matching non-empty input against an empty
             // pattern.
-            return nationalNumberPattern.Length > 0 &&
+            return nationalNumberPattern.Any() &&
                    Match(number, RegexCache.GetPatternForRegex(nationalNumberPattern), allowPrefixMatch);
         }
 
