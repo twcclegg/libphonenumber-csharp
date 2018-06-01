@@ -67,7 +67,7 @@ namespace PhoneNumbers
         // The current implementation assumes that all PhoneNumberDesc fields are present here, since it
         // "clears" a PhoneNumberDesc field by simply clearing all of the fields under it. See the comment
         // above, about all 3 sets, for more about these fields.
-        private readonly HashSet<string> excludableChildFields = new HashSet<string>
+        private static readonly HashSet<string> ExcludableChildFields = new HashSet<string>
         {
             "nationalNumberPattern",
             "possibleLength",
@@ -75,7 +75,7 @@ namespace PhoneNumbers
             "exampleNumber"
         };
 
-        private readonly HashSet<string> excludableChildlessFields = new HashSet<string>
+        private static readonly HashSet<string> ExcludableChildlessFields = new HashSet<string>
         {
             "preferredInternationalPrefix",
             "nationalPrefix",
@@ -92,19 +92,19 @@ namespace PhoneNumbers
         // Note: If changing the blacklist here or the name of the method, update documentation about
         // affected methods at the same time:
         // https://github.com/googlei18n/libphonenumber/blob/master/FAQ.md#what-is-the-metadatalitejsmetadata_lite-option
-        MetadataFilter ForLiteBuild()
+        internal static MetadataFilter ForLiteBuild()
         {
             // "exampleNumber" is a blacklist.
             return new MetadataFilter(ParseFieldMapFromString("exampleNumber"));
         }
 
-        MetadataFilter ForSpecialBuild()
+        internal static MetadataFilter ForSpecialBuild()
         {
             // "mobile" is a whitelist.
             return new MetadataFilter(ComputeComplement(ParseFieldMapFromString("mobile")));
         }
 
-        static MetadataFilter EmptyFilter()
+        internal static MetadataFilter EmptyFilter()
         {
             // Empty blacklist, meaning we filter nothing.
             return new MetadataFilter(new Dictionary<string, HashSet<string>>());
@@ -132,7 +132,7 @@ namespace PhoneNumbers
      *
      * @param metadata  The {@code PhoneMetadata} object to be filtered
      */
-        void FilterMetadata(PhoneMetadata.Builder metadata)
+        internal void FilterMetadata(PhoneMetadata.Builder metadata)
         {
             // TODO: Consider clearing if the filtered PhoneNumberDesc is empty.
             if (metadata.HasFixedLine)
@@ -258,15 +258,14 @@ namespace PhoneNumbers
         }
 
         /**
-     * The input blacklist or whitelist string is expected to be of the form "a(b,c):d(e):f", where
-     * b and c are children of a, e is a child of d, and f is either a parent field, a child field, or
-     * a childless field. Order and whitespace don't matter. We throw Exception for any
-     * duplicates, malformed strings, or strings where field tokens do not correspond to strings in
-     * the sets of excludable fields. We also throw Exception for empty strings since such
-     * strings should be treated as a special case by the flag checking code and not passed here.
-     */
-        // @VisibleForTesting
-        Dictionary<string, HashSet<string>> ParseFieldMapFromString(string str)
+         * The input blacklist or whitelist string is expected to be of the form "a(b,c):d(e):f", where
+         * b and c are children of a, e is a child of d, and f is either a parent field, a child field, or
+         * a childless field. Order and whitespace don't matter. We throw Exception for any
+         * duplicates, malformed strings, or strings where field tokens do not correspond to strings in
+         * the sets of excludable fields. We also throw Exception for empty strings since such
+         * strings should be treated as a special case by the flag checking code and not passed here.
+         */
+        static Dictionary<string, HashSet<string>> ParseFieldMapFromString(string str)
         {
             if (str == null)
             {
@@ -295,9 +294,9 @@ namespace PhoneNumbers
                             throw new Exception(group + " given more than once in " + str);
                         }
 
-                        fieldMap.Add(group, new HashSet<string>(excludableChildFields));
+                        fieldMap.Add(group, new HashSet<string>(ExcludableChildFields));
                     }
-                    else if (excludableChildlessFields.Contains(group))
+                    else if (ExcludableChildlessFields.Contains(group))
                     {
                         if (fieldMap.ContainsKey(group))
                         {
@@ -306,7 +305,7 @@ namespace PhoneNumbers
 
                         fieldMap.Add(group, new HashSet<string>());
                     }
-                    else if (excludableChildFields.Contains(group))
+                    else if (ExcludableChildFields.Contains(group))
                     {
                         if (wildcardChildren.Contains(group))
                         {
@@ -339,7 +338,7 @@ namespace PhoneNumbers
                     foreach (string child in group.Substring(leftParenIndex + 1, rightParenIndex - (leftParenIndex + 1))
                         .Split(','))
                     {
-                        if (!excludableChildFields.Contains(child))
+                        if (!ExcludableChildFields.Contains(child))
                         {
                             throw new Exception(child + " is not a valid child token");
                         }
@@ -370,7 +369,7 @@ namespace PhoneNumbers
                     }
 
                     if (!children.Add(wildcardChild)
-                        && fieldMap[parent].Count != excludableChildFields.Count)
+                        && fieldMap[parent].Count != ExcludableChildFields.Count)
                     {
                         // The map already contains parent -> wildcardChild but not all possible children.
                         // So wildcardChild was given explicitly as a child of parent, which is a duplication
@@ -388,7 +387,7 @@ namespace PhoneNumbers
         // parseFieldMapFromString(string) which does check. If fieldMap contains illegal tokens or parent
         // fields with no children or other unexpected state, the behavior of this function is undefined.
         // @VisibleForTesting
-        Dictionary<string, HashSet<string>> ComputeComplement(
+        static Dictionary<string, HashSet<string>> ComputeComplement(
             Dictionary<string, HashSet<string>> fieldMap)
         {
             Dictionary<string, HashSet<string>> complement = new Dictionary<string, HashSet<string>>();
@@ -396,17 +395,17 @@ namespace PhoneNumbers
             {
                 if (!fieldMap.ContainsKey(parent))
                 {
-                    complement.Add(parent, new HashSet<string>(excludableChildFields));
+                    complement.Add(parent, new HashSet<string>(ExcludableChildFields));
                 }
                 else
                 {
                     HashSet<string> otherChildren = fieldMap[parent];
                     // If the other map has all the children for this parent then we don't want to include the
                     // parent as a key.
-                    if (otherChildren.Count != excludableChildFields.Count)
+                    if (otherChildren.Count != ExcludableChildFields.Count)
                     {
                         HashSet<string> children = new HashSet<string>();
-                        foreach (string child in excludableChildFields)
+                        foreach (string child in ExcludableChildFields)
                         {
                             if (!otherChildren.Contains(child))
                             {
@@ -419,7 +418,7 @@ namespace PhoneNumbers
                 }
             }
 
-            foreach (string childlessField in excludableChildlessFields)
+            foreach (string childlessField in ExcludableChildlessFields)
             {
                 if (!fieldMap.ContainsKey(childlessField))
                 {
@@ -438,7 +437,7 @@ namespace PhoneNumbers
                 throw new Exception(parent + " is not an excludable parent field");
             }
 
-            if (!excludableChildFields.Contains(child))
+            if (!ExcludableChildFields.Contains(child))
             {
                 throw new Exception(child + " is not an excludable child field");
             }
@@ -449,7 +448,7 @@ namespace PhoneNumbers
         // @VisibleForTesting
         bool ShouldDrop(string childlessField)
         {
-            if (!excludableChildlessFields.Contains(childlessField))
+            if (!ExcludableChildlessFields.Contains(childlessField))
             {
                 throw new Exception(childlessField + " is not an excludable childless field");
             }
@@ -459,7 +458,7 @@ namespace PhoneNumbers
 
         private PhoneNumberDesc GetFiltered(string type, PhoneNumberDesc desc)
         {
-            PhoneNumberDesc.Builder builder = new PhoneNumberDesc.Builder().mergeFrom(desc);
+            PhoneNumberDesc.Builder builder = new PhoneNumberDesc.Builder().MergeFrom(desc);
             if (ShouldDrop(type, "nationalNumberPattern"))
             {
                 builder.ClearNationalNumberPattern();
