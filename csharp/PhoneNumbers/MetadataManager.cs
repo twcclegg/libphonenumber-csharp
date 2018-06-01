@@ -238,7 +238,7 @@ namespace PhoneNumbers
                 var metadataCollection = new PhoneMetadataCollection();
                 try
                 {
-                    metadataCollection.re(ois);
+                    metadataCollection.re(ois); // metadataCollection.mergeFrom(convertStreamToByteBuffer(ois, bufferSize));
                 }
                 catch (IOException e)
                 {

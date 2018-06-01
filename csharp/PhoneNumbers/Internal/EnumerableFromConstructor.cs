@@ -21,7 +21,7 @@ using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("PhoneNumbers.Test")]
 
-namespace PhoneNumbers
+namespace PhoneNumbers.Internal
 {
     internal class EnumerableFromConstructor<T> : IEnumerable<T>
     {

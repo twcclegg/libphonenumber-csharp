@@ -25,8 +25,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using PhoneNumbers;
+using PhoneNumbers.Internal;
 
 namespace PhoneNumbers
 {
@@ -83,11 +85,8 @@ namespace PhoneNumbers
         // Build the PhoneMetadataCollection from the input XML file.
         public static PhoneMetadataCollection buildPhoneMetadataCollection(string inputXmlFile,
             bool liteBuild, bool specialBuild)
-        {
-            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = builderFactory.newDocumentBuilder();
-            File xmlFile = new File(inputXmlFile);
-            XDocument document = builder.parse(xmlFile);
+        { 
+            XDocument document = XDocument.Load(inputXmlFile);
             // TODO: Look for other uses of these constants and possibly pull them out into a separate
             // constants file.
             bool isShortNumberMetadata = inputXmlFile.Contains("ShortNumberMetadata");
@@ -108,7 +107,7 @@ namespace PhoneNumbers
             PhoneMetadataCollection.Builder metadataCollection = new PhoneMetadataCollection.Builder();
             int numOfTerritories = territory.Count;
             // TODO: Infer filter from a single flag.
-            var metadataFilter = getMetadataFilter(liteBuild, specialBuild);
+            var metadataFilter = GetMetadataFilter(liteBuild, specialBuild);
             for (int i = 0; i < numOfTerritories; i++)
             {
                 XElement territoryElement = territory[i];
@@ -118,7 +117,7 @@ namespace PhoneNumbers
                     territoryElement.Attributes(XName.Get("id")).SingleOrDefault()?.Value ?? ""; // todo port good?
                 PhoneMetadata.Builder metadata = loadCountryMetadata(regionCode, territoryElement,
                     isShortNumberMetadata, isAlternateFormatsMetadata);
-                metadataFilter.filterMetadata(metadata);
+                metadataFilter.FilterMetadata(metadata);
                 metadataCollection.AddMetadata(metadata);
             }
 
@@ -175,8 +174,8 @@ namespace PhoneNumbers
         {
             // Removes all the whitespace and newline from the regexp. Not using pattern compile options to
             // make it work across programming languages.
-            String compressedRegex = removeWhitespace ? regex.replaceAll("\\s", "") : regex;
-            Pattern.compile(compressedRegex);
+            string compressedRegex = removeWhitespace ? regex.Trim() : regex;
+            compressedRegex = new Regex(compressedRegex, RegexOptions.Compiled).ToString();
             // We don't ever expect to see | followed by a ) in our metadata - this would be an indication
             // of a bug. If one wants to make something optional, we prefer ? to using an empty group.
             int errorIndex = compressedRegex.IndexOf("|)");
@@ -292,7 +291,7 @@ namespace PhoneNumbers
             else if (intlFormatPattern.Count == 0)
             {
                 // Default to use the same as the national pattern if none is defined.
-                intlFormat.mergeFrom(nationalFormat);
+                intlFormat.MergeFrom(nationalFormat);
             }
             else
             {
@@ -440,7 +439,6 @@ namespace PhoneNumbers
             }
         }
 
-// @VisibleForTesting
         static string getNationalPrefixFormattingRuleFromElement(XElement element,
             string nationalPrefix)
         {
@@ -453,7 +451,6 @@ namespace PhoneNumbers
             return nationalPrefixFormattingRule;
         }
 
-// @VisibleForTesting
         static string getDomesticCarrierCodeFormattingRuleFromElement(XElement element,
             string nationalPrefix)
         {
@@ -493,26 +490,25 @@ namespace PhoneNumbers
             return true;
         }
 
-/**
- * Processes a phone number description element from the XML file and returns it as a
- * PhoneNumberDesc. If the description element is a fixed line or mobile number, the parent
- * description will be used to fill in the whole element if necessary, or any components that are
- * missing. For all other types, the parent description will only be used to fill in missing
- * components if the type has a partial definition. For example, if no "tollFree" element exists,
- * we assume there are no toll free numbers for that locale, and return a phone number description
- * with no national number data and [-1] for the possible lengths. Note that the parent
- * description must therefore already be processed before this method is called on any child
- * elements.
- *
- * @param parentDesc  a generic phone number description that will be used to fill in missing
- *     parts of the description, or null if this is the root node. This must be processed before
- *     this is run on any child elements.
- * @param countryElement  the XML element representing all the country information
- * @param numberType  the name of the number type, corresponding to the appropriate tag in the XML
- *     file with information about that type
- * @return  complete description of that phone number type
- */
-// @VisibleForTesting
+        /**
+         * Processes a phone number description element from the XML file and returns it as a
+         * PhoneNumberDesc. If the description element is a fixed line or mobile number, the parent
+         * description will be used to fill in the whole element if necessary, or any components that are
+         * missing. For all other types, the parent description will only be used to fill in missing
+         * components if the type has a partial definition. For example, if no "tollFree" element exists,
+         * we assume there are no toll free numbers for that locale, and return a phone number description
+         * with no national number data and [-1] for the possible lengths. Note that the parent
+         * description must therefore already be processed before this method is called on any child
+         * elements.
+         *
+         * @param parentDesc  a generic phone number description that will be used to fill in missing
+         *     parts of the description, or null if this is the root node. This must be processed before
+         *     this is run on any child elements.
+         * @param countryElement  the XML element representing all the country information
+         * @param numberType  the name of the number type, corresponding to the appropriate tag in the XML
+         *     file with information about that type
+         * @return  complete description of that phone number type
+         */
         static PhoneNumberDesc.Builder processPhoneNumberDescElement(PhoneNumberDesc parentDesc,
             XElement countryElement,
             string numberType)
@@ -736,7 +732,7 @@ namespace PhoneNumbers
                 // It is okay if at this time we have duplicates, because the same Length might be possible
                 // for e.g. fixed-line and for mobile numbers, and this method operates potentially on
                 // multiple phoneNumberDesc XML elements.
-                lengths.addAll(thisElementLengths);
+                lengths.AddAll(thisElementLengths);
             }
         }
 
@@ -772,15 +768,15 @@ namespace PhoneNumbers
             {
                 // Make a copy here since we want to remove some nodes, but we don't want to do that on our
                 // actual data.
-                XElement allDescData = (XElement) data.cloneNode(true /* deep copy */);
+                XElement allDescData = new XElement(data);
                 foreach (string tag in PHONE_NUMBER_DESCS_WITHOUT_MATCHING_TYPES)
                 {
                     var nodesToRemove = allDescData.Elements(XName.Get(tag)).ToList();
+                    // We check when we process phone number descriptions that there are only one of each
+                    // type, so this is safe to do.
                     if (nodesToRemove.Any())
                     {
-                        // We check when we process phone number descriptions that there are only one of each
-                        // type, so this is safe to do.
-                        allDescData.removeChild(nodesToRemove[0]);
+                        nodesToRemove[0].Remove();
                     }
                 }
 
@@ -820,7 +816,7 @@ namespace PhoneNumbers
             HashSet<int> localOnlyLengths, PhoneNumberDesc parentDesc, PhoneNumberDesc.Builder desc)
         {
             // We clear these fields since the metadata tends to inherit from the parent element for other
-            // fields (via a mergeFrom).
+            // fields (via a MergeFrom).
             desc.ClearPossibleLength();
             desc.ClearPossibleLengthLocalOnly();
             // Only add the lengths to this sub-type if they aren't exactly the same as the possible
@@ -899,7 +895,7 @@ namespace PhoneNumbers
          * @param liteBuild  The liteBuild flag value as given by the command-line
          * @param specialBuild  The specialBuild flag value as given by the command-line
          */
-        internal static MetadataFilter getMetadataFilter(bool liteBuild, bool specialBuild)
+        internal static MetadataFilter GetMetadataFilter(bool liteBuild, bool specialBuild)
         {
             if (specialBuild)
             {
@@ -908,15 +904,15 @@ namespace PhoneNumbers
                     throw new Exception("liteBuild and specialBuild may not both be set");
                 }
 
-                return MetadataFilter.forSpecialBuild();
+                return MetadataFilter.ForSpecialBuild();
             }
 
             if (liteBuild)
             {
-                return MetadataFilter.forLiteBuild();
+                return MetadataFilter.ForLiteBuild();
             }
 
-            return MetadataFilter.emptyFilter();
+            return MetadataFilter.EmptyFilter();
         }
     }
 }
