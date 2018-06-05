@@ -235,17 +235,17 @@ namespace PhoneNumbers
                     throw new InvalidDataException("cannot load/parse metadata", e);
                 }
 
-                var metadataCollection = new PhoneMetadataCollection();
+                var metadataCollection = new PhoneMetadataCollection.Builder();
                 try
                 {
-                    metadataCollection.re(ois); // metadataCollection.mergeFrom(convertStreamToByteBuffer(ois, bufferSize));
+                    metadataCollection.MergeFrom(ConvertStreamToByteBuffer(ois, bufferSize));
                 }
                 catch (IOException e)
                 {
                     throw new InvalidDataException("cannot load/parse metadata", e);
                 }
 
-                return metadataCollection;
+                return metadataCollection.Build();
             }
             finally
             {
@@ -254,7 +254,9 @@ namespace PhoneNumbers
                     if (ois != null)
                     {
                         // This will close all underlying streams as well, including source.
+#if !NET35
                         ois.Dispose();
+#endif
                     }
                     else
                     {

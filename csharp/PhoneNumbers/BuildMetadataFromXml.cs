@@ -22,9 +22,8 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
-using PhoneNumbers;
 
-namespace Tools
+namespace PhoneNumbers
 {
     public class BuildMetadataFromXml
     {
@@ -603,7 +602,11 @@ namespace Tools
                     if (intersection.Count != 0)
                     {
                         throw new Exception(
+#if NET35
+                            $"Possible length(s) found specified as a normal and local-only length: {string.Join(", ", intersection.Select(x => x.ToString()).ToArray())}");
+#else
                             $"Possible length(s) found specified as a normal and local-only length: {string.Join(", ", intersection)}");
+#endif
                     }
                     // We check again when we set these lengths on the metadata itself in setPossibleLengths
                     // that the elements in localOnly are not also in lengths. For e.g. the generalDesc, it
