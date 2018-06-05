@@ -30,10 +30,10 @@ namespace PhoneNumbers
     */
     public class MappingFileProvider
     {
-        private static readonly Dictionary<string, string> LocaleNormalizationMap;
-        private List<HashSet<string>> availableLanguages;
-        private int[] countryCallingCodes;
         private int numOfEntries;
+        private int[] countryCallingCodes;
+        private List<HashSet<string>> availableLanguages;
+        private static readonly Dictionary<string, string> LocaleNormalizationMap;
 
         static MappingFileProvider()
         {
@@ -109,10 +109,14 @@ namespace PhoneNumbers
         public string GetFileName(int countryCallingCode, string language, string script, string region)
         {
             if (language.Length == 0)
+            {
                 return "";
+            }
             var index = Array.BinarySearch(countryCallingCodes, countryCallingCode);
             if (index < 0)
+            {
                 return "";
+            }
             var setOfLangs = availableLanguages[index];
             if (setOfLangs.Count > 0)
             {
@@ -134,30 +138,44 @@ namespace PhoneNumbers
             var fullLocaleStr = fullLocale.ToString();
             string normalizedLocale;
             if (LocaleNormalizationMap.TryGetValue(fullLocaleStr, out normalizedLocale))
+            {
                 if (setOfLangs.Contains(normalizedLocale))
+                {
                     return normalizedLocale;
+                }
+            }
             if (setOfLangs.Contains(fullLocaleStr))
+            {
                 return fullLocaleStr;
+            }
 
             if (OnlyOneOfScriptOrRegionIsEmpty(script, region))
             {
                 if (setOfLangs.Contains(language))
+                {
                     return language;
+                }
             }
             else if (script.Length > 0 && region.Length > 0)
             {
                 var langWithScript = new StringBuilder(language).Append('_').Append(script);
                 var langWithScriptStr = langWithScript.ToString();
                 if (setOfLangs.Contains(langWithScriptStr))
+                {
                     return langWithScriptStr;
+                }
 
                 var langWithRegion = new StringBuilder(language).Append('_').Append(region);
                 var langWithRegionStr = langWithRegion.ToString();
                 if (setOfLangs.Contains(langWithRegionStr))
+                {
                     return langWithRegionStr;
+                }
 
                 if (setOfLangs.Contains(language))
+                {
                     return language;
+                }
             }
             return "";
         }
@@ -178,7 +196,9 @@ namespace PhoneNumbers
         private static void AppendSubsequentLocalePart(string subsequentLocalePart, StringBuilder fullLocale)
         {
             if (subsequentLocalePart.Length > 0)
+            {
                 fullLocale.Append('_').Append(subsequentLocalePart);
+            }
         }
     }
 }
