@@ -2,7 +2,7 @@
 #pragma warning disable 1591, 0612, 3021
 #region Designer generated code
 
-using scg = global::System.Collections.Generic;
+using System.Collections.Generic;
 namespace PhoneNumbers {
   
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -23,7 +23,7 @@ namespace PhoneNumbers {
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
   public partial class PhoneNumber {
     private PhoneNumber() { }
-    private static readonly PhoneNumber defaultInstance = new PhoneNumber().MakeReadOnly();
+    private static readonly PhoneNumber defaultInstance = new PhoneNumber();
     private static readonly string[] _phoneNumberFieldNames = new string[] { "country_code", "country_code_source", "extension", "italian_leading_zero", "national_number", "number_of_leading_zeros", "preferred_domestic_carrier_code", "raw_input" };
     private static readonly uint[] _phoneNumberFieldTags = new uint[] { 8, 48, 26, 32, 16, 64, 58, 42 };
     public static PhoneNumber DefaultInstance {
@@ -114,11 +114,11 @@ namespace PhoneNumbers {
     
     public const int CountryCodeSourceFieldNumber = 6;
     private bool hasCountryCodeSource;
-    private global::PhoneNumbers.PhoneNumber.Types.CountryCodeSource countryCodeSource_ = global::PhoneNumbers.PhoneNumber.Types.CountryCodeSource.UNSPECIFIED;
+    private PhoneNumber.Types.CountryCodeSource countryCodeSource_ = PhoneNumber.Types.CountryCodeSource.UNSPECIFIED;
     public bool HasCountryCodeSource {
       get { return hasCountryCodeSource; }
     }
-    public global::PhoneNumbers.PhoneNumber.Types.CountryCodeSource CountryCodeSource {
+    public PhoneNumber.Types.CountryCodeSource CountryCodeSource {
       get { return countryCodeSource_; }
     }
     
@@ -143,38 +143,6 @@ namespace PhoneNumbers {
     
     
     
-    private int CalcSerializedSize() {
-      int size = memoizedSerializedSize;
-      if (size != -1) return size;
-      
-      size = 0;
-      if (hasCountryCode) {
-        size += pb::CodedOutputStream.ComputeInt32Size(1, CountryCode);
-      }
-      if (hasNationalNumber) {
-        size += pb::CodedOutputStream.ComputeUInt64Size(2, NationalNumber);
-      }
-      if (hasExtension) {
-        size += pb::CodedOutputStream.ComputeStringSize(3, Extension);
-      }
-      if (hasItalianLeadingZero) {
-        size += pb::CodedOutputStream.ComputeBoolSize(4, ItalianLeadingZero);
-      }
-      if (hasNumberOfLeadingZeros) {
-        size += pb::CodedOutputStream.ComputeInt32Size(8, NumberOfLeadingZeros);
-      }
-      if (hasRawInput) {
-        size += pb::CodedOutputStream.ComputeStringSize(5, RawInput);
-      }
-      if (hasCountryCodeSource) {
-        size += pb::CodedOutputStream.ComputeEnumSize(6, (int) CountryCodeSource);
-      }
-      if (hasPreferredDomesticCarrierCode) {
-        size += pb::CodedOutputStream.ComputeStringSize(7, PreferredDomesticCarrierCode);
-      }
-      memoizedSerializedSize = size;
-      return size;
-    }
     #region Lite runtime methods
     public override int GetHashCode() {
       int hash = GetType().GetHashCode();
@@ -205,9 +173,6 @@ namespace PhoneNumbers {
     
     #endregion
     
-    private PhoneNumber MakeReadOnly() {
-      return this;
-    }
     
     public static Builder CreateBuilder() { return new Builder(); }
     public Builder ToBuilder() { return CreateBuilder(this); }
@@ -266,7 +231,7 @@ namespace PhoneNumbers {
       }
       
       public PhoneNumber DefaultInstanceForType {
-        get { return global::PhoneNumbers.PhoneNumber.DefaultInstance; }
+        get { return PhoneNumber.DefaultInstance; }
       }
       
       public PhoneNumber Build() { return BuildPartial(); }
@@ -276,12 +241,12 @@ namespace PhoneNumbers {
           return result;
         }
         resultIsReadOnly = true;
-        return result.MakeReadOnly();
+        return result;
       }
       
       
       public Builder MergeFrom(PhoneNumber other) {
-        if (other == global::PhoneNumbers.PhoneNumber.DefaultInstance) return this;
+        if (other == PhoneNumber.DefaultInstance) return this;
         PrepareBuilder();
         if (other.HasCountryCode) {
           CountryCode = other.CountryCode;
@@ -438,11 +403,11 @@ namespace PhoneNumbers {
       public bool HasCountryCodeSource {
        get { return result.hasCountryCodeSource; }
       }
-      public global::PhoneNumbers.PhoneNumber.Types.CountryCodeSource CountryCodeSource {
+      public PhoneNumber.Types.CountryCodeSource CountryCodeSource {
         get { return result.CountryCodeSource; }
         set { SetCountryCodeSource(value); }
       }
-      public Builder SetCountryCodeSource(global::PhoneNumbers.PhoneNumber.Types.CountryCodeSource value) {
+      public Builder SetCountryCodeSource(PhoneNumber.Types.CountryCodeSource value) {
         PrepareBuilder();
         result.hasCountryCodeSource = true;
         result.countryCodeSource_ = value;
@@ -451,7 +416,7 @@ namespace PhoneNumbers {
       public Builder ClearCountryCodeSource() {
         PrepareBuilder();
         result.hasCountryCodeSource = false;
-        result.countryCodeSource_ = global::PhoneNumbers.PhoneNumber.Types.CountryCodeSource.UNSPECIFIED;
+        result.countryCodeSource_ = PhoneNumber.Types.CountryCodeSource.UNSPECIFIED;
         return this;
       }
       
@@ -477,7 +442,7 @@ namespace PhoneNumbers {
       }
     }
     static PhoneNumber() {
-      object.ReferenceEquals(global::PhoneNumbers.Phonenumber.Descriptor, null);
+      object.ReferenceEquals(Phonenumber.Descriptor, null);
     }
   }
   

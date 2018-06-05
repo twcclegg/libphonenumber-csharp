@@ -36,7 +36,7 @@ namespace PhoneNumbers
 
         internal PhoneNumberToCarrierMapper(string phonePrefixDataDirectory)
         {
-#if NET40
+#if (NET35 || NET40)
             var assembly = Assembly.GetExecutingAssembly();
 #else
             var assembly = typeof(PhoneNumberToCarrierMapper).GetTypeInfo().Assembly;

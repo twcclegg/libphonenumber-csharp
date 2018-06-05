@@ -2,7 +2,7 @@
 #pragma warning disable 1591, 0612, 3021
 #region Designer generated code
 
-using scg = global::System.Collections.Generic;
+using System.Collections.Generic;
 namespace PhoneNumbers {
   
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -23,7 +23,7 @@ namespace PhoneNumbers {
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
   public partial class NumberFormat {
     private NumberFormat() { }
-    private static readonly NumberFormat defaultInstance = new NumberFormat().MakeReadOnly();
+    private static readonly NumberFormat defaultInstance = new NumberFormat();
     private static readonly string[] _numberFormatFieldNames = new string[] { "domestic_carrier_code_formatting_rule", "format", "leading_digits_pattern", "national_prefix_formatting_rule", "national_prefix_optional_when_formatting", "pattern" };
     private static readonly uint[] _numberFormatFieldTags = new uint[] { 42, 18, 26, 34, 48, 10 };
     public static NumberFormat DefaultInstance {
@@ -59,8 +59,8 @@ namespace PhoneNumbers {
     }
     
     public const int LeadingDigitsPatternFieldNumber = 3;
-    private scg::List<string> leadingDigitsPattern_ = new scg::List<string>();
-    public scg::IList<string> LeadingDigitsPatternList {
+    private List<string> leadingDigitsPattern_ = new List<string>();
+    public IList<string> LeadingDigitsPatternList {
       get { return leadingDigitsPattern_; }
     }
     public int LeadingDigitsPatternCount {
@@ -111,37 +111,6 @@ namespace PhoneNumbers {
     
     
     
-    private int CalcSerializedSize() {
-      int size = memoizedSerializedSize;
-      if (size != -1) return size;
-      
-      size = 0;
-      if (hasPattern) {
-        size += pb::CodedOutputStream.ComputeStringSize(1, Pattern);
-      }
-      if (hasFormat) {
-        size += pb::CodedOutputStream.ComputeStringSize(2, Format);
-      }
-      {
-        int dataSize = 0;
-        foreach (string element in LeadingDigitsPatternList) {
-          dataSize += pb::CodedOutputStream.ComputeStringSizeNoTag(element);
-        }
-        size += dataSize;
-        size += 1 * leadingDigitsPattern_.Count;
-      }
-      if (hasNationalPrefixFormattingRule) {
-        size += pb::CodedOutputStream.ComputeStringSize(4, NationalPrefixFormattingRule);
-      }
-      if (hasNationalPrefixOptionalWhenFormatting) {
-        size += pb::CodedOutputStream.ComputeBoolSize(6, NationalPrefixOptionalWhenFormatting);
-      }
-      if (hasDomesticCarrierCodeFormattingRule) {
-        size += pb::CodedOutputStream.ComputeStringSize(5, DomesticCarrierCodeFormattingRule);
-      }
-      memoizedSerializedSize = size;
-      return size;
-    }
     #region Lite runtime methods
     public override int GetHashCode() {
       int hash = GetType().GetHashCode();
@@ -171,10 +140,6 @@ namespace PhoneNumbers {
     
     #endregion
     
-    private NumberFormat MakeReadOnly() {
-      leadingDigitsPattern_.MakeReadOnly();
-      return this;
-    }
     
     public static Builder CreateBuilder() { return new Builder(); }
     public Builder ToBuilder() { return CreateBuilder(this); }
@@ -233,7 +198,7 @@ namespace PhoneNumbers {
       }
       
       public NumberFormat DefaultInstanceForType {
-        get { return global::PhoneNumbers.NumberFormat.DefaultInstance; }
+        get { return NumberFormat.DefaultInstance; }
       }
       
       public NumberFormat Build() { return BuildPartial(); }
@@ -243,12 +208,12 @@ namespace PhoneNumbers {
           return result;
         }
         resultIsReadOnly = true;
-        return result.MakeReadOnly();
+        return result;
       }
       
       
       public Builder MergeFrom(NumberFormat other) {
-        if (other == global::PhoneNumbers.NumberFormat.DefaultInstance) return this;
+        if (other == NumberFormat.DefaultInstance) return this;
         PrepareBuilder();
         if (other.HasPattern) {
           Pattern = other.Pattern;
@@ -257,7 +222,7 @@ namespace PhoneNumbers {
           Format = other.Format;
         }
         if (other.leadingDigitsPattern_.Count != 0) {
-          result.leadingDigitsPattern_.Add(other.leadingDigitsPattern_);
+          result.leadingDigitsPattern_.AddRange(other.leadingDigitsPattern_);
         }
         if (other.HasNationalPrefixFormattingRule) {
           NationalPrefixFormattingRule = other.NationalPrefixFormattingRule;
@@ -316,7 +281,7 @@ namespace PhoneNumbers {
         return this;
       }
       
-      public scg::IList<string> LeadingDigitsPatternList {
+      public IList<string> LeadingDigitsPatternList {
         get { return PrepareBuilder().leadingDigitsPattern_; }
       }
       public int LeadingDigitsPatternCount {
@@ -337,9 +302,9 @@ namespace PhoneNumbers {
         result.leadingDigitsPattern_.Add(value);
         return this;
       }
-      public Builder AddRangeLeadingDigitsPattern(scg::IEnumerable<string> values) {
+      public Builder AddRangeLeadingDigitsPattern(IEnumerable<string> values) {
         PrepareBuilder();
-        result.leadingDigitsPattern_.Add(values);
+        result.leadingDigitsPattern_.AddRange(values);
         return this;
       }
       public Builder ClearLeadingDigitsPattern() {
@@ -411,14 +376,14 @@ namespace PhoneNumbers {
       }
     }
     static NumberFormat() {
-      object.ReferenceEquals(global::PhoneNumbers.Phonemetadata.Descriptor, null);
+      object.ReferenceEquals(Phonemetadata.Descriptor, null);
     }
   }
   
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
   public partial class PhoneNumberDesc {
     private PhoneNumberDesc() { }
-    private static readonly PhoneNumberDesc defaultInstance = new PhoneNumberDesc().MakeReadOnly();
+    private static readonly PhoneNumberDesc defaultInstance = new PhoneNumberDesc();
     private static readonly string[] _phoneNumberDescFieldNames = new string[] { "example_number", "national_number_pattern", "possible_length", "possible_length_local_only" };
     private static readonly uint[] _phoneNumberDescFieldTags = new uint[] { 50, 18, 72, 80 };
     public static PhoneNumberDesc DefaultInstance {
@@ -444,8 +409,8 @@ namespace PhoneNumbers {
     }
     
     public const int PossibleLengthFieldNumber = 9;
-    private scg::List<int> possibleLength_ = new scg::List<int>();
-    public scg::IList<int> PossibleLengthList {
+    private List<int> possibleLength_ = new List<int>();
+    public IList<int> PossibleLengthList {
       get { return possibleLength_; }
     }
     public int PossibleLengthCount {
@@ -456,8 +421,8 @@ namespace PhoneNumbers {
     }
     
     public const int PossibleLengthLocalOnlyFieldNumber = 10;
-    private scg::List<int> possibleLengthLocalOnly_ = new scg::List<int>();
-    public scg::IList<int> PossibleLengthLocalOnlyList {
+    private List<int> possibleLengthLocalOnly_ = new List<int>();
+    public IList<int> PossibleLengthLocalOnlyList {
       get { return possibleLengthLocalOnly_; }
     }
     public int PossibleLengthLocalOnlyCount {
@@ -486,36 +451,6 @@ namespace PhoneNumbers {
     
     
     
-    private int CalcSerializedSize() {
-      int size = memoizedSerializedSize;
-      if (size != -1) return size;
-      
-      size = 0;
-      if (hasNationalNumberPattern) {
-        size += pb::CodedOutputStream.ComputeStringSize(2, NationalNumberPattern);
-      }
-      {
-        int dataSize = 0;
-        foreach (int element in PossibleLengthList) {
-          dataSize += pb::CodedOutputStream.ComputeInt32SizeNoTag(element);
-        }
-        size += dataSize;
-        size += 1 * possibleLength_.Count;
-      }
-      {
-        int dataSize = 0;
-        foreach (int element in PossibleLengthLocalOnlyList) {
-          dataSize += pb::CodedOutputStream.ComputeInt32SizeNoTag(element);
-        }
-        size += dataSize;
-        size += 1 * possibleLengthLocalOnly_.Count;
-      }
-      if (hasExampleNumber) {
-        size += pb::CodedOutputStream.ComputeStringSize(6, ExampleNumber);
-      }
-      memoizedSerializedSize = size;
-      return size;
-    }
     #region Lite runtime methods
     public override int GetHashCode() {
       int hash = GetType().GetHashCode();
@@ -544,11 +479,6 @@ namespace PhoneNumbers {
     
     #endregion
     
-    private PhoneNumberDesc MakeReadOnly() {
-      possibleLength_.MakeReadOnly();
-      possibleLengthLocalOnly_.MakeReadOnly();
-      return this;
-    }
     
     public static Builder CreateBuilder() { return new Builder(); }
     public Builder ToBuilder() { return CreateBuilder(this); }
@@ -607,7 +537,7 @@ namespace PhoneNumbers {
       }
       
       public PhoneNumberDesc DefaultInstanceForType {
-        get { return global::PhoneNumbers.PhoneNumberDesc.DefaultInstance; }
+        get { return PhoneNumberDesc.DefaultInstance; }
       }
       
       public PhoneNumberDesc Build() { return BuildPartial(); }
@@ -617,21 +547,21 @@ namespace PhoneNumbers {
           return result;
         }
         resultIsReadOnly = true;
-        return result.MakeReadOnly();
+        return result;
       }
       
       
       public Builder MergeFrom(PhoneNumberDesc other) {
-        if (other == global::PhoneNumbers.PhoneNumberDesc.DefaultInstance) return this;
+        if (other == PhoneNumberDesc.DefaultInstance) return this;
         PrepareBuilder();
         if (other.HasNationalNumberPattern) {
           NationalNumberPattern = other.NationalNumberPattern;
         }
         if (other.possibleLength_.Count != 0) {
-          result.possibleLength_.Add(other.possibleLength_);
+          result.possibleLength_.AddRange(other.possibleLength_);
         }
         if (other.possibleLengthLocalOnly_.Count != 0) {
-          result.possibleLengthLocalOnly_.Add(other.possibleLengthLocalOnly_);
+          result.possibleLengthLocalOnly_.AddRange(other.possibleLengthLocalOnly_);
         }
         if (other.HasExampleNumber) {
           ExampleNumber = other.ExampleNumber;
@@ -663,7 +593,7 @@ namespace PhoneNumbers {
         return this;
       }
       
-      public scg::IList<int> PossibleLengthList {
+      public IList<int> PossibleLengthList {
         get { return PrepareBuilder().possibleLength_; }
       }
       public int PossibleLengthCount {
@@ -682,9 +612,9 @@ namespace PhoneNumbers {
         result.possibleLength_.Add(value);
         return this;
       }
-      public Builder AddRangePossibleLength(scg::IEnumerable<int> values) {
+      public Builder AddRangePossibleLength(IEnumerable<int> values) {
         PrepareBuilder();
-        result.possibleLength_.Add(values);
+        result.possibleLength_.AddRange(values);
         return this;
       }
       public Builder ClearPossibleLength() {
@@ -693,7 +623,7 @@ namespace PhoneNumbers {
         return this;
       }
       
-      public scg::IList<int> PossibleLengthLocalOnlyList {
+      public IList<int> PossibleLengthLocalOnlyList {
         get { return PrepareBuilder().possibleLengthLocalOnly_; }
       }
       public int PossibleLengthLocalOnlyCount {
@@ -712,9 +642,9 @@ namespace PhoneNumbers {
         result.possibleLengthLocalOnly_.Add(value);
         return this;
       }
-      public Builder AddRangePossibleLengthLocalOnly(scg::IEnumerable<int> values) {
+      public Builder AddRangePossibleLengthLocalOnly(IEnumerable<int> values) {
         PrepareBuilder();
-        result.possibleLengthLocalOnly_.Add(values);
+        result.possibleLengthLocalOnly_.AddRange(values);
         return this;
       }
       public Builder ClearPossibleLengthLocalOnly() {
@@ -745,14 +675,14 @@ namespace PhoneNumbers {
       }
     }
     static PhoneNumberDesc() {
-      object.ReferenceEquals(global::PhoneNumbers.Phonemetadata.Descriptor, null);
+      object.ReferenceEquals(Phonemetadata.Descriptor, null);
     }
   }
   
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
   public partial class PhoneMetadata {
     private PhoneMetadata() { }
-    private static readonly PhoneMetadata defaultInstance = new PhoneMetadata().MakeReadOnly();
+    private static readonly PhoneMetadata defaultInstance = new PhoneMetadata();
     private static readonly string[] _phoneMetadataFieldNames = new string[] { "carrier_specific", "country_code", "emergency", "fixed_line", "general_desc", "id", "international_prefix", "intl_number_format", "leading_digits", "leading_zero_possible", "main_country_for_code", "mobile", "mobile_number_portable_region", "national_prefix", "national_prefix_for_parsing", "national_prefix_transform_rule", "no_international_dialling", "number_format", "pager", "personal_number", "preferred_extn_prefix", "preferred_international_prefix", "premium_rate", "same_mobile_and_fixed_line_pattern", "shared_cost", "short_code", "sms_services", "standard_rate", "toll_free", "uan", "voicemail", "voip" };
     private static readonly uint[] _phoneMetadataFieldTags = new uint[] { 250, 80, 218, 18, 10, 74, 90, 162, 186, 208, 176, 26, 256, 98, 122, 130, 194, 154, 170, 58, 106, 138, 42, 144, 50, 234, 266, 242, 34, 202, 226, 66 };
     public static PhoneMetadata DefaultInstance {
@@ -769,172 +699,172 @@ namespace PhoneNumbers {
     
     public const int GeneralDescFieldNumber = 1;
     private bool hasGeneralDesc;
-    private global::PhoneNumbers.PhoneNumberDesc generalDesc_;
+    private PhoneNumberDesc generalDesc_;
     public bool HasGeneralDesc {
       get { return hasGeneralDesc; }
     }
-    public global::PhoneNumbers.PhoneNumberDesc GeneralDesc {
-      get { return generalDesc_ ?? global::PhoneNumbers.PhoneNumberDesc.DefaultInstance; }
+    public PhoneNumberDesc GeneralDesc {
+      get { return generalDesc_ ?? PhoneNumberDesc.DefaultInstance; }
     }
     
     public const int FixedLineFieldNumber = 2;
     private bool hasFixedLine;
-    private global::PhoneNumbers.PhoneNumberDesc fixedLine_;
+    private PhoneNumberDesc fixedLine_;
     public bool HasFixedLine {
       get { return hasFixedLine; }
     }
-    public global::PhoneNumbers.PhoneNumberDesc FixedLine {
-      get { return fixedLine_ ?? global::PhoneNumbers.PhoneNumberDesc.DefaultInstance; }
+    public PhoneNumberDesc FixedLine {
+      get { return fixedLine_ ?? PhoneNumberDesc.DefaultInstance; }
     }
     
     public const int MobileFieldNumber = 3;
     private bool hasMobile;
-    private global::PhoneNumbers.PhoneNumberDesc mobile_;
+    private PhoneNumberDesc mobile_;
     public bool HasMobile {
       get { return hasMobile; }
     }
-    public global::PhoneNumbers.PhoneNumberDesc Mobile {
-      get { return mobile_ ?? global::PhoneNumbers.PhoneNumberDesc.DefaultInstance; }
+    public PhoneNumberDesc Mobile {
+      get { return mobile_ ?? PhoneNumberDesc.DefaultInstance; }
     }
     
     public const int TollFreeFieldNumber = 4;
     private bool hasTollFree;
-    private global::PhoneNumbers.PhoneNumberDesc tollFree_;
+    private PhoneNumberDesc tollFree_;
     public bool HasTollFree {
       get { return hasTollFree; }
     }
-    public global::PhoneNumbers.PhoneNumberDesc TollFree {
-      get { return tollFree_ ?? global::PhoneNumbers.PhoneNumberDesc.DefaultInstance; }
+    public PhoneNumberDesc TollFree {
+      get { return tollFree_ ?? PhoneNumberDesc.DefaultInstance; }
     }
     
     public const int PremiumRateFieldNumber = 5;
     private bool hasPremiumRate;
-    private global::PhoneNumbers.PhoneNumberDesc premiumRate_;
+    private PhoneNumberDesc premiumRate_;
     public bool HasPremiumRate {
       get { return hasPremiumRate; }
     }
-    public global::PhoneNumbers.PhoneNumberDesc PremiumRate {
-      get { return premiumRate_ ?? global::PhoneNumbers.PhoneNumberDesc.DefaultInstance; }
+    public PhoneNumberDesc PremiumRate {
+      get { return premiumRate_ ?? PhoneNumberDesc.DefaultInstance; }
     }
     
     public const int SharedCostFieldNumber = 6;
     private bool hasSharedCost;
-    private global::PhoneNumbers.PhoneNumberDesc sharedCost_;
+    private PhoneNumberDesc sharedCost_;
     public bool HasSharedCost {
       get { return hasSharedCost; }
     }
-    public global::PhoneNumbers.PhoneNumberDesc SharedCost {
-      get { return sharedCost_ ?? global::PhoneNumbers.PhoneNumberDesc.DefaultInstance; }
+    public PhoneNumberDesc SharedCost {
+      get { return sharedCost_ ?? PhoneNumberDesc.DefaultInstance; }
     }
     
     public const int PersonalNumberFieldNumber = 7;
     private bool hasPersonalNumber;
-    private global::PhoneNumbers.PhoneNumberDesc personalNumber_;
+    private PhoneNumberDesc personalNumber_;
     public bool HasPersonalNumber {
       get { return hasPersonalNumber; }
     }
-    public global::PhoneNumbers.PhoneNumberDesc PersonalNumber {
-      get { return personalNumber_ ?? global::PhoneNumbers.PhoneNumberDesc.DefaultInstance; }
+    public PhoneNumberDesc PersonalNumber {
+      get { return personalNumber_ ?? PhoneNumberDesc.DefaultInstance; }
     }
     
     public const int VoipFieldNumber = 8;
     private bool hasVoip;
-    private global::PhoneNumbers.PhoneNumberDesc voip_;
+    private PhoneNumberDesc voip_;
     public bool HasVoip {
       get { return hasVoip; }
     }
-    public global::PhoneNumbers.PhoneNumberDesc Voip {
-      get { return voip_ ?? global::PhoneNumbers.PhoneNumberDesc.DefaultInstance; }
+    public PhoneNumberDesc Voip {
+      get { return voip_ ?? PhoneNumberDesc.DefaultInstance; }
     }
     
     public const int PagerFieldNumber = 21;
     private bool hasPager;
-    private global::PhoneNumbers.PhoneNumberDesc pager_;
+    private PhoneNumberDesc pager_;
     public bool HasPager {
       get { return hasPager; }
     }
-    public global::PhoneNumbers.PhoneNumberDesc Pager {
-      get { return pager_ ?? global::PhoneNumbers.PhoneNumberDesc.DefaultInstance; }
+    public PhoneNumberDesc Pager {
+      get { return pager_ ?? PhoneNumberDesc.DefaultInstance; }
     }
     
     public const int UanFieldNumber = 25;
     private bool hasUan;
-    private global::PhoneNumbers.PhoneNumberDesc uan_;
+    private PhoneNumberDesc uan_;
     public bool HasUan {
       get { return hasUan; }
     }
-    public global::PhoneNumbers.PhoneNumberDesc Uan {
-      get { return uan_ ?? global::PhoneNumbers.PhoneNumberDesc.DefaultInstance; }
+    public PhoneNumberDesc Uan {
+      get { return uan_ ?? PhoneNumberDesc.DefaultInstance; }
     }
     
     public const int EmergencyFieldNumber = 27;
     private bool hasEmergency;
-    private global::PhoneNumbers.PhoneNumberDesc emergency_;
+    private PhoneNumberDesc emergency_;
     public bool HasEmergency {
       get { return hasEmergency; }
     }
-    public global::PhoneNumbers.PhoneNumberDesc Emergency {
-      get { return emergency_ ?? global::PhoneNumbers.PhoneNumberDesc.DefaultInstance; }
+    public PhoneNumberDesc Emergency {
+      get { return emergency_ ?? PhoneNumberDesc.DefaultInstance; }
     }
     
     public const int VoicemailFieldNumber = 28;
     private bool hasVoicemail;
-    private global::PhoneNumbers.PhoneNumberDesc voicemail_;
+    private PhoneNumberDesc voicemail_;
     public bool HasVoicemail {
       get { return hasVoicemail; }
     }
-    public global::PhoneNumbers.PhoneNumberDesc Voicemail {
-      get { return voicemail_ ?? global::PhoneNumbers.PhoneNumberDesc.DefaultInstance; }
+    public PhoneNumberDesc Voicemail {
+      get { return voicemail_ ?? PhoneNumberDesc.DefaultInstance; }
     }
     
     public const int ShortCodeFieldNumber = 29;
     private bool hasShortCode;
-    private global::PhoneNumbers.PhoneNumberDesc shortCode_;
+    private PhoneNumberDesc shortCode_;
     public bool HasShortCode {
       get { return hasShortCode; }
     }
-    public global::PhoneNumbers.PhoneNumberDesc ShortCode {
-      get { return shortCode_ ?? global::PhoneNumbers.PhoneNumberDesc.DefaultInstance; }
+    public PhoneNumberDesc ShortCode {
+      get { return shortCode_ ?? PhoneNumberDesc.DefaultInstance; }
     }
     
     public const int StandardRateFieldNumber = 30;
     private bool hasStandardRate;
-    private global::PhoneNumbers.PhoneNumberDesc standardRate_;
+    private PhoneNumberDesc standardRate_;
     public bool HasStandardRate {
       get { return hasStandardRate; }
     }
-    public global::PhoneNumbers.PhoneNumberDesc StandardRate {
-      get { return standardRate_ ?? global::PhoneNumbers.PhoneNumberDesc.DefaultInstance; }
+    public PhoneNumberDesc StandardRate {
+      get { return standardRate_ ?? PhoneNumberDesc.DefaultInstance; }
     }
     
     public const int CarrierSpecificFieldNumber = 31;
     private bool hasCarrierSpecific;
-    private global::PhoneNumbers.PhoneNumberDesc carrierSpecific_;
+    private PhoneNumberDesc carrierSpecific_;
     public bool HasCarrierSpecific {
       get { return hasCarrierSpecific; }
     }
-    public global::PhoneNumbers.PhoneNumberDesc CarrierSpecific {
-      get { return carrierSpecific_ ?? global::PhoneNumbers.PhoneNumberDesc.DefaultInstance; }
+    public PhoneNumberDesc CarrierSpecific {
+      get { return carrierSpecific_ ?? PhoneNumberDesc.DefaultInstance; }
     }
     
     public const int SmsServicesFieldNumber = 33;
     private bool hasSmsServices;
-    private global::PhoneNumbers.PhoneNumberDesc smsServices_;
+    private PhoneNumberDesc smsServices_;
     public bool HasSmsServices {
       get { return hasSmsServices; }
     }
-    public global::PhoneNumbers.PhoneNumberDesc SmsServices {
-      get { return smsServices_ ?? global::PhoneNumbers.PhoneNumberDesc.DefaultInstance; }
+    public PhoneNumberDesc SmsServices {
+      get { return smsServices_ ?? PhoneNumberDesc.DefaultInstance; }
     }
     
     public const int NoInternationalDiallingFieldNumber = 24;
     private bool hasNoInternationalDialling;
-    private global::PhoneNumbers.PhoneNumberDesc noInternationalDialling_;
+    private PhoneNumberDesc noInternationalDialling_;
     public bool HasNoInternationalDialling {
       get { return hasNoInternationalDialling; }
     }
-    public global::PhoneNumbers.PhoneNumberDesc NoInternationalDialling {
-      get { return noInternationalDialling_ ?? global::PhoneNumbers.PhoneNumberDesc.DefaultInstance; }
+    public PhoneNumberDesc NoInternationalDialling {
+      get { return noInternationalDialling_ ?? PhoneNumberDesc.DefaultInstance; }
     }
     
     public const int IdFieldNumber = 9;
@@ -1028,26 +958,26 @@ namespace PhoneNumbers {
     }
     
     public const int NumberFormatFieldNumber = 19;
-    private scg::List<global::PhoneNumbers.NumberFormat> numberFormat_ = new scg::List<global::PhoneNumbers.NumberFormat>();
-    public scg::IList<global::PhoneNumbers.NumberFormat> NumberFormatList {
+    private List<NumberFormat> numberFormat_ = new List<NumberFormat>();
+    public IList<NumberFormat> NumberFormatList {
       get { return numberFormat_; }
     }
     public int NumberFormatCount {
       get { return numberFormat_.Count; }
     }
-    public global::PhoneNumbers.NumberFormat GetNumberFormat(int index) {
+    public NumberFormat GetNumberFormat(int index) {
       return numberFormat_[index];
     }
     
     public const int IntlNumberFormatFieldNumber = 20;
-    private scg::List<global::PhoneNumbers.NumberFormat> intlNumberFormat_ = new scg::List<global::PhoneNumbers.NumberFormat>();
-    public scg::IList<global::PhoneNumbers.NumberFormat> IntlNumberFormatList {
+    private List<NumberFormat> intlNumberFormat_ = new List<NumberFormat>();
+    public IList<NumberFormat> IntlNumberFormatList {
       get { return intlNumberFormat_; }
     }
     public int IntlNumberFormatCount {
       get { return intlNumberFormat_.Count; }
     }
-    public global::PhoneNumbers.NumberFormat GetIntlNumberFormat(int index) {
+    public NumberFormat GetIntlNumberFormat(int index) {
       return intlNumberFormat_[index];
     }
     
@@ -1094,10 +1024,10 @@ namespace PhoneNumbers {
     public bool IsInitialized {
       get {
         if (!hasId) return false;
-        foreach (global::PhoneNumbers.NumberFormat element in NumberFormatList) {
+        foreach (NumberFormat element in NumberFormatList) {
           if (!element.IsInitialized) return false;
         }
-        foreach (global::PhoneNumbers.NumberFormat element in IntlNumberFormatList) {
+        foreach (NumberFormat element in IntlNumberFormatList) {
           if (!element.IsInitialized) return false;
         }
         return true;
@@ -1107,110 +1037,6 @@ namespace PhoneNumbers {
     
     
     
-    private int CalcSerializedSize() {
-      int size = memoizedSerializedSize;
-      if (size != -1) return size;
-      
-      size = 0;
-      if (hasGeneralDesc) {
-        size += pb::CodedOutputStream.ComputeMessageSize(1, GeneralDesc);
-      }
-      if (hasFixedLine) {
-        size += pb::CodedOutputStream.ComputeMessageSize(2, FixedLine);
-      }
-      if (hasMobile) {
-        size += pb::CodedOutputStream.ComputeMessageSize(3, Mobile);
-      }
-      if (hasTollFree) {
-        size += pb::CodedOutputStream.ComputeMessageSize(4, TollFree);
-      }
-      if (hasPremiumRate) {
-        size += pb::CodedOutputStream.ComputeMessageSize(5, PremiumRate);
-      }
-      if (hasSharedCost) {
-        size += pb::CodedOutputStream.ComputeMessageSize(6, SharedCost);
-      }
-      if (hasPersonalNumber) {
-        size += pb::CodedOutputStream.ComputeMessageSize(7, PersonalNumber);
-      }
-      if (hasVoip) {
-        size += pb::CodedOutputStream.ComputeMessageSize(8, Voip);
-      }
-      if (hasPager) {
-        size += pb::CodedOutputStream.ComputeMessageSize(21, Pager);
-      }
-      if (hasUan) {
-        size += pb::CodedOutputStream.ComputeMessageSize(25, Uan);
-      }
-      if (hasEmergency) {
-        size += pb::CodedOutputStream.ComputeMessageSize(27, Emergency);
-      }
-      if (hasVoicemail) {
-        size += pb::CodedOutputStream.ComputeMessageSize(28, Voicemail);
-      }
-      if (hasShortCode) {
-        size += pb::CodedOutputStream.ComputeMessageSize(29, ShortCode);
-      }
-      if (hasStandardRate) {
-        size += pb::CodedOutputStream.ComputeMessageSize(30, StandardRate);
-      }
-      if (hasCarrierSpecific) {
-        size += pb::CodedOutputStream.ComputeMessageSize(31, CarrierSpecific);
-      }
-      if (hasSmsServices) {
-        size += pb::CodedOutputStream.ComputeMessageSize(33, SmsServices);
-      }
-      if (hasNoInternationalDialling) {
-        size += pb::CodedOutputStream.ComputeMessageSize(24, NoInternationalDialling);
-      }
-      if (hasId) {
-        size += pb::CodedOutputStream.ComputeStringSize(9, Id);
-      }
-      if (hasCountryCode) {
-        size += pb::CodedOutputStream.ComputeInt32Size(10, CountryCode);
-      }
-      if (hasInternationalPrefix) {
-        size += pb::CodedOutputStream.ComputeStringSize(11, InternationalPrefix);
-      }
-      if (hasPreferredInternationalPrefix) {
-        size += pb::CodedOutputStream.ComputeStringSize(17, PreferredInternationalPrefix);
-      }
-      if (hasNationalPrefix) {
-        size += pb::CodedOutputStream.ComputeStringSize(12, NationalPrefix);
-      }
-      if (hasPreferredExtnPrefix) {
-        size += pb::CodedOutputStream.ComputeStringSize(13, PreferredExtnPrefix);
-      }
-      if (hasNationalPrefixForParsing) {
-        size += pb::CodedOutputStream.ComputeStringSize(15, NationalPrefixForParsing);
-      }
-      if (hasNationalPrefixTransformRule) {
-        size += pb::CodedOutputStream.ComputeStringSize(16, NationalPrefixTransformRule);
-      }
-      if (hasSameMobileAndFixedLinePattern) {
-        size += pb::CodedOutputStream.ComputeBoolSize(18, SameMobileAndFixedLinePattern);
-      }
-      foreach (global::PhoneNumbers.NumberFormat element in NumberFormatList) {
-        size += pb::CodedOutputStream.ComputeMessageSize(19, element);
-      }
-      foreach (global::PhoneNumbers.NumberFormat element in IntlNumberFormatList) {
-        size += pb::CodedOutputStream.ComputeMessageSize(20, element);
-      }
-      if (hasMainCountryForCode) {
-        size += pb::CodedOutputStream.ComputeBoolSize(22, MainCountryForCode);
-      }
-      if (hasLeadingDigits) {
-        size += pb::CodedOutputStream.ComputeStringSize(23, LeadingDigits);
-      }
-      if (hasLeadingZeroPossible) {
-        size += pb::CodedOutputStream.ComputeBoolSize(26, LeadingZeroPossible);
-      }
-      if (hasMobileNumberPortableRegion) {
-        size += pb::CodedOutputStream.ComputeBoolSize(32, MobileNumberPortableRegion);
-      }
-      memoizedSerializedSize = size;
-      return size;
-    }
     #region Lite runtime methods
     public override int GetHashCode() {
       int hash = GetType().GetHashCode();
@@ -1240,9 +1066,9 @@ namespace PhoneNumbers {
       if (hasNationalPrefixForParsing) hash ^= nationalPrefixForParsing_.GetHashCode();
       if (hasNationalPrefixTransformRule) hash ^= nationalPrefixTransformRule_.GetHashCode();
       if (hasSameMobileAndFixedLinePattern) hash ^= sameMobileAndFixedLinePattern_.GetHashCode();
-      foreach(global::PhoneNumbers.NumberFormat i in numberFormat_)
+      foreach(NumberFormat i in numberFormat_)
         hash ^= i.GetHashCode();
-      foreach(global::PhoneNumbers.NumberFormat i in intlNumberFormat_)
+      foreach(NumberFormat i in intlNumberFormat_)
         hash ^= i.GetHashCode();
       if (hasMainCountryForCode) hash ^= mainCountryForCode_.GetHashCode();
       if (hasLeadingDigits) hash ^= leadingDigits_.GetHashCode();
@@ -1295,11 +1121,6 @@ namespace PhoneNumbers {
     
     #endregion
     
-    private PhoneMetadata MakeReadOnly() {
-      numberFormat_.MakeReadOnly();
-      intlNumberFormat_.MakeReadOnly();
-      return this;
-    }
     
     public static Builder CreateBuilder() { return new Builder(); }
     public Builder ToBuilder() { return CreateBuilder(this); }
@@ -1358,7 +1179,7 @@ namespace PhoneNumbers {
       }
       
       public PhoneMetadata DefaultInstanceForType {
-        get { return global::PhoneNumbers.PhoneMetadata.DefaultInstance; }
+        get { return PhoneMetadata.DefaultInstance; }
       }
       
       public PhoneMetadata Build() { return BuildPartial(); }
@@ -1368,12 +1189,12 @@ namespace PhoneNumbers {
           return result;
         }
         resultIsReadOnly = true;
-        return result.MakeReadOnly();
+        return result;
       }
       
       
       public Builder MergeFrom(PhoneMetadata other) {
-        if (other == global::PhoneNumbers.PhoneMetadata.DefaultInstance) return this;
+        if (other == PhoneMetadata.DefaultInstance) return this;
         PrepareBuilder();
         if (other.HasGeneralDesc) {
           MergeGeneralDesc(other.GeneralDesc);
@@ -1454,10 +1275,10 @@ namespace PhoneNumbers {
           SameMobileAndFixedLinePattern = other.SameMobileAndFixedLinePattern;
         }
         if (other.numberFormat_.Count != 0) {
-          result.numberFormat_.Add(other.numberFormat_);
+          result.numberFormat_.AddRange(other.numberFormat_);
         }
         if (other.intlNumberFormat_.Count != 0) {
-          result.intlNumberFormat_.Add(other.intlNumberFormat_);
+          result.intlNumberFormat_.AddRange(other.intlNumberFormat_);
         }
         if (other.HasMainCountryForCode) {
           MainCountryForCode = other.MainCountryForCode;
@@ -1480,30 +1301,30 @@ namespace PhoneNumbers {
       public bool HasGeneralDesc {
        get { return result.hasGeneralDesc; }
       }
-      public global::PhoneNumbers.PhoneNumberDesc GeneralDesc {
+      public PhoneNumberDesc GeneralDesc {
         get { return result.GeneralDesc; }
         set { SetGeneralDesc(value); }
       }
-      public Builder SetGeneralDesc(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder SetGeneralDesc(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         result.hasGeneralDesc = true;
         result.generalDesc_ = value;
         return this;
       }
-      public Builder SetGeneralDesc(global::PhoneNumbers.PhoneNumberDesc.Builder builderForValue) {
+      public Builder SetGeneralDesc(PhoneNumberDesc.Builder builderForValue) {
         if(builderForValue == null) throw new global::System.ArgumentNullException("builderForValue");
         PrepareBuilder();
         result.hasGeneralDesc = true;
         result.generalDesc_ = builderForValue.Build();
         return this;
       }
-      public Builder MergeGeneralDesc(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder MergeGeneralDesc(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         if (result.hasGeneralDesc &&
-            result.generalDesc_ != global::PhoneNumbers.PhoneNumberDesc.DefaultInstance) {
-            result.generalDesc_ = global::PhoneNumbers.PhoneNumberDesc.CreateBuilder(result.generalDesc_).MergeFrom(value).BuildPartial();
+            result.generalDesc_ != PhoneNumberDesc.DefaultInstance) {
+            result.generalDesc_ = PhoneNumberDesc.CreateBuilder(result.generalDesc_).MergeFrom(value).BuildPartial();
         } else {
           result.generalDesc_ = value;
         }
@@ -1520,30 +1341,30 @@ namespace PhoneNumbers {
       public bool HasFixedLine {
        get { return result.hasFixedLine; }
       }
-      public global::PhoneNumbers.PhoneNumberDesc FixedLine {
+      public PhoneNumberDesc FixedLine {
         get { return result.FixedLine; }
         set { SetFixedLine(value); }
       }
-      public Builder SetFixedLine(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder SetFixedLine(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         result.hasFixedLine = true;
         result.fixedLine_ = value;
         return this;
       }
-      public Builder SetFixedLine(global::PhoneNumbers.PhoneNumberDesc.Builder builderForValue) {
+      public Builder SetFixedLine(PhoneNumberDesc.Builder builderForValue) {
         if(builderForValue == null) throw new global::System.ArgumentNullException("builderForValue");
         PrepareBuilder();
         result.hasFixedLine = true;
         result.fixedLine_ = builderForValue.Build();
         return this;
       }
-      public Builder MergeFixedLine(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder MergeFixedLine(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         if (result.hasFixedLine &&
-            result.fixedLine_ != global::PhoneNumbers.PhoneNumberDesc.DefaultInstance) {
-            result.fixedLine_ = global::PhoneNumbers.PhoneNumberDesc.CreateBuilder(result.fixedLine_).MergeFrom(value).BuildPartial();
+            result.fixedLine_ != PhoneNumberDesc.DefaultInstance) {
+            result.fixedLine_ = PhoneNumberDesc.CreateBuilder(result.fixedLine_).MergeFrom(value).BuildPartial();
         } else {
           result.fixedLine_ = value;
         }
@@ -1560,30 +1381,30 @@ namespace PhoneNumbers {
       public bool HasMobile {
        get { return result.hasMobile; }
       }
-      public global::PhoneNumbers.PhoneNumberDesc Mobile {
+      public PhoneNumberDesc Mobile {
         get { return result.Mobile; }
         set { SetMobile(value); }
       }
-      public Builder SetMobile(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder SetMobile(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         result.hasMobile = true;
         result.mobile_ = value;
         return this;
       }
-      public Builder SetMobile(global::PhoneNumbers.PhoneNumberDesc.Builder builderForValue) {
+      public Builder SetMobile(PhoneNumberDesc.Builder builderForValue) {
         if(builderForValue == null) throw new global::System.ArgumentNullException("builderForValue");
         PrepareBuilder();
         result.hasMobile = true;
         result.mobile_ = builderForValue.Build();
         return this;
       }
-      public Builder MergeMobile(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder MergeMobile(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         if (result.hasMobile &&
-            result.mobile_ != global::PhoneNumbers.PhoneNumberDesc.DefaultInstance) {
-            result.mobile_ = global::PhoneNumbers.PhoneNumberDesc.CreateBuilder(result.mobile_).MergeFrom(value).BuildPartial();
+            result.mobile_ != PhoneNumberDesc.DefaultInstance) {
+            result.mobile_ = PhoneNumberDesc.CreateBuilder(result.mobile_).MergeFrom(value).BuildPartial();
         } else {
           result.mobile_ = value;
         }
@@ -1600,30 +1421,30 @@ namespace PhoneNumbers {
       public bool HasTollFree {
        get { return result.hasTollFree; }
       }
-      public global::PhoneNumbers.PhoneNumberDesc TollFree {
+      public PhoneNumberDesc TollFree {
         get { return result.TollFree; }
         set { SetTollFree(value); }
       }
-      public Builder SetTollFree(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder SetTollFree(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         result.hasTollFree = true;
         result.tollFree_ = value;
         return this;
       }
-      public Builder SetTollFree(global::PhoneNumbers.PhoneNumberDesc.Builder builderForValue) {
+      public Builder SetTollFree(PhoneNumberDesc.Builder builderForValue) {
         if(builderForValue == null) throw new global::System.ArgumentNullException("builderForValue");
         PrepareBuilder();
         result.hasTollFree = true;
         result.tollFree_ = builderForValue.Build();
         return this;
       }
-      public Builder MergeTollFree(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder MergeTollFree(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         if (result.hasTollFree &&
-            result.tollFree_ != global::PhoneNumbers.PhoneNumberDesc.DefaultInstance) {
-            result.tollFree_ = global::PhoneNumbers.PhoneNumberDesc.CreateBuilder(result.tollFree_).MergeFrom(value).BuildPartial();
+            result.tollFree_ != PhoneNumberDesc.DefaultInstance) {
+            result.tollFree_ = PhoneNumberDesc.CreateBuilder(result.tollFree_).MergeFrom(value).BuildPartial();
         } else {
           result.tollFree_ = value;
         }
@@ -1640,30 +1461,30 @@ namespace PhoneNumbers {
       public bool HasPremiumRate {
        get { return result.hasPremiumRate; }
       }
-      public global::PhoneNumbers.PhoneNumberDesc PremiumRate {
+      public PhoneNumberDesc PremiumRate {
         get { return result.PremiumRate; }
         set { SetPremiumRate(value); }
       }
-      public Builder SetPremiumRate(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder SetPremiumRate(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         result.hasPremiumRate = true;
         result.premiumRate_ = value;
         return this;
       }
-      public Builder SetPremiumRate(global::PhoneNumbers.PhoneNumberDesc.Builder builderForValue) {
+      public Builder SetPremiumRate(PhoneNumberDesc.Builder builderForValue) {
         if(builderForValue == null) throw new global::System.ArgumentNullException("builderForValue");
         PrepareBuilder();
         result.hasPremiumRate = true;
         result.premiumRate_ = builderForValue.Build();
         return this;
       }
-      public Builder MergePremiumRate(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder MergePremiumRate(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         if (result.hasPremiumRate &&
-            result.premiumRate_ != global::PhoneNumbers.PhoneNumberDesc.DefaultInstance) {
-            result.premiumRate_ = global::PhoneNumbers.PhoneNumberDesc.CreateBuilder(result.premiumRate_).MergeFrom(value).BuildPartial();
+            result.premiumRate_ != PhoneNumberDesc.DefaultInstance) {
+            result.premiumRate_ = PhoneNumberDesc.CreateBuilder(result.premiumRate_).MergeFrom(value).BuildPartial();
         } else {
           result.premiumRate_ = value;
         }
@@ -1680,30 +1501,30 @@ namespace PhoneNumbers {
       public bool HasSharedCost {
        get { return result.hasSharedCost; }
       }
-      public global::PhoneNumbers.PhoneNumberDesc SharedCost {
+      public PhoneNumberDesc SharedCost {
         get { return result.SharedCost; }
         set { SetSharedCost(value); }
       }
-      public Builder SetSharedCost(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder SetSharedCost(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         result.hasSharedCost = true;
         result.sharedCost_ = value;
         return this;
       }
-      public Builder SetSharedCost(global::PhoneNumbers.PhoneNumberDesc.Builder builderForValue) {
+      public Builder SetSharedCost(PhoneNumberDesc.Builder builderForValue) {
         if(builderForValue == null) throw new global::System.ArgumentNullException("builderForValue");
         PrepareBuilder();
         result.hasSharedCost = true;
         result.sharedCost_ = builderForValue.Build();
         return this;
       }
-      public Builder MergeSharedCost(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder MergeSharedCost(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         if (result.hasSharedCost &&
-            result.sharedCost_ != global::PhoneNumbers.PhoneNumberDesc.DefaultInstance) {
-            result.sharedCost_ = global::PhoneNumbers.PhoneNumberDesc.CreateBuilder(result.sharedCost_).MergeFrom(value).BuildPartial();
+            result.sharedCost_ != PhoneNumberDesc.DefaultInstance) {
+            result.sharedCost_ = PhoneNumberDesc.CreateBuilder(result.sharedCost_).MergeFrom(value).BuildPartial();
         } else {
           result.sharedCost_ = value;
         }
@@ -1720,30 +1541,30 @@ namespace PhoneNumbers {
       public bool HasPersonalNumber {
        get { return result.hasPersonalNumber; }
       }
-      public global::PhoneNumbers.PhoneNumberDesc PersonalNumber {
+      public PhoneNumberDesc PersonalNumber {
         get { return result.PersonalNumber; }
         set { SetPersonalNumber(value); }
       }
-      public Builder SetPersonalNumber(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder SetPersonalNumber(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         result.hasPersonalNumber = true;
         result.personalNumber_ = value;
         return this;
       }
-      public Builder SetPersonalNumber(global::PhoneNumbers.PhoneNumberDesc.Builder builderForValue) {
+      public Builder SetPersonalNumber(PhoneNumberDesc.Builder builderForValue) {
         if(builderForValue == null) throw new global::System.ArgumentNullException("builderForValue");
         PrepareBuilder();
         result.hasPersonalNumber = true;
         result.personalNumber_ = builderForValue.Build();
         return this;
       }
-      public Builder MergePersonalNumber(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder MergePersonalNumber(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         if (result.hasPersonalNumber &&
-            result.personalNumber_ != global::PhoneNumbers.PhoneNumberDesc.DefaultInstance) {
-            result.personalNumber_ = global::PhoneNumbers.PhoneNumberDesc.CreateBuilder(result.personalNumber_).MergeFrom(value).BuildPartial();
+            result.personalNumber_ != PhoneNumberDesc.DefaultInstance) {
+            result.personalNumber_ = PhoneNumberDesc.CreateBuilder(result.personalNumber_).MergeFrom(value).BuildPartial();
         } else {
           result.personalNumber_ = value;
         }
@@ -1760,30 +1581,30 @@ namespace PhoneNumbers {
       public bool HasVoip {
        get { return result.hasVoip; }
       }
-      public global::PhoneNumbers.PhoneNumberDesc Voip {
+      public PhoneNumberDesc Voip {
         get { return result.Voip; }
         set { SetVoip(value); }
       }
-      public Builder SetVoip(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder SetVoip(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         result.hasVoip = true;
         result.voip_ = value;
         return this;
       }
-      public Builder SetVoip(global::PhoneNumbers.PhoneNumberDesc.Builder builderForValue) {
+      public Builder SetVoip(PhoneNumberDesc.Builder builderForValue) {
         if(builderForValue == null) throw new global::System.ArgumentNullException("builderForValue");
         PrepareBuilder();
         result.hasVoip = true;
         result.voip_ = builderForValue.Build();
         return this;
       }
-      public Builder MergeVoip(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder MergeVoip(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         if (result.hasVoip &&
-            result.voip_ != global::PhoneNumbers.PhoneNumberDesc.DefaultInstance) {
-            result.voip_ = global::PhoneNumbers.PhoneNumberDesc.CreateBuilder(result.voip_).MergeFrom(value).BuildPartial();
+            result.voip_ != PhoneNumberDesc.DefaultInstance) {
+            result.voip_ = PhoneNumberDesc.CreateBuilder(result.voip_).MergeFrom(value).BuildPartial();
         } else {
           result.voip_ = value;
         }
@@ -1800,30 +1621,30 @@ namespace PhoneNumbers {
       public bool HasPager {
        get { return result.hasPager; }
       }
-      public global::PhoneNumbers.PhoneNumberDesc Pager {
+      public PhoneNumberDesc Pager {
         get { return result.Pager; }
         set { SetPager(value); }
       }
-      public Builder SetPager(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder SetPager(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         result.hasPager = true;
         result.pager_ = value;
         return this;
       }
-      public Builder SetPager(global::PhoneNumbers.PhoneNumberDesc.Builder builderForValue) {
+      public Builder SetPager(PhoneNumberDesc.Builder builderForValue) {
         if(builderForValue == null) throw new global::System.ArgumentNullException("builderForValue");
         PrepareBuilder();
         result.hasPager = true;
         result.pager_ = builderForValue.Build();
         return this;
       }
-      public Builder MergePager(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder MergePager(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         if (result.hasPager &&
-            result.pager_ != global::PhoneNumbers.PhoneNumberDesc.DefaultInstance) {
-            result.pager_ = global::PhoneNumbers.PhoneNumberDesc.CreateBuilder(result.pager_).MergeFrom(value).BuildPartial();
+            result.pager_ != PhoneNumberDesc.DefaultInstance) {
+            result.pager_ = PhoneNumberDesc.CreateBuilder(result.pager_).MergeFrom(value).BuildPartial();
         } else {
           result.pager_ = value;
         }
@@ -1840,30 +1661,30 @@ namespace PhoneNumbers {
       public bool HasUan {
        get { return result.hasUan; }
       }
-      public global::PhoneNumbers.PhoneNumberDesc Uan {
+      public PhoneNumberDesc Uan {
         get { return result.Uan; }
         set { SetUan(value); }
       }
-      public Builder SetUan(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder SetUan(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         result.hasUan = true;
         result.uan_ = value;
         return this;
       }
-      public Builder SetUan(global::PhoneNumbers.PhoneNumberDesc.Builder builderForValue) {
+      public Builder SetUan(PhoneNumberDesc.Builder builderForValue) {
         if(builderForValue == null) throw new global::System.ArgumentNullException("builderForValue");
         PrepareBuilder();
         result.hasUan = true;
         result.uan_ = builderForValue.Build();
         return this;
       }
-      public Builder MergeUan(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder MergeUan(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         if (result.hasUan &&
-            result.uan_ != global::PhoneNumbers.PhoneNumberDesc.DefaultInstance) {
-            result.uan_ = global::PhoneNumbers.PhoneNumberDesc.CreateBuilder(result.uan_).MergeFrom(value).BuildPartial();
+            result.uan_ != PhoneNumberDesc.DefaultInstance) {
+            result.uan_ = PhoneNumberDesc.CreateBuilder(result.uan_).MergeFrom(value).BuildPartial();
         } else {
           result.uan_ = value;
         }
@@ -1880,30 +1701,30 @@ namespace PhoneNumbers {
       public bool HasEmergency {
        get { return result.hasEmergency; }
       }
-      public global::PhoneNumbers.PhoneNumberDesc Emergency {
+      public PhoneNumberDesc Emergency {
         get { return result.Emergency; }
         set { SetEmergency(value); }
       }
-      public Builder SetEmergency(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder SetEmergency(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         result.hasEmergency = true;
         result.emergency_ = value;
         return this;
       }
-      public Builder SetEmergency(global::PhoneNumbers.PhoneNumberDesc.Builder builderForValue) {
+      public Builder SetEmergency(PhoneNumberDesc.Builder builderForValue) {
         if(builderForValue == null) throw new global::System.ArgumentNullException("builderForValue");
         PrepareBuilder();
         result.hasEmergency = true;
         result.emergency_ = builderForValue.Build();
         return this;
       }
-      public Builder MergeEmergency(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder MergeEmergency(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         if (result.hasEmergency &&
-            result.emergency_ != global::PhoneNumbers.PhoneNumberDesc.DefaultInstance) {
-            result.emergency_ = global::PhoneNumbers.PhoneNumberDesc.CreateBuilder(result.emergency_).MergeFrom(value).BuildPartial();
+            result.emergency_ != PhoneNumberDesc.DefaultInstance) {
+            result.emergency_ = PhoneNumberDesc.CreateBuilder(result.emergency_).MergeFrom(value).BuildPartial();
         } else {
           result.emergency_ = value;
         }
@@ -1920,30 +1741,30 @@ namespace PhoneNumbers {
       public bool HasVoicemail {
        get { return result.hasVoicemail; }
       }
-      public global::PhoneNumbers.PhoneNumberDesc Voicemail {
+      public PhoneNumberDesc Voicemail {
         get { return result.Voicemail; }
         set { SetVoicemail(value); }
       }
-      public Builder SetVoicemail(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder SetVoicemail(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         result.hasVoicemail = true;
         result.voicemail_ = value;
         return this;
       }
-      public Builder SetVoicemail(global::PhoneNumbers.PhoneNumberDesc.Builder builderForValue) {
+      public Builder SetVoicemail(PhoneNumberDesc.Builder builderForValue) {
         if(builderForValue == null) throw new global::System.ArgumentNullException("builderForValue");
         PrepareBuilder();
         result.hasVoicemail = true;
         result.voicemail_ = builderForValue.Build();
         return this;
       }
-      public Builder MergeVoicemail(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder MergeVoicemail(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         if (result.hasVoicemail &&
-            result.voicemail_ != global::PhoneNumbers.PhoneNumberDesc.DefaultInstance) {
-            result.voicemail_ = global::PhoneNumbers.PhoneNumberDesc.CreateBuilder(result.voicemail_).MergeFrom(value).BuildPartial();
+            result.voicemail_ != PhoneNumberDesc.DefaultInstance) {
+            result.voicemail_ = PhoneNumberDesc.CreateBuilder(result.voicemail_).MergeFrom(value).BuildPartial();
         } else {
           result.voicemail_ = value;
         }
@@ -1960,30 +1781,30 @@ namespace PhoneNumbers {
       public bool HasShortCode {
        get { return result.hasShortCode; }
       }
-      public global::PhoneNumbers.PhoneNumberDesc ShortCode {
+      public PhoneNumberDesc ShortCode {
         get { return result.ShortCode; }
         set { SetShortCode(value); }
       }
-      public Builder SetShortCode(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder SetShortCode(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         result.hasShortCode = true;
         result.shortCode_ = value;
         return this;
       }
-      public Builder SetShortCode(global::PhoneNumbers.PhoneNumberDesc.Builder builderForValue) {
+      public Builder SetShortCode(PhoneNumberDesc.Builder builderForValue) {
         if(builderForValue == null) throw new global::System.ArgumentNullException("builderForValue");
         PrepareBuilder();
         result.hasShortCode = true;
         result.shortCode_ = builderForValue.Build();
         return this;
       }
-      public Builder MergeShortCode(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder MergeShortCode(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         if (result.hasShortCode &&
-            result.shortCode_ != global::PhoneNumbers.PhoneNumberDesc.DefaultInstance) {
-            result.shortCode_ = global::PhoneNumbers.PhoneNumberDesc.CreateBuilder(result.shortCode_).MergeFrom(value).BuildPartial();
+            result.shortCode_ != PhoneNumberDesc.DefaultInstance) {
+            result.shortCode_ = PhoneNumberDesc.CreateBuilder(result.shortCode_).MergeFrom(value).BuildPartial();
         } else {
           result.shortCode_ = value;
         }
@@ -2000,30 +1821,30 @@ namespace PhoneNumbers {
       public bool HasStandardRate {
        get { return result.hasStandardRate; }
       }
-      public global::PhoneNumbers.PhoneNumberDesc StandardRate {
+      public PhoneNumberDesc StandardRate {
         get { return result.StandardRate; }
         set { SetStandardRate(value); }
       }
-      public Builder SetStandardRate(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder SetStandardRate(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         result.hasStandardRate = true;
         result.standardRate_ = value;
         return this;
       }
-      public Builder SetStandardRate(global::PhoneNumbers.PhoneNumberDesc.Builder builderForValue) {
+      public Builder SetStandardRate(PhoneNumberDesc.Builder builderForValue) {
         if(builderForValue == null) throw new global::System.ArgumentNullException("builderForValue");
         PrepareBuilder();
         result.hasStandardRate = true;
         result.standardRate_ = builderForValue.Build();
         return this;
       }
-      public Builder MergeStandardRate(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder MergeStandardRate(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         if (result.hasStandardRate &&
-            result.standardRate_ != global::PhoneNumbers.PhoneNumberDesc.DefaultInstance) {
-            result.standardRate_ = global::PhoneNumbers.PhoneNumberDesc.CreateBuilder(result.standardRate_).MergeFrom(value).BuildPartial();
+            result.standardRate_ != PhoneNumberDesc.DefaultInstance) {
+            result.standardRate_ = PhoneNumberDesc.CreateBuilder(result.standardRate_).MergeFrom(value).BuildPartial();
         } else {
           result.standardRate_ = value;
         }
@@ -2040,30 +1861,30 @@ namespace PhoneNumbers {
       public bool HasCarrierSpecific {
        get { return result.hasCarrierSpecific; }
       }
-      public global::PhoneNumbers.PhoneNumberDesc CarrierSpecific {
+      public PhoneNumberDesc CarrierSpecific {
         get { return result.CarrierSpecific; }
         set { SetCarrierSpecific(value); }
       }
-      public Builder SetCarrierSpecific(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder SetCarrierSpecific(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         result.hasCarrierSpecific = true;
         result.carrierSpecific_ = value;
         return this;
       }
-      public Builder SetCarrierSpecific(global::PhoneNumbers.PhoneNumberDesc.Builder builderForValue) {
+      public Builder SetCarrierSpecific(PhoneNumberDesc.Builder builderForValue) {
         if(builderForValue == null) throw new global::System.ArgumentNullException("builderForValue");
         PrepareBuilder();
         result.hasCarrierSpecific = true;
         result.carrierSpecific_ = builderForValue.Build();
         return this;
       }
-      public Builder MergeCarrierSpecific(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder MergeCarrierSpecific(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         if (result.hasCarrierSpecific &&
-            result.carrierSpecific_ != global::PhoneNumbers.PhoneNumberDesc.DefaultInstance) {
-            result.carrierSpecific_ = global::PhoneNumbers.PhoneNumberDesc.CreateBuilder(result.carrierSpecific_).MergeFrom(value).BuildPartial();
+            result.carrierSpecific_ != PhoneNumberDesc.DefaultInstance) {
+            result.carrierSpecific_ = PhoneNumberDesc.CreateBuilder(result.carrierSpecific_).MergeFrom(value).BuildPartial();
         } else {
           result.carrierSpecific_ = value;
         }
@@ -2080,30 +1901,30 @@ namespace PhoneNumbers {
       public bool HasSmsServices {
        get { return result.hasSmsServices; }
       }
-      public global::PhoneNumbers.PhoneNumberDesc SmsServices {
+      public PhoneNumberDesc SmsServices {
         get { return result.SmsServices; }
         set { SetSmsServices(value); }
       }
-      public Builder SetSmsServices(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder SetSmsServices(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         result.hasSmsServices = true;
         result.smsServices_ = value;
         return this;
       }
-      public Builder SetSmsServices(global::PhoneNumbers.PhoneNumberDesc.Builder builderForValue) {
+      public Builder SetSmsServices(PhoneNumberDesc.Builder builderForValue) {
         if(builderForValue == null) throw new global::System.ArgumentNullException("builderForValue");
         PrepareBuilder();
         result.hasSmsServices = true;
         result.smsServices_ = builderForValue.Build();
         return this;
       }
-      public Builder MergeSmsServices(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder MergeSmsServices(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         if (result.hasSmsServices &&
-            result.smsServices_ != global::PhoneNumbers.PhoneNumberDesc.DefaultInstance) {
-            result.smsServices_ = global::PhoneNumbers.PhoneNumberDesc.CreateBuilder(result.smsServices_).MergeFrom(value).BuildPartial();
+            result.smsServices_ != PhoneNumberDesc.DefaultInstance) {
+            result.smsServices_ = PhoneNumberDesc.CreateBuilder(result.smsServices_).MergeFrom(value).BuildPartial();
         } else {
           result.smsServices_ = value;
         }
@@ -2120,30 +1941,30 @@ namespace PhoneNumbers {
       public bool HasNoInternationalDialling {
        get { return result.hasNoInternationalDialling; }
       }
-      public global::PhoneNumbers.PhoneNumberDesc NoInternationalDialling {
+      public PhoneNumberDesc NoInternationalDialling {
         get { return result.NoInternationalDialling; }
         set { SetNoInternationalDialling(value); }
       }
-      public Builder SetNoInternationalDialling(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder SetNoInternationalDialling(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         result.hasNoInternationalDialling = true;
         result.noInternationalDialling_ = value;
         return this;
       }
-      public Builder SetNoInternationalDialling(global::PhoneNumbers.PhoneNumberDesc.Builder builderForValue) {
+      public Builder SetNoInternationalDialling(PhoneNumberDesc.Builder builderForValue) {
         if(builderForValue == null) throw new global::System.ArgumentNullException("builderForValue");
         PrepareBuilder();
         result.hasNoInternationalDialling = true;
         result.noInternationalDialling_ = builderForValue.Build();
         return this;
       }
-      public Builder MergeNoInternationalDialling(global::PhoneNumbers.PhoneNumberDesc value) {
+      public Builder MergeNoInternationalDialling(PhoneNumberDesc value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         if (result.hasNoInternationalDialling &&
-            result.noInternationalDialling_ != global::PhoneNumbers.PhoneNumberDesc.DefaultInstance) {
-            result.noInternationalDialling_ = global::PhoneNumbers.PhoneNumberDesc.CreateBuilder(result.noInternationalDialling_).MergeFrom(value).BuildPartial();
+            result.noInternationalDialling_ != PhoneNumberDesc.DefaultInstance) {
+            result.noInternationalDialling_ = PhoneNumberDesc.CreateBuilder(result.noInternationalDialling_).MergeFrom(value).BuildPartial();
         } else {
           result.noInternationalDialling_ = value;
         }
@@ -2344,42 +2165,42 @@ namespace PhoneNumbers {
         return this;
       }
       
-      public scg::IList<global::PhoneNumbers.NumberFormat> NumberFormatList {
+      public IList<NumberFormat> NumberFormatList {
         get { return PrepareBuilder().numberFormat_; }
       }
       public int NumberFormatCount {
         get { return result.NumberFormatCount; }
       }
-      public global::PhoneNumbers.NumberFormat GetNumberFormat(int index) {
+      public NumberFormat GetNumberFormat(int index) {
         return result.GetNumberFormat(index);
       }
-      public Builder SetNumberFormat(int index, global::PhoneNumbers.NumberFormat value) {
+      public Builder SetNumberFormat(int index, NumberFormat value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         result.numberFormat_[index] = value;
         return this;
       }
-      public Builder SetNumberFormat(int index, global::PhoneNumbers.NumberFormat.Builder builderForValue) {
+      public Builder SetNumberFormat(int index, NumberFormat.Builder builderForValue) {
         if(builderForValue == null) throw new global::System.ArgumentNullException("builderForValue");
         PrepareBuilder();
         result.numberFormat_[index] = builderForValue.Build();
         return this;
       }
-      public Builder AddNumberFormat(global::PhoneNumbers.NumberFormat value) {
+      public Builder AddNumberFormat(NumberFormat value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         result.numberFormat_.Add(value);
         return this;
       }
-      public Builder AddNumberFormat(global::PhoneNumbers.NumberFormat.Builder builderForValue) {
+      public Builder AddNumberFormat(NumberFormat.Builder builderForValue) {
         if(builderForValue == null) throw new global::System.ArgumentNullException("builderForValue");
         PrepareBuilder();
         result.numberFormat_.Add(builderForValue.Build());
         return this;
       }
-      public Builder AddRangeNumberFormat(scg::IEnumerable<global::PhoneNumbers.NumberFormat> values) {
+      public Builder AddRangeNumberFormat(IEnumerable<NumberFormat> values) {
         PrepareBuilder();
-        result.numberFormat_.Add(values);
+        result.numberFormat_.AddRange(values);
         return this;
       }
       public Builder ClearNumberFormat() {
@@ -2388,42 +2209,42 @@ namespace PhoneNumbers {
         return this;
       }
       
-      public scg::IList<global::PhoneNumbers.NumberFormat> IntlNumberFormatList {
+      public IList<NumberFormat> IntlNumberFormatList {
         get { return PrepareBuilder().intlNumberFormat_; }
       }
       public int IntlNumberFormatCount {
         get { return result.IntlNumberFormatCount; }
       }
-      public global::PhoneNumbers.NumberFormat GetIntlNumberFormat(int index) {
+      public NumberFormat GetIntlNumberFormat(int index) {
         return result.GetIntlNumberFormat(index);
       }
-      public Builder SetIntlNumberFormat(int index, global::PhoneNumbers.NumberFormat value) {
+      public Builder SetIntlNumberFormat(int index, NumberFormat value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         result.intlNumberFormat_[index] = value;
         return this;
       }
-      public Builder SetIntlNumberFormat(int index, global::PhoneNumbers.NumberFormat.Builder builderForValue) {
+      public Builder SetIntlNumberFormat(int index, NumberFormat.Builder builderForValue) {
         if(builderForValue == null) throw new global::System.ArgumentNullException("builderForValue");
         PrepareBuilder();
         result.intlNumberFormat_[index] = builderForValue.Build();
         return this;
       }
-      public Builder AddIntlNumberFormat(global::PhoneNumbers.NumberFormat value) {
+      public Builder AddIntlNumberFormat(NumberFormat value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         result.intlNumberFormat_.Add(value);
         return this;
       }
-      public Builder AddIntlNumberFormat(global::PhoneNumbers.NumberFormat.Builder builderForValue) {
+      public Builder AddIntlNumberFormat(NumberFormat.Builder builderForValue) {
         if(builderForValue == null) throw new global::System.ArgumentNullException("builderForValue");
         PrepareBuilder();
         result.intlNumberFormat_.Add(builderForValue.Build());
         return this;
       }
-      public Builder AddRangeIntlNumberFormat(scg::IEnumerable<global::PhoneNumbers.NumberFormat> values) {
+      public Builder AddRangeIntlNumberFormat(IEnumerable<NumberFormat> values) {
         PrepareBuilder();
-        result.intlNumberFormat_.Add(values);
+        result.intlNumberFormat_.AddRange(values);
         return this;
       }
       public Builder ClearIntlNumberFormat() {
@@ -2514,14 +2335,14 @@ namespace PhoneNumbers {
       }
     }
     static PhoneMetadata() {
-      object.ReferenceEquals(global::PhoneNumbers.Phonemetadata.Descriptor, null);
+      object.ReferenceEquals(Phonemetadata.Descriptor, null);
     }
   }
   
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
   public partial class PhoneMetadataCollection {
     private PhoneMetadataCollection() { }
-    private static readonly PhoneMetadataCollection defaultInstance = new PhoneMetadataCollection().MakeReadOnly();
+    private static readonly PhoneMetadataCollection defaultInstance = new PhoneMetadataCollection();
     private static readonly string[] _phoneMetadataCollectionFieldNames = new string[] { "metadata" };
     private static readonly uint[] _phoneMetadataCollectionFieldTags = new uint[] { 10 };
     public static PhoneMetadataCollection DefaultInstance {
@@ -2537,20 +2358,20 @@ namespace PhoneNumbers {
     }
     
     public const int MetadataFieldNumber = 1;
-    private scg::List<global::PhoneNumbers.PhoneMetadata> metadata_ = new scg::List<global::PhoneNumbers.PhoneMetadata>();
-    public scg::IList<global::PhoneNumbers.PhoneMetadata> MetadataList {
+    private List<PhoneMetadata> metadata_ = new List<PhoneMetadata>();
+    public IList<PhoneMetadata> MetadataList {
       get { return metadata_; }
     }
     public int MetadataCount {
       get { return metadata_.Count; }
     }
-    public global::PhoneNumbers.PhoneMetadata GetMetadata(int index) {
+    public PhoneMetadata GetMetadata(int index) {
       return metadata_[index];
     }
     
     public bool IsInitialized {
       get {
-        foreach (global::PhoneNumbers.PhoneMetadata element in MetadataList) {
+        foreach (PhoneMetadata element in MetadataList) {
           if (!element.IsInitialized) return false;
         }
         return true;
@@ -2560,21 +2381,10 @@ namespace PhoneNumbers {
     
     
     
-    private int CalcSerializedSize() {
-      int size = memoizedSerializedSize;
-      if (size != -1) return size;
-      
-      size = 0;
-      foreach (global::PhoneNumbers.PhoneMetadata element in MetadataList) {
-        size += pb::CodedOutputStream.ComputeMessageSize(1, element);
-      }
-      memoizedSerializedSize = size;
-      return size;
-    }
     #region Lite runtime methods
     public override int GetHashCode() {
       int hash = GetType().GetHashCode();
-      foreach(global::PhoneNumbers.PhoneMetadata i in metadata_)
+      foreach(PhoneMetadata i in metadata_)
         hash ^= i.GetHashCode();
       return hash;
     }
@@ -2590,10 +2400,6 @@ namespace PhoneNumbers {
     
     #endregion
     
-    private PhoneMetadataCollection MakeReadOnly() {
-      metadata_.MakeReadOnly();
-      return this;
-    }
     
     public static Builder CreateBuilder() { return new Builder(); }
     public Builder ToBuilder() { return CreateBuilder(this); }
@@ -2652,7 +2458,7 @@ namespace PhoneNumbers {
       }
       
       public PhoneMetadataCollection DefaultInstanceForType {
-        get { return global::PhoneNumbers.PhoneMetadataCollection.DefaultInstance; }
+        get { return PhoneMetadataCollection.DefaultInstance; }
       }
       
       public PhoneMetadataCollection Build() { return BuildPartial(); }
@@ -2662,15 +2468,15 @@ namespace PhoneNumbers {
           return result;
         }
         resultIsReadOnly = true;
-        return result.MakeReadOnly();
+        return result;
       }
       
       
       public Builder MergeFrom(PhoneMetadataCollection other) {
-        if (other == global::PhoneNumbers.PhoneMetadataCollection.DefaultInstance) return this;
+        if (other == PhoneMetadataCollection.DefaultInstance) return this;
         PrepareBuilder();
         if (other.metadata_.Count != 0) {
-          result.metadata_.Add(other.metadata_);
+          result.metadata_.AddRange(other.metadata_);
         }
         return this;
       }
@@ -2678,42 +2484,42 @@ namespace PhoneNumbers {
       
       
       
-      public scg::IList<global::PhoneNumbers.PhoneMetadata> MetadataList {
+      public IList<PhoneMetadata> MetadataList {
         get { return PrepareBuilder().metadata_; }
       }
       public int MetadataCount {
         get { return result.MetadataCount; }
       }
-      public global::PhoneNumbers.PhoneMetadata GetMetadata(int index) {
+      public PhoneMetadata GetMetadata(int index) {
         return result.GetMetadata(index);
       }
-      public Builder SetMetadata(int index, global::PhoneNumbers.PhoneMetadata value) {
+      public Builder SetMetadata(int index, PhoneMetadata value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         result.metadata_[index] = value;
         return this;
       }
-      public Builder SetMetadata(int index, global::PhoneNumbers.PhoneMetadata.Builder builderForValue) {
+      public Builder SetMetadata(int index, PhoneMetadata.Builder builderForValue) {
         if(builderForValue == null) throw new global::System.ArgumentNullException("builderForValue");
         PrepareBuilder();
         result.metadata_[index] = builderForValue.Build();
         return this;
       }
-      public Builder AddMetadata(global::PhoneNumbers.PhoneMetadata value) {
+      public Builder AddMetadata(PhoneMetadata value) {
         if(value == null) throw new global::System.ArgumentNullException("value");
         PrepareBuilder();
         result.metadata_.Add(value);
         return this;
       }
-      public Builder AddMetadata(global::PhoneNumbers.PhoneMetadata.Builder builderForValue) {
+      public Builder AddMetadata(PhoneMetadata.Builder builderForValue) {
         if(builderForValue == null) throw new global::System.ArgumentNullException("builderForValue");
         PrepareBuilder();
         result.metadata_.Add(builderForValue.Build());
         return this;
       }
-      public Builder AddRangeMetadata(scg::IEnumerable<global::PhoneNumbers.PhoneMetadata> values) {
+      public Builder AddRangeMetadata(IEnumerable<PhoneMetadata> values) {
         PrepareBuilder();
-        result.metadata_.Add(values);
+        result.metadata_.AddRange(values);
         return this;
       }
       public Builder ClearMetadata() {
@@ -2723,7 +2529,7 @@ namespace PhoneNumbers {
       }
     }
     static PhoneMetadataCollection() {
-      object.ReferenceEquals(global::PhoneNumbers.Phonemetadata.Descriptor, null);
+      object.ReferenceEquals(Phonemetadata.Descriptor, null);
     }
   }
   
