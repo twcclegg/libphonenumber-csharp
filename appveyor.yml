@@ -16,7 +16,7 @@ environment:
 pull_requests:
   do_not_increment_build_number: true
 before_build:
-  - xcopy "C:\Program Files (x86)\MSBuild\Microsoft\Portable" "C:\Program Files\dotnet\sdk\2.1.200\Microsoft\Portable\" /S /E
+  - xcopy "C:\Program Files (x86)\MSBuild\Microsoft\Portable" "C:\Program Files\dotnet\sdk\2.1.300\Microsoft\Portable\" /S /E
   - dotnet restore csharp -s https://api.nuget.org/v3/index.json
   - choco install opencover.portable
   - choco install codecov
