@@ -548,23 +548,21 @@ namespace PhoneNumbers
 #endif
             var isNonGeoRegion = RegionCodeForNonGeoEntity.Equals(regionCode);
             var name = asm.GetManifestResourceNames().FirstOrDefault(n => n.EndsWith(filePrefix)) ?? "missing";
-            using (var stream = asm.GetManifestResourceStream(name))
+            try
             {
-                try
+                var meta = BuildMetadataFromXml.BuildPhoneMetadataCollection(name, false, false, false, false); // todo lite/special builds
+                foreach (var m in meta.MetadataList)
                 {
-                    var meta = BuildMetadataFromXml.BuildPhoneMetadataCollection(stream, false, false, false, false); // todo lite/special builds
-                    foreach (var m in meta.MetadataList)
-                    {
-                        if(isNonGeoRegion)
-                            countryCodeToNonGeographicalMetadataMap[m.CountryCode] = m;
-                        else
-                            regionToMetadataMap[m.Id] = m;
-                    }
-                }
-                catch (IOException)
-                {
+                    if(isNonGeoRegion)
+                        countryCodeToNonGeographicalMetadataMap[m.CountryCode] = m;
+                    else
+                        regionToMetadataMap[m.Id] = m;
                 }
             }
+            catch (IOException)
+            {
+            }
+            
         }
 
         /**

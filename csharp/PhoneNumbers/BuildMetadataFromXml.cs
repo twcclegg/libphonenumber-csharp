@@ -75,15 +75,24 @@ namespace PhoneNumbers
             new HashSet<string> {NO_INTERNATIONAL_DIALLING};
 
         // Build the PhoneMetadataCollection from the input XML file.
-        public static PhoneMetadataCollection BuildPhoneMetadataCollection(Stream input,
+        public static PhoneMetadataCollection BuildPhoneMetadataCollection(string name,
             bool liteBuild, bool specialBuild, bool isShortNumberMetadata,
             bool isAlternateFormatsMetadata)
         {
-//#if (NET35 || NET40)
-  //          var document = XDocument.Load(new XmlTextReader(input));
-//#else
-            var document = XDocument.Load(input);
-//#endif
+            XDocument document;
+#if NET35
+            document = XDocument.Load(name);
+#else
+#if  NET40
+            var asm = Assembly.GetExecutingAssembly();
+#else
+            var asm = typeof(PhoneNumberUtil).GetTypeInfo().Assembly;
+#endif
+            using (var input = asm.GetManifestResourceStream(name))
+            {
+                document = XDocument.Load(input);
+            }
+#endif
 
             var metadataCollection = new PhoneMetadataCollection.Builder();
             var metadataFilter = GetMetadataFilter(liteBuild, specialBuild);
@@ -706,11 +715,8 @@ namespace PhoneNumbers
             var asm = typeof(BuildMetadataFromXml).GetTypeInfo().Assembly;
 #endif
             var name = asm.GetManifestResourceNames().FirstOrDefault(n => n.EndsWith(filePrefix)) ?? "missing";
-            using (var stream = asm.GetManifestResourceStream(name))
-            {
-                var collection = BuildPhoneMetadataCollection(stream, false, false, false, false); // todo lite/special build
-                return BuildCountryCodeToRegionCodeMap(collection);
-            }
+            var collection = BuildPhoneMetadataCollection(name, false, false, false, false); // todo lite/special build
+            return BuildCountryCodeToRegionCodeMap(collection);
         }
 
         /**

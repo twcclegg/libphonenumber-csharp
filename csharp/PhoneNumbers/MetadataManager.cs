@@ -63,13 +63,10 @@ namespace PhoneNumbers
             var asm = typeof(MetadataManager).GetTypeInfo().Assembly;
 #endif
             var name = asm.GetManifestResourceNames().FirstOrDefault(n => n.EndsWith(filePrefix)) ?? "missing";
-            using (var stream = asm.GetManifestResourceStream(name))
+            var meta = BuildMetadataFromXml.BuildPhoneMetadataCollection(name, false, false, false, true); // todo lite/special build
+            foreach (var m in meta.MetadataList)
             {
-                var meta = BuildMetadataFromXml.BuildPhoneMetadataCollection(stream, false, false, false, true); // todo lite/special build
-                foreach (var m in meta.MetadataList)
-                {
-                    CallingCodeToAlternateFormatsMap[m.CountryCode] = m;
-                }
+                CallingCodeToAlternateFormatsMap[m.CountryCode] = m;
             }
         }
         private static void LoadShortNumberMedataFromFile(string filePrefix)
@@ -80,13 +77,10 @@ namespace PhoneNumbers
             var asm = typeof(MetadataManager).GetTypeInfo().Assembly;
 #endif
             var name = asm.GetManifestResourceNames().FirstOrDefault(n => n.EndsWith(filePrefix)) ?? "missing";
-            using (var stream = asm.GetManifestResourceStream(name))
+            var meta = BuildMetadataFromXml.BuildPhoneMetadataCollection(name, false, false, true, false); // todo lite/special build
+            foreach (var m in meta.MetadataList)
             {
-                var meta = BuildMetadataFromXml.BuildPhoneMetadataCollection(stream, false, false, true, false); // todo lite/special build
-                foreach (var m in meta.MetadataList)
-                {
-                    ShortNumberMetadataMap[m.Id] = m;
-                }
+                ShortNumberMetadataMap[m.Id] = m;
             }
         }
 
