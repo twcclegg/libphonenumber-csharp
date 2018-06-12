@@ -80,7 +80,7 @@ namespace PhoneNumbers
         // Map of country calling codes that use a mobile token before the area code. One example of when
         // this is relevant is when determining the length of the national destination code, which should
         // be the length of the area code plus the length of the mobile token.
-        private static readonly Dictionary<int, string> MOBILE_TOKEN_MAPPINGS = new Dictionary<int, string>
+        private static readonly Dictionary<int, string> MobileTokenMappings = new Dictionary<int, string>
         {
             {52, "1" },
             {54, "9" }
@@ -90,7 +90,7 @@ namespace PhoneNumbers
         // below) which are not based on *area codes*. For example, in China mobile numbers start with a
         // carrier indicator, and beyond that are geographically assigned: this carrier indicator is not
         // considered to be an area code.
-        private static readonly HashSet<int> GEO_MOBILE_COUNTRIES_WITHOUT_MOBILE_AREA_CODES = new HashSet<int>
+        private static readonly HashSet<int> GeoMobileCountriesWithoutMobileAreaCodes = new HashSet<int>
         {
             86  // China
         };
@@ -100,7 +100,7 @@ namespace PhoneNumbers
         // from user reports. Note that countries like the US, where we can't distinguish between
         // fixed-line or mobile numbers, are not listed here, since we consider FIXED_LINE_OR_MOBILE to be
         // a possibly geographically-related type anyway (like FIXED_LINE).
-        private static readonly HashSet<int> GEO_MOBILE_COUNTRIES = new HashSet<int>
+        private static readonly HashSet<int> GeoMobileCountries = new HashSet<int>
         {
             52,  // Mexico
             54,  // Argentina
@@ -552,7 +552,7 @@ namespace PhoneNumbers
             {
                 try
                 {
-                    var meta = BuildMetadataFromXml.BuildPhoneMetadataCollection(stream, false, false); // todo lite/special builds
+                    var meta = BuildMetadataFromXml.BuildPhoneMetadataCollection(stream, false, false, false, false); // todo lite/special builds
                     foreach (var m in meta.MetadataList)
                     {
                         if(isNonGeoRegion)
@@ -742,7 +742,7 @@ namespace PhoneNumbers
                 // Note this is a rough heuristic; it doesn't cover Indonesia well, for example, where area
                 // codes are present for some mobile phones but not for others. We have no better way of
                 // representing this in the metadata at this point.
-                && GEO_MOBILE_COUNTRIES_WITHOUT_MOBILE_AREA_CODES.Contains(countryCallingCode))
+                && GeoMobileCountriesWithoutMobileAreaCodes.Contains(countryCallingCode))
             {
                 return 0;
             }
@@ -835,7 +835,7 @@ namespace PhoneNumbers
         */
         public static string GetCountryMobileToken(int countryCallingCode)
         {
-            return MOBILE_TOKEN_MAPPINGS.ContainsKey(countryCallingCode) ? MOBILE_TOKEN_MAPPINGS[countryCallingCode] : "";
+            return MobileTokenMappings.ContainsKey(countryCallingCode) ? MobileTokenMappings[countryCallingCode] : "";
         }
 
         /**
@@ -1061,7 +1061,7 @@ namespace PhoneNumbers
         {
             return phoneNumberType == PhoneNumberType.FIXED_LINE
                    || phoneNumberType == PhoneNumberType.FIXED_LINE_OR_MOBILE
-                   || GEO_MOBILE_COUNTRIES.Contains(countryCallingCode)
+                   || GeoMobileCountries.Contains(countryCallingCode)
                        && phoneNumberType == PhoneNumberType.MOBILE;
         }
 
