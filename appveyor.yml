@@ -19,7 +19,7 @@ branches:
   only:
     - master
 before_build:
-  - xcopy "C:\Program Files (x86)\MSBuild\Microsoft\Portable" "C:\Program Files\dotnet\sdk\2.1.300\Microsoft\Portable\" /S /E
+  - ps: xcopy "C:\Program Files (x86)\MSBuild\Microsoft\Portable" "C:\Program Files\dotnet\sdk\$(dotnet --version)\Microsoft\Portable\" /S /E
   - dotnet restore csharp -s https://api.nuget.org/v3/index.json
   - choco install opencover.portable
   - choco install codecov
