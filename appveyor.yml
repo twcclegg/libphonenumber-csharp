@@ -26,7 +26,7 @@ before_build:
 build_script:
   - cmd: dotnet pack -c Release csharp\PhoneNumbers
 test_script:
-  - OpenCover.Console.exe -register:user -target:dotnet.exe -targetargs:"test csharp\PhoneNumbers.Test\PhoneNumbers.Test.csproj" -filter:"+[PhoneNumbers]* -[PhoneNumbers.Test]* -Phonenumber.cs -Phonemetadata.cs" -oldStyle
+  - OpenCover.Console.exe -register:user -target:dotnet.exe -targetargs:"test csharp\PhoneNumbers.Test\PhoneNumbers.Test.csproj" -filter:"+[PhoneNumbers]* -[PhoneNumbers.Test]*" -excludebyattribute:*.CompilerGenerated*^ -oldStyle
   - codecov -f results.xml
 artifacts:
   - path: csharp\PhoneNumbers\bin\Release\libphonenumber-csharp.*
