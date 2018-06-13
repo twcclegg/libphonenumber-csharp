@@ -31,6 +31,8 @@ namespace PhoneNumbers
     {
         internal const string AlternateFormatsFilePrefix = "PhoneNumberAlternateFormats.xml";
 
+        internal const string ShortNumberMetadataFilePrefix = "ShortNumberMetadata.xml";
+
         private static readonly Dictionary<int, PhoneMetadata> CallingCodeToAlternateFormatsMap =
             new Dictionary<int, PhoneMetadata>();
 
@@ -39,11 +41,21 @@ namespace PhoneNumbers
         private static readonly Dictionary<int, List<string>> CountryCodeSet =
             BuildMetadataFromXml.GetCountryCodeToRegionCodeMap(AlternateFormatsFilePrefix);
 
+
+        // A mapping from a region code to the short number metadata for that region code.
+        private static readonly Dictionary<string, PhoneMetadata> ShortNumberMetadataMap =
+            new Dictionary<string, PhoneMetadata>();
+
+        // The set of region codes for which there are short number metadata. For every region code in
+        // this set there should be metadata linked into the resources.
+        private static readonly HashSet<string> ShortNumberMetadataRegionCodes =
+            ShortNumbersRegionCodeSet.RegionCodeSet;
+
         private MetadataManager()
         {
         }
 
-        private static void LoadMedataFromFile(string filePrefix)
+        private static void LoadAlternateFormatsMedataFromFile(string filePrefix)
         {
 #if (NET35 || NET40)
             var asm = Assembly.GetExecutingAssembly();
@@ -51,13 +63,24 @@ namespace PhoneNumbers
             var asm = typeof(MetadataManager).GetTypeInfo().Assembly;
 #endif
             var name = asm.GetManifestResourceNames().FirstOrDefault(n => n.EndsWith(filePrefix)) ?? "missing";
-            using (var stream = asm.GetManifestResourceStream(name))
+            var meta = BuildMetadataFromXml.BuildPhoneMetadataCollection(name, false, false, false, true); // todo lite/special build
+            foreach (var m in meta.MetadataList)
             {
-                var meta = BuildMetadataFromXml.BuildPhoneMetadataCollection(stream, false, false); // todo lite/special build
-                foreach (var m in meta.MetadataList)
-                {
-                    CallingCodeToAlternateFormatsMap[m.CountryCode] = m;
-                }
+                CallingCodeToAlternateFormatsMap[m.CountryCode] = m;
+            }
+        }
+        private static void LoadShortNumberMedataFromFile(string filePrefix)
+        {
+#if (NET35 || NET40)
+            var asm = Assembly.GetExecutingAssembly();
+#else
+            var asm = typeof(MetadataManager).GetTypeInfo().Assembly;
+#endif
+            var name = asm.GetManifestResourceNames().FirstOrDefault(n => n.EndsWith(filePrefix)) ?? "missing";
+            var meta = BuildMetadataFromXml.BuildPhoneMetadataCollection(name, false, false, true, false); // todo lite/special build
+            foreach (var m in meta.MetadataList)
+            {
+                ShortNumberMetadataMap[m.Id] = m;
             }
         }
 
@@ -68,11 +91,35 @@ namespace PhoneNumbers
                 if(!CountryCodeSet.ContainsKey(countryCallingCode))
                     return null;
                 if(!CallingCodeToAlternateFormatsMap.ContainsKey(countryCallingCode))
-                    LoadMedataFromFile(AlternateFormatsFilePrefix);
+                    LoadAlternateFormatsMedataFromFile(AlternateFormatsFilePrefix);
                 return CallingCodeToAlternateFormatsMap.ContainsKey(countryCallingCode)
                     ? CallingCodeToAlternateFormatsMap[countryCallingCode]
                     : null;
             }
         }
+
+        internal static PhoneMetadata GetShortNumberMetadataForRegion(string regionCode)
+        {
+            lock (ShortNumberMetadataMap)
+            {
+
+                if (!ShortNumberMetadataRegionCodes.Contains(regionCode))
+                    return null;
+
+                if (!ShortNumberMetadataMap.ContainsKey(regionCode))
+                    LoadShortNumberMedataFromFile(ShortNumberMetadataFilePrefix);
+
+                return ShortNumberMetadataMap.ContainsKey(regionCode)
+                    ? ShortNumberMetadataMap[regionCode]
+                    : null;
+            }
+        }
+
+        internal static HashSet<string> GetSupportedShortNumberRegions()
+        {
+            return ShortNumberMetadataRegionCodes;
+        }
+
+
     }
 }
