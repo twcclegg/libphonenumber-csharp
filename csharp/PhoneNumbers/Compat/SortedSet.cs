@@ -6,7 +6,7 @@ namespace PhoneNumbers
 {
     public class SortedSet<T> : ISet<T>
     {
-        private SortedDictionary<T, object> items;
+        private readonly SortedDictionary<T, object> items;
 
         public SortedSet()
         {
@@ -21,15 +21,9 @@ namespace PhoneNumbers
             }
         }
 
-        public int Count
-        {
-            get => items.Count;
-        }
+        public int Count => items.Count;
 
-        public bool IsReadOnly
-        {
-            get => false;
-        }
+        public bool IsReadOnly => false;
 
         public bool Add(T item)
         {
@@ -78,6 +72,39 @@ namespace PhoneNumbers
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        /// <summary>
+        /// Checks whether this Tree has all elements in common with IEnumerable other
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        [System.Security.SecuritySafeCritical]
+        public bool SetEquals(SortedSet<T> other)
+        {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+
+            using (var mine = GetEnumerator())
+            using (var theirs = other.GetEnumerator())
+            {
+                var mineEnded = !mine.MoveNext();
+                var theirsEnded = !theirs.MoveNext();
+                while (!mineEnded && !theirsEnded)
+                {
+                    if (!mine.Current.Equals(theirs.Current))
+                    {
+                        return false;
+                    }
+
+                    mineEnded = !mine.MoveNext();
+                    theirsEnded = !theirs.MoveNext();
+                }
+
+                return mineEnded && theirsEnded;
+            }
         }
     }
 }
