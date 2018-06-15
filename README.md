@@ -40,7 +40,7 @@ C# port of Google's [libphonenumber library](https://github.com/googlei18n/libph
 
 ## ToDo
 
-  * fix short number util port
+  * port read/write source xml data to binary for better performance and smaller .nupkg size (WIP)
   * update / add / port new unit tests from java source
 
 ## How to unfold automatic generated files
