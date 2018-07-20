@@ -37,4 +37,4 @@ deploy:
     on:
       appveyor_repo_tag: true
     api_key:
-      secure: QB8FoYFBWfFy8cxyScelVPg3X4q2BvLO0VELkUAOKT4ZHp362V7cIRq+nIrkjFJ5
+      secure: MCwHTCbHS1/wQ/DZbGrUuJrWBKBm6e6TYeR0QCHIg9QlXBQQicwtquGYYGu5hK4Y
