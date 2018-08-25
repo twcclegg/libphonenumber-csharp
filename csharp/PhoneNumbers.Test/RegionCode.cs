@@ -34,6 +34,7 @@
         public const string PG = "PG";
         public const string PL = "PL";
         public const string RE = "RE";
+        public const string RU = "RU";
         public const string SE = "SE";
         public const string SG = "SG";
         public const string US = "US";

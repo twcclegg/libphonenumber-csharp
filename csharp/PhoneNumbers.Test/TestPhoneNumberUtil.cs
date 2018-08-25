@@ -2259,6 +2259,26 @@ namespace PhoneNumbers.Test
                      phoneUtil.Parse("(800) 901-3355 ,extensio\u0301n 7246433", RegionCode.US));
             Assert.Equal(usWithExtension, phoneUtil.Parse("(800) 901-3355 , 7246433", RegionCode.US));
             Assert.Equal(usWithExtension, phoneUtil.Parse("(800) 901-3355 ext: 7246433", RegionCode.US));
+            // Testing Russian extension \u0434\u043E\u0431 with variants found online.
+            var ruWithExtension = new PhoneNumber.Builder
+            {
+                CountryCode = 7,
+                NationalNumber = 4232022511L,
+                Extension = "100"
+            }.Build();
+            Assert.Equal(ruWithExtension,
+                phoneUtil.Parse("8 (423) 202-25-11, \u0434\u043E\u0431. 100", RegionCode.RU));
+            Assert.Equal(ruWithExtension,
+                phoneUtil.Parse("8 (423) 202-25-11 \u0434\u043E\u0431. 100", RegionCode.RU));
+            Assert.Equal(ruWithExtension,
+                phoneUtil.Parse("8 (423) 202-25-11, \u0434\u043E\u0431 100", RegionCode.RU));
+            Assert.Equal(ruWithExtension,
+                phoneUtil.Parse("8 (423) 202-25-11 \u0434\u043E\u0431 100", RegionCode.RU));
+            Assert.Equal(ruWithExtension,
+                phoneUtil.Parse("8 (423) 202-25-11\u0434\u043E\u0431100", RegionCode.RU));
+            // In upper case
+            Assert.Equal(ruWithExtension,
+                phoneUtil.Parse("8 (423) 202-25-11, \u0414\u041E\u0431. 100", RegionCode.RU));
 
             // Test that if a number has two extensions specified, we ignore the second.
             var usWithTwoExtensionsNumber = new PhoneNumber.Builder()
@@ -2376,6 +2396,9 @@ namespace PhoneNumbers.Test
             // Test numbers with extensions.
             Assert.Equal(PhoneNumberUtil.MatchType.EXACT_MATCH,
                 phoneUtil.IsNumberMatch("+64 3 331-6005 extn 1234", "+6433316005#1234"));
+            Assert.Equal(PhoneNumberUtil.MatchType.EXACT_MATCH,
+                phoneUtil.IsNumberMatch("+7 423 202-25-11 ext 100",
+                    "+7 4232022511 \u0434\u043E\u0431. 100"));
             // Test proto buffers.
             Assert.Equal(PhoneNumberUtil.MatchType.EXACT_MATCH,
                 phoneUtil.IsNumberMatch(NZNumber, "+6403 331 6005"));

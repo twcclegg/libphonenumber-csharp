@@ -230,7 +230,7 @@ namespace PhoneNumbers
             // form with the combining acute accent.
             return (RFC3966_EXTN_PREFIX + CapturingExtnDigits + "|" + "[ \u00A0\\t,]*" +
             "(?:e?xt(?:ensi(?:o\u0301?|\u00F3))?n?|\uFF45?\uFF58\uFF54\uFF4E?|" +
-            "[" + singleExtnSymbols + "]|int|anexo|\uFF49\uFF4E\uFF54)" +
+            "доб|" + "[" + singleExtnSymbols + "]|int|anexo|\uFF49\uFF4E\uFF54)" +
             "[:\\.\uFF0E]?[ \u00A0\\t,-]*" + CapturingExtnDigits + "#?|" +
             "[- ]+(" + DIGITS + "{1,5})#");
         }
