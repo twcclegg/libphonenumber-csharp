@@ -421,7 +421,7 @@ namespace PhoneNumbers
                 }
 
                 var number = phoneUtil.ParseAndKeepRawInput(candidate, preferredRegion);
-                if (phoneUtil.Verify(leniency, number, candidate, phoneUtil))
+                if (leniency.Verify(number, candidate, phoneUtil))
                 {
                     // We used parseAndKeepRawInput to create this number, but for now we don't return the extra
                     // values parsed. TODO: stop clearing all values here and switch all users over
