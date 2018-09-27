@@ -19,6 +19,14 @@ C# port of Google's [libphonenumber library](https://github.com/googlei18n/libph
 
   See [this](https://github.com/twcclegg/libphonenumber-csharp/blob/master/csharp/README.txt "csharp/README.txt") for details about the port.
 
+## Example
+
+```cs
+  var phoneNumber = "+44 117 496 0123";
+  var phoneNumberUtil = PhoneNumbers.PhoneNumberUtil.GetInstance();
+  var phoneNumberInfo = phoneNumberUtil.Parse(phoneNumber, "GB");
+```
+
 ## Features
 
   * Parsing/formatting/validating phone numbers for all countries/regions of the world.
