@@ -22,9 +22,13 @@ C# port of Google's [libphonenumber library](https://github.com/googlei18n/libph
 ## Example
 
 ```cs
-  var phoneNumber = "+44 117 496 0123";
   var phoneNumberUtil = PhoneNumbers.PhoneNumberUtil.GetInstance();
-  var phoneNumberInfo = phoneNumberUtil.Parse(phoneNumber, "GB");
+  var e164PhoneNumber = "+44 117 496 0123";
+  var nationalPhoneNumber = "2024561111";
+  var smsShortNumber = "83835";
+  var phoneNumber = phoneNumberUtil.Parse(e164phoneNumber, null);
+  phoneNumber = phoneNumberUtil.Parse(nationalPhoneNumber, "US");
+  phoneNumber = phoneNumberUtil.Parse(smsShortNumber, "US");
 ```
 
 ## Features
