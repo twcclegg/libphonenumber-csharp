@@ -207,7 +207,7 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestGetExampleShortNumber()
         {
-            Assert.Equal("8711", ShortInfo.GetExampleShortNumber(RegionCode.AM));
+            Assert.Equal("110", ShortInfo.GetExampleShortNumber(RegionCode.AD));
             Assert.Equal("1010", ShortInfo.GetExampleShortNumber(RegionCode.FR));
             Assert.Equal("", ShortInfo.GetExampleShortNumber(RegionCode.UN001));
             Assert.Equal("", ShortInfo.GetExampleShortNumber(null));
