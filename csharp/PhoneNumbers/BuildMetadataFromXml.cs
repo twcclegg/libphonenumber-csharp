@@ -16,10 +16,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+#if NET35
+using System.Xml;
+#endif
 using System.Xml.Linq;
 
 namespace PhoneNumbers
@@ -79,11 +81,12 @@ namespace PhoneNumbers
             bool liteBuild, bool specialBuild, bool isShortNumberMetadata,
             bool isAlternateFormatsMetadata)
         {
+            // ReSharper disable once JoinDeclarationAndInitializer
             XDocument document;
 #if NET35
-            document = XDocument.Load(name);
+            document = XDocument.Load(new XmlTextReader(name));
 #else
-#if  NET40
+#if NET40
             var asm = Assembly.GetExecutingAssembly();
 #else
             var asm = typeof(PhoneNumberUtil).GetTypeInfo().Assembly;
