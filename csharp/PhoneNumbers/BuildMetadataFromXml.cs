@@ -20,6 +20,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+#if NET35
+using System.Xml;
+#endif
 using System.Xml.Linq;
 
 namespace PhoneNumbers
