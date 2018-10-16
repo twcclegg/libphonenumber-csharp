@@ -80,10 +80,7 @@ namespace PhoneNumbers
             bool isAlternateFormatsMetadata)
         {
             XDocument document;
-#if NET35
-            document = XDocument.Load(name);
-#else
-#if  NET40
+#if (NET35 || NET40)
             var asm = Assembly.GetExecutingAssembly();
 #else
             var asm = typeof(PhoneNumberUtil).GetTypeInfo().Assembly;
