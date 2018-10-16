@@ -91,10 +91,7 @@ namespace PhoneNumbers
             using (var input = asm.GetManifestResourceStream(name))
             {
 #if NET35
-		using (var reader = Xml.XmlReader.Create(input))
-		{
-			document = XDocument.Load(reader);
-		}
+		document = XDocument.Load(new XmlTextReader(input));
 #else
                 document = XDocument.Load(input);
 #endif
