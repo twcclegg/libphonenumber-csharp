@@ -87,7 +87,14 @@ namespace PhoneNumbers
 #endif
             using (var input = asm.GetManifestResourceStream(name))
             {
+#if NET35
+		using (var reader = Xml.XmlReader.Create(input))
+		{
+			document = XDocument.Load(reader);
+		}
+#else
                 document = XDocument.Load(input);
+#endif
             }
 
             var metadataCollection = new PhoneMetadataCollection.Builder();
