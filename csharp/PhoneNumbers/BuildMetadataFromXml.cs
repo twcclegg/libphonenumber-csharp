@@ -20,6 +20,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+#if NET35
+using System.Xml;
+#endif
 using System.Xml.Linq;
 
 namespace PhoneNumbers
@@ -80,19 +83,19 @@ namespace PhoneNumbers
             bool isAlternateFormatsMetadata)
         {
             XDocument document;
-#if NET35
-            document = XDocument.Load(name);
-#else
-#if  NET40
+#if (NET35 || NET40)
             var asm = Assembly.GetExecutingAssembly();
 #else
             var asm = typeof(PhoneNumberUtil).GetTypeInfo().Assembly;
 #endif
             using (var input = asm.GetManifestResourceStream(name))
             {
+#if NET35
+                document = XDocument.Load(new XmlTextReader(input));
+#else
                 document = XDocument.Load(input);
-            }
 #endif
+            }
 
             var metadataCollection = new PhoneMetadataCollection.Builder();
             var metadataFilter = GetMetadataFilter(liteBuild, specialBuild);
