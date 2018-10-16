@@ -89,7 +89,6 @@ namespace PhoneNumbers
             {
                 document = XDocument.Load(input);
             }
-#endif
 
             var metadataCollection = new PhoneMetadataCollection.Builder();
             var metadataFilter = GetMetadataFilter(liteBuild, specialBuild);
