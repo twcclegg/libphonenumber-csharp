@@ -50,9 +50,13 @@ namespace PhoneNumbers
 
         private sealed class MetadataLoader : IMetadataLoader
         {
-            public  StreamReader LoadMetadata(string metadataFileName)
+            public Stream LoadMetadata(string metadataFileName)
             {
-                return new StreamReader(new FileStream(metadataFileName, FileMode.Open));
+#if NET35 || PORTABLE
+                return null;
+#else
+                return new FileStream(metadataFileName, FileMode.Open);
+#endif
             }
         }
 
@@ -70,16 +74,6 @@ namespace PhoneNumbers
         // calling code in this set there should be metadata linked into the resources.
         private static readonly HashSet<int> AlternateFormatsCountryCodes =
             AlternateFormatsCountryCodeSet.CountryCodeSet;
-
-        // The set of region codes for which there are short number metadata. For every region code in
-        // this set there should be metadata linked into the resources.
-        private static readonly HashSet<string> ShortNumberMetadataRegionCodes =
-            ShortNumbersRegionCodeSet.RegionCodeSet;
-
-
-        // A mapping from a region code to the short number metadata for that region code.
-        private static readonly Dictionary<string, PhoneMetadata> ShortNumberMetadataMap =
-            new Dictionary<string, PhoneMetadata>();
 
         // The set of region codes for which there are short number metadata. For every region code in
         // this set there should be metadata linked into the resources.
@@ -282,7 +276,7 @@ namespace PhoneNumbers
                 var metadataCollection = new PhoneMetadataCollection.Builder();
                 try
                 {
-                    metadataCollection.MergeFrom(ConvertStreamToByteBuffer(ois, bufferSize));
+                    metadataCollection.AddRangeMetadata(null); //todo.MergeFrom(ConvertStreamToByteBuffer(ois, bufferSize));
                 }
                 catch (IOException e)
                 {
@@ -312,29 +306,5 @@ namespace PhoneNumbers
                 }
             }
         }
-
-        internal static PhoneMetadata GetShortNumberMetadataForRegion(string regionCode)
-        {
-            lock (ShortNumberMetadataMap)
-            {
-
-                if (!ShortNumberMetadataRegionCodes.Contains(regionCode))
-                    return null;
-
-                if (!ShortNumberMetadataMap.ContainsKey(regionCode))
-                    LoadShortNumberMedataFromFile(ShortNumberMetadataFilePrefix);
-
-                return ShortNumberMetadataMap.ContainsKey(regionCode)
-                    ? ShortNumberMetadataMap[regionCode]
-                    : null;
-            }
-        }
-
-        internal static HashSet<string> GetSupportedShortNumberRegions()
-        {
-            return ShortNumberMetadataRegionCodes;
-        }
-
-
     }
 }

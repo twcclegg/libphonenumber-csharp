@@ -34,6 +34,6 @@ namespace PhoneNumbers
          * @return  the input stream for the metadata file. The library will close this stream
          *     after it is done. Return null in case the metadata file could not be found
          */
-        StreamReader LoadMetadata(string metadataFileName);
+        Stream LoadMetadata(string metadataFileName);
     }
 }

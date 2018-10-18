@@ -88,7 +88,6 @@ namespace Tools
 
         private readonly Dictionary<string, SortedSet<string>> blacklist;
 
-        // @VisibleForTesting
         internal MetadataFilter(Dictionary<string, SortedSet<string>> blacklist)
         {
             this.blacklist = blacklist;
@@ -113,11 +112,6 @@ namespace Tools
         {
             // Empty blacklist, meaning we filter nothing.
             return new MetadataFilter(new Dictionary<string, SortedSet<string>>());
-        }
-
-        internal MetadataFilter(Dictionary<string, SortedSet<string>> blacklist)
-        {
-            this.blacklist = blacklist;
         }
 
         public override bool Equals(object obj)
