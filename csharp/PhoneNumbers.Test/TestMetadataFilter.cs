@@ -821,9 +821,9 @@ namespace PhoneNumbers.Test
                 metadata.TollFree})
             {
                 Assert.Equal(desc.NationalNumberPattern, NATIONAL_NUMBER_PATTERN);
-                Assert.True(ContentsEqual(desc.PossibleLengthList.ToList(), PossibleLengths));
-                Assert.True(ContentsEqual(desc.PossibleLengthLocalOnlyList.ToList(), PossibleLengthsLocalOnly));
-                Assert.False(desc.HasExampleNumber);
+                Assert.True(ContentsEqual(desc.PossibleLengths.ToList(), PossibleLengths));
+                Assert.True(ContentsEqual(desc.PossibleLengthsLocalOnly.ToList(), PossibleLengthsLocalOnly));
+                Assert.False(desc.ExampleNumber != null);
             }
         }
 
@@ -843,7 +843,7 @@ namespace PhoneNumbers.Test
             Assert.Equal(metadata.InternationalPrefix, INTERNATIONAL_PREFIX);
 
             // preferred_international_prefix should be cleared in specialBuild.
-            Assert.False(metadata.HasPreferredInternationalPrefix);
+            Assert.False(metadata.PreferredInternationalPrefix != null);
 
             // general_desc should have all fields but example_number; mobile should have all fields.
             foreach (var desc in new List<PhoneNumberDesc>
@@ -853,11 +853,11 @@ namespace PhoneNumbers.Test
             })
             {
                 Assert.Equal(desc.NationalNumberPattern, NATIONAL_NUMBER_PATTERN);
-                Assert.True(ContentsEqual(desc.PossibleLengthList.ToList(), PossibleLengths));
-                Assert.True(ContentsEqual(desc.PossibleLengthLocalOnlyList.ToList(), PossibleLengthsLocalOnly));
+                Assert.True(ContentsEqual(desc.PossibleLengths.ToList(), PossibleLengths));
+                Assert.True(ContentsEqual(desc.PossibleLengthsLocalOnly.ToList(), PossibleLengthsLocalOnly));
             }
 
-            Assert.False(metadata.GeneralDesc.HasExampleNumber);
+            Assert.False(metadata.GeneralDesc.ExampleNumber != null);
             Assert.Equal(metadata.Mobile.ExampleNumber, EXAMPLE_NUMBER);
 
             // All other PhoneNumberDescs must have all fields cleared.
@@ -867,10 +867,10 @@ namespace PhoneNumbers.Test
                 metadata.TollFree
             })
             {
-                Assert.False(desc.HasNationalNumberPattern);
-                Assert.Equal(desc.PossibleLengthList.Count, 0);
-                Assert.Equal(desc.PossibleLengthLocalOnlyList.Count, 0);
-                Assert.False(desc.HasExampleNumber);
+                Assert.False(desc.NationalNumberPattern != null);
+                Assert.Equal(desc.PossibleLengths.Count, 0);
+                Assert.Equal(desc.PossibleLengthsLocalOnly.Count, 0);
+                Assert.False(desc.ExampleNumber != null);
             }
         }
 
@@ -895,11 +895,11 @@ namespace PhoneNumbers.Test
                 metadata.TollFree})
             {
                 Assert.Equal(desc.NationalNumberPattern, NATIONAL_NUMBER_PATTERN);
-                Assert.True(ContentsEqual(desc.PossibleLengthList.ToList(), PossibleLengths));
-                Assert.True(ContentsEqual(desc.PossibleLengthLocalOnlyList.ToList(), PossibleLengthsLocalOnly));
+                Assert.True(ContentsEqual(desc.PossibleLengths.ToList(), PossibleLengths));
+                Assert.True(ContentsEqual(desc.PossibleLengthsLocalOnly.ToList(), PossibleLengthsLocalOnly));
             }
 
-            Assert.False(metadata.GeneralDesc.HasExampleNumber);
+            Assert.False(metadata.GeneralDesc.ExampleNumber != null);
             Assert.Equal(metadata.FixedLine.ExampleNumber, EXAMPLE_NUMBER);
             Assert.Equal(metadata.Mobile.ExampleNumber, EXAMPLE_NUMBER);
             Assert.Equal(metadata.TollFree.ExampleNumber, EXAMPLE_NUMBER);
@@ -930,39 +930,39 @@ namespace PhoneNumbers.Test
             }
         }
 
-        private static PhoneMetadata.Builder FakeArmeniaPhoneMetadata()
+        private static PhoneMetadata FakeArmeniaPhoneMetadata()
         {
-            var metadata = new PhoneMetadata.Builder();
-            metadata.SetId(ID);
-            metadata.SetCountryCode(COUNTRY_CODE);
-            metadata.SetInternationalPrefix(INTERNATIONAL_PREFIX);
-            metadata.SetPreferredInternationalPrefix(PREFERRED_INTERNATIONAL_PREFIX);
-            metadata.SetGeneralDesc(GetFakeArmeniaPhoneNumberDesc(true));
-            metadata.SetFixedLine(GetFakeArmeniaPhoneNumberDesc(false));
-            metadata.SetMobile(GetFakeArmeniaPhoneNumberDesc(false));
-            metadata.SetTollFree(GetFakeArmeniaPhoneNumberDesc(false));
+            var metadata = new PhoneMetadata();
+            metadata.Id = ID;
+            metadata.CountryCode = COUNTRY_CODE;
+            metadata.InternationalPrefix = INTERNATIONAL_PREFIX;
+            metadata.PreferredInternationalPrefix = PREFERRED_INTERNATIONAL_PREFIX;
+            metadata.GeneralDesc = GetFakeArmeniaPhoneNumberDesc(true);
+            metadata.FixedLine = GetFakeArmeniaPhoneNumberDesc(false);
+            metadata.Mobile = GetFakeArmeniaPhoneNumberDesc(false);
+            metadata.TollFree = GetFakeArmeniaPhoneNumberDesc(false);
             return metadata;
         }
 
         private static PhoneNumberDesc GetFakeArmeniaPhoneNumberDesc(bool generalDesc)
         {
-            var desc = new PhoneNumberDesc.Builder().SetNationalNumberPattern(NATIONAL_NUMBER_PATTERN);
+            var desc = new PhoneNumberDesc {NationalNumberPattern = NATIONAL_NUMBER_PATTERN};
             if (!generalDesc)
             {
-                desc.SetExampleNumber(EXAMPLE_NUMBER);
+                desc.ExampleNumber = EXAMPLE_NUMBER;
             }
 
             foreach (var i in PossibleLengths)
             {
-                desc.AddPossibleLength(i);
+                desc.PossibleLengths.Add(i);
             }
 
             foreach (var i in PossibleLengthsLocalOnly)
             {
-                desc.AddPossibleLengthLocalOnly(i);
+                desc.PossibleLengthsLocalOnly.Add(i);
             }
 
-            return desc.Build();
+            return desc;
         }
 
         private static bool ContentsEqual(IReadOnlyList<int> list, IReadOnlyList<int> array)

@@ -151,12 +151,12 @@ namespace PhoneNumbers.Test
             var intlFormat = "$1 $2";
             var xmlInput = "<numberFormat><intlFormat>" + intlFormat + "</intlFormat></numberFormat>";
             var numberFormatElement = ParseXmlString(xmlInput);
-            var metadata = new PhoneMetadata.Builder();
+            var metadata = new PhoneMetadata();
             var nationalFormat = "";
 
             Assert.True(BuildMetadataFromXml.LoadInternationalFormat(metadata, numberFormatElement,
                                                                     nationalFormat));
-            Assert.Equal(intlFormat, metadata.IntlNumberFormatList[0].Format);
+            Assert.Equal(intlFormat, metadata.IntlNumberFormats[0].Format);
         }
 
         [Fact]
@@ -165,12 +165,12 @@ namespace PhoneNumbers.Test
             var intlFormat = "$1 $2";
             var xmlInput = "<numberFormat><intlFormat>" + intlFormat + "</intlFormat></numberFormat>";
             var numberFormatElement = ParseXmlString(xmlInput);
-            var metadata = new PhoneMetadata.Builder();
+            var metadata = new PhoneMetadata();
             var nationalFormat = "$1";
 
             Assert.True(BuildMetadataFromXml.LoadInternationalFormat(metadata, numberFormatElement,
                                                                     nationalFormat));
-            Assert.Equal(intlFormat, metadata.IntlNumberFormatList[0].Format);
+            Assert.Equal(intlFormat, metadata.IntlNumberFormats[0].Format);
         }
 
         [Fact]
@@ -178,7 +178,7 @@ namespace PhoneNumbers.Test
         {
             var xmlInput = "<numberFormat><intlFormat/><intlFormat/></numberFormat>";
             var numberFormatElement = ParseXmlString(xmlInput);
-            var metadata = new PhoneMetadata.Builder();
+            var metadata = new PhoneMetadata();
 
             // Should throw an exception as multiple intlFormats are provided.
             try
@@ -197,12 +197,12 @@ namespace PhoneNumbers.Test
         {
             var xmlInput = "<numberFormat></numberFormat>";
             var numberFormatElement = ParseXmlString(xmlInput);
-            var metadata = new PhoneMetadata.Builder();
+            var metadata = new PhoneMetadata();
             var nationalFormat = "$1 $2 $3";
 
             Assert.False(BuildMetadataFromXml.LoadInternationalFormat(metadata, numberFormatElement,
                                                                      nationalFormat));
-            Assert.Equal(nationalFormat, metadata.IntlNumberFormatList[0].Format);
+            Assert.Equal(nationalFormat, metadata.IntlNumberFormats[0].Format);
         }
 
         // Tests LoadNationalFormat().
@@ -213,8 +213,8 @@ namespace PhoneNumbers.Test
             var xmlInput = string.Format("<numberFormat><format>{0}</format></numberFormat>",
                                             nationalFormat);
             var numberFormatElement = ParseXmlString(xmlInput);
-            var metadata = new PhoneMetadata.Builder();
-            var numberFormat = new NumberFormat.Builder();
+            var metadata = new PhoneMetadata();
+            var numberFormat = new NumberFormat();
 
             Assert.Equal(nationalFormat,
                          BuildMetadataFromXml.LoadNationalFormat(metadata, numberFormatElement,
@@ -226,8 +226,8 @@ namespace PhoneNumbers.Test
         {
             var xmlInput = "<numberFormat></numberFormat>";
             var numberFormatElement = ParseXmlString(xmlInput);
-            var metadata = new PhoneMetadata.Builder();
-            var numberFormat = new NumberFormat.Builder();
+            var metadata = new PhoneMetadata();
+            var numberFormat = new NumberFormat();
 
             try
             {
@@ -245,8 +245,8 @@ namespace PhoneNumbers.Test
         {
             var xmlInput = "<numberFormat><format/><format/></numberFormat>";
             var numberFormatElement = ParseXmlString(xmlInput);
-            var metadata = new PhoneMetadata.Builder();
-            var numberFormat = new NumberFormat.Builder();
+            var metadata = new PhoneMetadata();
+            var numberFormat = new NumberFormat();
 
             try
             {
@@ -273,12 +273,12 @@ namespace PhoneNumbers.Test
                 "  </availableFormats>" +
                 "</territory>";
             var element = ParseXmlString(xmlInput);
-            var metadata = new PhoneMetadata.Builder();
+            var metadata = new PhoneMetadata();
             BuildMetadataFromXml.LoadAvailableFormats(
                 metadata, element, "0", "", false /* NP not optional */);
-            Assert.Equal("(${1})", metadata.NumberFormatList[0].NationalPrefixFormattingRule);
-            Assert.Equal("0 $CC (${1})", metadata.NumberFormatList[0].DomesticCarrierCodeFormattingRule);
-            Assert.Equal("$1 $2 $3", metadata.NumberFormatList[0].Format);
+            Assert.Equal("(${1})", metadata.NumberFormats[0].NationalPrefixFormattingRule);
+            Assert.Equal("0 $CC (${1})", metadata.NumberFormats[0].DomesticCarrierCodeFormattingRule);
+            Assert.Equal("$1 $2 $3", metadata.NumberFormats[0].Format);
         }
 
         [Fact]
@@ -293,12 +293,12 @@ namespace PhoneNumbers.Test
                 "  </availableFormats>" +
                 "</territory>";
             var element = ParseXmlString(xmlInput);
-            var metadata = new PhoneMetadata.Builder();
+            var metadata = new PhoneMetadata();
             BuildMetadataFromXml.LoadAvailableFormats(
                 metadata, element, "0", "", false /* NP not optional */);
-            Assert.Equal("(${1})", metadata.NumberFormatList[0].NationalPrefixFormattingRule);
-            Assert.Equal("0 $CC (${1})", metadata.NumberFormatList[0].DomesticCarrierCodeFormattingRule);
-            Assert.Equal("$1 $2 $3", metadata.NumberFormatList[0].Format);
+            Assert.Equal("(${1})", metadata.NumberFormats[0].NationalPrefixFormattingRule);
+            Assert.Equal("0 $CC (${1})", metadata.NumberFormats[0].DomesticCarrierCodeFormattingRule);
+            Assert.Equal("$1 $2 $3", metadata.NumberFormats[0].Format);
         }
 
         [Fact]
@@ -311,10 +311,10 @@ namespace PhoneNumbers.Test
                 "  </availableFormats>" +
                 "</territory>";
             var element = ParseXmlString(xmlInput);
-            var metadata = new PhoneMetadata.Builder();
+            var metadata = new PhoneMetadata();
             BuildMetadataFromXml.LoadAvailableFormats(
                 metadata, element, "0", "($1)", false /* NP not optional */);
-            Assert.Equal("($1)", metadata.NumberFormatList[0].NationalPrefixFormattingRule);
+            Assert.Equal("($1)", metadata.NumberFormats[0].NationalPrefixFormattingRule);
         }
 
         [Fact]
@@ -327,10 +327,10 @@ namespace PhoneNumbers.Test
                 "  </availableFormats>" +
                 "</territory>";
             var element = ParseXmlString(xmlInput);
-            var metadata = new PhoneMetadata.Builder();
+            var metadata = new PhoneMetadata();
             BuildMetadataFromXml.LoadAvailableFormats(
                 metadata, element, "0", "($1)", false /* NP not optional */);
-            Assert.Equal(0, metadata.IntlNumberFormatCount);
+            Assert.Equal(0, metadata.IntlNumberFormats.Count);
         }
 
         [Fact]
@@ -344,11 +344,11 @@ namespace PhoneNumbers.Test
                 "  </availableFormats>" +
                 "</territory>";
             var element = ParseXmlString(xmlInput);
-            var metadata = new PhoneMetadata.Builder();
+            var metadata = new PhoneMetadata();
             BuildMetadataFromXml.LoadAvailableFormats(
                 metadata, element, "0", "($1)", false /* NP not optional */);
-            Assert.Equal("$1 $2 $3", metadata.NumberFormatList[0].Format);
-            Assert.Equal("$1-$2", metadata.NumberFormatList[1].Format);
+            Assert.Equal("$1 $2 $3", metadata.NumberFormats[0].Format);
+            Assert.Equal("$1-$2", metadata.NumberFormats[1].Format);
         }
 
         // Tests setLeadingDigitsPatterns().
@@ -360,11 +360,11 @@ namespace PhoneNumbers.Test
                 "<leadingDigits>1</leadingDigits><leadingDigits>2</leadingDigits>" +
                 "</numberFormat>";
             var numberFormatElement = ParseXmlString(xmlInput);
-            var numberFormat = new NumberFormat.Builder();
+            var numberFormat = new NumberFormat();
             BuildMetadataFromXml.SetLeadingDigitsPatterns(numberFormatElement, numberFormat);
 
-            Assert.Equal("1", numberFormat.LeadingDigitsPatternList[0]);
-            Assert.Equal("2", numberFormat.LeadingDigitsPatternList[1]);
+            Assert.Equal("1", numberFormat.LeadingDigitsPatterns[0]);
+            Assert.Equal("2", numberFormat.LeadingDigitsPatterns[1]);
         }
 
         // Tests GetNationalPrefixFormattingRuleFromElement().
@@ -397,14 +397,16 @@ namespace PhoneNumbers.Test
 
             var phoneNumberDesc = BuildMetadataFromXml.ProcessPhoneNumberDescElement(
                 null, territoryElement, "invalidType");
-            Assert.False(phoneNumberDesc.HasNationalNumberPattern);
+            Assert.False(phoneNumberDesc.NationalNumberPattern != null);
         }
 
         [Fact]
         public void TestProcessPhoneNumberDescElementOverridesGeneralDesc()
         {
-            var generalDesc = new PhoneNumberDesc.Builder()
-                .SetNationalNumberPattern("\\d{8}").Build();
+            var generalDesc = new PhoneNumberDesc
+            {
+                NationalNumberPattern = "\\d{8}"
+            };
             var xmlInput =
                 "<territory><fixedLine>" +
                 "  <nationalNumberPattern>\\d{6}</nationalNumberPattern>" +
@@ -454,7 +456,7 @@ namespace PhoneNumbers.Test
                 "  <mobile><nationalNumberPattern>\\d{6}</nationalNumberPattern></mobile>" +
                 "</territory>";
             var territoryElement = ParseXmlString(xmlInput);
-            var metadata = new PhoneMetadata.Builder();
+            var metadata = new PhoneMetadata();
             // Should set sameMobileAndFixedPattern to true.
             BuildMetadataFromXml.LoadGeneralDesc(metadata, territoryElement);
             Assert.True(metadata.SameMobileAndFixedLinePattern);
@@ -477,7 +479,7 @@ namespace PhoneNumbers.Test
                 "  <shortCode><nationalNumberPattern>\\d{10}</nationalNumberPattern></shortCode>" +
                  "</territory>";
             var territoryElement = ParseXmlString(xmlInput);
-            var metadata = new PhoneMetadata.Builder();
+            var metadata = new PhoneMetadata();
             BuildMetadataFromXml.LoadGeneralDesc(metadata, territoryElement);
             Assert.Equal("\\d{1}", metadata.FixedLine.NationalNumberPattern);
             Assert.Equal("\\d{2}", metadata.Mobile.NationalNumberPattern);

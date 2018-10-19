@@ -23,12 +23,8 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestEqualSimpleNumber()
         {
-            var numberA = new PhoneNumber.Builder()
-                .SetCountryCode(1).SetNationalNumber(6502530000L).Build();
-
-            var numberB = new PhoneNumber.Builder()
-                .SetCountryCode(1).SetNationalNumber(6502530000L).Build();
-
+            var numberA = new PhoneNumber {CountryCode = 1, NationalNumber = 6502530000L};
+            var numberB = new PhoneNumber {CountryCode = 1, NationalNumber = 6502530000L};
             Assert.Equal(numberA, numberB);
             Assert.Equal(numberA.GetHashCode(), numberB.GetHashCode());
         }
@@ -36,12 +32,16 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestEqualWithCountryCodeSourceSet()
         {
-            var numberA = new PhoneNumber.Builder()
-                .SetRawInput("+1 650 253 00 00").
-                SetCountryCodeSource(PhoneNumber.Types.CountryCodeSource.FROM_NUMBER_WITH_PLUS_SIGN).BuildPartial();
-            var numberB = new PhoneNumber.Builder()
-                .SetRawInput("+1 650 253 00 00").
-                SetCountryCodeSource(PhoneNumber.Types.CountryCodeSource.FROM_NUMBER_WITH_PLUS_SIGN).BuildPartial();
+            var numberA = new PhoneNumber
+            {
+                RawInput = "+1 650 253 00 00",
+                CountryCodeSource = PhoneNumber.Types.CountryCodeSource.FromNumberWithPlusSign
+            };
+            var numberB = new PhoneNumber
+            {
+                RawInput = "+1 650 253 00 00",
+                CountryCodeSource = PhoneNumber.Types.CountryCodeSource.FromNumberWithPlusSign
+            };
             Assert.Equal(numberA, numberB);
             Assert.Equal(numberA.GetHashCode(), numberB.GetHashCode());
         }
@@ -49,12 +49,8 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestNonEqualWithItalianLeadingZeroSetToTrue()
         {
-            var numberA = new PhoneNumber.Builder()
-                .SetCountryCode(1).SetNationalNumber(6502530000L).SetItalianLeadingZero(true).Build();
-
-            var numberB = new PhoneNumber.Builder()
-                .SetCountryCode(1).SetNationalNumber(6502530000L).Build();
-
+            var numberA = new PhoneNumber {CountryCode = 1, NationalNumber = 6502530000L, ItalianLeadingZero = true};
+            var numberB = new PhoneNumber {CountryCode = 1, NationalNumber = 6502530000L};
             Assert.False(numberA.Equals(numberB));
             Assert.False(numberA.GetHashCode() == numberB.GetHashCode());
         }
@@ -62,16 +58,22 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestNonEqualWithDifferingRawInput()
         {
-            var numberA = new PhoneNumber.Builder()
-                .SetCountryCode(1).SetNationalNumber(6502530000L).SetRawInput("+1 650 253 00 00")
-                .SetCountryCodeSource(PhoneNumber.Types.CountryCodeSource.FROM_NUMBER_WITH_PLUS_SIGN).Build();
-
-            var numberB = new PhoneNumber.Builder()
+            var numberA = new PhoneNumber
+            {
+                CountryCode = 1,
+                NationalNumber = 6502530000L,
+                RawInput = "+1 650 253 00 00",
+                CountryCodeSource = PhoneNumber.Types.CountryCodeSource.FromNumberWithPlusSign
+            };
             // Although these numbers would pass an isNumberMatch test, they are not considered "equal" as
             // objects, since their raw input is different.
-                .SetCountryCode(1).SetNationalNumber(6502530000L).SetRawInput("+1-650-253-00-00").
-                SetCountryCodeSource(PhoneNumber.Types.CountryCodeSource.FROM_NUMBER_WITH_PLUS_SIGN).Build();
-
+            var numberB = new PhoneNumber
+            {
+                CountryCode = 1,
+                NationalNumber = 6502530000L,
+                RawInput = "+1-650-253-00-00",
+                CountryCodeSource = PhoneNumber.Types.CountryCodeSource.FromNumberWithPlusSign
+            };
             Assert.False(numberA.Equals(numberB));
             Assert.False(numberA.GetHashCode() == numberB.GetHashCode());
         }
@@ -79,12 +81,13 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestNonEqualWithPreferredDomesticCarrierCodeSetToDefault()
         {
-            var numberA = new PhoneNumber.Builder()
-                .SetCountryCode(1).SetNationalNumber(6502530000L).SetPreferredDomesticCarrierCode("").Build();
-
-            var numberB = new PhoneNumber.Builder()
-                .SetCountryCode(1).SetNationalNumber(6502530000L).Build();
-
+            var numberA = new PhoneNumber
+            {
+                CountryCode = 1,
+                NationalNumber = 6502530000L,
+                PreferredDomesticCarrierCode = ""
+            };
+            var numberB = new PhoneNumber {CountryCode = 1, NationalNumber = 6502530000L};
             Assert.False(numberA.Equals(numberB));
             Assert.False(numberA.GetHashCode() == numberB.GetHashCode());
         }
@@ -92,12 +95,18 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestEqualWithPreferredDomesticCarrierCodeSetToDefault()
         {
-            var numberA = new PhoneNumber.Builder()
-                .SetCountryCode(1).SetNationalNumber(6502530000L).SetPreferredDomesticCarrierCode("").Build();
-
-            var numberB = new PhoneNumber.Builder()
-                .SetCountryCode(1).SetNationalNumber(6502530000L).SetPreferredDomesticCarrierCode("").Build();
-
+            var numberA = new PhoneNumber
+            {
+                CountryCode = 1,
+                NationalNumber = 6502530000L,
+                PreferredDomesticCarrierCode = ""
+            };
+            var numberB = new PhoneNumber
+            {
+                CountryCode = 1,
+                NationalNumber = 6502530000L,
+                PreferredDomesticCarrierCode = ""
+            };
             Assert.Equal(numberA, numberB);
             Assert.Equal(numberA.GetHashCode(), numberB.GetHashCode());
         }

@@ -33,51 +33,51 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestIsPossibleShortNumber()
         {
-            var possibleNumber = new PhoneNumber.Builder().SetCountryCode(33).SetNationalNumber(123456L).Build();
+            var possibleNumber = new PhoneNumber {CountryCode = 33, NationalNumber = 123456L };
             Assert.True(ShortInfo.IsPossibleShortNumber(possibleNumber));
             Assert.True(
                 ShortInfo.IsPossibleShortNumberForRegion(Parse("123456", RegionCode.FR), RegionCode.FR));
 
-            var impossibleNumber = new PhoneNumber.Builder().SetCountryCode(33).SetNationalNumber(9L).Build();
+            var impossibleNumber = new PhoneNumber {CountryCode = 33, NationalNumber = 9L };
             Assert.False(ShortInfo.IsPossibleShortNumber(impossibleNumber));
 
             // Note that GB and GG share the country calling code 44, and that this number is possible but
             // not valid.
             Assert.True(ShortInfo.IsPossibleShortNumber(
-                new PhoneNumber.Builder().SetCountryCode(44).SetNationalNumber(11001L).Build()));
+                new PhoneNumber { CountryCode = 44, NationalNumber = 11001L }));
         }
 
         [Fact]
         public void TestIsValidShortNumber()
         {
             Assert.True(ShortInfo.IsValidShortNumber(
-                new PhoneNumber.Builder().SetCountryCode(33).SetNationalNumber(1010L).Build()));
+                new PhoneNumber { CountryCode = 33, NationalNumber = 1010L }));
             Assert.True(ShortInfo.IsValidShortNumberForRegion(Parse("1010", RegionCode.FR), RegionCode.FR));
             Assert.False(ShortInfo.IsValidShortNumber(
-                new PhoneNumber.Builder().SetCountryCode(33).SetNationalNumber(123456L).Build()));
+                new PhoneNumber { CountryCode = 33, NationalNumber = 123456L }));
             Assert.False(
                 ShortInfo.IsValidShortNumberForRegion(Parse("123456", RegionCode.FR), RegionCode.FR));
 
             // Note that GB and GG share the country calling code 44.
             Assert.True(ShortInfo.IsValidShortNumber(
-                new PhoneNumber.Builder().SetCountryCode(44).SetNationalNumber(18001L).Build()));
+                new PhoneNumber { CountryCode = 44, NationalNumber = 18001L }));
         }
 
         [Fact]
         public void TestIsCarrierSpecific()
         {
-            var carrierSpecificNumber = new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(33669L).Build();
+            var carrierSpecificNumber = new PhoneNumber {CountryCode =1, NationalNumber = 33669L };
             Assert.True(ShortInfo.IsCarrierSpecific(carrierSpecificNumber));
             Assert.True(
                 ShortInfo.IsCarrierSpecificForRegion(Parse("33669", RegionCode.US), RegionCode.US));
 
-            var notCarrierSpecificNumber = new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(911L).Build();
+            var notCarrierSpecificNumber = new PhoneNumber {CountryCode =1, NationalNumber = 911L };
             Assert.False(ShortInfo.IsCarrierSpecific(notCarrierSpecificNumber));
             Assert.False(
                 ShortInfo.IsCarrierSpecificForRegion(Parse("911", RegionCode.US), RegionCode.US));
 
             var carrierSpecificNumberForSomeRegion =
-                new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(211L).Build();
+                new PhoneNumber {CountryCode =1, NationalNumber = 211L };
             Assert.True(ShortInfo.IsCarrierSpecific(carrierSpecificNumberForSomeRegion));
             Assert.True(
                 ShortInfo.IsCarrierSpecificForRegion(carrierSpecificNumberForSomeRegion, RegionCode.US));
@@ -89,7 +89,7 @@ namespace PhoneNumbers.Test
         public void TestIsSmsService()
         {
             var smsServiceNumberForSomeRegion =
-                new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(21234L).Build();
+                new PhoneNumber {CountryCode =1, NationalNumber = 21234L };
             Assert.True(ShortInfo.IsSmsServiceForRegion(smsServiceNumberForSomeRegion, RegionCode.US));
             Assert.False(ShortInfo.IsSmsServiceForRegion(smsServiceNumberForSomeRegion, RegionCode.BB));
         }
@@ -101,8 +101,8 @@ namespace PhoneNumbers.Test
                 ShortNumberInfo.ShortNumberCost.PREMIUM_RATE);
             Assert.Equal(ShortNumberInfo.ShortNumberCost.PREMIUM_RATE, ShortInfo.GetExpectedCostForRegion(
                 Parse(premiumRateExample, RegionCode.FR), RegionCode.FR));
-            var premiumRateNumber = new PhoneNumber.Builder().SetCountryCode(33)
-                .SetNationalNumber(ulong.Parse(premiumRateExample)).Build();
+            var premiumRateNumber =
+                new PhoneNumber {CountryCode = 33, NationalNumber = ulong.Parse(premiumRateExample)};
             Assert.Equal(ShortNumberInfo.ShortNumberCost.PREMIUM_RATE,
                 ShortInfo.GetExpectedCost(premiumRateNumber));
 
@@ -110,32 +110,28 @@ namespace PhoneNumbers.Test
                 ShortNumberInfo.ShortNumberCost.STANDARD_RATE);
             Assert.Equal(ShortNumberInfo.ShortNumberCost.STANDARD_RATE, ShortInfo.GetExpectedCostForRegion(
                 Parse(standardRateExample, RegionCode.FR), RegionCode.FR));
-            var standardRateNumber = new PhoneNumber.Builder().SetCountryCode(33)
-                .SetNationalNumber(ulong.Parse(standardRateExample)).Build();
-            Assert.Equal(ShortNumberInfo.ShortNumberCost.STANDARD_RATE,
+            var standardRateNumber = new PhoneNumber {CountryCode = 33, NationalNumber = ulong.Parse(standardRateExample)};            Assert.Equal(ShortNumberInfo.ShortNumberCost.STANDARD_RATE,
                 ShortInfo.GetExpectedCost(standardRateNumber));
 
             var tollFreeExample = ShortInfo.GetExampleShortNumberForCost(RegionCode.FR,
                 ShortNumberInfo.ShortNumberCost.TOLL_FREE);
             Assert.Equal(ShortNumberInfo.ShortNumberCost.TOLL_FREE,
                 ShortInfo.GetExpectedCostForRegion(Parse(tollFreeExample, RegionCode.FR), RegionCode.FR));
-            var tollFreeNumber = new PhoneNumber.Builder().SetCountryCode(33)
-                .SetNationalNumber(ulong.Parse(tollFreeExample)).Build();
-            Assert.Equal(ShortNumberInfo.ShortNumberCost.TOLL_FREE,
-                ShortInfo.GetExpectedCost(tollFreeNumber));
+            var tollFreeNumber = new PhoneNumber {CountryCode = 33, NationalNumber = ulong.Parse(tollFreeExample),           Assert.Equal(ShortNumberInfo.ShortNumberCost.TOLL_FREE,
+                ShortInfo.GetExpectedCost(tollFreeNumber)};
 
             Assert.Equal(ShortNumberInfo.ShortNumberCost.UNKNOWN_COST,
                 ShortInfo.GetExpectedCostForRegion(Parse("12345", RegionCode.FR), RegionCode.FR));
-            var unknownCostNumber = new PhoneNumber.Builder().SetCountryCode(33).SetNationalNumber(12345L);
+            var unknownCostNumber = new PhoneNumber { CountryCode = 33, NationalNumber = 12345L};
             Assert.Equal(ShortNumberInfo.ShortNumberCost.UNKNOWN_COST,
-                ShortInfo.GetExpectedCost(unknownCostNumber.Build()));
+                ShortInfo.GetExpectedCost(unknownCostNumber));
 
             // Test that an invalid number may nevertheless have a cost other than UNKNOWN_COST.
             Assert.False(
                 ShortInfo.IsValidShortNumberForRegion(Parse("116123", RegionCode.FR), RegionCode.FR));
             Assert.Equal(ShortNumberInfo.ShortNumberCost.TOLL_FREE,
                 ShortInfo.GetExpectedCostForRegion(Parse("116123", RegionCode.FR), RegionCode.FR));
-            var invalidNumber = new PhoneNumber.Builder().SetCountryCode(33).SetNationalNumber(116123L).Build();
+            var invalidNumber = new PhoneNumber {CountryCode = 33, NationalNumber = 116123L };
             Assert.False(ShortInfo.IsValidShortNumber(invalidNumber));
             Assert.Equal(ShortNumberInfo.ShortNumberCost.TOLL_FREE,
                 ShortInfo.GetExpectedCost(invalidNumber));
@@ -143,10 +139,11 @@ namespace PhoneNumbers.Test
             // Test a nonexistent country code.
             Assert.Equal(ShortNumberInfo.ShortNumberCost.UNKNOWN_COST,
                 ShortInfo.GetExpectedCostForRegion(Parse("911", RegionCode.US), RegionCode.ZZ));
-            unknownCostNumber.Clear();
-            unknownCostNumber.SetCountryCode(123).SetNationalNumber(911L);
+            //unknownCostNumber.Clear();
+            unknownCostNumber.CountryCode = 123;
+            unknownCostNumber.NationalNumber = 911L;
             Assert.Equal(ShortNumberInfo.ShortNumberCost.UNKNOWN_COST,
-                ShortInfo.GetExpectedCost(unknownCostNumber.Build()));
+                ShortInfo.GetExpectedCost(unknownCostNumber));
         }
 
         [Fact]
@@ -157,13 +154,13 @@ namespace PhoneNumbers.Test
             // are not known to be valid numbers in the Christmas Islands.
             var ambiguousPremiumRateString = "1234";
             var ambiguousPremiumRateNumber =
-                new PhoneNumber.Builder().SetCountryCode(61).SetNationalNumber(1234L).Build();
+                new PhoneNumber {CountryCode = 61, NationalNumber = 1234L };
             var ambiguousStandardRateString = "1194";
             var ambiguousStandardRateNumber =
-                new PhoneNumber.Builder().SetCountryCode(61).SetNationalNumber(1194L).Build();
+                new PhoneNumber {CountryCode = 61, NationalNumber = 1194L };
             var ambiguousTollFreeString = "733";
             var ambiguousTollFreeNumber =
-                new PhoneNumber.Builder().SetCountryCode(61).SetNationalNumber(733L).Build();
+                new PhoneNumber {CountryCode = 61, NationalNumber = 733L };
 
             Assert.True(ShortInfo.IsValidShortNumber(ambiguousPremiumRateNumber));
             Assert.True(ShortInfo.IsValidShortNumber(ambiguousStandardRateNumber));
@@ -394,7 +391,7 @@ namespace PhoneNumbers.Test
             Assert.Equal(ShortNumberInfo.ShortNumberCost.TOLL_FREE,
                 ShortInfo.GetExpectedCostForRegion(Parse("112", RegionCode.CX), RegionCode.CX));
             var sharedEmergencyNumber =
-                new PhoneNumber.Builder().SetCountryCode(61).SetNationalNumber(112L).Build();
+                new PhoneNumber {CountryCode = 61, NationalNumber = 112L };
             Assert.True(ShortInfo.IsValidShortNumber(sharedEmergencyNumber));
             Assert.Equal(ShortNumberInfo.ShortNumberCost.TOLL_FREE,
                 ShortInfo.GetExpectedCost(sharedEmergencyNumber));

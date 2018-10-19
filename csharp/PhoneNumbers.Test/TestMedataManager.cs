@@ -31,7 +31,7 @@ namespace PhoneNumbers.Test
             // We should have some data for Germany.
             var germanyAlternateFormats = MetadataManager.GetAlternateFormatsForCountry(49);
             Assert.NotNull(germanyAlternateFormats);
-            Assert.True(germanyAlternateFormats.NumberFormatList.Count > 0);
+            Assert.True(germanyAlternateFormats.NumberFormats.Count > 0);
         }
 
         [Fact]

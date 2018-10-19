@@ -427,9 +427,9 @@ namespace PhoneNumbers
                     // values parsed. TODO: stop clearing all values here and switch all users over
                     // to using rawInput() rather than the rawString() of PhoneNumberMatch.
                     var bnumber = number.ToBuilder();
-                    bnumber.ClearCountryCodeSource();
-                    bnumber.ClearRawInput();
-                    bnumber.ClearPreferredDomesticCarrierCode();
+                    bnumber.CountryCodeSource = null;
+                    bnumber.RawInput = null;
+                    bnumber.PreferredDomesticCarrierCode = null;
                     return new PhoneNumberMatch(offset, candidate, bnumber.Build());
                 }
             }
@@ -574,7 +574,7 @@ namespace PhoneNumbers
                 MetadataManager.GetAlternateFormatsForCountry(number.CountryCode);
             if (alternateFormats != null)
             {
-                foreach (var alternateFormat in alternateFormats.NumberFormatList)
+                foreach (var alternateFormat in alternateFormats.NumberFormats)
                 {
                     formattedNumberGroups = GetNationalNumberGroups(util, number, alternateFormat);
                     if (checker(util, number, normalizedCandidate, formattedNumberGroups))
@@ -632,7 +632,7 @@ namespace PhoneNumbers
         {
             // First, check how we deduced the country code. If it was written in international format, then
             // the national prefix is not required.
-            if (number.CountryCodeSource != PhoneNumber.Types.CountryCodeSource.FROM_DEFAULT_COUNTRY)
+            if (number.CountryCodeSource != PhoneNumber.Types.CountryCodeSource.FromDefaultCountry)
             {
                 return true;
             }
@@ -646,7 +646,7 @@ namespace PhoneNumbers
             // Check if a national prefix should be present when formatting this number.
             var nationalNumber = util.GetNationalSignificantNumber(number);
             var formatRule =
-                util.ChooseFormattingPatternForNumber(metadata.NumberFormatList, nationalNumber);
+                util.ChooseFormattingPatternForNumber(metadata.NumberFormats, nationalNumber);
             // To do this, we check that a national prefix formatting rule was present and that it wasn't
             // just the first-group symbol ($1) with punctuation.
             if (formatRule != null && formatRule.NationalPrefixFormattingRule.Length > 0)

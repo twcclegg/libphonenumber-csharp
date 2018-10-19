@@ -373,16 +373,18 @@ namespace PhoneNumbers.Test
             const string text = "Call 650-253-4561 -- 455-234-3451";
             const string region = "US";
 
-            var number1 = new PhoneNumber.Builder()
-                .SetCountryCode(phoneUtil.GetCountryCodeForRegion(region))
-                .SetNationalNumber(6502534561L)
-                .Build();
+            var number1 = new PhoneNumber
+            {
+                CountryCode = phoneUtil.GetCountryCodeForRegion(region),
+                NationalNumber = 6502534561L
+            };
             var match1 = new PhoneNumberMatch(5, "650-253-4561", number1);
 
-            var number2 = new PhoneNumber.Builder()
-                .SetCountryCode(phoneUtil.GetCountryCodeForRegion(region))
-                .SetNationalNumber(4552343451L)
-                .Build();
+            var number2 = new PhoneNumber
+            {
+                CountryCode = phoneUtil.GetCountryCodeForRegion(region),
+                NationalNumber = 4552343451L
+            };
             var match2 = new PhoneNumberMatch(21, "455-234-3451", number2);
 
             var matches = phoneUtil.FindNumbers(text, region).GetEnumerator();
@@ -735,14 +737,18 @@ namespace PhoneNumbers.Test
             var text = "Call 033316005  or 032316005!";
             var region = "NZ";
 
-            var number1 = new PhoneNumber.Builder()
-                .SetCountryCode(phoneUtil.GetCountryCodeForRegion(region))
-                .SetNationalNumber(33316005).Build();
+            var number1 = new PhoneNumber
+            {
+                CountryCode = phoneUtil.GetCountryCodeForRegion(region),
+                NationalNumber = 33316005
+            };
             var match1 = new PhoneNumberMatch(5, "033316005", number1);
 
-            var number2 = new PhoneNumber.Builder()
-                .SetCountryCode(phoneUtil.GetCountryCodeForRegion(region))
-                .SetNationalNumber(32316005).Build();
+            var number2 = new PhoneNumber
+            {
+                CountryCode = phoneUtil.GetCountryCodeForRegion(region),
+                NationalNumber = 32316005
+            };
             var match2 = new PhoneNumberMatch(19, "032316005", number2);
 
             var matches = phoneUtil.FindNumbers(text, region, PhoneNumberUtil.Leniency.POSSIBLE, long.MaxValue).GetEnumerator();
@@ -865,7 +871,7 @@ namespace PhoneNumbers.Test
         * Asserts that another number can be found in {@code text} starting at {@code index}, and that
         * its corresponding range is {@code [start, end)}.
         */
-        [SuppressMessage("ReSharper", "UnusedParameter.Local")]
+        [SuppressMessage("ReSharper", "ParameterOnlyUsedForPreconditionCheck.Local")]
         private void AssertEqualRange(string text, int index, int start, int end)
         {
             var sub = text.Substring(index);

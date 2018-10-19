@@ -31,31 +31,31 @@ namespace PhoneNumbers.Test
 
         // Set up some test numbers to re-use.
         private static readonly PhoneNumber KONumber1 =
-            new PhoneNumber.Builder().SetCountryCode(82).SetNationalNumber(22123456L).Build();
+            new PhoneNumber {CountryCode = 82, NationalNumber = 22123456L };
         private static readonly PhoneNumber KONumber2 =
-            new PhoneNumber.Builder().SetCountryCode(82).SetNationalNumber(322123456L).Build();
+            new PhoneNumber {CountryCode = 82, NationalNumber = 322123456L };
         private static readonly PhoneNumber KONumber3 =
-            new PhoneNumber.Builder().SetCountryCode(82).SetNationalNumber(6421234567L).Build();
+            new PhoneNumber {CountryCode = 82, NationalNumber = 6421234567L };
         private static readonly PhoneNumber KOInvalidNumber =
-           new PhoneNumber.Builder().SetCountryCode(82).SetNationalNumber(1234L).Build();
+           new PhoneNumber {CountryCode = 82, NationalNumber = 1234L };
         private static readonly PhoneNumber USNumber1 =
-            new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(6502530000L).Build();
+            new PhoneNumber {CountryCode =1, NationalNumber = 6502530000L };
         private static readonly PhoneNumber USNumber2 =
-            new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(6509600000L).Build();
+            new PhoneNumber {CountryCode =1, NationalNumber = 6509600000L };
         private static readonly PhoneNumber USNumber3 =
-            new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(2128120000L).Build();
+            new PhoneNumber {CountryCode =1, NationalNumber = 2128120000L };
         private static readonly PhoneNumber USNumber4 =
-            new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(6174240000L).Build();
+            new PhoneNumber {CountryCode =1, NationalNumber = 6174240000L };
         private static readonly PhoneNumber USInvalidNumber =
-            new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(123456789L).Build();
+            new PhoneNumber {CountryCode =1, NationalNumber = 123456789L };
         private static readonly PhoneNumber BSNumber1 =
-            new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(2423651234L).Build();
+            new PhoneNumber {CountryCode =1, NationalNumber = 2423651234L };
         private static readonly PhoneNumber AUNumber =
-            new PhoneNumber.Builder().SetCountryCode(61).SetNationalNumber(236618300L).Build();
+            new PhoneNumber {CountryCode = 61, NationalNumber = 236618300L };
         private static readonly PhoneNumber NumberWithInvalidCountryCode =
-            new PhoneNumber.Builder().SetCountryCode(999).SetNationalNumber(2423651234L).Build();
+            new PhoneNumber {CountryCode = 999, NationalNumber = 2423651234L };
         private static readonly PhoneNumber InternationalTollFree =
-            new PhoneNumber.Builder().SetCountryCode(800).SetNationalNumber(12345678L).Build();
+            new PhoneNumber {CountryCode = 800, NationalNumber = 12345678L };
 
         public TestPhoneNumberOfflineGeocoder()
         {

@@ -41,7 +41,7 @@ namespace PhoneNumbers
 
         public void Clear()
         {
-            items.Clear();
+            items. = null;
         }
 
         public bool Contains(T item)

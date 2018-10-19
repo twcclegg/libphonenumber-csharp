@@ -103,82 +103,77 @@ namespace PhoneNumbers.Test
         public void TestLookupInvalidNumber_US()
         {
             // central office code cannot start with 1.
-            var number = new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(2121234567L).Build();
+            var number = new PhoneNumber {CountryCode = 1, NationalNumber = 2121234567L};
             Assert.Equal("New York", areaCodeMapForUS.Lookup(number));
         }
 
         [Fact]
         public void TestLookupNumber_NJ()
         {
-            var number = new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(2016641234L).Build();
+            var number = new PhoneNumber {CountryCode = 1, NationalNumber = 2016641234L};
             Assert.Equal("Westwood, NJ", areaCodeMapForUS.Lookup(number));
         }
 
         [Fact]
         public void TestLookupNumber_NY()
         {
-            var number = new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(2126641234L).Build();
+            var number = new PhoneNumber {CountryCode = 1, NationalNumber = 2126641234L};
             Assert.Equal("New York", areaCodeMapForUS.Lookup(number));
         }
 
         [Fact]
         public void TestLookupNumber_CA_1()
         {
-            var number = new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(6503451234L).Build();
+            var number = new PhoneNumber {CountryCode = 1, NationalNumber = 6503451234L};
             Assert.Equal("San Mateo, CA", areaCodeMapForUS.Lookup(number));
         }
 
         [Fact]
         public void TestLookupNumber_CA_2()
         {
-            var number = new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(6502531234L).Build();
+            var number = new PhoneNumber {CountryCode = 1, NationalNumber = 6502531234L};
             Assert.Equal("California", areaCodeMapForUS.Lookup(number));
         }
 
         [Fact]
         public void TestLookupNumberFound_TX()
         {
-            var number = new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(9724801234L).Build();
+            var number = new PhoneNumber {CountryCode = 1, NationalNumber = 9724801234L};
             Assert.Equal("Richardson, TX", areaCodeMapForUS.Lookup(number));
         }
 
         [Fact]
         public void TestLookupNumberNotFound_TX()
         {
-            var number = new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(9724811234L).Build();
+            var number = new PhoneNumber {CountryCode = 1, NationalNumber = 9724811234L};
             Assert.Null(areaCodeMapForUS.Lookup(number));
         }
 
         [Fact]
         public void TestLookupNumber_CH()
         {
-            var number = new PhoneNumber.Builder().SetCountryCode(41).SetNationalNumber(446681300L).Build();
+            var number = new PhoneNumber {CountryCode = 41, NationalNumber = 446681300L };
             Assert.Null(areaCodeMapForUS.Lookup(number));
         }
 
         [Fact]
         public void TestLookupNumber_IT()
         {
-            var number = new PhoneNumber.Builder().SetCountryCode(39).SetNationalNumber(212345678L).SetItalianLeadingZero(true)
-                .Build();
+            var number = new PhoneNumber{CountryCode = 39, NationalNumber = 212345678L, ItalianLeadingZero = true};
             Assert.Equal("Milan", areaCodeMapForIT.Lookup(number));
 
-            number = new PhoneNumber.Builder().SetCountryCode(39).SetNationalNumber(612345678L).SetItalianLeadingZero(true)
-                .Build();
+            number = new PhoneNumber{CountryCode = 39, NationalNumber = 612345678L, ItalianLeadingZero = true};
             Assert.Equal("Rome", areaCodeMapForIT.Lookup(number));
 
-            number = new PhoneNumber.Builder().SetCountryCode(39).SetNationalNumber(3211234L).SetItalianLeadingZero(true)
-                .Build();
+            number = new PhoneNumber{CountryCode = 39, NationalNumber = 3211234L, ItalianLeadingZero = true};
             Assert.Equal("Novara", areaCodeMapForIT.Lookup(number));
 
             // A mobile number
-            number = new PhoneNumber.Builder().SetCountryCode(39).SetNationalNumber(321123456L).SetItalianLeadingZero(false)
-                .Build();
+            number = new PhoneNumber{CountryCode = 39, NationalNumber = 321123456L, ItalianLeadingZero = false};
             Assert.Null(areaCodeMapForIT.Lookup(number));
 
             // An invalid number (too short)
-            number = new PhoneNumber.Builder().SetCountryCode(39).SetNationalNumber(321123L).SetItalianLeadingZero(true)
-                .Build();
+            number = new PhoneNumber{CountryCode = 39, NationalNumber = 321123L, ItalianLeadingZero = true};
             Assert.Equal("Novara", areaCodeMapForIT.Lookup(number));
         }
     }

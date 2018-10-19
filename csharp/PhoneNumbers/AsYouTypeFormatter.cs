@@ -56,8 +56,9 @@ namespace PhoneNumbers
         // Character used when appropriate to separate a prefix, such as a long NDD or a country calling
         // code, from the national number.
         private static readonly char SeparatorBeforeNationalNumber = ' ';
+
         private static readonly PhoneMetadata EmptyMetadata =
-            new PhoneMetadata.Builder().SetInternationalPrefix("NA").BuildPartial();
+            new PhoneMetadata {InternationalPrefix = "NA"};
         private readonly PhoneMetadata defaultMetaData;
         private PhoneMetadata currentMetadata;
 
@@ -170,10 +171,10 @@ namespace PhoneNumbers
         private void GetAvailableFormats(string leadingDigits)
         {
             var formatList =
-                isCompleteNumber && currentMetadata.IntlNumberFormatCount > 0
-                ? currentMetadata.IntlNumberFormatList
-                : currentMetadata.NumberFormatList;
-            var nationalPrefixIsUsedByCountry = currentMetadata.HasNationalPrefix;
+                isCompleteNumber && currentMetadata.IntlNumberFormats.Count > 0
+                ? currentMetadata.IntlNumberFormats
+                : currentMetadata.NumberFormats;
+            var nationalPrefixIsUsedByCountry = currentMetadata.NationalPrefix != null;
             foreach (var format in formatList)
             {
                 if (!nationalPrefixIsUsedByCountry
@@ -203,12 +204,12 @@ namespace PhoneNumbers
             {
                 var format = possibleFormats[i];
                 // Keep everything that isn't restricted by leading digits.
-                if (format.LeadingDigitsPatternCount != 0)
+                if (format.LeadingDigitsPatterns.Count != 0)
                 {
                     var lastLeadingDigitsPattern =
-                        Math.Min(indexOfLeadingDigitsPattern, format.LeadingDigitsPatternCount - 1);
+                        Math.Min(indexOfLeadingDigitsPattern, format.LeadingDigitsPatterns.Count - 1);
                     var leadingDigitsPattern = regexCache.GetPatternForRegex(
-                        format.GetLeadingDigitsPattern(lastLeadingDigitsPattern));
+                        format.LeadingDigitsPatterns[lastLeadingDigitsPattern]);
                     var m = leadingDigitsPattern.MatchBeginning(leadingDigits);
                     if (!m.Success)
                     {
@@ -286,7 +287,7 @@ namespace PhoneNumbers
             originalPosition = 0;
             isCompleteNumber = false;
             isExpectingCountryCallingCode = false;
-            possibleFormats.Clear();
+            possibleFormats.RemoveAll( _ => true);
             shouldAddSpaceAfterNationalPrefix = false;
             if (!currentMetadata.Equals(defaultMetaData))
             {
@@ -579,7 +580,7 @@ namespace PhoneNumbers
                 prefixBeforeNationalNumber.Append('1').Append(SeparatorBeforeNationalNumber);
                 isCompleteNumber = true;
             }
-            else if (currentMetadata.HasNationalPrefixForParsing)
+            else if (currentMetadata.NationalPrefixForParsing != null)
             {
                 var nationalPrefixForParsing =
                     regexCache.GetPatternForRegex(currentMetadata.NationalPrefixForParsing);

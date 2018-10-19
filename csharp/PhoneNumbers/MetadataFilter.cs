@@ -105,7 +105,7 @@ namespace PhoneNumbers
         public override bool Equals(object obj)
             => blacklist.Count == ((MetadataFilter) obj)?.blacklist?.Count &&
                blacklist.All(kvp =>
-                   ((MetadataFilter) obj).blacklist.TryGetValue(kvp.Key, out var value2) && kvp.Value.SetEquals(value2));
+                   ((MetadataFilter) obj).blacklist.TryGetValue(kvp.Key, out var value2) && kvp.Value.Equals = value2);
 
         public override int GetHashCode()
         {
@@ -124,59 +124,59 @@ namespace PhoneNumbers
          *
          * @param metadata  The {@code PhoneMetadata} object to be filtered
          */
-        internal void FilterMetadata(PhoneMetadata.Builder metadata)
+        internal void FilterMetadata(PhoneMetadata metadata)
         {
             // TODO: Consider clearing if the filtered PhoneNumberDesc is empty.
-            if (metadata.HasFixedLine)
-                metadata.SetFixedLine(GetFiltered("fixedLine", metadata.FixedLine));
-            if (metadata.HasMobile)
-                metadata.SetMobile(GetFiltered("mobile", metadata.Mobile));
-            if (metadata.HasTollFree)
-                metadata.SetTollFree(GetFiltered("tollFree", metadata.TollFree));
-            if (metadata.HasPremiumRate)
-                metadata.SetPremiumRate(GetFiltered("premiumRate", metadata.PremiumRate));
-            if (metadata.HasSharedCost)
-                metadata.SetSharedCost(GetFiltered("sharedCost", metadata.SharedCost));
-            if (metadata.HasPersonalNumber)
-                metadata.SetPersonalNumber(GetFiltered("personalNumber", metadata.PersonalNumber));
-            if (metadata.HasVoip)
-                metadata.SetVoip(GetFiltered("voip", metadata.Voip));
-            if (metadata.HasPager)
-                metadata.SetPager(GetFiltered("pager", metadata.Pager));
-            if (metadata.HasUan)
-                metadata.SetUan(GetFiltered("uan", metadata.Uan));
-            if (metadata.HasEmergency)
-                metadata.SetEmergency(GetFiltered("emergency", metadata.Emergency));
-            if (metadata.HasVoicemail)
-                metadata.SetVoicemail(GetFiltered("voicemail", metadata.Voicemail));
-            if (metadata.HasShortCode)
-                metadata.SetShortCode(GetFiltered("shortCode", metadata.ShortCode));
-            if (metadata.HasStandardRate)
-                metadata.SetStandardRate(GetFiltered("standardRate", metadata.StandardRate));
-            if (metadata.HasCarrierSpecific)
-                metadata.SetCarrierSpecific(GetFiltered("carrierSpecific", metadata.CarrierSpecific));
-            if (metadata.HasSmsServices)
-                metadata.SetSmsServices(GetFiltered("smsServices", metadata.SmsServices));
-            if (metadata.HasNoInternationalDialling)
-                metadata.SetNoInternationalDialling(GetFiltered("noInternationalDialling",
-                    metadata.NoInternationalDialling));
+            if (metadata.FixedLine != null)
+                metadata.FixedLine = GetFiltered("fixedLine", metadata.FixedLine);
+            if (metadata.Mobile != null)
+                metadata.Mobile = GetFiltered("mobile", metadata.Mobile);
+            if (metadata.TollFree != null)
+                metadata.TollFree = GetFiltered("tollFree", metadata.TollFree);
+            if (metadata.PremiumRate != null)
+                metadata.PremiumRate = GetFiltered("premiumRate", metadata.PremiumRate);
+            if (metadata.SharedCost != null)
+                metadata.SharedCost = GetFiltered("sharedCost", metadata.SharedCost);
+            if (metadata.PersonalNumber != null)
+                metadata.PersonalNumber = GetFiltered("personalNumber", metadata.PersonalNumber);
+            if (metadata.Voip != null)
+                metadata.Voip = GetFiltered("voip", metadata.Voip);
+            if (metadata.Pager != null)
+                metadata.Pager = GetFiltered("pager", metadata.Pager);
+            if (metadata.Uan != null)
+                metadata.Uan = GetFiltered("uan", metadata.Uan);
+            if (metadata.Emergency != null)
+                metadata.Emergency = GetFiltered("emergency", metadata.Emergency);
+            if (metadata.Voicemail != null)
+                metadata.Voicemail = GetFiltered("voicemail", metadata.Voicemail);
+            if (metadata.ShortCode != null)
+                metadata.ShortCode = GetFiltered("shortCode", metadata.ShortCode);
+            if (metadata.StandardRate != null)
+                metadata.StandardRate = GetFiltered("standardRate", metadata.StandardRate);
+            if (metadata.CarrierSpecific != null)
+                metadata.CarrierSpecific = GetFiltered("carrierSpecific", metadata.CarrierSpecific);
+            if (metadata.SmsServices != null)
+                metadata.SmsServices = GetFiltered("smsServices", metadata.SmsServices);
+            if (metadata.NoInternationalDialling != null)
+                metadata.NoInternationalDialling = GetFiltered("noInternationalDialling",
+                    metadata.NoInternationalDialling);
 
             if (ShouldDrop("preferredInternationalPrefix"))
-                metadata.ClearPreferredInternationalPrefix();
+                metadata.PreferredInternationalPrefix = null;
             if (ShouldDrop("nationalPrefix"))
-                metadata.ClearNationalPrefix();
+                metadata.NationalPrefix = null;
             if (ShouldDrop("preferredExtnPrefix"))
-                metadata.ClearPreferredExtnPrefix();
+                metadata.PreferredExtnPrefix = null;
             if (ShouldDrop("nationalPrefixTransformRule"))
-                metadata.ClearNationalPrefixTransformRule();
+                metadata.NationalPrefixTransformRule = null;
             if (ShouldDrop("sameMobileAndFixedLinePattern"))
-                metadata.ClearSameMobileAndFixedLinePattern();
+                metadata.SameMobileAndFixedLinePattern = false;
             if (ShouldDrop("mainCountryForCode"))
-                metadata.ClearMainCountryForCode();
+                metadata.MainCountryForCode = false;
             if (ShouldDrop("leadingZeroPossible"))
-                metadata.ClearLeadingZeroPossible();
+                metadata.LeadingZeroPossible = false;
             if (ShouldDrop("mobileNumberPortableRegion"))
-                metadata.ClearMobileNumberPortableRegion();
+                metadata.MobileNumberPortableRegion = false;
         }
 
         /**
@@ -325,16 +325,16 @@ namespace PhoneNumbers
 
         private PhoneNumberDesc GetFiltered(string type, PhoneNumberDesc desc)
         {
-            var builder = new PhoneNumberDesc.Builder().MergeFrom(desc);
+            var builder = new PhoneNumberDesc();
             if (ShouldDrop(type, "nationalNumberPattern"))
-                builder.ClearNationalNumberPattern();
+                builder.NationalNumberPattern = null;
             if (ShouldDrop(type, "possibleLength"))
-                builder.ClearPossibleLength();
+                builder.PossibleLengths = null;
             if (ShouldDrop(type, "possibleLengthLocalOnly"))
-                builder.ClearPossibleLengthLocalOnly();
+                builder.PossibleLengthsLocalOnly = null;
             if (ShouldDrop(type, "exampleNumber"))
-                builder.ClearExampleNumber();
-            return builder.Build();
+                builder.ExampleNumber = null;
+            return builder;
         }
     }
 }

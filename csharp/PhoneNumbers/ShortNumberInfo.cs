@@ -123,7 +123,7 @@ namespace PhoneNumbers
             }
 
             var numberLength = GetNationalSignificantNumber(number).Length;
-            return phoneMetadata.GeneralDesc.PossibleLengthList.Contains(numberLength);
+            return phoneMetadata.GeneralDesc.PossibleLengths.Contains(numberLength);
         }
 
         /**
@@ -147,7 +147,7 @@ namespace PhoneNumbers
                     continue;
                 }
 
-                if (phoneMetadata.GeneralDesc.PossibleLengthList.Contains(shortNumberLength))
+                if (phoneMetadata.GeneralDesc.PossibleLengths.Contains(shortNumberLength))
                 {
                     return true;
                 }
@@ -255,7 +255,7 @@ namespace PhoneNumbers
             // The possible lengths are not present for a particular sub-type if they match the general
             // description; for this reason, we check the possible lengths against the general description
             // first to allow an early exit if possible.
-            if (!phoneMetadata.GeneralDesc.PossibleLengthList.Contains(shortNumber.Length))
+            if (!phoneMetadata.GeneralDesc.PossibleLengths.Contains(shortNumber.Length))
             {
                 return ShortNumberCost.UNKNOWN_COST;
             }
@@ -484,7 +484,7 @@ namespace PhoneNumbers
             }
 
             var metadata = MetadataManager.GetShortNumberMetadataForRegion(regionCode);
-            if (metadata == null || !metadata.HasEmergency)
+            if (metadata == null || metadata.Emergency == null)
             {
                 return false;
             }
@@ -601,8 +601,8 @@ namespace PhoneNumbers
         private bool MatchesPossibleNumberAndNationalNumber(string number,
             PhoneNumberDesc numberDesc)
         {
-            if (numberDesc.PossibleLengthCount > 0
-                && !numberDesc.PossibleLengthList.Contains(number.Length))
+            if (numberDesc.PossibleLengths.Count > 0
+                && !numberDesc.PossibleLengths.Contains(number.Length))
             {
                 return false;
             }
