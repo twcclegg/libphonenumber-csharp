@@ -28,8 +28,8 @@ namespace PhoneNumbers.Test
 
         public TestExampleNumbers()
         {
-            invalidCases. = null;
-            wrongTypeCases. = null;
+            invalidCases = null;
+            wrongTypeCases = null;
             PhoneNumberUtil.ResetInstance();
             phoneNumberUtil = PhoneNumberUtil.GetInstance();
         }

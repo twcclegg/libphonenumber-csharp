@@ -68,7 +68,7 @@ namespace PhoneNumbers
         // by that country calling code. In the case of multiple regions sharing a calling code, such as
         // the NANPA regions, the one indicated with "isMainCountryForCode" in the metadata should be
         // first.
-        private readonly Dictionary<int, List<string>> countryCallingCodeToRegionCodeMap;
+        private readonly Dictionary<int?, List<string>> countryCallingCodeToRegionCodeMap;
 
         private ShortNumberInfo(IMatcherApi matcherApi)
         {
@@ -83,7 +83,7 @@ namespace PhoneNumbers
          * non-geographical country calling codes, the region code 001 is returned. Also, in the case
          * of no region code being found, an empty list is returned.
          */
-        private List<string> GetRegionCodesForCountryCode(int countryCallingCode)
+        private List<string> GetRegionCodesForCountryCode(int? countryCallingCode)
         {
             countryCallingCodeToRegionCodeMap.TryGetValue(countryCallingCode, out var regionCodes);
             return regionCodes ?? new List<string>();

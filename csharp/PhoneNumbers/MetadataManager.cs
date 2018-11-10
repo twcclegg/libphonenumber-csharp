@@ -33,12 +33,12 @@ namespace PhoneNumbers
 
         internal const string ShortNumberMetadataFilePrefix = "ShortNumberMetadata.xml";
 
-        private static readonly Dictionary<int, PhoneMetadata> CallingCodeToAlternateFormatsMap =
-            new Dictionary<int, PhoneMetadata>();
+        private static readonly Dictionary<int?, PhoneMetadata> CallingCodeToAlternateFormatsMap =
+            new Dictionary<int?, PhoneMetadata>();
 
         // A set of which country calling codes there are alternate format data for. If the set has an
         // entry for a code, then there should be data for that code linked into the resources.
-        private static readonly Dictionary<int, List<string>> CountryCodeSet =
+        private static readonly Dictionary<int?, List<string>> CountryCodeSet =
             BuildMetadataFromXml.GetCountryCodeToRegionCodeMap(AlternateFormatsFilePrefix);
 
 
@@ -64,7 +64,7 @@ namespace PhoneNumbers
 #endif
             var name = asm.GetManifestResourceNames().FirstOrDefault(n => n.EndsWith(filePrefix)) ?? "missing";
             var meta = BuildMetadataFromXml.BuildPhoneMetadataCollection(name, false, false, false, true); // todo lite/special build
-            foreach (var m in meta.MetadataList)
+            foreach (var m in meta.Metadata)
             {
                 CallingCodeToAlternateFormatsMap[m.CountryCode] = m;
             }
@@ -78,13 +78,13 @@ namespace PhoneNumbers
 #endif
             var name = asm.GetManifestResourceNames().FirstOrDefault(n => n.EndsWith(filePrefix)) ?? "missing";
             var meta = BuildMetadataFromXml.BuildPhoneMetadataCollection(name, false, false, true, false); // todo lite/special build
-            foreach (var m in meta.MetadataList)
+            foreach (var m in meta.Metadata)
             {
                 ShortNumberMetadataMap[m.Id] = m;
             }
         }
 
-        public static PhoneMetadata GetAlternateFormatsForCountry(int countryCallingCode)
+        public static PhoneMetadata GetAlternateFormatsForCountry(int? countryCallingCode)
         {
             lock(CallingCodeToAlternateFormatsMap)
             {

@@ -28,10 +28,10 @@ namespace PhoneNumbers
         // country/region represented by that country code. In the case of multiple
         // countries sharing a calling code, such as the NANPA countries, the one
         // indicated with "isMainCountryForCode" in the metadata should be first.
-        internal static Dictionary<int, List<string>> GetCountryCodeToRegionCodeMap()
+        internal static Dictionary<int?, List<string>> GetCountryCodeToRegionCodeMap()
             // The capacity is set to 286 as there are 215 different entries,
             // and this offers a load factor of roughly 0.75.
-            => new Dictionary<int, List<string>>(286)
+            => new Dictionary<int?, List<string>>(286)
             {
                 { 1, new List<string>(25)
                     {

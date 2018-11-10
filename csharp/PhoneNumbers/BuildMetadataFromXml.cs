@@ -116,11 +116,11 @@ namespace PhoneNumbers
         // represented by that country code. In the case of multiple countries sharing a calling code,
         // such as the NANPA countries, the one indicated with "isMainCountryForCode" in the metadata
         // should be first.
-        public static Dictionary<int, List<string>> BuildCountryCodeToRegionCodeMap(
+        public static Dictionary<int?, List<string>> BuildCountryCodeToRegionCodeMap(
             PhoneMetadataCollection metadataCollection)
         {
             var countryCodeToRegionCodeMap =
-                new Dictionary<int, List<string>>();
+                new Dictionary<int?, List<string>>();
             foreach (var metadata in metadataCollection.Metadata)
             {
                 var regionCode = metadata.Id;
@@ -156,7 +156,7 @@ namespace PhoneNumbers
             if (removeWhitespace)
                 regex = Regex.Replace(regex, "\\s", "");
             // ReSharper disable once ObjectCreationAsStatement
-            new Regex(regex, InternalRegexOptions.Default);
+            new Regex(regex);
             // return regex itself if it is of correct regex syntax
             // i.e. compile did not fail with a PatternSyntaxException.
             return regex;
@@ -459,7 +459,7 @@ namespace PhoneNumbers
                 metadata.NoInternationalDialling = ProcessPhoneNumberDescElement(generalDesc, element,
                     NO_INTERNATIONAL_DIALLING);
                 var mobileAndFixedAreSame = metadata.Mobile.NationalNumberPattern
-                    .Equals(metadata.FixedLine.NationalNumberPattern);
+                    ?.Equals(metadata.FixedLine.NationalNumberPattern) ?? false;
                 if (metadata.SameMobileAndFixedLinePattern != mobileAndFixedAreSame)
                     metadata.SameMobileAndFixedLinePattern = mobileAndFixedAreSame;
                 metadata.TollFree = ProcessPhoneNumberDescElement(generalDesc, element, TOLL_FREE);
@@ -668,8 +668,7 @@ namespace PhoneNumbers
             return input;
         }
 
-        // @VisibleForTesting
-        public static void LoadGeneralDesc(PhoneMetadata metadata, XElement element)
+        internal static void LoadGeneralDesc(PhoneMetadata metadata, XElement element)
         {
             var generalDescBuilder = ProcessPhoneNumberDescElement(null, element, GENERAL_DESC);
             SetPossibleLengthsGeneralDesc(generalDescBuilder, metadata.Id, element, false);
@@ -689,8 +688,8 @@ namespace PhoneNumbers
             metadata.NoInternationalDialling = 
                 ProcessPhoneNumberDescElement(generalDesc, element, NO_INTERNATIONAL_DIALLING);
             metadata.SameMobileAndFixedLinePattern = 
-                metadata.Mobile.NationalNumberPattern.Equals(
-                    metadata.FixedLine.NationalNumberPattern);
+                metadata.Mobile.NationalNumberPattern?.Equals(
+                    metadata.FixedLine.NationalNumberPattern) ?? false;
         }
 
         public static PhoneMetadata LoadCountryMetadata(string regionCode,
@@ -710,7 +709,7 @@ namespace PhoneNumbers
             return metadata;
         }
 
-        public static Dictionary<int, List<string>> GetCountryCodeToRegionCodeMap(string filePrefix)
+        public static Dictionary<int?, List<string>> GetCountryCodeToRegionCodeMap(string filePrefix)
         {
 #if (NET35 || NET40)
             var asm = Assembly.GetExecutingAssembly();

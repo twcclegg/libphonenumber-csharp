@@ -32,7 +32,7 @@ namespace PhoneNumbers
     {
         private static readonly Dictionary<string, string> LocaleNormalizationMap;
         private List<HashSet<string>> availableLanguages;
-        private int[] countryCallingCodes;
+        private List<int?> countryCallingCodes;
         private int numOfEntries;
 
         static MappingFileProvider()
@@ -62,7 +62,7 @@ namespace PhoneNumbers
         public void ReadFileConfigs(SortedDictionary<int, HashSet<string>> availableDataFiles)
         {
             numOfEntries = availableDataFiles.Count;
-            countryCallingCodes = new int[numOfEntries];
+            countryCallingCodes = new List<int?>(numOfEntries);
             availableLanguages = new List<HashSet<string>>(numOfEntries);
             var index = 0;
             foreach (var countryCallingCode in availableDataFiles.Keys)
@@ -106,11 +106,11 @@ namespace PhoneNumbers
          * @param region  two-letter uppercase ISO country codes as defined by ISO 3166-1
          * @return  the name of the file, or empty string if no such file can be found
          */
-        public string GetFileName(int countryCallingCode, string language, string script, string region)
+        public string GetFileName(int? countryCallingCode, string language, string script, string region)
         {
             if (language.Length == 0)
                 return "";
-            var index = Array.BinarySearch(countryCallingCodes, countryCallingCode);
+            var index = countryCallingCodes.BinarySearch(countryCallingCode);
             if (index < 0)
                 return "";
             var setOfLangs = availableLanguages[index];
@@ -132,8 +132,7 @@ namespace PhoneNumbers
         {
             var fullLocale = ConstructFullLocale(language, script, region);
             var fullLocaleStr = fullLocale.ToString();
-            string normalizedLocale;
-            if (LocaleNormalizationMap.TryGetValue(fullLocaleStr, out normalizedLocale))
+            if (LocaleNormalizationMap.TryGetValue(fullLocaleStr, out var normalizedLocale))
                 if (setOfLangs.Contains(normalizedLocale))
                     return normalizedLocale;
             if (setOfLangs.Contains(fullLocaleStr))

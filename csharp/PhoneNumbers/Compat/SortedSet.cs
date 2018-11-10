@@ -41,7 +41,10 @@ namespace PhoneNumbers
 
         public void Clear()
         {
-            items. = null;
+            foreach (var key in items.Keys)
+            {
+                items.Remove(key);
+            }
         }
 
         public bool Contains(T item)

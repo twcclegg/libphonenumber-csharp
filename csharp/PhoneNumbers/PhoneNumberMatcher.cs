@@ -426,11 +426,11 @@ namespace PhoneNumbers
                     // We used parseAndKeepRawInput to create this number, but for now we don't return the extra
                     // values parsed. TODO: stop clearing all values here and switch all users over
                     // to using rawInput() rather than the rawString() of PhoneNumberMatch.
-                    var bnumber = number.ToBuilder();
+                    var bnumber = new PhoneNumber().MergeFrom(number);
                     bnumber.CountryCodeSource = null;
                     bnumber.RawInput = null;
                     bnumber.PreferredDomesticCarrierCode = null;
-                    return new PhoneNumberMatch(offset, candidate, bnumber.Build());
+                    return new PhoneNumberMatch(offset, candidate, bnumber);
                 }
             }
             catch (NumberParseException)
@@ -501,7 +501,7 @@ namespace PhoneNumbers
                 PhoneNumberUtil.NonDigitsPattern.Split(normalizedCandidate.ToString());
             // Set this to the last group, skipping it if the number has an extension.
             var candidateNumberGroupIndex =
-                number.HasExtension ? candidateGroups.Length - 2 : candidateGroups.Length - 1;
+                number.Extension != null ? candidateGroups.Length - 2 : candidateGroups.Length - 1;
             // First we check if the national significant number is formatted as a block.
             // We use contains and not equals, since the national significant number may be present with
             // a prefix such as a national number prefix, or the country code itself.

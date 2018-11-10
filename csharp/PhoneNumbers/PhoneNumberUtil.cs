@@ -80,7 +80,7 @@ namespace PhoneNumbers
         // Map of country calling codes that use a mobile token before the area code. One example of when
         // this is relevant is when determining the length of the national destination code, which should
         // be the length of the area code plus the length of the mobile token.
-        private static readonly Dictionary<int, string> MobileTokenMappings = new Dictionary<int, string>
+        private static readonly Dictionary<int?, string> MobileTokenMappings = new Dictionary<int?, string>
         {
             {52, "1" },
             {54, "9" }
@@ -831,7 +831,7 @@ namespace PhoneNumbers
         * @param countryCallingCode  the country calling code for which we want the mobile token
         * @return  the mobile token, as a string, for the given country calling code
         */
-        public static string GetCountryMobileToken(int countryCallingCode)
+        public static string GetCountryMobileToken(int? countryCallingCode)
         {
             return MobileTokenMappings.ContainsKey(countryCallingCode) ? MobileTokenMappings[countryCallingCode] : "";
         }
@@ -866,7 +866,7 @@ namespace PhoneNumbers
         }
 
         public static PhoneNumberUtil GetInstance(string baseFileLocation,
-            Dictionary<int, List<string>> countryCallingCodeToRegionCodeMap)
+            Dictionary<int?, List<string>> countryCallingCodeToRegionCodeMap)
         {
             lock (ThisLock)
             {
@@ -910,7 +910,7 @@ namespace PhoneNumbers
         * @return  an unordered set of the country calling codes for every non-geographical entity the
         *     library supports
         */
-        public Dictionary<int, PhoneMetadata>.KeyCollection GetSupportedGlobalNetworkCallingCodes()
+        public Dictionary<int?, PhoneMetadata>.KeyCollection GetSupportedGlobalNetworkCallingCodes()
         {
             return countryCodeToNonGeographicalMetadataMap.Keys;
         }
@@ -924,9 +924,9 @@ namespace PhoneNumbers
         * @return  an unordered set of the country calling codes for every geographical and
         *     non-geographical entity the library supports
         */
-         public HashSet<int> GetSupportedCallingCodes()
+         public HashSet<int?> GetSupportedCallingCodes()
          {
-             return new HashSet<int>(countryCallingCodeToRegionCodeMap.Keys);
+             return new HashSet<int?>(countryCallingCodeToRegionCodeMap.Keys);
          }
 
         /**
@@ -1075,7 +1075,7 @@ namespace PhoneNumbers
         /**
         * Helper function to check the country calling code is valid.
         */
-        private bool HasValidCountryCallingCode(int countryCallingCode)
+        private bool HasValidCountryCallingCode(int? countryCallingCode)
         {
             return countryCallingCodeToRegionCodeMap.ContainsKey(countryCallingCode);
         }
@@ -1202,7 +1202,7 @@ namespace PhoneNumbers
                     }
                 }
                 formattedNumber.Append(
-                    FormatNsnUsingPattern(nationalSignificantNumber, numFormatCopy.Build(), numberFormat));
+                    FormatNsnUsingPattern(nationalSignificantNumber, numFormatCopy, numberFormat));
             }
             MaybeAppendFormattedExtension(number, metadata, numberFormat, formattedNumber);
             PrefixNumberWithCountryCallingCode(countryCallingCode, numberFormat, formattedNumber);
@@ -1295,12 +1295,13 @@ namespace PhoneNumbers
             var countryCallingCode = number.CountryCode;
             if (!HasValidCountryCallingCode(countryCallingCode))
             {
-                return number.HasRawInput ? number.RawInput : "";
+                return number.RawInput != null ? number.RawInput : "";
             }
 
             string formattedNumber;
             // Clear the extension, as that part cannot normally be dialed together with the main number.
-            var numberNoExt = new PhoneNumber().MergeFrom(number).Extension = null.Build();
+            var numberNoExt = new PhoneNumber().MergeFrom(number);
+            numberNoExt.Extension = null;
             var numberType = GetNumberType(numberNoExt);
             var regionCode = GetRegionCodeForCountryCode(countryCallingCode);
             if (regionCode.Equals("CO") && regionCallingFrom.Equals("CO"))
@@ -1519,10 +1520,9 @@ namespace PhoneNumbers
                     }
                     // Otherwise, we need to remove the national prefix from our output.
                     var numFormatCopy = new NumberFormat()
-                        .MergeFrom(formatRule)
-                        .NationalPrefixFormattingRule = null
-                        .Build();
-                    var numberFormats = new List<NumberFormat>(1)
+                        .MergeFrom(formatRule);
+                    numFormatCopy.NationalPrefixFormattingRule = null;
+                    var numberFormats = new List<NumberFormat>
                     {
                         numFormatCopy
                     };
@@ -1660,7 +1660,7 @@ namespace PhoneNumbers
                 // This will not work in the cases where the pattern (and not the leading digits) decide
                 // whether a national prefix needs to be used, since we have overridden the pattern to match
                 // anything, but that is not the case in the metadata to date.
-                return FormatNsnUsingPattern(rawInput, newFormat.Build(), PhoneNumberFormat.NATIONAL);
+                return FormatNsnUsingPattern(rawInput, newFormat, PhoneNumberFormat.NATIONAL);
             }
             var internationalPrefixForFormatting = "";
             // If an unsupported region-calling-from is entered, or a country with multiple international
@@ -1762,7 +1762,7 @@ namespace PhoneNumbers
             string nationalNumber)
         {
             return (from numFormat in availableFormats
-                let size = numFormat.LeadingDigitsPattern.Count
+                let size = numFormat.LeadingDigitsPatterns.Count
                 where size == 0 || regexCache.GetPatternForRegex(
                     // We always use the last leading_digits_pattern, as it is the most detailed.
                     numFormat.LeadingDigitsPatterns[size - 1])
@@ -1878,7 +1878,7 @@ namespace PhoneNumbers
         *    does not contain such information, or the country calling code passed in does not belong
         *    to a non-geographical entity.
         */
-        public PhoneNumber GetExampleNumberForNonGeoEntity(int countryCallingCode)
+        public PhoneNumber GetExampleNumberForNonGeoEntity(int? countryCallingCode)
         {
             var metadata = GetMetadataForNonGeographicalRegion(countryCallingCode);
             if (metadata != null)
@@ -2485,16 +2485,15 @@ namespace PhoneNumbers
         */
         public bool TruncateTooLongNumber(PhoneNumber number)
         {
-            if (IsValidNumber(number.Clone().Build()))
+            if (IsValidNumber(number))
                 return true;
             PhoneNumber copy;
             var nationalNumber = number.NationalNumber;
             do
             {
                 nationalNumber /= 10;
-                var numberCopy = number.Clone();
-                numberCopy.NationalNumber = nationalNumber;
-                copy = numberCopy.Build();
+                copy = new PhoneNumber().MergeFrom(number);
+                copy.NationalNumber = nationalNumber;
                 if (IsPossibleNumberWithReason(copy) == ValidationResult.TOO_SHORT ||
                   nationalNumber == 0)
                     return false;
@@ -3073,7 +3072,7 @@ namespace PhoneNumbers
 
         private static bool AreEqual(PhoneNumber p1, PhoneNumber p2)
         {
-            return p1.Clone().Build().Equals(p2.Clone().Build());
+            return p1.Equals(p2);
         }
 
         /**
@@ -3306,7 +3305,7 @@ namespace PhoneNumbers
                         // second number without one as well.
                         var secondNumberProto = new PhoneNumber();
                         ParseHelper(secondNumber, null, false, false, secondNumberProto);
-                        return IsNumberMatch(firstNumber, secondNumberProto.Build());
+                        return IsNumberMatch(firstNumber, secondNumberProto);
                     }
                     catch (NumberParseException)
                     {

@@ -138,7 +138,7 @@ namespace PhoneNumbers
         }
 
         private AreaCodeMap GetPhonePrefixDescriptions(
-            int prefixMapKey, string language, string script, string region)
+            int? prefixMapKey, string language, string script, string region)
         {
             var fileName = mappingFileProvider.GetFileName(prefixMapKey, language, script, region);
             if (fileName.Length == 0)

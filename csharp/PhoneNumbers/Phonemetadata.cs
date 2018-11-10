@@ -3,8 +3,6 @@
 // Input: my.proto
 
 using System.Collections.Generic;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 
 #pragma warning disable CS1591, CS0612, CS3021, IDE1006
 namespace PhoneNumbers
@@ -69,7 +67,7 @@ namespace PhoneNumbers
 
         public string NationalNumberPattern
         {
-            get { return __pbn__NationalNumberPattern ?? ""; }
+            get { return __pbn__NationalNumberPattern; }
             set { __pbn__NationalNumberPattern = value; }
         }
 
@@ -77,13 +75,13 @@ namespace PhoneNumbers
         public void ResetNationalNumberPattern() => __pbn__NationalNumberPattern = null;
         private string __pbn__NationalNumberPattern;
 
-        public List<int> PossibleLengths { get; set; }
+        public List<int> PossibleLengths = new List<int>();
 
-        public List<int> PossibleLengthsLocalOnly { get; set; }
+        public List<int> PossibleLengthsLocalOnly = new List<int>();
 
         public string ExampleNumber
         {
-            get { return __pbn__ExampleNumber ?? ""; }
+            get { return __pbn__ExampleNumber; }
             set { __pbn__ExampleNumber = value; }
         }
 
@@ -153,7 +151,7 @@ namespace PhoneNumbers
 
         public string InternationalPrefix
         {
-            get { return __pbn__InternationalPrefix ?? ""; }
+            get { return __pbn__InternationalPrefix; }
             set { __pbn__InternationalPrefix = value; }
         }
 
@@ -163,7 +161,7 @@ namespace PhoneNumbers
 
         public string PreferredInternationalPrefix
         {
-            get { return __pbn__PreferredInternationalPrefix ?? ""; }
+            get { return __pbn__PreferredInternationalPrefix; }
             set { __pbn__PreferredInternationalPrefix = value; }
         }
 
@@ -173,7 +171,7 @@ namespace PhoneNumbers
 
         public string NationalPrefix
         {
-            get { return __pbn__NationalPrefix ?? ""; }
+            get { return __pbn__NationalPrefix; }
             set { __pbn__NationalPrefix = value; }
         }
 

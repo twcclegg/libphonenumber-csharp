@@ -105,7 +105,7 @@ namespace PhoneNumbers
         public override bool Equals(object obj)
             => blacklist.Count == ((MetadataFilter) obj)?.blacklist?.Count &&
                blacklist.All(kvp =>
-                   ((MetadataFilter) obj).blacklist.TryGetValue(kvp.Key, out var value2) && kvp.Value.Equals = value2);
+                   ((MetadataFilter) obj).blacklist.TryGetValue(kvp.Key, out var value2) && kvp.Value.SetEquals(value2));
 
         public override int GetHashCode()
         {
@@ -325,16 +325,15 @@ namespace PhoneNumbers
 
         private PhoneNumberDesc GetFiltered(string type, PhoneNumberDesc desc)
         {
-            var builder = new PhoneNumberDesc();
             if (ShouldDrop(type, "nationalNumberPattern"))
-                builder.NationalNumberPattern = null;
+                desc.NationalNumberPattern = null;
             if (ShouldDrop(type, "possibleLength"))
-                builder.PossibleLengths = null;
+                desc.PossibleLengths.Clear();
             if (ShouldDrop(type, "possibleLengthLocalOnly"))
-                builder.PossibleLengthsLocalOnly = null;
+                desc.PossibleLengthsLocalOnly.Clear();
             if (ShouldDrop(type, "exampleNumber"))
-                builder.ExampleNumber = null;
-            return builder;
+                desc.ExampleNumber = null;
+            return desc;
         }
     }
 }

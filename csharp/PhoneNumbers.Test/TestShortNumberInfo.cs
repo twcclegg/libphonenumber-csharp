@@ -117,8 +117,9 @@ namespace PhoneNumbers.Test
                 ShortNumberInfo.ShortNumberCost.TOLL_FREE);
             Assert.Equal(ShortNumberInfo.ShortNumberCost.TOLL_FREE,
                 ShortInfo.GetExpectedCostForRegion(Parse(tollFreeExample, RegionCode.FR), RegionCode.FR));
-            var tollFreeNumber = new PhoneNumber {CountryCode = 33, NationalNumber = ulong.Parse(tollFreeExample),           Assert.Equal(ShortNumberInfo.ShortNumberCost.TOLL_FREE,
-                ShortInfo.GetExpectedCost(tollFreeNumber)};
+            var tollFreeNumber = new PhoneNumber {CountryCode = 33, NationalNumber = ulong.Parse(tollFreeExample)};
+            Assert.Equal(ShortNumberInfo.ShortNumberCost.TOLL_FREE,
+                ShortInfo.GetExpectedCost(tollFreeNumber));
 
             Assert.Equal(ShortNumberInfo.ShortNumberCost.UNKNOWN_COST,
                 ShortInfo.GetExpectedCostForRegion(Parse("12345", RegionCode.FR), RegionCode.FR));
