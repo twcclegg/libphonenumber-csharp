@@ -169,31 +169,44 @@ namespace PhoneNumbers
 
         private void GetAvailableFormats(string leadingDigits)
         {
+            // First decide whether we should use international or national number rules.
+            var isInternationalNumber = isCompleteNumber && extractedNationalPrefix.Length == 0;
             var formatList =
-                isCompleteNumber && currentMetadata.IntlNumberFormatCount > 0
-                ? currentMetadata.IntlNumberFormatList
-                : currentMetadata.NumberFormatList;
-            var nationalPrefixIsUsedByCountry = currentMetadata.HasNationalPrefix;
+                (isInternationalNumber && currentMetadata.IntlNumberFormatCount > 0)
+                    ? currentMetadata.IntlNumberFormatList
+                    : currentMetadata.NumberFormatList;
             foreach (var format in formatList)
             {
-                if (!nationalPrefixIsUsedByCountry
-                    || isCompleteNumber
-                    || format.NationalPrefixOptionalWhenFormatting
-                    || PhoneNumberUtil.FormattingRuleHasFirstGroupOnly(
-                        format.NationalPrefixFormattingRule))
+                // Discard a few formats that we know are not relevant based on the presence of the national
+                // prefix.
+                if (extractedNationalPrefix.Length > 0
+                    && PhoneNumberUtil.FormattingRuleHasFirstGroupOnly(
+                        format.NationalPrefixFormattingRule)
+                    && !format.NationalPrefixOptionalWhenFormatting
+                    && !format.HasDomesticCarrierCodeFormattingRule)
                 {
-                    if (IsFormatEligible(format.Format))
-                    {
-                        possibleFormats.Add(format);
-                    }
+                    // If it is a national number that had a national prefix, any rules that aren't valid with a
+                    // national prefix should be excluded. A rule that has a carrier-code formatting rule is
+                    // kept since the national prefix might actually be an extracted carrier code - we don't
+                    // distinguish between these when extracting it in the AYTF.
+                    continue;
+                }
+                else if (extractedNationalPrefix.Length == 0
+                         && !isCompleteNumber
+                         && !PhoneNumberUtil.FormattingRuleHasFirstGroupOnly(
+                             format.NationalPrefixFormattingRule)
+                         && !format.NationalPrefixOptionalWhenFormatting)
+                {
+                    // This number was entered without a national prefix, and this formatting rule requires one,
+                    // so we discard it.
+                    continue;
+                }
+                if (EligibleFormatPattern.MatchAll(format.Format).Success)
+                {
+                    possibleFormats.Add(format);
                 }
             }
             NarrowDownPossibleFormats(leadingDigits);
-        }
-
-        private static bool IsFormatEligible(string format)
-        {
-            return EligibleFormatPattern.MatchAll(format).Success;
         }
 
         private void NarrowDownPossibleFormats(string leadingDigits)
