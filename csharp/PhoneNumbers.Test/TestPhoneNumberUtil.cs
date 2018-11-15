@@ -762,7 +762,7 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestFormatByPattern()
         {
-            var newNumFormat = new NumberFormat {Pattern = "(\\d{3}\\d{3})(\\d{4})", Format = "($1) $2-$3" };
+            var newNumFormat = new NumberFormat {Pattern = "(\\d{3})(\\d{3})(\\d{4})", Format = "($1) $2-$3" };
             var newNumberFormats = new List<NumberFormat>{newNumFormat};
 
             Assert.Equal("(650) 253-0000", phoneUtil.FormatByPattern(USNumber, PhoneNumberFormat.NATIONAL,
@@ -785,7 +785,7 @@ namespace PhoneNumbers.Test
                 phoneUtil.FormatByPattern(BSNumber, PhoneNumberFormat.INTERNATIONAL,
                 newNumberFormats));
 
-            newNumberFormats[0].Pattern = "(\\d{2}\\d{5})(\\d{3})";
+            newNumberFormats[0].Pattern = "(\\d{2})(\\d{5})(\\d{3})";
             newNumberFormats[0].Format = "$1-$2 $3";
             Assert.Equal("02-36618 300",
                 phoneUtil.FormatByPattern(ITNumber, PhoneNumberFormat.NATIONAL,
@@ -795,7 +795,7 @@ namespace PhoneNumbers.Test
                 newNumberFormats));
 
             newNumberFormats[0].NationalPrefixFormattingRule = "$NP$FG";
-            newNumberFormats[0].Pattern ="(\\d{2}\\d{4})(\\d{4})";
+            newNumberFormats[0].Pattern ="(\\d{2})(\\d{4})(\\d{4})";
             newNumberFormats[0].Format = "$1 $2 $3";
             Assert.Equal("020 7031 3000",
                 phoneUtil.FormatByPattern(GBNumber, PhoneNumberFormat.NATIONAL,
@@ -1437,7 +1437,7 @@ namespace PhoneNumbers.Test
             Assert.Equal(strippedNumber, numberToStrip.ToString());
             // If there was a transform rule, check it was applied.
             // Note that a capturing group is present here.
-            metadata.NationalPrefixForParsing = "0(\\d{2}";
+            metadata.NationalPrefixForParsing = "0(\\d{2})";
             numberToStrip = new StringBuilder("031123");
             var transformedNumber = "5315123";
             Assert.True(phoneUtil.MaybeStripNationalPrefixAndCarrierCode(numberToStrip, metadata, null));
@@ -2274,7 +2274,6 @@ namespace PhoneNumbers.Test
             alphaNumericNumber.CountryCodeSource = PhoneNumber.Types.CountryCodeSource.FromDefaultCountry;
             Assert.Equal(alphaNumericNumber,
                 phoneUtil.ParseAndKeepRawInput("800 six-flags", RegionCode.US));
-
             var shorterAlphaNumber =
                 new PhoneNumber
                 {
@@ -2286,10 +2285,12 @@ namespace PhoneNumbers.Test
             Assert.Equal(shorterAlphaNumber,
                 phoneUtil.ParseAndKeepRawInput("1800 six-flag", RegionCode.US));
 
+            shorterAlphaNumber.RawInput = "+1800 six-flag";
             shorterAlphaNumber.CountryCodeSource = PhoneNumber.Types.CountryCodeSource.FromNumberWithPlusSign;
             Assert.Equal(shorterAlphaNumber,
                 phoneUtil.ParseAndKeepRawInput("+1800 six-flag", RegionCode.NZ));
 
+            shorterAlphaNumber.RawInput = "001800 six-flag";
             shorterAlphaNumber.CountryCodeSource = PhoneNumber.Types.CountryCodeSource.FromNumberWithIdd;
             Assert.Equal(shorterAlphaNumber,
                 phoneUtil.ParseAndKeepRawInput("001800 six-flag", RegionCode.NZ));
@@ -2312,7 +2313,7 @@ namespace PhoneNumbers.Test
                 NationalNumber = 22123456,
                 RawInput = "08122123456",
                 CountryCodeSource = PhoneNumber.Types.CountryCodeSource.FromDefaultCountry,
-                PreferredDomesticCarrierCode = "81;"
+                PreferredDomesticCarrierCode = "81"
             };
             Assert.Equal(koreanNumber, phoneUtil.ParseAndKeepRawInput("08122123456", RegionCode.KR));
         }

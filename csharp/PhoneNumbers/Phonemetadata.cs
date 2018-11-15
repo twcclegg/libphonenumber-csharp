@@ -8,59 +8,62 @@ using System.Collections.Generic;
 namespace PhoneNumbers
 {
 
-        public partial class NumberFormat {
+    public partial class NumberFormat
+    {
 
-                public string Pattern { get; set; }
+        public string Pattern { get; set; }
 
-                public string Format { get; set; }
+        public string Format { get; set; }
 
-                public List<string> LeadingDigitsPatterns { get; } = new List<string>();
+        public List<string> LeadingDigitsPatterns { get; } = new List<string>();
 
-                        public string NationalPrefixFormattingRule
+        public string NationalPrefixFormattingRule
         {
             get { return __pbn__NationalPrefixFormattingRule ?? ""; }
             set { __pbn__NationalPrefixFormattingRule = value; }
         }
+
         public bool ShouldSerializeNationalPrefixFormattingRule() => __pbn__NationalPrefixFormattingRule != null;
         public void ResetNationalPrefixFormattingRule() => __pbn__NationalPrefixFormattingRule = null;
         private string __pbn__NationalPrefixFormattingRule;
 
-                        public bool NationalPrefixOptionalWhenFormatting
+        public bool NationalPrefixOptionalWhenFormatting
         {
             get { return __pbn__NationalPrefixOptionalWhenFormatting ?? false; }
             set { __pbn__NationalPrefixOptionalWhenFormatting = value; }
         }
-        public bool ShouldSerializeNationalPrefixOptionalWhenFormatting() => __pbn__NationalPrefixOptionalWhenFormatting != null;
-        public void ResetNationalPrefixOptionalWhenFormatting() => __pbn__NationalPrefixOptionalWhenFormatting = null;
+
+        public bool ShouldSerializeNationalPrefixOptionalWhenFormatting() =>
+            __pbn__NationalPrefixOptionalWhenFormatting != null;
+
+        public void ResetNationalPrefixOptionalWhenFormatting() =>
+            __pbn__NationalPrefixOptionalWhenFormatting = null;
+
         private bool? __pbn__NationalPrefixOptionalWhenFormatting;
 
-                        public string DomesticCarrierCodeFormattingRule
+        public string DomesticCarrierCodeFormattingRule
         {
             get { return __pbn__DomesticCarrierCodeFormattingRule ?? ""; }
             set { __pbn__DomesticCarrierCodeFormattingRule = value; }
         }
-        public bool ShouldSerializeDomesticCarrierCodeFormattingRule() => __pbn__DomesticCarrierCodeFormattingRule != null;
+
+        public bool ShouldSerializeDomesticCarrierCodeFormattingRule() =>
+            __pbn__DomesticCarrierCodeFormattingRule != null;
+
         public void ResetDomesticCarrierCodeFormattingRule() => __pbn__DomesticCarrierCodeFormattingRule = null;
         private string __pbn__DomesticCarrierCodeFormattingRule;
 
-            public NumberFormat MergeFrom(NumberFormat numberFormat)
-            {
-                var copy = new NumberFormat
-                {
-                    __pbn__DomesticCarrierCodeFormattingRule = numberFormat.__pbn__DomesticCarrierCodeFormattingRule,
-                    __pbn__NationalPrefixFormattingRule = numberFormat.__pbn__NationalPrefixFormattingRule,
-                    __pbn__NationalPrefixOptionalWhenFormatting =
-                        numberFormat.__pbn__NationalPrefixOptionalWhenFormatting,
-                    DomesticCarrierCodeFormattingRule = numberFormat.DomesticCarrierCodeFormattingRule,
-                    Format = numberFormat.Format,
-                    NationalPrefixFormattingRule = numberFormat.NationalPrefixFormattingRule,
-                    NationalPrefixOptionalWhenFormatting = numberFormat.NationalPrefixOptionalWhenFormatting,
-                    Pattern = numberFormat.Pattern
-                };
-                copy.LeadingDigitsPatterns.AddRange(numberFormat.LeadingDigitsPatterns);
-                return copy;
-            }
+        public NumberFormat MergeFrom(NumberFormat numberFormat)
+        {
+            DomesticCarrierCodeFormattingRule = numberFormat.DomesticCarrierCodeFormattingRule;
+            Format = numberFormat.Format;
+            NationalPrefixFormattingRule = numberFormat.NationalPrefixFormattingRule;
+            NationalPrefixOptionalWhenFormatting = numberFormat.NationalPrefixOptionalWhenFormatting;
+            Pattern = numberFormat.Pattern;
+            LeadingDigitsPatterns.AddRange(numberFormat.LeadingDigitsPatterns);
+            return this;
         }
+    }
 
     public partial class PhoneNumberDesc
     {
@@ -301,9 +304,10 @@ namespace PhoneNumbers
         }
     }
 
-    public partial class PhoneMetadataCollection {
+    public partial class PhoneMetadataCollection
+    {
 
-                public List<PhoneMetadata> Metadata { get; } = new List<PhoneMetadata>();
+        public List<PhoneMetadata> Metadata { get; } = new List<PhoneMetadata>();
 
     }
 

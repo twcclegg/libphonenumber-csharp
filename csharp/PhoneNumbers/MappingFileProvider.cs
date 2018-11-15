@@ -64,10 +64,9 @@ namespace PhoneNumbers
             numOfEntries = availableDataFiles.Count;
             countryCallingCodes = new List<int?>(numOfEntries);
             availableLanguages = new List<HashSet<string>>(numOfEntries);
-            var index = 0;
             foreach (var countryCallingCode in availableDataFiles.Keys)
             {
-                countryCallingCodes[index++] = countryCallingCode;
+                countryCallingCodes.Add(countryCallingCode);
                 availableLanguages.Add(new HashSet<string>(availableDataFiles[countryCallingCode]));
             }
         }

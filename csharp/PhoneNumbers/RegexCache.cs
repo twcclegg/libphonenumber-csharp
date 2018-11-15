@@ -41,8 +41,7 @@ namespace PhoneNumbers
         {
             lock (this)
             {
-                Entry e;
-                if (!cache.TryGetValue(regex, out e))
+                if (!cache.TryGetValue(regex, out var e))
                 {
                     // Insert new node
                     var r = new PhoneRegex(regex);

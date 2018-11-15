@@ -22,17 +22,10 @@ namespace PhoneNumbers.Test
     [Collection("TestMetadataTestCase")]
     public class TestExampleNumbers
     {
-        private readonly PhoneNumberUtil phoneNumberUtil;
+        private readonly PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.GetInstance();
         private readonly List<PhoneNumber> invalidCases = new List<PhoneNumber>();
         private readonly List<PhoneNumber> wrongTypeCases = new List<PhoneNumber>();
 
-        public TestExampleNumbers()
-        {
-            invalidCases = null;
-            wrongTypeCases = null;
-            PhoneNumberUtil.ResetInstance();
-            phoneNumberUtil = PhoneNumberUtil.GetInstance();
-        }
 
         /**
         * @param exampleNumberRequestedType  type we are requesting an example number for
