@@ -27,7 +27,7 @@ namespace PhoneNumbers.Test
     public class TestPhoneNumberOfflineGeocoder
     {
         private PhoneNumberOfflineGeocoder geocoder;
-        const string TEST_MAPPING_DATA_DIRECTORY = "res.test_";
+        private const string TEST_MAPPING_DATA_DIRECTORY = "test.geocoding.";
 
         // Set up some test numbers to re-use.
         private static readonly PhoneNumber KONumber1 =

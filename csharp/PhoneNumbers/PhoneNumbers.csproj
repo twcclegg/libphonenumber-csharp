@@ -31,7 +31,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="res\*;..\..\resources\*.xml" />
+    <EmbeddedResource Include="..\..\resources\**" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net40' ">
