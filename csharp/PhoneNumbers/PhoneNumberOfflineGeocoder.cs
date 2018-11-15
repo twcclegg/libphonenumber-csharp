@@ -83,7 +83,7 @@ namespace PhoneNumbers
     public class PhoneNumberOfflineGeocoder
     {
         private static PhoneNumberOfflineGeocoder instance;
-        private const string MAPPING_DATA_DIRECTORY = "res.prod_";
+        private const string MAPPING_DATA_DIRECTORY = "geocoding.";
         private static readonly object ThisLock = new object();
 
         private readonly PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
@@ -107,7 +107,7 @@ namespace PhoneNumbers
         private void LoadMappingFileProvider()
         {
             var files = new SortedDictionary<int, HashSet<string>>();
-#if (NET35 || NET40)
+#if NET35 || NET40
             var asm = Assembly.GetExecutingAssembly();
 #else
             var asm = typeof(PhoneNumberOfflineGeocoder).GetTypeInfo().Assembly;
@@ -117,18 +117,17 @@ namespace PhoneNumbers
             var names = allNames.Where(n => n.StartsWith(prefix));
             foreach (var n in names)
             {
-                var name = n.Substring(prefix.Length);
-                var pos = name.IndexOf("_", StringComparison.Ordinal);
+                var name = n.Substring(prefix.Length).Split('.');
                 int country;
                 try
                 {
-                    country = int.Parse(name.Substring(0, pos));
+                    country = int.Parse(name[1]);
                 }
                 catch(FormatException)
                 {
                     throw new Exception("Failed to parse geocoding file name: " + name);
                 }
-                var language = name.Substring(pos + 1);
+                var language = name[0];
                 if (!files.ContainsKey(country))
                     files[country] = new HashSet<string>();
                 files[country].Add(language);
@@ -149,12 +148,12 @@ namespace PhoneNumbers
             {
                 LoadAreaCodeMapFromFile(fileName);
             }
-            return availablePhonePrefixMaps.TryGetValue(fileName, out AreaCodeMap map) ? map : null;
+            return availablePhonePrefixMaps.TryGetValue(fileName, out var map) ? map : null;
         }
 
         private void LoadAreaCodeMapFromFile(string fileName)
         {
-#if (NET35 || NET40)
+#if NET35 || NET40
             var asm = Assembly.GetExecutingAssembly();
 #else
             var asm = typeof(PhoneNumberOfflineGeocoder).GetTypeInfo().Assembly;
