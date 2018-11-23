@@ -29,6 +29,10 @@ namespace PhoneNumbers
         {
             try
             {
+                if (items.ContainsKey(item))
+                {
+                    return false;
+                }
                 items.Add(item, null);
             }
             catch (ArgumentException)
