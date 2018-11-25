@@ -47,6 +47,9 @@ namespace PhoneNumbers
         // Set to true when users enter their own formatting. AsYouTypeFormatter will do no formatting at
         // all when this is set to true.
         private bool inputHasFormatting;
+        // This is set to true when we know the user is entering a full national significant number, since
+        // we have either detected a national prefix or an international dialing prefix. When this is
+        // true, we will no longer use local number formatting patterns.
         private bool isCompleteNumber;
         private bool isExpectingCountryCallingCode;
         private bool shouldAddSpaceAfterNationalPrefix;
@@ -91,8 +94,8 @@ namespace PhoneNumbers
 
         // The digits that have not been entered yet will be represented by a \u2008, the punctuation
         // space.
-        private readonly string digitPlaceholder = "\u2008";
-        private readonly Regex digitPattern;
+        private const string DIGIT_PLACEHOLDER = "\u2008";
+        private readonly Regex digitPattern = new Regex(DIGIT_PLACEHOLDER, InternalRegexOptions.Default);
         private int lastMatchPosition;
         // The position of a digit upon which inputDigitAndRememberPosition is most recently invoked, as
         // found in the original sequence of characters the user entered.
@@ -121,7 +124,6 @@ namespace PhoneNumbers
          */
         public AsYouTypeFormatter(string regionCode)
         {
-            digitPattern = new Regex(digitPlaceholder, InternalRegexOptions.Default);
             defaultCountry = regionCode;
             currentMetadata = GetMetadataForRegion(defaultCountry);
             defaultMetaData = currentMetadata;
@@ -172,7 +174,7 @@ namespace PhoneNumbers
             // First decide whether we should use international or national number rules.
             var isInternationalNumber = isCompleteNumber && extractedNationalPrefix.Length == 0;
             var formatList =
-                (isInternationalNumber && currentMetadata.IntlNumberFormatCount > 0)
+                isInternationalNumber && currentMetadata.IntlNumberFormatCount > 0
                     ? currentMetadata.IntlNumberFormatList
                     : currentMetadata.NumberFormatList;
             foreach (var format in formatList)
@@ -212,24 +214,19 @@ namespace PhoneNumbers
         private void NarrowDownPossibleFormats(string leadingDigits)
         {
             var indexOfLeadingDigitsPattern = leadingDigits.Length - MinLeadingDigitsLength;
-            for (var i = 0; i != possibleFormats.Count; )
+            while (possibleFormats.Count > 0 )
             {
-                var format = possibleFormats[i];
+                var format = possibleFormats[0];
                 // Keep everything that isn't restricted by leading digits.
-                if (format.LeadingDigitsPatternCount != 0)
-                {
-                    var lastLeadingDigitsPattern =
-                        Math.Min(indexOfLeadingDigitsPattern, format.LeadingDigitsPatternCount - 1);
-                    var leadingDigitsPattern = regexCache.GetPatternForRegex(
-                        format.GetLeadingDigitsPattern(lastLeadingDigitsPattern));
-                    var m = leadingDigitsPattern.MatchBeginning(leadingDigits);
-                    if (!m.Success)
-                    {
-                        possibleFormats.RemoveAt(i);
-                        continue;
-                    }
-                }
-                ++i;
+                if (format.LeadingDigitsPatternCount == 0)
+                    continue;
+                var lastLeadingDigitsPattern =
+                    Math.Min(indexOfLeadingDigitsPattern, format.LeadingDigitsPatternCount - 1);
+                var leadingDigitsPattern = regexCache.GetPatternForRegex(
+                    format.GetLeadingDigitsPattern(lastLeadingDigitsPattern));
+                var m = leadingDigitsPattern.MatchBeginning(leadingDigits);
+                if (!m.Success)
+                    possibleFormats.RemoveAt(0);
             }
         }
 
@@ -245,10 +242,10 @@ namespace PhoneNumbers
             }
 
             // Replace anything in the form of [..] with \d
-            numberPattern = CharacterClassPattern.Replace(numberPattern, "\\d");
+            numberPattern = CharacterClassPattern.Replace(numberPattern, "\\\\d");
 
             // Replace any standalone digit (not the one in d{}) with \d
-            numberPattern = StandaloneDigitPattern.Replace(numberPattern, "\\d");
+            numberPattern = StandaloneDigitPattern.Replace(numberPattern, "\\\\d");
             formattingTemplate.Length = 0;
             var tempTemplate = GetFormattingTemplate(numberPattern, format.Format);
             if (tempTemplate.Length > 0)
@@ -275,7 +272,7 @@ namespace PhoneNumbers
             // Formats the number according to numberFormat
             var template = Regex.Replace(aPhoneNumber, numberPattern, numberFormat);
             // Replaces each digit with character digitPlaceholder
-            template = template.Replace("9", digitPlaceholder);
+            template = template.Replace("9", DIGIT_PLACEHOLDER);
             return template;
         }
 

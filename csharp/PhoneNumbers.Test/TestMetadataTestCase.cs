@@ -29,8 +29,9 @@ namespace PhoneNumbers.Test
     {
         public const string TestMetaDataFilePrefix = "PhoneNumberMetaDataForTesting.xml";
 
-        public PhoneNumberUtil PhoneUtil;
+        public readonly PhoneNumberUtil PhoneUtil;
 
+        // ReSharper disable once MemberCanBeProtected.Global
         public TestMetadataTestCase()
         {
             PhoneUtil = InitializePhoneUtilForTesting();
