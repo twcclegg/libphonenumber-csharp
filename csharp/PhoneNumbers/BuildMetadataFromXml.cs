@@ -294,19 +294,26 @@ namespace PhoneNumbers
                     {
                         format.SetNationalPrefixFormattingRule(
                             GetNationalPrefixFormattingRuleFromElement(numberFormatElement, nationalPrefix));
-                        format.SetNationalPrefixOptionalWhenFormatting(
-                            numberFormatElement.HasAttribute(NATIONAL_PREFIX_OPTIONAL_WHEN_FORMATTING));
                     }
-                    else
+                    else if (!nationalPrefixFormattingRule.Equals(""))
                     {
                         format.SetNationalPrefixFormattingRule(nationalPrefixFormattingRule);
+                    }
+
+                    if (numberFormatElement.HasAttribute(NATIONAL_PREFIX_OPTIONAL_WHEN_FORMATTING))
+                        format.SetNationalPrefixOptionalWhenFormatting(
+                            bool.Parse(numberFormatElement.Attribute(NATIONAL_PREFIX_OPTIONAL_WHEN_FORMATTING).Value));
+                    else if (format.NationalPrefixOptionalWhenFormatting
+                             != nationalPrefixOptionalWhenFormatting)
+                    {
+                        // Inherit from the parent field if it is not already the same as the default.
                         format.SetNationalPrefixOptionalWhenFormatting(nationalPrefixOptionalWhenFormatting);
                     }
                     if (numberFormatElement.HasAttribute("carrierCodeFormattingRule"))
                         format.SetDomesticCarrierCodeFormattingRule(ValidateRE(
                             GetDomesticCarrierCodeFormattingRuleFromElement(
                                 numberFormatElement, nationalPrefix)));
-                    else
+                    else if (!carrierCodeFormattingRule.Equals(""))
                         format.SetDomesticCarrierCodeFormattingRule(carrierCodeFormattingRule);
 
                     // Extract the pattern for the national format.

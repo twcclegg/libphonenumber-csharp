@@ -214,19 +214,25 @@ namespace PhoneNumbers
         private void NarrowDownPossibleFormats(string leadingDigits)
         {
             var indexOfLeadingDigitsPattern = leadingDigits.Length - MinLeadingDigitsLength;
-            while (possibleFormats.Count > 0 )
+            for (var i = 0; i < possibleFormats.Count; )
             {
-                var format = possibleFormats[0];
+                var format = possibleFormats[i];
                 // Keep everything that isn't restricted by leading digits.
-                if (format.LeadingDigitsPatternCount == 0)
-                    continue;
-                var lastLeadingDigitsPattern =
-                    Math.Min(indexOfLeadingDigitsPattern, format.LeadingDigitsPatternCount - 1);
-                var leadingDigitsPattern = regexCache.GetPatternForRegex(
-                    format.GetLeadingDigitsPattern(lastLeadingDigitsPattern));
-                var m = leadingDigitsPattern.MatchBeginning(leadingDigits);
-                if (!m.Success)
-                    possibleFormats.RemoveAt(0);
+                if (format.LeadingDigitsPatternCount != 0)
+                {
+                    var lastLeadingDigitsPattern =
+                        Math.Min(indexOfLeadingDigitsPattern, format.LeadingDigitsPatternCount - 1);
+                    var leadingDigitsPattern = regexCache.GetPatternForRegex(
+                        format.GetLeadingDigitsPattern(lastLeadingDigitsPattern));
+                    var m = leadingDigitsPattern.MatchBeginning(leadingDigits);
+                    if (!m.Success)
+                    {
+                        possibleFormats.RemoveAt(i);
+                        continue;
+                    }
+                }
+
+                ++i;
             }
         }
 
@@ -242,10 +248,10 @@ namespace PhoneNumbers
             }
 
             // Replace anything in the form of [..] with \d
-            numberPattern = CharacterClassPattern.Replace(numberPattern, "\\\\d");
+            numberPattern = CharacterClassPattern.Replace(numberPattern, "\\d");
 
             // Replace any standalone digit (not the one in d{}) with \d
-            numberPattern = StandaloneDigitPattern.Replace(numberPattern, "\\\\d");
+            numberPattern = StandaloneDigitPattern.Replace(numberPattern, "\\d");
             formattingTemplate.Length = 0;
             var tempTemplate = GetFormattingTemplate(numberPattern, format.Format);
             if (tempTemplate.Length > 0)
@@ -710,11 +716,9 @@ namespace PhoneNumbers
         {
             // Note that formattingTemplate is not guaranteed to have a value, it could be empty, e.g.
             // when the next digit is entered after extracting an IDD or NDD.
-            var digitMatcher = digitPattern.Match(formattingTemplate.ToString(), lastMatchPosition);
+            var digitMatcher = digitPattern.Match(formattingTemplate.ToString());
             if (digitMatcher.Success)
             {
-                //XXX: double match, can we fix that?
-                digitMatcher = digitPattern.Match(formattingTemplate.ToString());
                 var tempTemplate = digitPattern.Replace(formattingTemplate.ToString(), nextChar.ToString(), 1);
                 formattingTemplate.Length = 0;
                 formattingTemplate.Append(tempTemplate);
