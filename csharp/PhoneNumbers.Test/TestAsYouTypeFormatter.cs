@@ -861,7 +861,7 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
-        public void testAYTFLongIDD_KR()
+        public void TestAYTFLongIDD_KR()
         {
             var formatter = phoneUtil.GetAsYouTypeFormatter("KR");
             // 00300 1 650 253 2222
@@ -884,7 +884,7 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
-        public void testAYTFLongNDD_KR()
+        public void TestAYTFLongNDD_KR()
         {
             var formatter = phoneUtil.GetAsYouTypeFormatter("KR");
             // 08811-9876-7890
@@ -922,7 +922,7 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
-        public void testAYTFLongNDD_SG()
+        public void TestAYTFLongNDD_SG()
         {
             var formatter = phoneUtil.GetAsYouTypeFormatter("SG");
             // 777777 9876 7890

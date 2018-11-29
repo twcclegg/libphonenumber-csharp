@@ -47,6 +47,9 @@ namespace PhoneNumbers
         // Set to true when users enter their own formatting. AsYouTypeFormatter will do no formatting at
         // all when this is set to true.
         private bool inputHasFormatting;
+        // This is set to true when we know the user is entering a full national significant number, since
+        // we have either detected a national prefix or an international dialing prefix. When this is
+        // true, we will no longer use local number formatting patterns.
         private bool isCompleteNumber;
         private bool isExpectingCountryCallingCode;
         private bool shouldAddSpaceAfterNationalPrefix;
@@ -91,8 +94,8 @@ namespace PhoneNumbers
 
         // The digits that have not been entered yet will be represented by a \u2008, the punctuation
         // space.
-        private readonly string digitPlaceholder = "\u2008";
-        private readonly Regex digitPattern;
+        private const string DIGIT_PLACEHOLDER = "\u2008";
+        private readonly Regex digitPattern = new Regex(DIGIT_PLACEHOLDER, InternalRegexOptions.Default);
         private int lastMatchPosition;
         // The position of a digit upon which inputDigitAndRememberPosition is most recently invoked, as
         // found in the original sequence of characters the user entered.
@@ -121,7 +124,6 @@ namespace PhoneNumbers
          */
         public AsYouTypeFormatter(string regionCode)
         {
-            digitPattern = new Regex(digitPlaceholder, InternalRegexOptions.Default);
             defaultCountry = regionCode;
             currentMetadata = GetMetadataForRegion(defaultCountry);
             defaultMetaData = currentMetadata;
@@ -169,37 +171,50 @@ namespace PhoneNumbers
 
         private void GetAvailableFormats(string leadingDigits)
         {
+            // First decide whether we should use international or national number rules.
+            var isInternationalNumber = isCompleteNumber && extractedNationalPrefix.Length == 0;
             var formatList =
-                isCompleteNumber && currentMetadata.IntlNumberFormatCount > 0
-                ? currentMetadata.IntlNumberFormatList
-                : currentMetadata.NumberFormatList;
-            var nationalPrefixIsUsedByCountry = currentMetadata.HasNationalPrefix;
+                isInternationalNumber && currentMetadata.IntlNumberFormatCount > 0
+                    ? currentMetadata.IntlNumberFormatList
+                    : currentMetadata.NumberFormatList;
             foreach (var format in formatList)
             {
-                if (!nationalPrefixIsUsedByCountry
-                    || isCompleteNumber
-                    || format.NationalPrefixOptionalWhenFormatting
-                    || PhoneNumberUtil.FormattingRuleHasFirstGroupOnly(
-                        format.NationalPrefixFormattingRule))
+                // Discard a few formats that we know are not relevant based on the presence of the national
+                // prefix.
+                if (extractedNationalPrefix.Length > 0
+                    && PhoneNumberUtil.FormattingRuleHasFirstGroupOnly(
+                        format.NationalPrefixFormattingRule)
+                    && !format.NationalPrefixOptionalWhenFormatting
+                    && !format.HasDomesticCarrierCodeFormattingRule)
                 {
-                    if (IsFormatEligible(format.Format))
-                    {
-                        possibleFormats.Add(format);
-                    }
+                    // If it is a national number that had a national prefix, any rules that aren't valid with a
+                    // national prefix should be excluded. A rule that has a carrier-code formatting rule is
+                    // kept since the national prefix might actually be an extracted carrier code - we don't
+                    // distinguish between these when extracting it in the AYTF.
+                    continue;
+                }
+                else if (extractedNationalPrefix.Length == 0
+                         && !isCompleteNumber
+                         && !PhoneNumberUtil.FormattingRuleHasFirstGroupOnly(
+                             format.NationalPrefixFormattingRule)
+                         && !format.NationalPrefixOptionalWhenFormatting)
+                {
+                    // This number was entered without a national prefix, and this formatting rule requires one,
+                    // so we discard it.
+                    continue;
+                }
+                if (EligibleFormatPattern.MatchAll(format.Format).Success)
+                {
+                    possibleFormats.Add(format);
                 }
             }
             NarrowDownPossibleFormats(leadingDigits);
         }
 
-        private static bool IsFormatEligible(string format)
-        {
-            return EligibleFormatPattern.MatchAll(format).Success;
-        }
-
         private void NarrowDownPossibleFormats(string leadingDigits)
         {
             var indexOfLeadingDigitsPattern = leadingDigits.Length - MinLeadingDigitsLength;
-            for (var i = 0; i != possibleFormats.Count; )
+            for (var i = 0; i < possibleFormats.Count; )
             {
                 var format = possibleFormats[i];
                 // Keep everything that isn't restricted by leading digits.
@@ -216,6 +231,7 @@ namespace PhoneNumbers
                         continue;
                     }
                 }
+
                 ++i;
             }
         }
@@ -262,7 +278,7 @@ namespace PhoneNumbers
             // Formats the number according to numberFormat
             var template = Regex.Replace(aPhoneNumber, numberPattern, numberFormat);
             // Replaces each digit with character digitPlaceholder
-            template = template.Replace("9", digitPlaceholder);
+            template = template.Replace("9", DIGIT_PLACEHOLDER);
             return template;
         }
 
@@ -700,11 +716,9 @@ namespace PhoneNumbers
         {
             // Note that formattingTemplate is not guaranteed to have a value, it could be empty, e.g.
             // when the next digit is entered after extracting an IDD or NDD.
-            var digitMatcher = digitPattern.Match(formattingTemplate.ToString(), lastMatchPosition);
+            var digitMatcher = digitPattern.Match(formattingTemplate.ToString());
             if (digitMatcher.Success)
             {
-                //XXX: double match, can we fix that?
-                digitMatcher = digitPattern.Match(formattingTemplate.ToString());
                 var tempTemplate = digitPattern.Replace(formattingTemplate.ToString(), nextChar.ToString(), 1);
                 formattingTemplate.Length = 0;
                 formattingTemplate.Append(tempTemplate);
