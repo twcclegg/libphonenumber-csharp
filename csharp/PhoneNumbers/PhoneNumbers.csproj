@@ -1,19 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>C# port of Google's common Java, C++ and Javascript library for parsing, formatting, storing and validating international phone numbers. For usage samples: http: //code.google.com/p/libphonenumber/A port of Google's libphonenumber for .NET Core</Description>
-    <AssemblyTitle>libphonenumber-csharp</AssemblyTitle>
+    <Description>C# port of Google's common Java, C++ and Javascript library for parsing, formatting, storing and validating international phone numbers. http://code.google.com/p/libphonenumber/</Description>
+    <Title>libphonenumber-csharp</Title>
+    <AssemblyName>PhoneNumbers</AssemblyName>
+    <PackageId>libphonenumber-csharp</PackageId>
     <VersionPrefix>$(APPVEYOR_BUILD_VERSION)</VersionPrefix>
     <Authors>Patrick Mézard;Tom Clegg;Jarrod Alexander;Google;libphonenumber contributors</Authors>
     <TargetFrameworks>net35;net40;netstandard1.3;netstandard2.0;portable-net45+win8+wpa81+wp8</TargetFrameworks>
-    <AssemblyName>PhoneNumbers</AssemblyName>
-    <PackageId>libphonenumber-csharp</PackageId>
-    <PackageTags>phonenumber phone libphonenumber e164 e.164 international</PackageTags>
+    <PackageTags>phonenumber;phone;libphonenumber;e164;e.164;international</PackageTags>
     <PackageProjectUrl>https://github.com/twcclegg/libphonenumber-csharp</PackageProjectUrl>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <PackageIconUrl>https://github.com/twcclegg/libphonenumber-csharp/blob/master/icon.png</PackageIconUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/twcclegg/libphonenumber-csharp</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryBranch>master</RepositoryBranch>
+    <RepositoryCommit>$APPVEYOR_REPO_COMMIT</RepositoryCommit>
     <DebugType>full</DebugType>
   </PropertyGroup>
 
