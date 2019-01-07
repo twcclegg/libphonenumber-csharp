@@ -204,9 +204,9 @@ namespace PhoneNumbers.Test
             Assert.Equal("0(?:(11|343|3715)15)?", metadata.NationalPrefixForParsing);
             Assert.Equal("9$1", metadata.NationalPrefixTransformRule);
             Assert.Equal("$2 15 $3-$4", metadata.NumberFormatList[2].Format);
-            Assert.Equal("(9)(\\d{4})(\\d{2})(\\d{4})",
+            Assert.Equal("(\\d)(\\d{4})(\\d{2})(\\d{4})",
                      metadata.NumberFormatList[3].Pattern);
-            Assert.Equal("(9)(\\d{4})(\\d{2})(\\d{4})",
+            Assert.Equal("(\\d)(\\d{4})(\\d{2})(\\d{4})",
                      metadata.IntlNumberFormatList[3].Pattern);
             Assert.Equal("$1 $2 $3 $4", metadata.IntlNumberFormatList[3].Format);
         }
