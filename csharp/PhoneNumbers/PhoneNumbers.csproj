@@ -8,7 +8,9 @@
     <VersionPrefix>$(APPVEYOR_BUILD_VERSION)</VersionPrefix>
     <Authors>Patrick Mézard;Tom Clegg;Jarrod Alexander;Google;libphonenumber contributors</Authors>
     <TargetFrameworks>net35;net40;netstandard1.3;netstandard2.0;portable-net45+win8+wpa81+wp8</TargetFrameworks>
-    <PackageTags>phonenumber;phone;libphonenumber;e164;e.164;international</PackageTags>
+    <AssemblyName>PhoneNumbers</AssemblyName>
+    <PackageId>libphonenumber-csharp</PackageId>
+    <PackageTags>phonenumber phone libphonenumber e164 e.164 international</PackageTags>
     <PackageProjectUrl>https://github.com/twcclegg/libphonenumber-csharp</PackageProjectUrl>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
     <PackageIconUrl>https://github.com/twcclegg/libphonenumber-csharp/blob/master/icon.png</PackageIconUrl>
