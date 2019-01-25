@@ -13,7 +13,7 @@
     <PackageTags>phonenumber phone libphonenumber e164 e.164 international</PackageTags>
     <PackageProjectUrl>https://github.com/twcclegg/libphonenumber-csharp</PackageProjectUrl>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
-    <PackageIconUrl>https://github.com/twcclegg/libphonenumber-csharp/blob/master/icon.png</PackageIconUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/twcclegg/libphonenumber-csharp/master/icon.png</PackageIconUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryUrl>https://github.com/twcclegg/libphonenumber-csharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
