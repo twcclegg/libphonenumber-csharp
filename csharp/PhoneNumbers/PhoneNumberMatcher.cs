@@ -165,6 +165,12 @@ namespace PhoneNumbers
         /** The next index to start searching at. Undefined in {@link State#DONE}. */
         private int searchIndex;
 
+        // A cache for frequently used country-specific regular expressions. Set to 32 to cover ~2-3
+        // countries being used for the same doc with ~10 patterns for each country. Some pages will have
+        // a lot more countries in use, but typically fewer numbers for each so expanding the cache for
+        // that use-case won't have a lot of benefit.
+        private readonly RegexCache regexCache = new RegexCache(32);
+
         /**
         * Creates a new instance. See the factory methods in {@link PhoneNumberUtil} on how to obtain a
         * new instance.
@@ -421,7 +427,7 @@ namespace PhoneNumbers
                 }
 
                 var number = phoneUtil.ParseAndKeepRawInput(candidate, preferredRegion);
-                if (leniency.Verify(number, candidate, phoneUtil))
+                if (leniency.Verify(number, candidate, phoneUtil, this))
                 {
                     // We used parseAndKeepRawInput to create this number, but for now we don't return the extra
                     // values parsed. TODO: stop clearing all values here and switch all users over
@@ -451,17 +457,17 @@ namespace PhoneNumbers
         *     formatted this number
         */
         public delegate bool CheckGroups(PhoneNumberUtil util, PhoneNumber number,
-                StringBuilder normalizedCandidate, string[] expectedNumberGroups);
+                StringBuilder normalizedCandidate, IList<string> expectedNumberGroups);
 
         public static bool AllNumberGroupsRemainGrouped(PhoneNumberUtil util,
             PhoneNumber number,
             StringBuilder normalizedCandidate,
-            string[] formattedNumberGroups)
+            IList<string> formattedNumberGroups)
         {
             var fromIndex = 0;
             // Check each group of consecutive digits are not broken into separate groupings in the
             // {@code normalizedCandidate} string.
-            for (var i = 0; i < formattedNumberGroups.Length; i++)
+            for (var i = 0; i < formattedNumberGroups.Count; i++)
             {
                 // Fails if the substring of {@code normalizedCandidate} starting from {@code fromIndex}
                 // doesn't contain the consecutive digits in formattedNumberGroups[i].
@@ -495,7 +501,7 @@ namespace PhoneNumbers
         public static bool AllNumberGroupsAreExactlyPresent(PhoneNumberUtil util,
             PhoneNumber number,
             StringBuilder normalizedCandidate,
-            string[] formattedNumberGroups)
+            IList<string> formattedNumberGroups)
         {
             var candidateGroups =
                 PhoneNumberUtil.NonDigitsPattern.Split(normalizedCandidate.ToString());
@@ -513,7 +519,7 @@ namespace PhoneNumbers
             }
             // Starting from the end, go through in reverse, excluding the first group, and check the
             // candidate and number groups are the same.
-            for (var formattedNumberGroupIndex = (formattedNumberGroups.Length - 1);
+            for (var formattedNumberGroupIndex = (formattedNumberGroups.Count - 1);
                 formattedNumberGroupIndex > 0 && candidateNumberGroupIndex >= 0;
                 formattedNumberGroupIndex--, candidateNumberGroupIndex--)
             {
@@ -531,51 +537,67 @@ namespace PhoneNumbers
 
         /**
         * Helper method to get the national-number part of a number, formatted without any national
-        * prefix, and return it as a set of digit blocks that would be formatted together.
+        * prefix, and return it as a set of digit blocks that would be formatted together following
+        * standard formatting rules.
         */
-        private static string[] GetNationalNumberGroups(PhoneNumberUtil util, PhoneNumber number,
+        private static IList<string> GetNationalNumberGroups(PhoneNumberUtil util, PhoneNumber number) {
+            // This will be in the format +CC-DG1-DG2-DGX;ext=EXT where DG1..DGX represents groups of
+            // digits.
+            var rfc3966Format = util.Format(number, PhoneNumberFormat.RFC3966);
+            // We remove the extension part from the formatted string before splitting it into different
+            // groups.
+            var endIndex = rfc3966Format.IndexOf(';');
+            if (endIndex < 0) {
+                endIndex = rfc3966Format.Length;
+            }
+            // The country-code will have a '-' following it.
+            var startIndex = rfc3966Format.IndexOf('-') + 1;
+            return rfc3966Format.Substring(startIndex, endIndex - startIndex).Split('-');
+        }
+
+        /**
+         * Helper method to get the national-number part of a number, formatted without any national
+         * prefix, and return it as a set of digit blocks that should be formatted together according to
+         * the formatting pattern passed in.
+         */
+        private static IList<string> GetNationalNumberGroups(PhoneNumberUtil util, PhoneNumber number,
             NumberFormat formattingPattern)
         {
-            if (formattingPattern == null)
-            {
-                // This will be in the format +CC-DG;ext=EXT where DG represents groups of digits.
-                var rfc3966Format = util.Format(number, PhoneNumberFormat.RFC3966);
-                // We remove the extension part from the formatted string before splitting it into different
-                // groups.
-                var endIndex = rfc3966Format.IndexOf(';');
-                if (endIndex < 0)
-                {
-                    endIndex = rfc3966Format.Length;
-                }
-                // The country-code will have a '-' following it.
-                var startIndex = rfc3966Format.IndexOf('-') + 1;
-                return rfc3966Format.Substring(startIndex, endIndex - startIndex).Split('-');
-            }
-            // We format the NSN only, and split that according to the separator.
+            // If a format is provided, we format the NSN only, and split that according to the separator.
             var nationalSignificantNumber = util.GetNationalSignificantNumber(number);
             return util.FormatNsnUsingPattern(nationalSignificantNumber,
                 formattingPattern, PhoneNumberFormat.RFC3966).Split('-');
         }
 
-        public static bool CheckNumberGroupingIsValid(
+        public bool CheckNumberGroupingIsValid(
             PhoneNumber number, string candidate, PhoneNumberUtil util, CheckGroups checker)
         {
             // TODO: Evaluate how this works for other locales (testing has been limited to NANPA regions)
             // and optimise if necessary.
             var normalizedCandidate =
                 PhoneNumberUtil.NormalizeDigits(candidate, true /* keep non-digits */);
-            var formattedNumberGroups = GetNationalNumberGroups(util, number, null);
+            var formattedNumberGroups = GetNationalNumberGroups(util, number);
             if (checker(util, number, normalizedCandidate, formattedNumberGroups))
             {
                 return true;
             }
-            // If this didn't pass, see if there are any alternate formats, and try them instead.
+            // If this didn't pass, see if there are any alternate formats that match, and try them instead.
             var alternateFormats =
                 MetadataManager.GetAlternateFormatsForCountry(number.CountryCode);
+            var nationalSignificantNumber = util.GetNationalSignificantNumber(number);
             if (alternateFormats != null)
             {
                 foreach (var alternateFormat in alternateFormats.NumberFormatList)
                 {
+                    if (alternateFormat.LeadingDigitsPatternCount > 0) {
+                        // There is only one leading digits pattern for alternate formats.
+                        var pattern =
+                            regexCache.GetPatternForRegex(alternateFormat.GetLeadingDigitsPattern(0));
+                        if (!pattern.MatchBeginning(nationalSignificantNumber).Success) {
+                            // Leading digits don't match; try another one.
+                            continue;
+                        }
+                    }
                     formattedNumberGroups = GetNationalNumberGroups(util, number, alternateFormat);
                     if (checker(util, number, normalizedCandidate, formattedNumberGroups))
                     {

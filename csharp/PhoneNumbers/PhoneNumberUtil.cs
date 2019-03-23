@@ -482,7 +482,12 @@ namespace PhoneNumbers
             EXACT_GROUPING
         }
 
-        public bool Verify(Leniency leniency, PhoneNumber number, string candidate, PhoneNumberUtil util)
+        public bool Verify(
+            Leniency leniency,
+            PhoneNumber number,
+            string candidate,
+            PhoneNumberUtil util,
+            PhoneNumberMatcher matcher)
         {
             switch (leniency)
             {
@@ -504,7 +509,7 @@ namespace PhoneNumbers
                         {
                             return false;
                         }
-                        return PhoneNumberMatcher.CheckNumberGroupingIsValid(
+                        return matcher.CheckNumberGroupingIsValid(
                             number, candidate, util, PhoneNumberMatcher.AllNumberGroupsRemainGrouped);
                     }
                 case Leniency.EXACT_GROUPING:
@@ -516,7 +521,7 @@ namespace PhoneNumbers
                         {
                             return false;
                         }
-                        return PhoneNumberMatcher.CheckNumberGroupingIsValid(
+                        return matcher.CheckNumberGroupingIsValid(
                             number, candidate, util, PhoneNumberMatcher.AllNumberGroupsAreExactlyPresent);
                     }
                 default:

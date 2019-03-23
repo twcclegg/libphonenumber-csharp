@@ -4,7 +4,12 @@ namespace PhoneNumbers
 {
     public static class LeniencyExtensions
     {
-        public static bool Verify(this Leniency leniency, PhoneNumber number, string candidate, PhoneNumberUtil util)=>
-            util.Verify(leniency, number, candidate, util);
+        public static bool Verify(
+            this Leniency leniency,
+            PhoneNumber number,
+            string candidate,
+            PhoneNumberUtil util,
+            PhoneNumberMatcher matcher)=>
+            util.Verify(leniency, number, candidate, util, matcher);
     }
 }
