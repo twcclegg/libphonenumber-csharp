@@ -24,21 +24,22 @@ using System.Text.RegularExpressions;
 
 namespace PhoneNumbers
 {
-    /**
-    * Utility for international phone numbers. Functionality includes formatting, parsing and
-    * validation.
-    *
-    * <p>If you use this library, and want to be notified about important changes, please sign up to
-    * our <a href="http://groups.google.com/group/libphonenumber-discuss/about">mailing list</a>.
-    *
-    * NOTE: A lot of methods in this class require Region Code strings. These must be provided using
-    * ISO 3166-1 two-letter country-code format. These should be in upper-case. The list of the codes
-    * can be found here:
-    * http://www.iso.org/iso/country_codes/iso_3166_code_lists/country_names_and_code_elements.htm
-    *
-    * @author Shaopeng Jia
-    * @author Lara Rennie
-    */
+    /// <summary>
+    /// Utility for international phone numbers. Functionality includes formatting, parsing and
+    /// validation.
+    /// <para>
+    /// If you use this library, and want to be notified about important changes, please sign up to
+    /// our mailing list: http://groups.google.com/group/libphonenumber-discuss/about
+    /// </para>
+    /// NOTE: A lot of methods in this class require Region Code strings.These must be provided using
+    /// ISO 3166-1 two-letter country-code format.These should be in upper-case. The list of the codes
+    /// can be found here:
+    /// http://www.iso.org/iso/country_codes/iso_3166_code_lists/country_names_and_code_elements.htm
+    /// <!--
+    /// @author Shaopeng Jia
+    /// @author Lara Rennie
+    /// -->
+    /// </summary>
     public class PhoneNumberUtil
     {
         // Flags to use when compiling regular expressions for phone numbers.
@@ -119,7 +120,7 @@ namespace PhoneNumbers
         private const string RFC3966_PREFIX = "tel:";
         private const string RFC3966_PHONE_CONTEXT = ";phone-context=";
         private const string RFC3966_ISDN_SUBADDRESS = ";isub=";
-        
+
         // A map that contains characters that are essential when dialling. That means any of the
         // characters in this map must not be removed from a number when dialing, otherwise the call will
         // not reach the intended destination.
@@ -159,12 +160,13 @@ namespace PhoneNumbers
         private static readonly PhoneRegex SeparatorPattern = new PhoneRegex("[" + ValidPunctuation + "]+", InternalRegexOptions.Default);
         private static readonly Regex CapturingDigitPattern;
 
-        // Regular expression of acceptable characters that may start a phone number for the purposes of
-        // parsing. This allows us to strip away meaningless prefixes to phone numbers that may be
-        // mistakenly given to us. This consists of digits, the plus symbol and arabic-indic digits. This
-        // does not contain alpha characters, although they may be used later in the number. It also does
-        // not include other punctuation, as this will be stripped later during parsing and is of no
-        // information value when parsing a number.
+        /// <summary>Regular expression of acceptable characters that may start a phone number for the purposes of
+        /// parsing. This allows us to strip away meaningless prefixes to phone numbers that may be
+        /// mistakenly given to us. This consists of digits, the plus symbol and arabic-indic digits. This
+        /// does not contain alpha characters, although they may be used later in the number. It also does
+        /// not include other punctuation, as this will be stripped later during parsing and is of no
+        /// information value when parsing a number.
+        /// </summary>
         public static readonly PhoneRegex ValidStartCharPattern;
 
         // Regular expression of characters typically used to start a second phone number for the purposes
@@ -401,7 +403,7 @@ namespace PhoneNumbers
 
         public const string RegionCodeForNonGeoEntity = "001";
 
-        // Types of phone number matches. See detailed description beside the isNumberMatch() method.
+        /// <summary>Types of phone number matches. See detailed description beside the isNumberMatch() method.</summary>
         public enum MatchType
         {
             NOT_A_NUMBER,
@@ -411,74 +413,76 @@ namespace PhoneNumbers
             EXACT_MATCH
         }
 
-        // Possible outcomes when testing if a PhoneNumber is possible.
+        /// <summary>Possible outcomes when testing if a PhoneNumber is possible.</summary>
         public enum ValidationResult
         {
-            /** The number length matches that of valid numbers for this region. */
+            /// <summary>The number length matches that of valid numbers for this region.</summary>
             IS_POSSIBLE,
-            /**
-             * The number length matches that of local numbers for this region only (i.e. numbers that may
-             * be able to be dialled within an area, but do not have all the information to be dialled from
-             * anywhere inside or outside the country).
-             */
+            /// <summary>
+            /// The number length matches that of local numbers for this region only (i.e. numbers that may
+            /// be able to be dialled within an area, but do not have all the information to be dialled from
+            /// anywhere inside or outside the country).
+            /// </summary>
             IS_POSSIBLE_LOCAL_ONLY,
-            /** The number has an invalid country calling code. */
+            /// <summary>The number has an invalid country calling code.</summary>
             INVALID_COUNTRY_CODE,
-            /** The number is shorter than all valid numbers for this region. */
+            /// <summary>The number is shorter than all valid numbers for this region.</summary>
             TOO_SHORT,
-            /**
-             * The number is longer than the shortest valid numbers for this region, shorter than the
-             * longest valid numbers for this region, and does not itself have a number length that matches
-             * valid numbers for this region. This can also be returned in the case where
-             * isPossibleNumberForTypeWithReason was called, and there are no numbers of this type at all
-             * for this region.
-             */
+            /// <summary>
+            /// The number is longer than the shortest valid numbers for this region, shorter than the
+            /// longest valid numbers for this region, and does not itself have a number length that matches
+            /// valid numbers for this region. This can also be returned in the case where
+            /// isPossibleNumberForTypeWithReason was called, and there are no numbers of this type at all
+            /// for this region.
+            /// </summary>
             INVALID_LENGTH,
-            /** The number is longer than all valid numbers for this region. */
+            /// <summary>The number is longer than all valid numbers for this region.</summary>
             TOO_LONG
         }
 
-        /**
-        * Leniency when {@linkplain PhoneNumberUtil#findNumbers finding} potential phone numbers in text
-        * segments. The levels here are ordered in increasing strictness.
-        */
+        /// <summary>
+        /// Leniency when <see cref="FindNumbers(string, string)"/> finding potential phone numbers in text
+        /// segments. The levels here are ordered in increasing strictness.
+        /// </summary>
         public enum Leniency
         {
-            /**
-            * Phone numbers accepted are {@linkplain PhoneNumberUtil#isPossibleNumber(PhoneNumber)
-            * possible}, but not necessarily {@linkplain PhoneNumberUtil#isValidNumber(PhoneNumber) valid}.
-            */
+            /// <summary>
+            /// Phone numbers accepted are <see cref="IsPossibleNumber(PhoneNumber)"/>
+            /// possible, but not necessarily <see cref="IsValidNumber(PhoneNumber)"/> valid.
+            /// </summary>
             POSSIBLE,
-            /**
-            * Phone numbers accepted are {@linkplain PhoneNumberUtil#isPossibleNumber(PhoneNumber)
-            * possible} and {@linkplain PhoneNumberUtil#isValidNumber(PhoneNumber) valid}. Numbers written
-            * in national format must have their national-prefix present if it is usually written for a
-            * number of this type.
-            */
+            /// <summary>
+            /// Phone numbers accepted are <see cref="IsPossibleNumber(PhoneNumber)"/>
+            /// possible and <see cref="IsValidNumber(PhoneNumber)"/> valid. Numbers written
+            /// in national format must have their national-prefix present if it is usually written for a
+            /// number of this type.
+            /// </summary>
             VALID,
-            /**
-            * Phone numbers accepted are {@linkplain PhoneNumberUtil#isValidNumber(PhoneNumber) valid} and
-            * are grouped in a possible way for this locale. For example, a US number written as
-            * "65 02 53 00 00" and "650253 0000" are not accepted at this leniency level, whereas
-            * "650 253 0000", "650 2530000" or "6502530000" are.
-            * Numbers with more than one '/' symbol are also dropped at this level.
-            * <p>
-            * Warning: This level might result in lower coverage especially for regions outside of country
-            * code "+1". If you are not sure about which level to use, email the discussion group
-            * libphonenumber-discuss@googlegroups.com.
-            */
+            /// <summary>
+            /// Phone numbers accepted are <see cref="IsValidNumber(PhoneNumber)"/> valid and
+            /// are grouped in a possible way for this locale. For example, a US number written as
+            /// "65 02 53 00 00" and "650253 0000" are not accepted at this leniency level, whereas
+            /// "650 253 0000", "650 2530000" or "6502530000" are.
+            /// Numbers with more than one '/' symbol are also dropped at this level.
+            /// <para>
+            /// Warning: This level might result in lower coverage especially for regions outside of country
+            /// code "+1". If you are not sure about which level to use, email the discussion group
+            /// libphonenumber-discuss@googlegroups.com.
+            /// </para>
+            /// </summary>
             STRICT_GROUPING,
-            /**
-            * Phone numbers accepted are {@linkplain PhoneNumberUtil#isValidNumber(PhoneNumber) valid} and
-            * are grouped in the same way that we would have formatted it, or as a single block. For
-            * example, a US number written as "650 2530000" is not accepted at this leniency level, whereas
-            * "650 253 0000" or "6502530000" are.
-            * Numbers with more than one '/' symbol are also dropped at this level.
-            * <p>
-            * Warning: This level might result in lower coverage especially for regions outside of country
-            * code "+1". If you are not sure about which level to use, email the discussion group
-            * libphonenumber-discuss@googlegroups.com.
-            */
+            /// <summary>
+            /// Phone numbers accepted are <see cref="IsValidNumber(PhoneNumber)"/> valid and
+            /// are grouped in the same way that we would have formatted it, or as a single block. For
+            /// example, a US number written as "650 2530000" is not accepted at this leniency level, whereas
+            /// "650 253 0000" or "6502530000" are.
+            /// Numbers with more than one '/' symbol are also dropped at this level.
+            /// <para>
+            /// Warning: This level might result in lower coverage especially for regions outside of country
+            /// code "+1". If you are not sure about which level to use, email the discussion group
+            /// libphonenumber-discuss@googlegroups.com.
+            /// </para>
+            /// </summary>
             EXACT_GROUPING
         }
 
@@ -567,24 +571,23 @@ namespace PhoneNumbers
             catch (IOException)
             {
             }
-            
+
         }
 
-        /**
-        * Attempts to extract a possible number from the string passed in. This currently strips all
-        * leading characters that cannot be used to start a phone number. Characters that can be used to
-        * start a phone number are defined in the VALID_START_CHAR_PATTERN. If none of these characters
-        * are found in the number passed in, an empty string is returned. This function also attempts to
-        * strip off any alternative extensions or endings if two or more are present, such as in the case
-        * of: (530) 583-6985 x302/x2303. The second extension here makes this actually two phone numbers,
-        * (530) 583-6985 x302 and (530) 583-6985 x2303. We remove the second extension so that the first
-        * number is parsed correctly.
-        *
-        * @param number  the string that might contain a phone number
-        * @return        the number, stripped of any non-phone-number prefix (such as "Tel:") or an empty
-        *                string if no character used to start phone numbers (such as + or any digit) is
-        *                found in the number
-        */
+        /// <summary>
+        /// Attempts to extract a possible number from the string passed in. This currently strips all
+        /// leading characters that cannot be used to start a phone number. Characters that can be used to
+        /// start a phone number are defined in the VALID_START_CHAR_PATTERN. If none of these characters
+        /// are found in the number passed in, an empty string is returned. This function also attempts to
+        /// strip off any alternative extensions or endings if two or more are present, such as in the case
+        /// of: (530) 583-6985 x302/x2303. The second extension here makes this actually two phone numbers,
+        /// (530) 583-6985 x302 and (530) 583-6985 x2303. We remove the second extension so that the first
+        /// number is parsed correctly.
+        /// </summary>
+        /// <param name="number">The string that might contain a phone number.</param>
+        /// <returns>The number, stripped of any non-phone-number prefix (such as "Tel:") or an empty
+        /// string if no character used to start phone numbers (such as + or any digit) is
+        /// found in the number.</returns>
         public static string ExtractPossibleNumber(string number)
         {
             var m = ValidStartCharPattern.Match(number);
@@ -600,16 +603,15 @@ namespace PhoneNumbers
             return number;
         }
 
-        /**
-        * Checks to see if the string of characters could possibly be a phone number at all. At the
-        * moment, checks to see that the string begins with at least 2 digits, ignoring any punctuation
-        * commonly found in phone numbers.
-        * This method does not require the number to be normalized in advance - but does assume that
-        * leading non-number symbols have been removed, such as by the method extractPossibleNumber.
-        *
-        * @param number  string to be checked for viability as a phone number
-        * @return        true if the number could be a phone number of some sort, otherwise false
-        */
+        /// <summary>
+        /// Checks to see if the string of characters could possibly be a phone number at all. At the
+        /// moment, checks to see that the string begins with at least 2 digits, ignoring any punctuation
+        /// commonly found in phone numbers.
+        /// This method does not require the number to be normalized in advance - but does assume that
+        /// leading non-number symbols have been removed, such as by the method extractPossibleNumber.
+        /// </summary>
+        /// <param name="number">String to be checked for viability as a phone number.</param>
+        /// <returns>True if the number could be a phone number of some sort, otherwise false.</returns>
         public static bool IsViablePhoneNumber(string number)
         {
             if (number.Length < MinLengthForNsn)
@@ -617,23 +619,22 @@ namespace PhoneNumbers
             return ValidPhoneNumberPattern.MatchAll(number).Success;
         }
 
-        /**
-        * Normalizes a string of characters representing a phone number. This performs the following
-        * conversions:
-        *   Punctuation is stripped.
-        *   For ALPHA/VANITY numbers:
-        *   Letters are converted to their numeric representation on a telephone keypad. The keypad
-        *       used here is the one defined in ITU Recommendation E.161. This is only done if there are
-        *       3 or more letters in the number, to lessen the risk that such letters are typos.
-        *   For other numbers:
-        *   Wide-ascii digits are converted to normal ASCII (European) digits.
-        *   Arabic-Indic numerals are converted to European numerals.
-        *   Spurious alpha characters are stripped.
-        *   Arabic-Indic numerals are converted to European numerals.
-        *
-        * @param number  a string of characters representing a phone number
-        * @return        the normalized string version of the phone number
-        */
+        /// <summary>
+        /// Normalizes a string of characters representing a phone number. This performs the following
+        /// conversions:
+        ///   Punctuation is stripped.
+        ///   For ALPHA/VANITY numbers:
+        ///   Letters are converted to their numeric representation on a telephone keypad. The keypad
+        ///       used here is the one defined in ITU Recommendation E.161. This is only done if there are
+        ///       3 or more letters in the number, to lessen the risk that such letters are typos.
+        ///   For other numbers:
+        ///   Wide-ascii digits are converted to normal ASCII (European) digits.
+        ///   Arabic-Indic numerals are converted to European numerals.
+        ///   Spurious alpha characters are stripped.
+        ///   Arabic-Indic numerals are converted to European numerals.
+        /// </summary>
+        /// <param name="number">A string of characters representing a phone number.</param>
+        /// <returns>The normalized string version of the phone number.</returns>
         public static string Normalize(string number)
         {
             return ValidAlphaPhonePattern.MatchAll(number).Success
@@ -648,13 +649,12 @@ namespace PhoneNumbers
             number.Append(n);
         }
 
-        /**
-        * Normalizes a string of characters representing a phone number. This converts wide-ascii and
-        * arabic-indic numerals to European numerals, and strips punctuation and alpha characters.
-        *
-        * @param number  a string of characters representing a phone number
-        * @return        the normalized string version of the phone number
-        */
+        /// <summary>
+        /// Normalizes a string of characters representing a phone number. This converts wide-ascii and
+        /// arabic-indic numerals to European numerals, and strips punctuation and alpha characters.
+        /// </summary>
+        /// <param name="number">A string of characters representing a phone number.</param>
+        /// <returns>The normalized string version of the phone number.</returns>
         public static string NormalizeDigitsOnly(string number)
         {
             return NormalizeDigits(number, false /* strip non-digits */).ToString();
@@ -678,10 +678,12 @@ namespace PhoneNumbers
             return normalizedDigits;
         }
 
-        /**
-        * Converts all alpha characters in a number to their respective digits on a keypad, but retains
-        * existing formatting.
-        */
+        /// <summary>
+        /// Converts all alpha characters in a number to their respective digits on a keypad, but retains
+        /// existing formatting.
+        /// </summary>
+        /// <param name="number"></param>
+        /// <returns></returns>
         public static string ConvertAlphaCharactersInNumber(string number)
         {
             return NormalizeHelper(number, AlphaPhoneMappings, false);
@@ -833,32 +835,30 @@ namespace PhoneNumbers
             return numberGroups[2].Length;
         }
 
-        /**
-        * Returns the mobile token for the provided country calling code if it has one, otherwise
-        * returns an empty string. A mobile token is a number inserted before the area code when dialing
-        * a mobile number from that country from abroad.
-        *
-        * @param countryCallingCode  the country calling code for which we want the mobile token
-        * @return  the mobile token, as a string, for the given country calling code
-        */
+        /// <summary>
+        /// Returns the mobile token for the provided country calling code if it has one, otherwise
+        /// returns an empty string. A mobile token is a number inserted before the area code when dialing
+        /// a mobile number from that country from abroad.
+        /// </summary>
+        /// <param name="countryCallingCode">The country calling code for which we want the mobile token.</param>
+        /// <returns>The mobile token, as a string, for the given country calling code.</returns>
         public static string GetCountryMobileToken(int countryCallingCode)
         {
             return MobileTokenMappings.ContainsKey(countryCallingCode) ? MobileTokenMappings[countryCallingCode] : "";
         }
 
-        /**
-        * Normalizes a string of characters representing a phone number by replacing all characters found
-        * in the accompanying map with the values therein, and stripping all other characters if
-        * removeNonMatches is true.
-        *
-        * @param number                     a string of characters representing a phone number
-        * @param normalizationReplacements  a mapping of characters to what they should be replaced by in
-        *                                   the normalized version of the phone number
-        * @param removeNonMatches           indicates whether characters that are not able to be replaced
-        *                                   should be stripped from the number. If this is false, they
-        *                                   will be left unchanged in the number.
-        * @return  the normalized string version of the phone number
-        */
+        /// <summary>
+        /// Normalizes a string of characters representing a phone number by replacing all characters found
+        /// in the accompanying map with the values therein, and stripping all other characters if
+        /// removeNonMatches is true.
+        /// </summary>
+        /// <param name="number">A string of characters representing a phone number.</param>
+        /// <param name="normalizationReplacements">A mapping of characters to what they should be replaced by in
+        /// the normalized version of the phone number.</param>
+        /// <param name="removeNonMatches">indicates whether characters that are not able to be replaced
+        /// should be stripped from the number. If this is false, they
+        /// will be left unchanged in the number.</param>
+        /// <returns>The normalized string version of the phone number.</returns>
         private static string NormalizeHelper(string number, Dictionary<char, char> normalizationReplacements,
             bool removeNonMatches)
         {
@@ -892,9 +892,9 @@ namespace PhoneNumbers
             }
         }
 
-        /**
-        * Used for testing purposes only to reset the PhoneNumberUtil singleton to null.
-        */
+        /// <summary>
+        /// Used for testing purposes only to reset the PhoneNumberUtil singleton to null.
+        /// </summary>
         public static void ResetInstance()
         {
             lock (ThisLock)
@@ -903,45 +903,44 @@ namespace PhoneNumbers
             }
         }
 
-        /**
-        * Returns all regions the library has metadata for.
-        *
-        * @return  an unordered set of the two-letter region codes for every geographical region the
-        *     library supports
-        */
+        /// <summary>
+        /// Returns all regions the library has metadata for.
+        /// </summary>
+        /// <returns>An unordered set of the two-letter region codes for every geographical region the
+        /// library supports.</returns>
         public HashSet<string> GetSupportedRegions()
         {
             return supportedRegions;
         }
 
-        /**
-        * Returns all global network calling codes the library has metadata for.
-        *
-        * @return  an unordered set of the country calling codes for every non-geographical entity the
-        *     library supports
-        */
+        /// <summary>
+        /// Returns all global network calling codes the library has metadata for.
+        /// </summary>
+        /// <returns>An unordered set of the country calling codes for every non-geographical entity the
+        /// library supports.</returns>
         public Dictionary<int, PhoneMetadata>.KeyCollection GetSupportedGlobalNetworkCallingCodes()
         {
             return countryCodeToNonGeographicalMetadataMap.Keys;
         }
 
-        /**
-        * Returns all country calling codes the library has metadata for, covering both non-geographical
-        * entities (global network calling codes) and those used for geographical entities. This could be
-        * used to populate a drop-down box of country calling codes for a phone-number widget, for
-        * instance.
-        *
-        * @return  an unordered set of the country calling codes for every geographical and
-        *     non-geographical entity the library supports
-        */
-         public HashSet<int> GetSupportedCallingCodes()
-         {
-             return new HashSet<int>(countryCallingCodeToRegionCodeMap.Keys);
-         }
+        /// <summary>
+        /// Returns all country calling codes the library has metadata for, covering both non-geographical
+        /// entities (global network calling codes) and those used for geographical entities. This could be
+        /// used to populate a drop-down box of country calling codes for a phone-number widget, for
+        /// instance.
+        /// </summary>
+        /// <returns>An unordered set of the country calling codes for every geographical and
+        /// non-geographical entity the library supports.</returns>
+        public HashSet<int> GetSupportedCallingCodes()
+        {
+            return new HashSet<int>(countryCallingCodeToRegionCodeMap.Keys);
+        }
 
-        /**
-        * Returns true if there is any possible number data set for a particular PhoneNumberDesc.
-        */
+        /// <summary>
+        /// Returns true if there is any possible number data set for a particular PhoneNumberDesc.
+        /// </summary>
+        /// <param name="desc"></param>
+        /// <returns></returns>
         private static bool DescHasPossibleNumberData(PhoneNumberDesc desc)
         {
             // If this is empty, it means numbers of this type inherit from the "general desc" -> the value
@@ -949,9 +948,11 @@ namespace PhoneNumbers
             return desc.PossibleLengthCount != 1 || desc.PossibleLengthList[0] != -1;
         }
 
-        /**
-         * Returns true if there is any data set for a particular PhoneNumberDesc.
-         */
+        /// <summary>
+        /// Returns true if there is any data set for a particular PhoneNumberDesc.
+        /// </summary>
+        /// <param name="desc"></param>
+        /// <returns></returns>
         private static bool DescHasData(PhoneNumberDesc desc)
         {
             // Checking most properties since we don't know what's present, since a custom build may have
@@ -963,10 +964,12 @@ namespace PhoneNumbers
                    || desc.HasNationalNumberPattern;
         }
 
-        /**
-         * Returns the types we have metadata for based on the PhoneMetadata object passed in, which must
-         * be non-null.
-         */
+        /// <summary>
+        /// Returns the types we have metadata for based on the PhoneMetadata object passed in, which must
+        /// be non-null.
+        /// </summary>
+        /// <param name="metadata"></param>
+        /// <returns></returns>
         private HashSet<PhoneNumberType> GetSupportedTypesForMetadata(PhoneMetadata metadata)
         {
             var types = new HashSet<PhoneNumberType>();
@@ -986,13 +989,15 @@ namespace PhoneNumbers
             return types;
         }
 
-        /**
-         * Returns the types for a given region which the library has metadata for. Will not include
-         * FIXED_LINE_OR_MOBILE (if numbers in this region could be classified as FIXED_LINE_OR_MOBILE,
-         * both FIXED_LINE and MOBILE would be present) and UNKNOWN.
-         *
-         * No types will be returned for invalid or unknown region codes.
-         */
+        /// <summary>
+        /// Returns the types for a given region which the library has metadata for. Will not include
+        /// FIXED_LINE_OR_MOBILE (if numbers in this region could be classified as FIXED_LINE_OR_MOBILE,
+        /// both FIXED_LINE and MOBILE would be present) and UNKNOWN.
+        ///
+        /// No types will be returned for invalid or unknown region codes.
+        /// </summary>
+        /// <param name="regionCode"></param>
+        /// <returns></returns>
         public HashSet<PhoneNumberType> GetSupportedTypesForRegion(string regionCode)
         {
             if (!IsValidRegionCode(regionCode))
@@ -1003,31 +1008,33 @@ namespace PhoneNumbers
             return GetSupportedTypesForMetadata(metadata);
         }
 
-        /**
-         * Returns the types for a country-code belonging to a non-geographical entity which the library
-         * has metadata for. Will not include FIXED_LINE_OR_MOBILE (if numbers for this non-geographical
-         * entity could be classified as FIXED_LINE_OR_MOBILE, both FIXED_LINE and MOBILE would be
-         * present) and UNKNOWN.
-         *
-         * No types will be returned for country calling codes that do not map to a known non-geographical
-         * entity.
-         */
+        /// <summary>
+        /// Returns the types for a country-code belonging to a non-geographical entity which the library
+        /// has metadata for. Will not include FIXED_LINE_OR_MOBILE (if numbers for this non-geographical
+        /// entity could be classified as FIXED_LINE_OR_MOBILE, both FIXED_LINE and MOBILE would be
+        /// present) and UNKNOWN.
+        ///
+        /// No types will be returned for country calling codes that do not map to a known non-geographical
+        /// entity.
+        /// </summary>
+        /// <param name="countryCallingCode"></param>
+        /// <returns></returns>
         public HashSet<PhoneNumberType> GetSupportedTypesForNonGeoEntity(int countryCallingCode)
         {
             var metadata = GetMetadataForNonGeographicalRegion(countryCallingCode);
             return metadata == null ? new HashSet<PhoneNumberType>() : GetSupportedTypesForMetadata(metadata);
         }
 
-        /**
-        * Gets a {@link PhoneNumberUtil} instance to carry out international phone number formatting,
-        * parsing, or validation. The instance is loaded with phone number metadata for a number of most
-        * commonly used regions.
-        *
-        * <p>The {@link PhoneNumberUtil} is implemented as a singleton. Therefore, calling getInstance
-        * multiple times will only result in one instance being created.
-        *
-        * @return a PhoneNumberUtil instance
-        */
+        /// <summary>
+        /// Gets a <see cref="PhoneNumberUtil"/> instance to carry out international phone number formatting,
+        /// parsing, or validation. The instance is loaded with phone number metadata for a number of most
+        /// commonly used regions.
+        /// <para>
+        /// The <see cref="PhoneNumberUtil"/> is implemented as a singleton. Therefore, calling getInstance
+        /// multiple times will only result in one instance being created.
+        /// </para>
+        /// </summary>
+        /// <returns>A <see cref="PhoneNumberUtil"/> instance.</returns>
         public static PhoneNumberUtil GetInstance()
         {
             lock (ThisLock)
@@ -1041,30 +1048,37 @@ namespace PhoneNumbers
 
 
 
-        /**
-        * Helper function to check if the national prefix formatting rule has the first group only, i.e.,
-        * does not start with the national prefix.
-        */
+        /// <summary>
+        /// Helper function to check if the national prefix formatting rule has the first group only, i.e.,
+        /// does not start with the national prefix.
+        /// </summary>
+        /// <param name="nationalPrefixFormattingRule"></param>
+        /// <returns></returns>
         internal static bool FormattingRuleHasFirstGroupOnly(string nationalPrefixFormattingRule)
         {
             return nationalPrefixFormattingRule.Length == 0
                    || FirstGroupOnlyPrefixPattern.MatchAll(nationalPrefixFormattingRule).Success;
         }
 
-        /**
-         * Tests whether a phone number has a geographical association. It checks if the number is
-         * associated with a certain region in the country to which it belongs. Note that this doesn't
-         * verify if the number is actually in use.
-         */
+        /// <summary>
+        /// Tests whether a phone number has a geographical association. It checks if the number is
+        /// associated with a certain region in the country to which it belongs. Note that this doesn't
+        /// verify if the number is actually in use.
+        /// </summary>
+        /// <param name="phoneNumber"></param>
+        /// <returns></returns>
         public bool IsNumberGeographical(PhoneNumber phoneNumber)
         {
             return IsNumberGeographical(GetNumberType(phoneNumber), phoneNumber.CountryCode);
         }
 
-        /**
-         * Overload of isNumberGeographical(PhoneNumber), since calculating the phone number type is
-         * expensive; if we have already done this, we don't want to do it again.
-         */
+        /// <summary>
+        /// Overload of isNumberGeographical(PhoneNumber), since calculating the phone number type is
+        /// expensive; if we have already done this, we don't want to do it again.
+        /// </summary>
+        /// <param name="phoneNumberType"></param>
+        /// <param name="countryCallingCode"></param>
+        /// <returns></returns>
         public bool IsNumberGeographical(PhoneNumberType phoneNumberType, int countryCallingCode)
         {
             return phoneNumberType == PhoneNumberType.FIXED_LINE
@@ -1090,20 +1104,19 @@ namespace PhoneNumbers
             return countryCallingCodeToRegionCodeMap.ContainsKey(countryCallingCode);
         }
 
-        /**
-        * Formats a phone number in the specified format using default rules. Note that this does not
-        * promise to produce a phone number that the user can dial from where they are - although we do
-        * format in either 'national' or 'international' format depending on what the client asks for, we
-        * do not currently support a more abbreviated format, such as for users in the same "area" who
-        * could potentially dial the number without area code. Note that if the phone number has a
-        * country calling code of 0 or an otherwise invalid country calling code, we cannot work out
-        * which formatting rules to apply so we return the national significant number with no formatting
-        * applied.
-        *
-        * @param number         the phone number to be formatted
-        * @param numberFormat   the format the phone number should be formatted into
-        * @return  the formatted phone number
-        */
+        /// <summary>
+        /// Formats a phone number in the specified format using default rules. Note that this does not
+        /// promise to produce a phone number that the user can dial from where they are - although we do
+        /// format in either 'national' or 'international' format depending on what the client asks for, we
+        /// do not currently support a more abbreviated format, such as for users in the same "area" who
+        /// could potentially dial the number without area code. Note that if the phone number has a
+        /// country calling code of 0 or an otherwise invalid country calling code, we cannot work out
+        /// which formatting rules to apply so we return the national significant number with no formatting
+        /// applied.
+        /// </summary>
+        /// <param name="number">The phone number to be formatted.</param>
+        /// <param name="numberFormat">The format the phone number should be formatted into.</param>
+        /// <returns>The formatted phone number.</returns>
         public string Format(PhoneNumber number, PhoneNumberFormat numberFormat)
         {
             if (number.NationalNumber == 0 && number.HasRawInput)
@@ -1119,10 +1132,13 @@ namespace PhoneNumbers
             return formattedNumber.ToString();
         }
 
-        /**
-        * Same as {@link #format(PhoneNumber, PhoneNumberFormat)}, but accepts a mutable StringBuilder as
-        * a parameter to decrease object creation when invoked many times.
-        */
+        /// <summary>
+        /// Same as <see cref="Format(PhoneNumber, PhoneNumberFormat)"/>, but accepts a mutable StringBuilder as
+        /// a parameter to decrease object creation when invoked many times.
+        /// </summary>
+        /// <param name="number"></param>
+        /// <param name="numberFormat"></param>
+        /// <param name="formattedNumber"></param>
         public void Format(PhoneNumber number, PhoneNumberFormat numberFormat,
             StringBuilder formattedNumber)
         {
@@ -1155,17 +1171,16 @@ namespace PhoneNumbers
             PrefixNumberWithCountryCallingCode(countryCallingCode, numberFormat, formattedNumber);
         }
 
-        /**
-        * Formats a phone number in the specified format using client-defined formatting rules. Note that
-        * if the phone number has a country calling code of zero or an otherwise invalid country calling
-        * code, we cannot work out things like whether there should be a national prefix applied, or how
-        * to format extensions, so we return the national significant number with no formatting applied.
-        *
-        * @param number                        the phone number to be formatted
-        * @param numberFormat                  the format the phone number should be formatted into
-        * @param userDefinedFormats            formatting rules specified by clients
-        * @return  the formatted phone number
-        */
+        /// <summary>
+        /// Formats a phone number in the specified format using client-defined formatting rules. Note that
+        /// if the phone number has a country calling code of zero or an otherwise invalid country calling
+        /// code, we cannot work out things like whether there should be a national prefix applied, or how
+        /// to format extensions, so we return the national significant number with no formatting applied.
+        /// </summary>
+        /// <param name="number">The phone number to be formatted.</param>
+        /// <param name="numberFormat">The format the phone number should be formatted into.</param>
+        /// <param name="userDefinedFormats">Formatting rules specified by clients.</param>
+        /// <returns>The formatted phone number.</returns>
         public string FormatByPattern(PhoneNumber number, PhoneNumberFormat numberFormat,
             List<NumberFormat> userDefinedFormats)
         {
@@ -1219,17 +1234,16 @@ namespace PhoneNumbers
             return formattedNumber.ToString();
         }
 
-        /**
-        * Formats a phone number in national format for dialing using the carrier as specified in the
-        * {@code carrierCode}. The {@code carrierCode} will always be used regardless of whether the
-        * phone number already has a preferred domestic carrier code stored. If {@code carrierCode}
-        * contains an empty string, returns the number in national format without any carrier code.
-        * 
-        * @param number  the phone number to be formatted
-        * @param carrierCode  the carrier selection code to be used
-        * @return  the formatted phone number in national format for dialing using the carrier as
-        *          specified in the {@code carrierCode}
-        */
+        /// <summary>
+        /// Formats a phone number in national format for dialing using the carrier as specified in the
+        /// carrierCode. The carrierCode will always be used regardless of whether the
+        /// phone number already has a preferred domestic carrier code stored. If carrierCode
+        /// contains an empty string, returns the number in national format without any carrier code.
+        /// </summary>
+        /// <param name="number">The phone number to be formatted.</param>
+        /// <param name="carrierCode">The carrier selection code to be used.</param>
+        /// <returns>The formatted phone number in national format for dialing using the carrier as
+        /// specified in the carrierCode.</returns>
         public string FormatNationalNumberWithCarrierCode(PhoneNumber number, string carrierCode)
         {
             var countryCallingCode = number.CountryCode;
@@ -1258,23 +1272,23 @@ namespace PhoneNumbers
                 : GetMetadataForRegion(regionCode);
         }
 
-        /**
-        * Formats a phone number in national format for dialing using the carrier as specified in the
-        * preferredDomesticCarrierCode field of the PhoneNumber object passed in. If that is missing,
-        * use the {@code fallbackCarrierCode} passed in instead. If there is no
-        * {@code preferredDomesticCarrierCode}, and the {@code fallbackCarrierCode} contains an empty
-        * string, return the number in national format without any carrier code.
-        *
-        * <p>Use {@link #formatNationalNumberWithCarrierCode} instead if the carrier code passed in
-        * should take precedence over the number's {@code preferredDomesticCarrierCode} when formatting.
-        *
-        * @param number  the phone number to be formatted
-        * @param fallbackCarrierCode  the carrier selection code to be used, if none is found in the
-        *     phone number itself
-        * @return  the formatted phone number in national format for dialing using the number's
-        *     {@code preferredDomesticCarrierCode}, or the {@code fallbackCarrierCode} passed in if
-        *     none is found
-        */
+        /// <summary>
+        /// Formats a phone number in national format for dialing using the carrier as specified in the
+        /// preferredDomesticCarrierCode field of the PhoneNumber object passed in. If that is missing,
+        /// use the fallbackCarrierCode passed in instead. If there is no
+        /// preferredDomesticCarrierCode, and the fallbackCarrierCode contains an empty
+        /// string, return the number in national format without any carrier code.
+        ///
+        /// <para>Use <see cref="FormatNationalNumberWithCarrierCode(PhoneNumber, string)"/> instead if the carrier code passed in
+        /// should take precedence over the number's preferredDomesticCarrierCode when formatting.</para>
+        /// </summary>
+        /// <param name="number">The phone number to be formatted.</param>
+        /// <param name="fallbackCarrierCode">The carrier selection code to be used, if none is found in the
+        /// phone number itself.</param>
+        /// <returns>The formatted phone number in national format for dialing using the number's
+        /// preferredDomesticCarrierCode, or the fallbackCarrierCode passed in if
+        /// none is found.
+        /// </returns>
         public string FormatNationalNumberWithPreferredCarrierCode(PhoneNumber number,
             string fallbackCarrierCode)
         {
@@ -1287,18 +1301,17 @@ namespace PhoneNumbers
                 : fallbackCarrierCode);
         }
 
-        /**
-        * Returns a number formatted in such a way that it can be dialed from a mobile phone in a
-        * specific region. If the number cannot be reached from the region (e.g. some countries block
-        * toll-free numbers from being called outside of the country), the method returns an empty
-        * string.
-        *
-        * @param number  the phone number to be formatted
-        * @param regionCallingFrom  the region where the call is being placed
-        * @param withFormatting  whether the number should be returned with formatting symbols, such as
-        *     spaces and dashes.
-        * @return  the formatted phone number
-        */
+        /// <summary>
+        /// Returns a number formatted in such a way that it can be dialed from a mobile phone in a
+        /// specific region.If the number cannot be reached from the region(e.g.some countries block
+        /// toll-free numbers from being called outside of the country), the method returns an empty
+        /// string.
+        /// </summary>
+        /// <param name="number">The phone number to be formatted.</param>
+        /// <param name="regionCallingFrom">The region where the call is being placed.</param>
+        /// <param name="withFormatting">Whether the number should be returned with formatting symbols, such as
+        /// spaces and dashes.</param>
+        /// <returns>The formatted phone number.</returns>
         public string FormatNumberForMobileDialing(PhoneNumber number, string regionCallingFrom,
             bool withFormatting)
         {
@@ -1354,23 +1367,22 @@ namespace PhoneNumbers
                     true /* remove non matches */);
         }
 
-        /**
-        * Formats a phone number for out-of-country dialing purposes. If no regionCallingFrom is
-        * supplied, we format the number in its INTERNATIONAL format. If the country calling code is the
-        * same as that of the region where the number is from, then NATIONAL formatting will be applied.
-        *
-        * <p>If the number itself has a country calling code of zero or an otherwise invalid country
-        * calling code, then we return the number with no formatting applied.
-        *
-        * <p>Note this function takes care of the case for calling inside of NANPA and between Russia and
-        * Kazakhstan (who share the same country calling code). In those cases, no international prefix
-        * is used. For regions which have multiple international prefixes, the number in its
-        * INTERNATIONAL format will be returned instead.
-        *
-        * @param number               the phone number to be formatted
-        * @param regionCallingFrom    the region where the call is being placed
-        * @return  the formatted phone number
-        */
+        /// <summary>
+        /// Formats a phone number for out-of-country dialing purposes.If no regionCallingFrom is
+        /// supplied, we format the number in its INTERNATIONAL format.If the country calling code is the
+        /// same as that of the region where the number is from, then NATIONAL formatting will be applied.
+        /// <para>
+        /// If the number itself has a country calling code of zero or an otherwise invalid country
+        /// calling code, then we return the number with no formatting applied.
+        /// </para>
+        /// <para>Note this function takes care of the case for calling inside of NANPA and between Russia and
+        /// Kazakhstan (who share the same country calling code). In those cases, no international prefix
+        /// is used.For regions which have multiple international prefixes, the number in its
+        /// INTERNATIONAL format will be returned instead.</para>
+        /// </summary>
+        /// <param name="number">The phone number to be formatted.</param>
+        /// <param name="regionCallingFrom">The region where the call is being placed.</param>
+        /// <returns>The formatted phone number.</returns>
         public string FormatOutOfCountryCallingNumber(PhoneNumber number, string regionCallingFrom)
         {
             if (!IsValidRegionCode(regionCallingFrom))
@@ -1442,21 +1454,20 @@ namespace PhoneNumbers
             return formattedNumber.ToString();
         }
 
-        /**
-        * Formats a phone number using the original phone number format that the number is parsed from.
-        * The original format is embedded in the country_code_source field of the PhoneNumber object
-        * passed in. If such information is missing, the number will be formatted into the NATIONAL
-        * format by default. When we don't have a formatting pattern for the number, the method returns
-        * the raw input when it is available.
-        *
-        * Note this method guarantees no digit will be inserted, removed or modified as a result of
-        * formatting.
-        * 
-        * @param number  the phone number that needs to be formatted in its original number format
-        * @param regionCallingFrom  the region whose IDD needs to be prefixed if the original number
-        *     has one
-        * @return  the formatted phone number in its original number format
-        */
+        /// <summary>
+        /// Formats a phone number using the original phone number format that the number is parsed from.
+        /// The original format is embedded in the country_code_source field of the PhoneNumber object
+        /// passed in. If such information is missing, the number will be formatted into the NATIONAL
+        /// format by default. When we don't have a formatting pattern for the number, the method returns
+        /// the raw input when it is available.
+        /// <para>
+        /// Note this method guarantees no digit will be inserted, removed or modified as a result of
+        /// formatting.</para>
+        /// </summary>
+        /// <param name="number">The phone number that needs to be formatted in its original number format.</param>
+        /// <param name="regionCallingFrom">The region whose IDD needs to be prefixed if the original number
+        /// has one.</param>
+        /// <returns>The formatted phone number in its original number format.</returns>
         public string FormatInOriginalFormat(PhoneNumber number, string regionCallingFrom)
         {
             if (number.HasRawInput && !HasFormattingPatternForNumber(number))
@@ -1708,13 +1719,12 @@ namespace PhoneNumbers
             return formattedNumber.ToString();
         }
 
-        /**
-        * Gets the national significant number of the a phone number. Note a national significant number
-        * doesn't contain a national prefix or any formatting.
-        *
-        * @param number  the PhoneNumber object for which the national significant number is needed
-        * @return  the national significant number of the PhoneNumber object passed in
-        */
+        /// <summary>
+        /// Gets the national significant number of the a phone number. Note a national significant number
+        /// doesn't contain a national prefix or any formatting.
+        /// </summary>
+        /// <param name="number">The PhoneNumber object for which the national significant number is needed.</param>
+        /// <returns>The national significant number of the PhoneNumber object passed in.</returns>
         public string GetNationalSignificantNumber(PhoneNumber number)
         {
             // If a leading zero has been set, we prefix this now. Note this is not a national prefix.
@@ -1840,29 +1850,27 @@ namespace PhoneNumbers
             return formattedNationalNumber;
         }
 
-        /**
-        * Gets a valid number for the specified region.
-        *
-        * @param regionCode  region for which an example number is needed
-        * @return  a valid fixed-line number for the specified region. Returns null when the metadata
-        *    does not contain such information, or the region 001 is passed in. For 001 (representing
-        *    non-geographical numbers), call {@link #getExampleNumberForNonGeoEntity} instead.
-        */
+        /// <summary>
+        /// Gets a valid number for the specified region.
+        /// </summary>
+        /// <param name="regionCode">Region for which an example number is needed.</param>
+        /// <returns>A valid fixed-line number for the specified region.Returns null when the metadata
+        /// does not contain such information, or the region 001 is passed in. For 001 (representing
+        /// non - geographical numbers), call <see cref="GetExampleNumberForNonGeoEntity(int)"/> instead.</returns>
         public PhoneNumber GetExampleNumber(string regionCode)
         {
             return GetExampleNumberForType(regionCode, PhoneNumberType.FIXED_LINE);
         }
 
-        /**
-        * Gets a valid number for the specified region and number type.
-        *
-        * @param regionCode  region for which an example number is needed
-        * @param type  the type of number that is needed
-        * @return  a valid number for the specified region and type. Returns null when the metadata
-        *     does not contain such information or if an invalid region or region 001 was entered.
-        *     For 001 (representing non-geographical numbers), call
-        *     {@link #getExampleNumberForNonGeoEntity} instead.
-        */
+        /// <summary>
+        /// Gets a valid number for the specified region and number type.
+        /// </summary>
+        /// <param name="regionCode">Region for which an example number is needed.</param>
+        /// <param name="type">The type of number that is needed.</param>
+        /// <returns>A valid number for the specified region and type. Returns null when the metadata
+        /// does not contain such information or if an invalid region or region 001 was entered.
+        /// For 001 (representing non-geographical numbers), call
+        /// <see cref="GetExampleNumberForNonGeoEntity(int)"/> instead.</returns>
         public PhoneNumber GetExampleNumberForType(string regionCode, PhoneNumberType type)
         {
             // Check the region code is valid.
@@ -1880,14 +1888,13 @@ namespace PhoneNumbers
             return null;
         }
 
-        /**
-        * Gets a valid number for the specified country calling code for a non-geographical entity.
-        *
-        * @param countryCallingCode  the country calling code for a non-geographical entity
-        * @return  a valid number for the non-geographical entity. Returns null when the metadata
-        *    does not contain such information, or the country calling code passed in does not belong
-        *    to a non-geographical entity.
-        */
+        /// <summary>
+        /// Gets a valid number for the specified country calling code for a non-geographical entity.
+        /// </summary>
+        /// <param name="countryCallingCode">The country calling code for a non-geographical entity</param>
+        /// <returns>A valid number for the non-geographical entity. Returns null when the metadata
+        /// does not contain such information, or the country calling code passed in does not belong
+        /// to a non-geographical entity.</returns>
         public PhoneNumber GetExampleNumberForNonGeoEntity(int countryCallingCode)
         {
             var metadata = GetMetadataForNonGeographicalRegion(countryCallingCode);
@@ -1976,12 +1983,11 @@ namespace PhoneNumbers
             }
         }
 
-        /**
-        * Gets the type of a phone number.
-        *
-        * @param number  the phone number that we want to know the type
-        * @return  the type of the phone number
-        */
+        /// <summary>
+        /// Gets the type of a phone number.
+        /// </summary>
+        /// <param name="number">The phone number that we want to know the type.</param>
+        /// <returns>The type of the phone number.</returns>
         public PhoneNumberType GetNumberType(PhoneNumber number)
         {
             var regionCode = GetRegionCodeForNumber(number);
@@ -2091,31 +2097,29 @@ namespace PhoneNumbers
             return nationalNumberPatternMatch.Success;
         }
 
-        /**
-        * Tests whether a phone number matches a valid pattern. Note this doesn't verify the number
-        * is actually in use, which is impossible to tell by just looking at a number itself.
-        *
-        * @param number       the phone number that we want to validate
-        * @return  a bool that indicates whether the number is of a valid pattern
-        */
+        /// <summary>
+        /// Tests whether a phone number matches a valid pattern. Note this doesn't verify the number
+        /// is actually in use, which is impossible to tell by just looking at a number itself.
+        /// </summary>
+        /// <param name="number">The phone number that we want to validate.</param>
+        /// <returns>A bool that indicates whether the number is of a valid pattern.</returns>
         public bool IsValidNumber(PhoneNumber number)
         {
             var regionCode = GetRegionCodeForNumber(number);
             return IsValidNumberForRegion(number, regionCode);
         }
 
-        /**
-        * Tests whether a phone number is valid for a certain region. Note this doesn't verify the number
-        * is actually in use, which is impossible to tell by just looking at a number itself. If the
-        * country calling code is not the same as the country calling code for the region, this
-        * immediately exits with false. After this, the specific number pattern rules for the region are
-        * examined. This is useful for determining for example whether a particular number is valid for
-        * Canada, rather than just a valid NANPA number.
-        *
-        * @param number       the phone number that we want to validate
-        * @param regionCode   the region that we want to validate the phone number for
-        * @return  a bool that indicates whether the number is of a valid pattern
-        */
+        /// <summary>
+        /// Tests whether a phone number is valid for a certain region. Note this doesn't verify the number
+        /// is actually in use, which is impossible to tell by just looking at a number itself. If the
+        /// country calling code is not the same as the country calling code for the region, this
+        /// immediately exits with false. After this, the specific number pattern rules for the region are
+        /// examined. This is useful for determining for example whether a particular number is valid for
+        /// Canada, rather than just a valid NANPA number.
+        /// </summary>
+        /// <param name="number">The phone number that we want to validate.</param>
+        /// <param name="regionCode">The region that we want to validate the phone number for.</param>
+        /// <returns>A bool that indicates whether the number is of a valid pattern.</returns>
         public bool IsValidNumberForRegion(PhoneNumber number, string regionCode)
         {
             var countryCode = number.CountryCode;
@@ -2142,14 +2146,13 @@ namespace PhoneNumbers
             return GetNumberTypeHelper(nationalSignificantNumber, metadata) != PhoneNumberType.UNKNOWN;
         }
 
-        /**
-        * Returns the region where a phone number is from. This could be used for geocoding at the region
-        * level.
-        *
-        * @param number  the phone number whose origin we want to know
-        * @return  the region where the phone number is from, or null if no region matches this calling
-        *     code
-        */
+        /// <summary>
+        /// Returns the region where a phone number is from. This could be used for geocoding at the region
+        /// level.
+        /// </summary>
+        /// <param name="number">The phone number whose origin we want to know.</param>
+        /// <returns>The region where the phone number is from, or null if no region matches this calling
+        /// code.</returns>
         public string GetRegionCodeForNumber(PhoneNumber number)
         {
             countryCallingCodeToRegionCodeMap.TryGetValue(number.CountryCode, out List<string> regions);
@@ -2180,11 +2183,13 @@ namespace PhoneNumbers
             return null;
         }
 
-        /**
-        * Returns the region code that matches the specific country calling code. In the case of no
-        * region code being found, ZZ will be returned. In the case of multiple regions, the one
-        * designated in the metadata as the "main" region for this calling code will be returned.
-        */
+        /// <summary>
+        /// Returns the region code that matches the specific country calling code. In the case of no
+        /// region code being found, ZZ will be returned. In the case of multiple regions, the one
+        /// designated in the metadata as the "main" region for this calling code will be returned.
+        /// </summary>
+        /// <param name="countryCallingCode"></param>
+        /// <returns></returns>
         public string GetRegionCodeForCountryCode(int countryCallingCode)
         {
             return countryCallingCodeToRegionCodeMap.TryGetValue(countryCallingCode, out List<string> regionCodes)
@@ -2192,45 +2197,42 @@ namespace PhoneNumbers
                 : UnknownRegion;
         }
 
-        /**
-        * Returns the country calling code for a specific region. For example, this would be 1 for the
-        * United States, and 64 for New Zealand.
-        *
-        * @param regionCode  region that we want to get the country calling code for
-        * @return  the country calling code for the region denoted by regionCode
-        */
+        /// <summary>
+        /// Returns the country calling code for a specific region. For example, this would be 1 for the
+        /// United States, and 64 for New Zealand.
+        /// </summary>
+        /// <param name="regionCode">Region that we want to get the country calling code for.</param>
+        /// <returns>The country calling code for the region denoted by regionCode.</returns>
         public int GetCountryCodeForRegion(string regionCode)
         {
             return !IsValidRegionCode(regionCode) ? 0 : GetCountryCodeForValidRegion(regionCode);
         }
 
-        /**
-        * Returns the country calling code for a specific region. For example, this would be 1 for the
-        * United States, and 64 for New Zealand. Assumes the region is already valid.
-        *
-        * @param regionCode  the region that we want to get the country calling code for
-        * @return  the country calling code for the region denoted by regionCode
-        */
+        /// <summary>
+        /// Returns the country calling code for a specific region. For example, this would be 1 for the
+        /// United States, and 64 for New Zealand. Assumes the region is already valid.
+        /// </summary>
+        /// <param name="regionCode">The region that we want to get the country calling code for.</param>
+        /// <returns>The country calling code for the region denoted by regionCode.</returns>
         private int GetCountryCodeForValidRegion(string regionCode)
         {
             var metadata = GetMetadataForRegion(regionCode);
             return metadata.CountryCode;
         }
 
-        /**
-        * Returns the national dialling prefix for a specific region. For example, this would be 1 for
-        * the United States, and 0 for New Zealand. Set stripNonDigits to true to strip symbols like "~"
-        * (which indicates a wait for a dialling tone) from the prefix returned. If no national prefix is
-        * present, we return null.
-        *
-        * <p>Warning: Do not use this method for do-your-own formatting - for some regions, the
-        * national dialling prefix is used only for certain types of numbers. Use the library's
-        * formatting functions to prefix the national prefix when required.
-        *
-        * @param regionCode  the region that we want to get the dialling prefix for
-        * @param stripNonDigits  true to strip non-digits from the national dialling prefix
-        * @return  the dialling prefix for the region denoted by regionCode
-        */
+        /// <summary>
+        /// Returns the national dialling prefix for a specific region. For example, this would be 1 for
+        /// the United States, and 0 for New Zealand. Set stripNonDigits to true to strip symbols like "~"
+        /// (which indicates a wait for a dialling tone) from the prefix returned. If no national prefix is
+        /// present, we return null.
+        /// <para>
+        /// Warning: Do not use this method for do-your-own formatting - for some regions, the
+        /// national dialling prefix is used only for certain types of numbers. Use the library's
+        /// formatting functions to prefix the national prefix when required.</para>
+        /// </summary>
+        /// <param name="regionCode">The region that we want to get the dialling prefix for.</param>
+        /// <param name="stripNonDigits">True to strip non-digits from the national dialling prefix.</param>
+        /// <returns>The dialling prefix for the region denoted by regionCode.</returns>
         public string GetNddPrefixForRegion(string regionCode, bool stripNonDigits)
         {
             if (!IsValidRegionCode(regionCode))
@@ -2255,26 +2257,25 @@ namespace PhoneNumbers
             return nationalPrefix;
         }
 
-        /**
-        * Checks if this is a region under the North American Numbering Plan Administration (NANPA).
-        *
-        * @return  true if regionCode is one of the regions under NANPA
-        */
+        /// <summary>
+        /// Checks if this is a region under the North American Numbering Plan Administration (NANPA).
+        /// </summary>
+        /// <param name="regionCode"></param>
+        /// <returns>True if regionCode is one of the regions under NANPA.</returns>
         public bool IsNANPACountry(string regionCode)
         {
             return regionCode != null && nanpaRegions.Contains(regionCode);
         }
 
-        /**
-        * Checks if the number is a valid vanity (alpha) number such as 800 MICROSOFT. A valid vanity
-        * number will start with at least 3 digits and will have three or more alpha characters. This
-        * does not do region-specific checks - to work out if this number is actually valid for a region,
-        * it should be parsed and methods such as {@link #isPossibleNumberWithReason} and
-        * {@link #isValidNumber} should be used.
-        *
-        * @param number  the number that needs to be checked
-        * @return  true if the number is a valid vanity number
-        */
+        /// <summary>
+        /// Checks if the number is a valid vanity (alpha) number such as 800 MICROSOFT. A valid vanity
+        /// number will start with at least 3 digits and will have three or more alpha characters. This
+        /// does not do region-specific checks - to work out if this number is actually valid for a region,
+        /// it should be parsed and methods such as <see cref="IsPossibleNumberWithReason(PhoneNumber)"/> and
+        /// <see cref="IsValidNumber(PhoneNumber)"/> should be used.
+        /// </summary>
+        /// <param name="number">The number that needs to be checked.</param>
+        /// <returns>True if the number is a valid vanity number.</returns>
         public bool IsAlphaNumber(string number)
         {
             if (!IsViablePhoneNumber(number))
@@ -2287,21 +2288,25 @@ namespace PhoneNumbers
             return ValidAlphaPhonePattern.MatchAll(strippedNumber.ToString()).Success;  //XXX: ToString
         }
 
-        /**
-        * Convenience wrapper around {@link #isPossibleNumberWithReason}. Instead of returning the reason
-        * for failure, this method returns a bool value.
-        * @param number  the number that needs to be checked
-        * @return  true if the number is possible
-        */
+        /// <summary>
+        /// Convenience wrapper around <see cref="IsPossibleNumberWithReason(PhoneNumber)"/>. Instead of returning the reason
+        /// for failure, this method returns a bool value.
+        /// </summary>
+        /// <param name="number">The number that needs to be checked.</param>
+        /// <returns>True if the number is possible.</returns>
         public bool IsPossibleNumber(PhoneNumber number)
         {
             return IsPossibleNumberWithReason(number) == ValidationResult.IS_POSSIBLE;
         }
 
-        /**
-        * Helper method to check a number against possible lengths for this number, and determine
-        * whether it matches, or is too short or too long.
-        */
+        /// <summary>
+        /// Helper method to check a number against possible lengths for this number, and determine
+        /// whether it matches, or is too short or too long.
+        /// </summary>
+        /// <param name="number"></param>
+        /// <param name="metadata"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
         private static ValidationResult TestNumberLength(string number, PhoneMetadata metadata,
             PhoneNumberType type = PhoneNumberType.UNKNOWN)
         {
@@ -2455,25 +2460,24 @@ namespace PhoneNumbers
             return TestNumberLength(nationalNumber, metadata, type);
         }
 
-        /**
-        * Check whether a phone number is a possible number given a number in the form of a string, and
-        * the region where the number could be dialed from. It provides a more lenient check than
-        * {@link #isValidNumber}. See {@link #isPossibleNumber(PhoneNumber)} for details.
-        *
-        * <p>This method first parses the number, then invokes {@link #isPossibleNumber(PhoneNumber)}
-        * with the resultant PhoneNumber object.
-        *
-        * @param number  the number that needs to be checked, in the form of a string
-        * @param regionDialingFrom  the region that we are expecting the number to be dialed from.
-        *     Note this is different from the region where the number belongs.  For example, the number
-        *     +1 650 253 0000 is a number that belongs to US. When written in this form, it can be
-        *     dialed from any region. When it is written as 00 1 650 253 0000, it can be dialed from any
-        *     region which uses an international dialling prefix of 00. When it is written as
-        *     650 253 0000, it can only be dialed from within the US, and when written as 253 0000, it
-        *     can only be dialed from within a smaller area in the US (Mountain View, CA, to be more
-        *     specific).
-        * @return  true if the number is possible
-        */
+        /// <summary>
+        /// Check whether a phone number is a possible number given a number in the form of a string, and
+        /// the region where the number could be dialed from. It provides a more lenient check than
+        /// <see cref="IsValidNumber(PhoneNumber)"/>. See <see cref="IsPossibleNumber(PhoneNumber)"/> for details.
+        /// <para>
+        /// This method first parses the number, then invokes <see cref="IsPossibleNumber(PhoneNumber)"/>
+        /// with the resultant PhoneNumber object.</para>
+        /// </summary>
+        /// <param name="number">The number that needs to be checked, in the form of a string.</param>
+        /// <param name="regionDialingFrom">The region that we are expecting the number to be dialed from.
+        /// Note this is different from the region where the number belongs.  For example, the number
+        /// +1 650 253 0000 is a number that belongs to US. When written in this form, it can be
+        /// dialed from any region. When it is written as 00 1 650 253 0000, it can be dialed from any
+        /// region which uses an international dialling prefix of 00. When it is written as
+        /// 650 253 0000, it can only be dialed from within the US, and when written as 253 0000, it
+        /// can only be dialed from within a smaller area in the US (Mountain View, CA, to be more
+        /// specific).</param>
+        /// <returns>True if the number is possible.</returns>
         public bool IsPossibleNumber(string number, string regionDialingFrom)
         {
             try
@@ -2486,13 +2490,13 @@ namespace PhoneNumbers
             }
         }
 
-        /**
-        * Attempts to extract a valid number from a phone number that is too long to be valid, and resets
-        * the PhoneNumber object passed in to that valid version. If no valid number could be extracted,
-        * the PhoneNumber object passed in will not be modified.
-        * @param number a PhoneNumber object which contains a number that is too long to be valid.
-        * @return  true if a valid phone number can be successfully extracted.
-        */
+        /// <summary>
+        /// Attempts to extract a valid number from a phone number that is too long to be valid, and resets
+        /// the PhoneNumber object passed in to that valid version. If no valid number could be extracted,
+        /// the PhoneNumber object passed in will not be modified.
+        /// </summary>
+        /// <param name="number">A PhoneNumber object which contains a number that is too long to be valid.</param>
+        /// <returns>True if a valid phone number can be successfully extracted.</returns>
         public bool TruncateTooLongNumber(PhoneNumber.Builder number)
         {
             if (IsValidNumber(number.Clone().Build()))
@@ -2514,14 +2518,13 @@ namespace PhoneNumbers
             return true;
         }
 
-        /**
-        * Gets an {@link com.google.i18n.phonenumbers.AsYouTypeFormatter} for the specific region.
-        *
-        * @param regionCode  region where the phone number is being entered
-        *
-        * @return  an {@link com.google.i18n.phonenumbers.AsYouTypeFormatter} object, which can be used
-        *     to format phone numbers in the specific region "as you type"
-        */
+        /// <summary>
+        /// Gets an <see cref="AsYouTypeFormatter"/> for the specific region.
+        /// </summary>
+        /// <param name="regionCode">Region where the phone number is being entered.</param>
+        ///
+        /// <returns>An <see cref="AsYouTypeFormatter"/> object, which can be used
+        /// to format phone numbers in the specific region "as you type".</returns>
         public AsYouTypeFormatter GetAsYouTypeFormatter(string regionCode)
         {
             return new AsYouTypeFormatter(regionCode);
@@ -2683,18 +2686,17 @@ namespace PhoneNumbers
             return false;
         }
 
-        /**
-        * Strips any international prefix (such as +, 00, 011) present in the number provided, normalizes
-        * the resulting number, and indicates if an international prefix was present.
-        *
-        * @param number  the non-normalized telephone number that we wish to strip any international
-        *     dialing prefix from.
-        * @param possibleIddPrefix  the international direct dialing prefix from the region we
-        *     think this number may be dialed in
-        * @return  the corresponding CountryCodeSource if an international dialing prefix could be
-        *     removed from the number, otherwise CountryCodeSource.FROM_DEFAULT_COUNTRY if the number did
-        *     not seem to be in international format.
-        */
+        /// <summary>
+        /// Strips any international prefix (such as +, 00, 011) present in the number provided, normalizes
+        /// the resulting number, and indicates if an international prefix was present.
+        /// </summary>
+        /// <param name="number">The non-normalized telephone number that we wish to strip any international
+        /// dialing prefix from.</param>
+        /// <param name="possibleIddPrefix">The international direct dialing prefix from the region we
+        /// think this number may be dialed in.</param>
+        /// <returns>The corresponding CountryCodeSource if an international dialing prefix could be
+        /// removed from the number, otherwise CountryCodeSource.FROM_DEFAULT_COUNTRY if the number did
+        /// not seem to be in international format.</returns>
         public PhoneNumber.Types.CountryCodeSource MaybeStripInternationalPrefixAndNormalize(StringBuilder number,
           string possibleIddPrefix)
         {
@@ -2717,15 +2719,14 @@ namespace PhoneNumbers
                 : PhoneNumber.Types.CountryCodeSource.FROM_DEFAULT_COUNTRY;
         }
 
-        /**
-        * Strips any national prefix (such as 0, 1) present in the number provided.
-        *
-        * @param number  the normalized telephone number that we wish to strip any national
-        *     dialing prefix from
-        * @param metadata  the metadata for the region that we think this number is from
-        * @param carrierCode  a place to insert the carrier code if one is extracted
-        * @return true if a national prefix or carrier code (or both) could be extracted.
-        */
+        /// <summary>
+        /// Strips any national prefix (such as 0, 1) present in the number provided.
+        /// </summary>
+        /// <param name="number">The normalized telephone number that we wish to strip any national
+        /// dialing prefix from.</param>
+        /// <param name="metadata">The metadata for the region that we think this number is from.</param>
+        /// <param name="carrierCode">A place to insert the carrier code if one is extracted.</param>
+        /// <returns>True if a national prefix or carrier code (or both) could be extracted.</returns>
         public bool MaybeStripNationalPrefixAndCarrierCode(
             StringBuilder number, PhoneMetadata metadata, StringBuilder carrierCode)
         {
@@ -2778,13 +2779,12 @@ namespace PhoneNumbers
             return false;
         }
 
-        /**
-        * Strips any extension (as in, the part of the number dialled after the call is connected,
-        * usually indicated with extn, ext, x or similar) from the end of the number, and returns it.
-        *
-        * @param number  the non-normalized telephone number that we wish to strip the extension from
-        * @return        the phone extension
-        */
+        /// <summary>
+        /// Strips any extension (as in, the part of the number dialled after the call is connected,
+        /// usually indicated with extn, ext, x or similar) from the end of the number, and returns it.
+        /// </summary>
+        /// <param name="number">The non-normalized telephone number that we wish to strip the extension from.</param>
+        /// <returns>The phone extension.</returns>
         static string MaybeStripExtension(StringBuilder number)
         {
             var m = ExtnPattern.Match(number.ToString()); //XXX: ToString
@@ -2825,26 +2825,26 @@ namespace PhoneNumbers
             return true;
         }
 
-        /**
-        * Parses a string and returns it in proto buffer format. This method will throw a
-        * {@link com.google.i18n.phonenumbers.NumberParseException} if the number is not considered to be
-        * a possible number. Note that validation of whether the number is actually a valid number for a
-        * particular region is not performed. This can be done separately with {@link #isValidNumber}.
-        *
-        * @param numberToParse     number that we are attempting to parse. This can contain formatting
-        *                          such as +, ( and -, as well as a phone number extension. It can also
-        *                          be provided in RFC3966 format.
-        * @param defaultRegion     region that we are expecting the number to be from. This is only used
-        *                          if the number being parsed is not written in international format.
-        *                          The country_code for the number in this case would be stored as that
-        *                          of the default region supplied. If the number is guaranteed to
-        *                          start with a '+' followed by the country calling code, then "ZZ" or
-        *                          null can be supplied.
-        * @return                  a phone number proto buffer filled with the parsed number
-        * @throws NumberParseException  if the string is not considered to be a viable phone number or if
-        *                               no default region was supplied and the number is not in
-        *                               international format (does not start with +)
-        */
+        /// <summary>
+        /// Parses a string and returns it in proto buffer format. This method will throw a
+        /// <see cref="NumberParseException"/> if the number is not considered to be
+        /// a possible number. Note that validation of whether the number is actually a valid number for a
+        /// particular region is not performed. This can be done separately with <see cref="IsValidNumber(PhoneNumber)"/>.
+        /// </summary>
+        /// <param name="numberToParse">Number that we are attempting to parse. This can contain formatting
+        /// such as +, ( and -, as well as a phone number extension. It can also
+        /// be provided in RFC3966 format.</param>
+        /// <param name="defaultRegion">Region that we are expecting the number to be from. This is only used
+        /// if the number being parsed is not written in international format.
+        /// The country_code for the number in this case would be stored as that
+        /// of the default region supplied. If the number is guaranteed to
+        /// start with a '+' followed by the country calling code, then "ZZ" or
+        /// null can be supplied.</param>
+        /// <returns>A phone number proto buffer filled with the parsed number</returns>
+        /// <exception cref="NumberParseException">If the string is not considered to be a viable phone number or if
+        /// no default region was supplied and the number is not in
+        /// international format (does not start with +).
+        /// </exception>
         public PhoneNumber Parse(string numberToParse, string defaultRegion)
         {
             var phoneNumber = new PhoneNumber.Builder();
@@ -2852,30 +2852,29 @@ namespace PhoneNumbers
             return phoneNumber.Build();
         }
 
-        /**
-        * Same as {@link #parse(String, String)}, but accepts mutable PhoneNumber as a parameter to
-        * decrease object creation when invoked many times.
-        */
+        /// <summary>
+        /// Same as <see cref="Parse(string, string)"/>, but accepts mutable PhoneNumber as a parameter to
+        /// decrease object creation when invoked many times.
+        /// </summary>
         public void Parse(string numberToParse, string defaultRegion, PhoneNumber.Builder phoneNumber)
         {
             ParseHelper(numberToParse, defaultRegion, false, true, phoneNumber);
         }
 
-        /**
-        * Parses a string and returns it in proto buffer format. This method differs from {@link #parse}
-        * in that it always populates the raw_input field of the protocol buffer with numberToParse as
-        * well as the country_code_source field.
-        *
-        * @param numberToParse     number that we are attempting to parse. This can contain formatting
-        *                          such as +, ( and -, as well as a phone number extension.
-        * @param defaultRegion     region that we are expecting the number to be from. This is only used
-        *                          if the number being parsed is not written in international format.
-        *                          The country calling code for the number in this case would be stored
-        *                          as that of the default region supplied.
-        * @return                  a phone number proto buffer filled with the parsed number
-        * @throws NumberParseException  if the string is not considered to be a viable phone number or if
-        *                               no default region was supplied
-        */
+        /// <summary>
+        /// Parses a string and returns it in proto buffer format. This method differs from {@link #parse}
+        /// in that it always populates the raw_input field of the protocol buffer with numberToParse as
+        /// well as the country_code_source field.
+        /// </summary>
+        /// <param name="numberToParse">Number that we are attempting to parse. This can contain formatting
+        /// such as +, ( and -, as well as a phone number extension.</param>
+        /// <param name="defaultRegion">Region that we are expecting the number to be from. This is only used
+        /// if the number being parsed is not written in international format.
+        /// The country calling code for the number in this case would be stored
+        /// as that of the default region supplied.</param>
+        /// <returns>A phone number proto buffer filled with the parsed number.</returns>
+        /// <exception cref="NumberParseException">If the string is not considered to be a viable phone number or if
+        /// no default region was supplied.</exception>
         public PhoneNumber ParseAndKeepRawInput(string numberToParse, string defaultRegion)
         {
             var phoneNumber = new PhoneNumber.Builder();
@@ -2883,46 +2882,49 @@ namespace PhoneNumbers
             return phoneNumber.Build();
         }
 
-        /**
-        * Same as{@link #parseAndKeepRawInput(String, String)}, but accepts a mutable PhoneNumber as
-        * a parameter to decrease object creation when invoked many times.
-        */
+        /// <summary>
+        /// Same as <see cref="ParseAndKeepRawInput(string, string)"/>, but accepts a mutable PhoneNumber as
+        /// a parameter to decrease object creation when invoked many times.
+        /// </summary>
+        /// <param name="numberToParse"></param>
+        /// <param name="defaultRegion"></param>
+        /// <param name="phoneNumber"></param>
         public void ParseAndKeepRawInput(string numberToParse, string defaultRegion, PhoneNumber.Builder phoneNumber)
         {
             ParseHelper(numberToParse, defaultRegion, true, true, phoneNumber);
         }
 
-        /**
-        * Returns an iterable over all {@link PhoneNumberMatch PhoneNumberMatches} in {@code text}. This
-        * is a shortcut for {@link #findNumbers(CharSequence, String, Leniency, long)
-        * getMatcher(text, defaultRegion, Leniency.VALID, Long.MAX_VALUE)}.
-        *
-        * @param text              the text to search for phone numbers, null for no text
-        * @param defaultRegion     region that we are expecting the number to be from. This is only used
-        *                          if the number being parsed is not written in international format. The
-        *                          country_code for the number in this case would be stored as that of
-        *                          the default region supplied. May be null if only international
-        *                          numbers are expected.
-        */
+        /// <summary>
+        /// Returns an iterable over all <see cref="PhoneNumberMatch"/> PhoneNumberMatches in text. This
+        /// is a shortcut for <see cref="FindNumbers(string, string, Leniency, long)"/>
+        /// getMatcher(text, defaultRegion, Leniency.VALID, Long.MAX_VALUE)}.
+        /// </summary>
+        /// <param name="text">The text to search for phone numbers, null for no text.</param>
+        /// <param name="defaultRegion">Region that we are expecting the number to be from. This is only used
+        /// if the number being parsed is not written in international format. The
+        /// country_code for the number in this case would be stored as that of
+        /// the default region supplied. May be null if only international
+        /// numbers are expected.</param>
+        /// <returns></returns>
         public IEnumerable<PhoneNumberMatch> FindNumbers(string text, string defaultRegion)
         {
             return FindNumbers(text, defaultRegion, Leniency.VALID, long.MaxValue);
         }
 
-        /**
-        * Returns an iterable over all {@link PhoneNumberMatch PhoneNumberMatches} in {@code text}.
-        *
-        * @param text              the text to search for phone numbers, null for no text
-        * @param defaultRegion     region that we are expecting the number to be from. This is only used
-        *                          if the number being parsed is not written in international format. The
-        *                          country_code for the number in this case would be stored as that of
-        *                          the default region supplied. May be null if only international
-        *                          numbers are expected.
-        * @param leniency          the leniency to use when evaluating candidate phone numbers
-        * @param maxTries          the maximum number of invalid numbers to try before giving up on the
-        *                          text. This is to cover degenerate cases where the text has a lot of
-        *                          false positives in it. Must be {@code >= 0}.
-        */
+        /// <summary>
+        /// Returns an iterable over all <see cref="PhoneNumberMatch"/> PhoneNumberMatches in text.
+        /// </summary>
+        /// <param name="text">The text to search for phone numbers, null for no text.</param>
+        /// <param name="defaultRegion">Tegion that we are expecting the number to be from. This is only used
+        /// if the number being parsed is not written in international format. The
+        /// country_code for the number in this case would be stored as that of
+        /// the default region supplied. May be null if only international
+        /// numbers are expected.</param>
+        /// <param name="leniency">The leniency to use when evaluating candidate phone numbers.</param>
+        /// <param name="maxTries">The maximum number of invalid numbers to try before giving up on the
+        /// text. This is to cover degenerate cases where the text has a lot of
+        /// false positives in it. Must be {@code >= 0}.</param>
+        /// <returns></returns>
         public IEnumerable<PhoneNumberMatch> FindNumbers(string text, string defaultRegion,
             Leniency leniency, long maxTries)
         {
@@ -3134,26 +3136,25 @@ namespace PhoneNumbers
             // actually written in RFC3966.
         }
 
-        /**
-        * Takes two phone numbers and compares them for equality.
-        *
-        * <p>Returns EXACT_MATCH if the country_code, NSN, presence of a leading zero for Italian numbers
-        * and any extension present are the same.
-        * Returns NSN_MATCH if either or both has no region specified, and the NSNs and extensions are
-        * the same.
-        * Returns SHORT_NSN_MATCH if either or both has no region specified, or the region specified is
-        * the same, and one NSN could be a shorter version of the other number. This includes the case
-        * where one has an extension specified, and the other does not.
-        * Returns NO_MATCH otherwise.
-        * For example, the numbers +1 345 657 1234 and 657 1234 are a SHORT_NSN_MATCH.
-        * The numbers +1 345 657 1234 and 345 657 are a NO_MATCH.
-        *
-        * @param firstNumberIn  first number to compare
-        * @param secondNumberIn  second number to compare
-        *
-        * @return  NO_MATCH, SHORT_NSN_MATCH, NSN_MATCH or EXACT_MATCH depending on the level of equality
-        *     of the two numbers, described in the method definition.
-        */
+        /// <summary>
+        /// Takes two phone numbers and compares them for equality.
+        /// <para>
+        /// Returns EXACT_MATCH if the country_code, NSN, presence of a leading zero for Italian numbers
+        /// and any extension present are the same.
+        /// Returns NSN_MATCH if either or both has no region specified, and the NSNs and extensions are
+        /// the same.</para>
+        /// <para>Returns SHORT_NSN_MATCH if either or both has no region specified, or the region specified is
+        /// the same, and one NSN could be a shorter version of the other number. This includes the case
+        /// where one has an extension specified, and the other does not.</para>
+        /// <para>Returns NO_MATCH otherwise.
+        /// For example, the numbers +1 345 657 1234 and 657 1234 are a SHORT_NSN_MATCH.
+        /// The numbers +1 345 657 1234 and 345 657 are a NO_MATCH.</para>
+        /// </summary>
+        /// <param name="firstNumberIn">First number to compare.</param>
+        /// <param name="secondNumberIn">Second number to compare.</param>
+        ///
+        /// <returns>NO_MATCH, SHORT_NSN_MATCH, NSN_MATCH or EXACT_MATCH depending on the level of equality
+        /// of the two numbers, described in the method definition.</returns>
         public MatchType IsNumberMatch(PhoneNumber firstNumberIn, PhoneNumber secondNumberIn)
         {
             // Make copies of the phone number so that the numbers passed in are not edited.
@@ -3224,17 +3225,16 @@ namespace PhoneNumbers
                 secondNumberNationalNumber.EndsWith(firstNumberNationalNumber);
         }
 
-        /**
-        * Takes two phone numbers as strings and compares them for equality. This is a convenience
-        * wrapper for {@link #isNumberMatch(PhoneNumber, PhoneNumber)}. No default region is known.
-        *
-        * @param firstNumber  first number to compare. Can contain formatting, and can have country
-        *     calling code specified with + at the start.
-        * @param secondNumber  second number to compare. Can contain formatting, and can have country
-        *     calling code specified with + at the start.
-        * @return  NOT_A_NUMBER, NO_MATCH, SHORT_NSN_MATCH, NSN_MATCH, EXACT_MATCH. See
-        *     {@link #isNumberMatch(PhoneNumber, PhoneNumber)} for more details.
-        */
+        /// <summary>
+        /// Takes two phone numbers as strings and compares them for equality. This is a convenience
+        /// wrapper for <see cref="IsNumberMatch(PhoneNumber, PhoneNumber)"/>. No default region is known.
+        /// </summary>
+        /// <param name="firstNumber">First number to compare. Can contain formatting, and can have country
+        /// calling code specified with + at the start.</param>
+        /// <param name="secondNumber">Second number to compare. Can contain formatting, and can have country
+        /// calling code specified with + at the start.</param>
+        /// <returns>NOT_A_NUMBER, NO_MATCH, SHORT_NSN_MATCH, NSN_MATCH, EXACT_MATCH. See
+        /// <see cref="IsNumberMatch(PhoneNumber, PhoneNumber)"/> for more details.</returns>
         public MatchType IsNumberMatch(string firstNumber, string secondNumber)
         {
             try
@@ -3275,16 +3275,15 @@ namespace PhoneNumbers
             return MatchType.NOT_A_NUMBER;
         }
 
-        /**
-        * Takes two phone numbers and compares them for equality. This is a convenience wrapper for
-        * {@link #isNumberMatch(PhoneNumber, PhoneNumber)}. No default region is known.
-        *
-        * @param firstNumber  first number to compare in proto buffer format.
-        * @param secondNumber  second number to compare. Can contain formatting, and can have country
-        *     calling code specified with + at the start.
-        * @return  NOT_A_NUMBER, NO_MATCH, SHORT_NSN_MATCH, NSN_MATCH, EXACT_MATCH. See
-        *     {@link #isNumberMatch(PhoneNumber, PhoneNumber)} for more details.
-        */
+        /// <summary>
+        /// Takes two phone numbers and compares them for equality. This is a convenience wrapper for
+        /// <see cref="IsNumberMatch(PhoneNumber, PhoneNumber)"/>. No default region is known.
+        /// </summary>
+        /// <param name="firstNumber">First number to compare in proto buffer format.</param>
+        /// <param name="secondNumber">Second number to compare. Can contain formatting, and can have country
+        /// calling code specified with + at the start.</param>
+        /// <returns>NOT_A_NUMBER, NO_MATCH, SHORT_NSN_MATCH, NSN_MATCH, EXACT_MATCH. See
+        /// <see cref="IsNumberMatch(PhoneNumber, PhoneNumber)"/> for more details.</returns>
         public MatchType IsNumberMatch(PhoneNumber firstNumber, string secondNumber)
         {
             // First see if the second number has an implicit country calling code, by attempting to parse
@@ -3328,15 +3327,15 @@ namespace PhoneNumbers
             return MatchType.NOT_A_NUMBER;
         }
 
-        /**
-        * Returns true if the number can be dialled from outside the region, or unknown. If the number
-        * can only be dialled from within the region, returns false. Does not check the number is a valid
-        * number.
-        * TODO: Make this method public when we have enough metadata to make it worthwhile.
-        *
-        * @param number  the phone-number for which we want to know whether it is only diallable from
-        *     outside the region
-        */
+        /// <summary>
+        /// Returns true if the number can be dialled from outside the region, or unknown. If the number
+        /// can only be dialled from within the region, returns false. Does not check the number is a valid
+        /// number.
+        /// TODO: Make this method public when we have enough metadata to make it worthwhile.
+        /// </summary>
+        /// <param name="number">the phone-number for which we want to know whether it is only diallable from
+        /// outside the region</param>
+        /// <returns></returns>
         public bool CanBeInternationallyDialled(PhoneNumber number)
         {
             var regionCode = GetRegionCodeForNumber(number);

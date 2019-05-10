@@ -20,6 +20,7 @@
     <RepositoryBranch>master</RepositoryBranch>
     <RepositoryCommit>$APPVEYOR_REPO_COMMIT</RepositoryCommit>
     <DebugType>full</DebugType>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup>
