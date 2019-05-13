@@ -16,16 +16,20 @@
 
 namespace PhoneNumbers.Internal
 {
-    /**
-     * Internal phonenumber matching API used to isolate the underlying implementation of the
-     * matcher and allow different implementations to be swapped in easily.
-     */
+    /// <summary>
+    /// Internal phonenumber matching API used to isolate the underlying implementation of the
+    /// matcher and allow different implementations to be swapped in easily.
+    /// </summary>
     public interface IMatcherApi
     {
-        /**
-         * Returns whether the given national number (a string containing only decimal digits) matches
-         * the national number pattern defined in the given {@code PhoneNumberDesc} message.
-         */
+        /// <summary>
+        /// Returns whether the given national number (a string containing only decimal digits) matches
+        /// the national number pattern defined in the given {@code PhoneNumberDesc} message.
+        /// </summary>
+        /// <param name="number"></param>
+        /// <param name="numberDesc"></param>
+        /// <param name="allowPrefixMatch"></param>
+        /// <returns></returns>
         bool MatchNationalNumber(string number, PhoneNumberDesc numberDesc,
             bool allowPrefixMatch);
     }

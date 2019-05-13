@@ -21,19 +21,18 @@ using System.Text.RegularExpressions;
 
 namespace PhoneNumbers
 {
-    /**
-     * A formatter which formats phone numbers as they are entered.
-     *
-     * <p>An AsYouTypeFormatter can be created by invoking
-     * {@link PhoneNumberUtil#getAsYouTypeFormatter}. After that, digits can be added by invoking
-     * {@link #inputDigit} on the formatter instance, and the partially formatted phone number will be
-     * returned each time a digit is added. {@link #clear} can be invoked before formatting a new
-     * number.
-     *
-     * <p>See the unittests for more details on how the formatter is to be used.
-     *
-     * @author Shaopeng Jia
-     */
+    /// <summary>
+    /// A formatter which formats phone numbers as they are entered.
+    /// <para>
+    /// An AsYouTypeFormatter can be created by invoking
+    /// <see cref="PhoneNumberUtil.GetAsYouTypeFormatter(string)"/>. After that, digits can be added by invoking
+    /// <see cref="InputDigit(char)"/> on the formatter instance, and the partially formatted phone number will be
+    /// returned each time a digit is added. {@link #clear} can be invoked before formatting a new
+    /// number.
+    /// </para>
+    /// See the unittests for more details on how the formatter is to be used.
+    /// <!-- @author Shaopeng Jia -->
+    /// </summary>
     public class AsYouTypeFormatter
     {
         private string currentOutput = "";
@@ -106,12 +105,11 @@ namespace PhoneNumbers
         // A cache for frequently used country-specific regular expressions.
         private readonly RegexCache regexCache = new RegexCache(64);
 
-        /**
-         * Constructs an as-you-type formatter. Should be obtained from {@link
-         * PhoneNumberUtil#getAsYouTypeFormatter}.
-         *
-         * @param regionCode  the country/region where the phone number is being entered
-         */
+        /// <summary>
+        /// Constructs an as-you-type formatter. Should be obtained from
+        /// <see cref="PhoneNumberUtil.GetAsYouTypeFormatter(string)"/>.
+        /// </summary>
+        /// <param name="regionCode">The country/region where the phone number is being entered.</param>
         public AsYouTypeFormatter(string regionCode)
         {
             defaultCountry = regionCode;
@@ -259,9 +257,9 @@ namespace PhoneNumbers
             return template;
         }
 
-        /**
-         * Clears the internal state of the formatter, so it can be reused.
-         */
+        /// <summary>
+        /// Clears the internal state of the formatter, so it can be reused.
+        /// </summary>
         public void Clear()
         {
             currentOutput = "";
@@ -287,27 +285,28 @@ namespace PhoneNumbers
             }
         }
 
-        /**
-         * Formats a phone number on-the-fly as each digit is entered.
-         *
-         * @param nextChar  the most recently entered digit of a phone number. Formatting characters are
-         *     allowed, but as soon as they are encountered this method formats the number as entered and
-         *     not "as you type" anymore. Full width digits and Arabic-indic digits are allowed, and will
-         *     be shown as they are.
-         * @return  the partially formatted phone number.
-         */
+        /// <summary>
+        /// Formats a phone number on-the-fly as each digit is entered.
+        /// </summary>
+        /// <param name="nextChar">The most recently entered digit of a phone number. Formatting characters are
+        /// allowed, but as soon as they are encountered this method formats the number as entered and
+        /// not "as you type" anymore. Full width digits and Arabic-indic digits are allowed, and will
+        /// be shown as they are.</param>
+        /// <returns>The partially formatted phone number.</returns>
         public string InputDigit(char nextChar)
         {
             currentOutput = InputDigitWithOptionToRememberPosition(nextChar, false);
             return currentOutput;
         }
 
-        /**
-         * Same as {@link #inputDigit}, but remembers the position where {@code nextChar} is inserted, so
-         * that it can be retrieved later by using {@link #getRememberedPosition}. The remembered
-         * position will be automatically adjusted if additional formatting characters are later
-         * inserted/removed in front of {@code nextChar}.
-         */
+        /// <summary>
+        /// Same as <see cref="InputDigit(char)"/>, but remembers the position where nextChar is inserted, so
+        /// that it can be retrieved later by using <see cref="GetRememberedPosition"/>. The remembered
+        /// position will be automatically adjusted if additional formatting characters are later
+        /// inserted/removed in front of nextChar.
+        /// </summary>
+        /// <param name="nextChar"></param>
+        /// <returns></returns>
         public string InputDigitAndRememberPosition(char nextChar)
         {
             currentOutput = InputDigitWithOptionToRememberPosition(nextChar, true);
@@ -464,10 +463,11 @@ namespace PhoneNumbers
             return "";
         }
 
-        /**
-         * Returns the current position in the partially formatted phone number of the character which was
-         * previously passed in as the parameter of {@link #inputDigitAndRememberPosition}.
-         */
+        /// <summary>
+        /// Returns the current position in the partially formatted phone number of the character which was
+        /// previously passed in as the parameter of {@link #inputDigitAndRememberPosition}.
+        /// </summary>
+        /// <returns></returns>
         public int GetRememberedPosition()
         {
             if (!ableToFormat)
@@ -488,11 +488,13 @@ namespace PhoneNumbers
         }
 
 
-        /**
-         * Combines the national number with any prefix (IDD/+ and country code or national prefix) that
-         * was collected. A space will be inserted between them if the current formatting template
-         * indicates this to be suitable.
-         */
+        /// <summary>
+        /// Combines the national number with any prefix (IDD/+ and country code or national prefix) that
+        /// was collected. A space will be inserted between them if the current formatting template
+        /// indicates this to be suitable.
+        /// </summary>
+        /// <param name="nationalNumberStr"></param>
+        /// <returns></returns>
         private string AppendNationalNumber(string nationalNumberStr)
         {
             var prefixBeforeNationalNumberLength = prefixBeforeNationalNumber.Length;
@@ -548,10 +550,11 @@ namespace PhoneNumbers
             return prefixBeforeNationalNumber.ToString();
         }
 
-        /**
-         * Returns true if the current country is a NANPA country and the national number begins with
-         * the national prefix.
-         */
+        /// <summary>
+        /// Returns true if the current country is a NANPA country and the national number begins with
+        /// the national prefix.
+        /// </summary>
+        /// <returns></returns>
         private bool IsNanpaNumberWithNationalPrefix()
         {
             // For NANPA numbers beginning with 1[2-9], treat the 1 as the national prefix. The reason is
@@ -594,13 +597,12 @@ namespace PhoneNumbers
             return nationalPrefix;
         }
 
-        /**
-         * Extracts IDD and plus sign to prefixBeforeNationalNumber when they are available, and places
-         * the remaining input into nationalNumber.
-         *
-         * @return  true when accruedInputWithoutFormatting begins with the plus sign or valid IDD for
-         *     defaultCountry.
-         */
+        /// <summary>
+        /// Extracts IDD and plus sign to prefixBeforeNationalNumber when they are available, and places
+        /// the remaining input into nationalNumber.
+        /// </summary>
+        /// <returns>True when accruedInputWithoutFormatting begins with the plus sign or valid IDD for
+        /// defaultCountry.</returns>
         private bool AttemptToExtractIdd()
         {
             var internationalPrefix =
@@ -625,13 +627,12 @@ namespace PhoneNumbers
             return false;
         }
 
-        /**
-         * Extracts the country calling code from the beginning of nationalNumber to
-         * prefixBeforeNationalNumber when they are available, and places the remaining input into
-         * nationalNumber.
-         *
-         * @return  true when a valid country calling code can be found.
-         */
+        /// <summary>
+        /// Extracts the country calling code from the beginning of nationalNumber to
+        /// prefixBeforeNationalNumber when they are available, and places the remaining input into
+        /// nationalNumber.
+        /// </summary>
+        /// <returns>True when a valid country calling code can be found.</returns>
         private bool AttemptToExtractCountryCallingCode()
         {
             if (nationalNumber.Length == 0)
