@@ -18,12 +18,11 @@ using System.Collections.Generic;
 
 namespace PhoneNumbers
 {
-    /**
-    * A utility that maps phone number prefixes to a string describing the geographical area the prefix
-    * covers.
-    *
-    * @author Shaopeng Jia
-    */
+    /// <summary>
+    /// A utility that maps phone number prefixes to a string describing the geographical area the prefix
+    /// covers.
+    /// <!-- @author Shaopeng Jia -->
+    /// </summary>
     public class AreaCodeMap
     {
         private readonly PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
@@ -41,10 +40,13 @@ namespace PhoneNumbers
          * {@link #readAreaCodeMap(java.util.SortedMap)} or {@link #readExternal(java.io.ObjectInput)}.
          */
 
-        /**
-         * Gets the size of the provided area code map storage. The map storage passed-in will be filled
-         * as a result.
-         */
+        /// <summary>
+        /// Gets the size of the provided area code map storage. The map storage passed-in will be filled
+        /// as a result.
+        /// </summary>
+        /// <param name="mapStorage"></param>
+        /// <param name="areaCodeMap"></param>
+        /// <returns></returns>
         private static int GetSizeOfAreaCodeMapStorage(AreaCodeMapStorageStrategy mapStorage,
             SortedDictionary<int, string> areaCodeMap)
         {
@@ -62,12 +64,14 @@ namespace PhoneNumbers
             return new FlyweightMapStorage();
         }
 
-        /**
-         * Gets the smaller area code map storage strategy according to the provided area code map. It
-         * actually uses (outputs the data to a stream) both strategies and retains the best one which
-         * make this method quite expensive.
-         */
-        // @VisibleForTesting
+        /// <summary>
+        /// Gets the smaller area code map storage strategy according to the provided area code map. It
+        /// actually uses (outputs the data to a stream) both strategies and retains the best one which
+        /// make this method quite expensive.
+        /// <!-- @VisibleForTesting -->
+        /// </summary>
+        /// <param name="areaCodeMap"></param>
+        /// <returns></returns>
         public AreaCodeMapStorageStrategy GetSmallerMapStorage(SortedDictionary<int, string> areaCodeMap)
         {
             var flyweightMapStorage = CreateFlyweightMapStorage();
@@ -80,28 +84,26 @@ namespace PhoneNumbers
                 ? flyweightMapStorage : defaultMapStorage;
         }
 
-        /**
-         * Creates an {@link AreaCodeMap} initialized with {@code sortedAreaCodeMap}.  Note that the
-         * underlying implementation of this method is expensive thus should not be called by
-         * time-critical applications.
-         *
-         * @param sortedAreaCodeMap  a map from phone number prefixes to descriptions of corresponding
-         *     geographical areas, sorted in ascending order of the phone number prefixes as integers.
-         */
+        /// <summary>
+        /// Creates an <see cref="AreaCodeMap"/> initialized with sortedAreaCodeMap.  Note that the
+        /// underlying implementation of this method is expensive thus should not be called by
+        /// time-critical applications.
+        /// </summary>
+        /// <param name="sortedAreaCodeMap">A map from phone number prefixes to descriptions of corresponding
+        /// geographical areas, sorted in ascending order of the phone number prefixes as integers.</param>
         public void ReadAreaCodeMap(SortedDictionary<int, string> sortedAreaCodeMap)
         {
             areaCodeMapStorage = GetSmallerMapStorage(sortedAreaCodeMap);
         }
 
-        /**
-         * Returns the description of the geographical area the {@code number} corresponds to. This method
-         * distinguishes the case of an invalid prefix and a prefix for which the name is not available in
-         * the current language. If the description is not available in the current language an empty
-         * string is returned. If no description was found for the provided number, null is returned.
-         *
-         * @param number  the phone number to look up
-         * @return  the description of the geographical area
-         */
+        /// <summary>
+        /// Returns the description of the geographical area the number corresponds to. This method
+        /// distinguishes the case of an invalid prefix and a prefix for which the name is not available in
+        /// the current language. If the description is not available in the current language an empty
+        /// string is returned. If no description was found for the provided number, null is returned.
+        /// </summary>
+        /// <param name="number">The phone number to look up.</param>
+        /// <returns>The description of the geographical area.</returns>
         public string Lookup(PhoneNumber number)
         {
             var numOfEntries = areaCodeMapStorage.GetNumOfEntries();
@@ -138,12 +140,16 @@ namespace PhoneNumbers
             return null;
         }
 
-        /**
-         * Does a binary search for {@code value} in the provided array from {@code start} to {@code end}
-         * (inclusive). Returns the position if {@code value} is found; otherwise, returns the
-         * position which has the largest value that is less than {@code value}. This means if
-         * {@code value} is the smallest, -1 will be returned.
-         */
+        /// <summary>
+        /// Does a binary search for value in the provided array from start to end
+        /// (inclusive). Returns the position if value is found; otherwise, returns the
+        /// position which has the largest value that is less than value. This means if
+        /// value is the smallest, -1 will be returned.
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         private int BinarySearch(int start, int end, long value)
         {
             var current = 0;
@@ -168,9 +174,10 @@ namespace PhoneNumbers
             return current;
         }
 
-        /**
-         * Dumps the mappings contained in the area code map.
-         */
+        /// <summary>
+        /// Dumps the mappings contained in the area code map.
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return areaCodeMapStorage.ToString();

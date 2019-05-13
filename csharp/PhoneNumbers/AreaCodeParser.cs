@@ -18,19 +18,21 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-/**
- * A utility that generates the binary serialization of the area code/location mappings from
- * human-readable text files. It also generates a configuration file which contains information on
- * data files available for use.
- *
- * <p> The text files must be located in sub-directories of the provided input path. For each input
- * file inputPath/lang/countryCallingCode.txt the corresponding binary file is generated as
- * outputPath/countryCallingCode_lang.
- *
- * @author Philippe Liard
- */
 namespace PhoneNumbers
 {
+    /// <summary>
+    /// <para>
+    /// A utility that generates the binary serialization of the area code/location mappings from
+    /// human-readable text files. It also generates a configuration file which contains information on
+    /// data files available for use.
+    /// </para>
+    /// <para>
+    /// The text files must be located in sub-directories of the provided input path. For each input
+    /// file inputPath/lang/countryCallingCode.txt the corresponding binary file is generated as
+    /// outputPath/countryCallingCode_lang.
+    /// </para>
+    /// <!-- @author Philippe Liard -->
+    /// </summary>
     internal class AreaCodeParser
     {
         public static AreaCodeMap ParseAreaCodeMap(Stream stream)

@@ -19,58 +19,56 @@ using System.Text;
 
 namespace PhoneNumbers
 {
-    /**
-    * Abstracts the way area code data is stored into memory and serialized to a stream. It is used by
-    * {@link AreaCodeMap} to support the most space-efficient storage strategy according to the
-    * provided data.
-    *
-    * @author Philippe Liard
-    */
+    /// <summary>
+    /// Abstracts the way area code data is stored into memory and serialized to a stream. It is used by
+    /// <see cref="AreaCodeMap"/> to support the most space-efficient storage strategy according to the
+    /// provided data.
+    /// <!-- @author Philippe Liard -->
+    /// </summary>
     public abstract class AreaCodeMapStorageStrategy
     {
         protected int NumOfEntries = 0;
         protected readonly List<int> PossibleLengths = new List<int>();
 
-        /**
-         * Gets the phone number prefix located at the provided {@code index}.
-         *
-         * @param index  the index of the prefix that needs to be returned
-         * @return  the phone number prefix at the provided index
-         */
+        /// <summary>
+        /// Gets the phone number prefix located at the provided index.
+        /// </summary>
+        /// <param name="index">The index of the prefix that needs to be returned.</param>
+        /// <returns>The phone number prefix at the provided index.</returns>
         public abstract int GetPrefix(int index);
 
         public abstract int GetStorageSize();
 
-        /**
-         * Gets the description corresponding to the phone number prefix located at the provided {@code
-         * index}. If the description is not available in the current language an empty string is
-         * returned.
-         *
-         * @param index  the index of the phone number prefix that needs to be returned
-         * @return  the description corresponding to the phone number prefix at the provided index
-         */
+        /// <summary>
+        /// Gets the description corresponding to the phone number prefix located at the provided
+        /// index. If the description is not available in the current language an empty string is
+        /// returned.
+        /// </summary>
+        /// <param name="index">The index of the phone number prefix that needs to be returned.</param>
+        /// <returns>The description corresponding to the phone number prefix at the provided index.</returns>
         public abstract string GetDescription(int index);
 
-        /**
-         * Sets the internal state of the underlying storage implementation from the provided {@code
-         * sortedAreaCodeMap} that maps phone number prefixes to description strings.
-         *
-         * @param sortedAreaCodeMap  a sorted map that maps phone number prefixes including country
-         *    calling code to description strings
-         */
+        /// <summary>
+        /// Sets the internal state of the underlying storage implementation from the provided
+        /// sortedAreaCodeMap that maps phone number prefixes to description strings.
+        /// </summary>
+        /// <param name="sortedAreaCodeMap">A sorted map that maps phone number prefixes including country
+        /// calling code to description strings.</param>
         public abstract void ReadFromSortedMap(SortedDictionary<int, string> sortedAreaCodeMap);
 
-        /**
-         * @return  the number of entries contained in the area code map
-         */
+        /// <summary>
+        /// The number of entries contained in the area code map.
+        /// </summary>
+        /// <returns>The number of entries contained in the area code map.</returns>
         public int GetNumOfEntries()
         {
             return NumOfEntries;
         }
 
-        /**
-         * @return  the set containing the possible lengths of prefixes
-         */
+        /// <summary>
+        /// The set containing the possible lengths of prefixes.
+        /// </summary>
+        /// <returns>The set containing the possible lengths of prefixes.</returns>
         public List<int> GetPossibleLengths()
         {
             return PossibleLengths;
