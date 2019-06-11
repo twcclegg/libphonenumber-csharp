@@ -13,13 +13,19 @@
 //
 
 using System.Collections.Generic;
-
+#if !NET35 && !NET40
+using System.Collections.Immutable;
+#endif
 //
 namespace PhoneNumbers
 {
   public class LocaleData
   {
+#if !NET35 && !NET40
+    public static readonly ImmutableDictionary<string, ImmutableDictionary<string, string>> Data = new Dictionary<string, ImmutableDictionary<string, string>>
+#else
     public static readonly Dictionary<string, Dictionary<string, string>> Data = new Dictionary<string, Dictionary<string, string>>
+#endif
     {
       {"AD", new Dictionary<string, string>
       {
@@ -211,7 +217,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5b89\u9053\u5c14"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"AE", new Dictionary<string, string>
       {
         {"aa", "United Arab Emirates"},
@@ -402,7 +412,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u963f\u62c9\u4f2f\u8054\u5408\u914b\u957f\u56fd"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"AF", new Dictionary<string, string>
       {
         {"aa", "Afghanistan"},
@@ -593,7 +607,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u963f\u5bcc\u6c57"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"AG", new Dictionary<string, string>
       {
         {"aa", "Antigua and Barbuda"},
@@ -784,7 +802,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5b89\u63d0\u74dc\u548c\u5df4\u5e03\u8fbe"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"AI", new Dictionary<string, string>
       {
         {"aa", "Anguilla"},
@@ -975,7 +997,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5b89\u572d\u62c9"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"AL", new Dictionary<string, string>
       {
         {"aa", "Albania"},
@@ -1166,7 +1192,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u963f\u5c14\u5df4\u5c3c\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"AM", new Dictionary<string, string>
       {
         {"aa", "Armenia"},
@@ -1357,7 +1387,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u4e9a\u7f8e\u5c3c\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"AN", new Dictionary<string, string>
       {
         {"aa", "Netherlands Antilles"},
@@ -1548,7 +1582,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u8377\u5c5e\u5b89\u7684\u5217\u65af\u7fa4\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"AO", new Dictionary<string, string>
       {
         {"aa", "Angola"},
@@ -1739,7 +1777,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5b89\u54e5\u62c9"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"AQ", new Dictionary<string, string>
       {
         {"aa", "Antarctica"},
@@ -1930,7 +1972,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5357\u6781\u6d32"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"AR", new Dictionary<string, string>
       {
         {"aa", "Argentina"},
@@ -2121,7 +2167,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u963f\u6839\u5ef7"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"AS", new Dictionary<string, string>
       {
         {"aa", "American Samoa"},
@@ -2312,7 +2362,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u4e1c\u8428\u6469\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"AT", new Dictionary<string, string>
       {
         {"aa", "Austria"},
@@ -2503,7 +2557,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5965\u5730\u5229"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"AU", new Dictionary<string, string>
       {
         {"aa", "Australia"},
@@ -2694,7 +2752,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u6fb3\u5927\u5229\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"AW", new Dictionary<string, string>
       {
         {"aa", "Aruba"},
@@ -2885,7 +2947,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u963f\u9c81\u5df4"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"AX", new Dictionary<string, string>
       {
         {"aa", "\u00c5land Islands"},
@@ -3076,7 +3142,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5965\u5170\u7fa4\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"AZ", new Dictionary<string, string>
       {
         {"aa", "Azerbaijan"},
@@ -3267,7 +3337,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u963f\u585e\u62dc\u7586"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"BA", new Dictionary<string, string>
       {
         {"aa", "Bosnia and Herzegovina"},
@@ -3458,7 +3532,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u6ce2\u65af\u5c3c\u4e9a\u548c\u9ed1\u5c71\u5171\u548c\u56fd"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"BB", new Dictionary<string, string>
       {
         {"aa", "Barbados"},
@@ -3649,7 +3727,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5df4\u5df4\u591a\u65af"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"BD", new Dictionary<string, string>
       {
         {"aa", "Bangladesh"},
@@ -3840,7 +3922,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5b5f\u52a0\u62c9"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"BE", new Dictionary<string, string>
       {
         {"aa", "Belgium"},
@@ -4031,7 +4117,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u6bd4\u5229\u65f6"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"BF", new Dictionary<string, string>
       {
         {"aa", "Burkina Faso"},
@@ -4222,7 +4312,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5e03\u57fa\u7eb3\u6cd5\u7d22"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"BG", new Dictionary<string, string>
       {
         {"aa", "Bulgaria"},
@@ -4413,7 +4507,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u4fdd\u52a0\u5229\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"BH", new Dictionary<string, string>
       {
         {"aa", "Bahrain"},
@@ -4604,7 +4702,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5df4\u6797"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"BI", new Dictionary<string, string>
       {
         {"aa", "Burundi"},
@@ -4795,7 +4897,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5e03\u9686\u8fea"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"BJ", new Dictionary<string, string>
       {
         {"aa", "Benin"},
@@ -4986,7 +5092,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u8d1d\u5b81"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"BL", new Dictionary<string, string>
       {
         {"aa", "Saint Barth\u00e9lemy"},
@@ -5177,7 +5287,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "*aa"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"BM", new Dictionary<string, string>
       {
         {"aa", "Bermuda"},
@@ -5368,7 +5482,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u767e\u6155\u5927"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"BN", new Dictionary<string, string>
       {
         {"aa", "Brunei"},
@@ -5559,7 +5677,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u6587\u83b1"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"BO", new Dictionary<string, string>
       {
         {"aa", "Bolivia"},
@@ -5750,7 +5872,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u73bb\u5229\u7ef4\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"BR", new Dictionary<string, string>
       {
         {"aa", "Brazil"},
@@ -5941,7 +6067,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5df4\u897f"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"BS", new Dictionary<string, string>
       {
         {"aa", "Bahamas"},
@@ -6132,7 +6262,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5df4\u54c8\u9a6c"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"BT", new Dictionary<string, string>
       {
         {"aa", "Bhutan"},
@@ -6323,7 +6457,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u4e0d\u4e39"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"BV", new Dictionary<string, string>
       {
         {"aa", "Bouvet Island"},
@@ -6514,7 +6652,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5e03\u97e6\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"BW", new Dictionary<string, string>
       {
         {"aa", "Botswana"},
@@ -6705,7 +6847,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u535a\u8328\u74e6\u7eb3"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"BY", new Dictionary<string, string>
       {
         {"aa", "Belarus"},
@@ -6896,7 +7042,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u767d\u4fc4\u7f57\u65af"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"BZ", new Dictionary<string, string>
       {
         {"aa", "Belize"},
@@ -7087,7 +7237,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u4f2f\u91cc\u5179"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"CA", new Dictionary<string, string>
       {
         {"aa", "Canada"},
@@ -7278,7 +7432,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u52a0\u62ff\u5927"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"CC", new Dictionary<string, string>
       {
         {"aa", "Cocos Islands"},
@@ -7469,7 +7627,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u79d1\u5e93\u65af\u7fa4\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"CD", new Dictionary<string, string>
       {
         {"aa", "The Democratic Republic Of Congo"},
@@ -7660,7 +7822,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u521a\u679c\u6c11\u4e3b\u5171\u548c\u56fd"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"CF", new Dictionary<string, string>
       {
         {"aa", "Central African Republic"},
@@ -7851,7 +8017,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u4e2d\u975e\u5171\u548c\u56fd"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"CG", new Dictionary<string, string>
       {
         {"aa", "Congo"},
@@ -8042,7 +8212,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u521a\u679c"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"CH", new Dictionary<string, string>
       {
         {"aa", "Switzerland"},
@@ -8233,7 +8407,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u745e\u58eb"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"CI", new Dictionary<string, string>
       {
         {"aa", "C\u00f4te d\"Ivoire"},
@@ -8424,7 +8602,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u8c61\u7259\u6d77\u5cb8"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"CK", new Dictionary<string, string>
       {
         {"aa", "Cook Islands"},
@@ -8615,7 +8797,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5e93\u514b\u7fa4\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"CL", new Dictionary<string, string>
       {
         {"aa", "Chile"},
@@ -8806,7 +8992,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u667a\u5229"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"CM", new Dictionary<string, string>
       {
         {"aa", "Cameroon"},
@@ -8997,7 +9187,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5580\u9ea6\u9686"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"CN", new Dictionary<string, string>
       {
         {"aa", "China"},
@@ -9188,7 +9382,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u4e2d\u56fd"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"CO", new Dictionary<string, string>
       {
         {"aa", "Colombia"},
@@ -9379,7 +9577,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u54e5\u4f26\u6bd4\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"CR", new Dictionary<string, string>
       {
         {"aa", "Costa Rica"},
@@ -9570,7 +9772,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u54e5\u65af\u8fbe\u9ece\u52a0"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"CS", new Dictionary<string, string>
       {
         {"aa", "Serbia and Montenegro"},
@@ -9761,7 +9967,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u585e\u5c14\u7ef4\u4e9a\u53ca\u9ed1\u5c71"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"CU", new Dictionary<string, string>
       {
         {"aa", "Cuba"},
@@ -9952,7 +10162,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u53e4\u5df4"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"CV", new Dictionary<string, string>
       {
         {"aa", "Cape Verde"},
@@ -10143,7 +10357,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u4f5b\u5f97\u89d2"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"CX", new Dictionary<string, string>
       {
         {"aa", "Christmas Island"},
@@ -10334,7 +10552,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5723\u8bde\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"CY", new Dictionary<string, string>
       {
         {"aa", "Cyprus"},
@@ -10525,7 +10747,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u585e\u6d66\u8def\u65af"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"CZ", new Dictionary<string, string>
       {
         {"aa", "Czech Republic"},
@@ -10716,7 +10942,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u6377\u514b\u5171\u548c\u56fd"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"DE", new Dictionary<string, string>
       {
         {"aa", "Germany"},
@@ -10907,7 +11137,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5fb7\u56fd"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"DJ", new Dictionary<string, string>
       {
         {"aa", "Djibouti"},
@@ -11098,7 +11332,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5409\u5e03\u63d0"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"DK", new Dictionary<string, string>
       {
         {"aa", "Denmark"},
@@ -11289,7 +11527,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u4e39\u9ea6"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"DM", new Dictionary<string, string>
       {
         {"aa", "Dominica"},
@@ -11480,7 +11722,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u591a\u7c73\u5c3c\u52a0\u8054\u90a6"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"DO", new Dictionary<string, string>
       {
         {"aa", "Dominican Republic"},
@@ -11671,7 +11917,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u591a\u7c73\u5c3c\u52a0\u5171\u548c\u56fd"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"DZ", new Dictionary<string, string>
       {
         {"aa", "Algeria"},
@@ -11862,7 +12112,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u963f\u5c14\u53ca\u5229\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"EC", new Dictionary<string, string>
       {
         {"aa", "Ecuador"},
@@ -12053,7 +12307,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5384\u74dc\u591a\u5c14"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"EE", new Dictionary<string, string>
       {
         {"aa", "Estonia"},
@@ -12244,7 +12502,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u7231\u6c99\u5c3c\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"EG", new Dictionary<string, string>
       {
         {"aa", "Egypt"},
@@ -12435,7 +12697,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u57c3\u53ca"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"EH", new Dictionary<string, string>
       {
         {"aa", "Western Sahara"},
@@ -12626,7 +12892,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u897f\u6492\u54c8\u62c9"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"ER", new Dictionary<string, string>
       {
         {"aa", "Eritrea"},
@@ -12817,7 +13087,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5384\u91cc\u7279\u5c3c\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"ES", new Dictionary<string, string>
       {
         {"aa", "Spain"},
@@ -13008,7 +13282,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u897f\u73ed\u7259"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"ET", new Dictionary<string, string>
       {
         {"aa", "Ethiopia"},
@@ -13199,7 +13477,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u57c3\u585e\u4fc4\u6bd4\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"FI", new Dictionary<string, string>
       {
         {"aa", "Finland"},
@@ -13390,7 +13672,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u82ac\u5170"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"FJ", new Dictionary<string, string>
       {
         {"aa", "Fiji"},
@@ -13581,7 +13867,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u6590\u6d4e"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"FK", new Dictionary<string, string>
       {
         {"aa", "Falkland Islands"},
@@ -13772,7 +14062,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5bcc\u514b\u5170\u7fa4\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"FM", new Dictionary<string, string>
       {
         {"aa", "Micronesia"},
@@ -13963,7 +14257,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5bc6\u514b\u7f57\u5c3c\u897f\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"FO", new Dictionary<string, string>
       {
         {"aa", "Faroe Islands"},
@@ -14154,7 +14452,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u6cd5\u7f57\u7fa4\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"FR", new Dictionary<string, string>
       {
         {"aa", "France"},
@@ -14345,7 +14647,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u6cd5\u56fd"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"GA", new Dictionary<string, string>
       {
         {"aa", "Gabon"},
@@ -14536,7 +14842,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u52a0\u84ec"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"GB", new Dictionary<string, string>
       {
         {"aa", "United Kingdom"},
@@ -14727,7 +15037,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u82f1\u56fd"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"GD", new Dictionary<string, string>
       {
         {"aa", "Grenada"},
@@ -14918,7 +15232,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u683c\u6797\u7eb3\u8fbe"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"GE", new Dictionary<string, string>
       {
         {"aa", "Georgia"},
@@ -15109,7 +15427,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u683c\u9c81\u5409\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"GF", new Dictionary<string, string>
       {
         {"aa", "French Guiana"},
@@ -15300,7 +15622,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u6cd5\u5c5e\u572d\u4e9a\u90a3"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"GG", new Dictionary<string, string>
       {
         {"aa", "Guernsey"},
@@ -15491,7 +15817,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "*aa"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"GH", new Dictionary<string, string>
       {
         {"aa", "Ghana"},
@@ -15682,7 +16012,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u52a0\u7eb3"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"GI", new Dictionary<string, string>
       {
         {"aa", "Gibraltar"},
@@ -15873,7 +16207,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u76f4\u5e03\u7f57\u9640"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"GL", new Dictionary<string, string>
       {
         {"aa", "Greenland"},
@@ -16064,7 +16402,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u683c\u9675\u5170"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"GM", new Dictionary<string, string>
       {
         {"aa", "Gambia"},
@@ -16255,7 +16597,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5188\u6bd4\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"GN", new Dictionary<string, string>
       {
         {"aa", "Guinea"},
@@ -16446,7 +16792,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u51e0\u5185\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"GP", new Dictionary<string, string>
       {
         {"aa", "Guadeloupe"},
@@ -16637,7 +16987,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u74dc\u5fb7\u7f57\u666e\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"GQ", new Dictionary<string, string>
       {
         {"aa", "Equatorial Guinea"},
@@ -16828,7 +17182,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u8d64\u9053\u51e0\u5185\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"GR", new Dictionary<string, string>
       {
         {"aa", "Greece"},
@@ -17019,7 +17377,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5e0c\u814a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"GS", new Dictionary<string, string>
       {
         {"aa", "South Georgia And The South Sandwich Islands"},
@@ -17210,7 +17572,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5357\u4e54\u6cbb\u4e9a\u5c9b\u548c\u5357\u6851\u5fb7\u97e6\u5947\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"GT", new Dictionary<string, string>
       {
         {"aa", "Guatemala"},
@@ -17401,7 +17767,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5371\u5730\u9a6c\u62c9"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"GU", new Dictionary<string, string>
       {
         {"aa", "Guam"},
@@ -17592,7 +17962,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5173\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"GW", new Dictionary<string, string>
       {
         {"aa", "Guinea-Bissau"},
@@ -17783,7 +18157,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u51e0\u5185\u4e9a\u6bd4\u7ecd\u5171\u548c\u56fd"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"GY", new Dictionary<string, string>
       {
         {"aa", "Guyana"},
@@ -17974,7 +18352,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u572d\u4e9a\u90a3"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"HK", new Dictionary<string, string>
       {
         {"aa", "Hong Kong"},
@@ -18165,7 +18547,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "*ja"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"HM", new Dictionary<string, string>
       {
         {"aa", "Heard Island And McDonald Islands"},
@@ -18356,7 +18742,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u8d6b\u5fb7\u548c\u9ea6\u514b\u5510\u7eb3\u7fa4\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"HN", new Dictionary<string, string>
       {
         {"aa", "Honduras"},
@@ -18547,7 +18937,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u6d2a\u90fd\u62c9\u65af"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"HR", new Dictionary<string, string>
       {
         {"aa", "Croatia"},
@@ -18738,7 +19132,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u514b\u7f57\u5730\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"HT", new Dictionary<string, string>
       {
         {"aa", "Haiti"},
@@ -18929,7 +19327,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u6d77\u5730"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"HU", new Dictionary<string, string>
       {
         {"aa", "Hungary"},
@@ -19120,7 +19522,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5308\u7259\u5229"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"ID", new Dictionary<string, string>
       {
         {"aa", "Indonesia"},
@@ -19311,7 +19717,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5370\u5ea6\u5c3c\u897f\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"IE", new Dictionary<string, string>
       {
         {"aa", "Ireland"},
@@ -19502,7 +19912,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u7231\u5c14\u5170"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"IL", new Dictionary<string, string>
       {
         {"aa", "Israel"},
@@ -19693,7 +20107,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u4ee5\u8272\u5217"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"IM", new Dictionary<string, string>
       {
         {"aa", "Isle Of Man"},
@@ -19884,7 +20302,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "*aa"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"IN", new Dictionary<string, string>
       {
         {"aa", "India"},
@@ -20075,7 +20497,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5370\u5ea6"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"IO", new Dictionary<string, string>
       {
         {"aa", "British Indian Ocean Territory"},
@@ -20266,7 +20692,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u82f1\u5c5e\u5370\u5ea6\u6d0b\u9886\u5730"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"IQ", new Dictionary<string, string>
       {
         {"aa", "Iraq"},
@@ -20457,7 +20887,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u4f0a\u62c9\u514b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"IR", new Dictionary<string, string>
       {
         {"aa", "Iran"},
@@ -20648,7 +21082,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u4f0a\u6717"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"IS", new Dictionary<string, string>
       {
         {"aa", "Iceland"},
@@ -20839,7 +21277,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u51b0\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"IT", new Dictionary<string, string>
       {
         {"aa", "Italy"},
@@ -21030,7 +21472,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u610f\u5927\u5229"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"JE", new Dictionary<string, string>
       {
         {"aa", "Jersey"},
@@ -21221,7 +21667,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "*aa"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"JM", new Dictionary<string, string>
       {
         {"aa", "Jamaica"},
@@ -21412,7 +21862,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u7259\u4e70\u52a0"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"JO", new Dictionary<string, string>
       {
         {"aa", "Jordan"},
@@ -21603,7 +22057,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u7ea6\u65e6"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"JP", new Dictionary<string, string>
       {
         {"aa", "Japan"},
@@ -21794,7 +22252,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "*ja"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"KE", new Dictionary<string, string>
       {
         {"aa", "Kenya"},
@@ -21985,7 +22447,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u80af\u5c3c\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"KG", new Dictionary<string, string>
       {
         {"aa", "Kyrgyzstan"},
@@ -22176,7 +22642,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5409\u5c14\u5409\u514b\u65af\u5766"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"KH", new Dictionary<string, string>
       {
         {"aa", "Cambodia"},
@@ -22367,7 +22837,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u67ec\u57d4\u5be8"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"KI", new Dictionary<string, string>
       {
         {"aa", "Kiribati"},
@@ -22558,7 +23032,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u57fa\u91cc\u5df4\u65af"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"KM", new Dictionary<string, string>
       {
         {"aa", "Comoros"},
@@ -22749,7 +23227,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u79d1\u6469\u7f57"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"KN", new Dictionary<string, string>
       {
         {"aa", "Saint Kitts And Nevis"},
@@ -22940,7 +23422,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5723\u57fa\u8328\u548c\u5c3c\u7ef4\u65af"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"KP", new Dictionary<string, string>
       {
         {"aa", "North Korea"},
@@ -23131,7 +23617,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u671d\u9c9c"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"KR", new Dictionary<string, string>
       {
         {"aa", "South Korea"},
@@ -23322,7 +23812,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u97e9\u56fd"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"KW", new Dictionary<string, string>
       {
         {"aa", "Kuwait"},
@@ -23513,7 +24007,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u79d1\u5a01\u7279"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"KY", new Dictionary<string, string>
       {
         {"aa", "Cayman Islands"},
@@ -23704,7 +24202,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5f00\u66fc\u7fa4\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"KZ", new Dictionary<string, string>
       {
         {"aa", "Kazakhstan"},
@@ -23895,7 +24397,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u54c8\u8428\u514b\u65af\u5766"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"LA", new Dictionary<string, string>
       {
         {"aa", "Laos"},
@@ -24086,7 +24592,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u8001\u631d"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"LB", new Dictionary<string, string>
       {
         {"aa", "Lebanon"},
@@ -24277,7 +24787,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u9ece\u5df4\u5ae9"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"LC", new Dictionary<string, string>
       {
         {"aa", "Saint Lucia"},
@@ -24468,7 +24982,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5723\u5362\u897f\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"LI", new Dictionary<string, string>
       {
         {"aa", "Liechtenstein"},
@@ -24659,7 +25177,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5217\u652f\u6566\u58eb\u767b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"LK", new Dictionary<string, string>
       {
         {"aa", "Sri Lanka"},
@@ -24850,7 +25372,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u65af\u91cc\u5170\u5361"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"LR", new Dictionary<string, string>
       {
         {"aa", "Liberia"},
@@ -25041,7 +25567,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5229\u6bd4\u91cc\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"LS", new Dictionary<string, string>
       {
         {"aa", "Lesotho"},
@@ -25232,7 +25762,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u83b1\u7d22\u6258"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"LT", new Dictionary<string, string>
       {
         {"aa", "Lithuania"},
@@ -25423,7 +25957,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u7acb\u9676\u5b9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"LU", new Dictionary<string, string>
       {
         {"aa", "Luxembourg"},
@@ -25614,7 +26152,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5362\u68ee\u5821"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"LV", new Dictionary<string, string>
       {
         {"aa", "Latvia"},
@@ -25805,7 +26347,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u62c9\u8131\u7ef4\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"LY", new Dictionary<string, string>
       {
         {"aa", "Libya"},
@@ -25996,7 +26542,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5229\u6bd4\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"MA", new Dictionary<string, string>
       {
         {"aa", "Morocco"},
@@ -26187,7 +26737,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u6469\u6d1b\u54e5"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"MC", new Dictionary<string, string>
       {
         {"aa", "Monaco"},
@@ -26378,7 +26932,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u6469\u7eb3\u54e5"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"MD", new Dictionary<string, string>
       {
         {"aa", "Moldova"},
@@ -26569,7 +27127,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u6469\u5c14\u591a\u74e6"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"ME", new Dictionary<string, string>
       {
         {"aa", "Montenegro"},
@@ -26760,7 +27322,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u9ed1\u5c71"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"MF", new Dictionary<string, string>
       {
         {"aa", "Saint Martin"},
@@ -26951,7 +27517,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "*aa"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"MG", new Dictionary<string, string>
       {
         {"aa", "Madagascar"},
@@ -27142,7 +27712,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u9a6c\u8fbe\u52a0\u65af\u52a0"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"MH", new Dictionary<string, string>
       {
         {"aa", "Marshall Islands"},
@@ -27333,7 +27907,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u9a6c\u7ecd\u5c14\u7fa4\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"MK", new Dictionary<string, string>
       {
         {"aa", "Macedonia"},
@@ -27524,7 +28102,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u9a6c\u5176\u987f\u738b\u56fd"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"ML", new Dictionary<string, string>
       {
         {"aa", "Mali"},
@@ -27715,7 +28297,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u9a6c\u91cc"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"MM", new Dictionary<string, string>
       {
         {"aa", "Myanmar"},
@@ -27906,7 +28492,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u7f05\u7538"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"MN", new Dictionary<string, string>
       {
         {"aa", "Mongolia"},
@@ -28097,7 +28687,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u8499\u53e4"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"MO", new Dictionary<string, string>
       {
         {"aa", "Macao"},
@@ -28288,7 +28882,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u6fb3\u95e8\u7279\u533a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"MP", new Dictionary<string, string>
       {
         {"aa", "Northern Mariana Islands"},
@@ -28479,7 +29077,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u7f8e\u5c5e\u5317\u9a6c\u91cc\u4e9a\u7eb3\u7fa4\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"MQ", new Dictionary<string, string>
       {
         {"aa", "Martinique"},
@@ -28670,7 +29272,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u9a6c\u63d0\u5c3c\u514b\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"MR", new Dictionary<string, string>
       {
         {"aa", "Mauritania"},
@@ -28861,7 +29467,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u6bdb\u91cc\u5854\u5c3c\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"MS", new Dictionary<string, string>
       {
         {"aa", "Montserrat"},
@@ -29052,7 +29662,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u8499\u7279\u585e\u62c9\u7fa4\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"MT", new Dictionary<string, string>
       {
         {"aa", "Malta"},
@@ -29243,7 +29857,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u9a6c\u8033\u4ed6"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"MU", new Dictionary<string, string>
       {
         {"aa", "Mauritius"},
@@ -29434,7 +30052,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u6bdb\u91cc\u6c42\u65af"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"MV", new Dictionary<string, string>
       {
         {"aa", "Maldives"},
@@ -29625,7 +30247,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u9a6c\u5c14\u4ee3\u592b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"MW", new Dictionary<string, string>
       {
         {"aa", "Malawi"},
@@ -29816,7 +30442,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u9a6c\u62c9\u7ef4"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"MX", new Dictionary<string, string>
       {
         {"aa", "Mexico"},
@@ -30007,7 +30637,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u58a8\u897f\u54e5"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"MY", new Dictionary<string, string>
       {
         {"aa", "Malaysia"},
@@ -30198,7 +30832,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u9a6c\u6765\u897f\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"MZ", new Dictionary<string, string>
       {
         {"aa", "Mozambique"},
@@ -30389,7 +31027,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u83ab\u6851\u6bd4\u514b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"NA", new Dictionary<string, string>
       {
         {"aa", "Namibia"},
@@ -30580,7 +31222,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u7eb3\u7c73\u6bd4\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"NC", new Dictionary<string, string>
       {
         {"aa", "New Caledonia"},
@@ -30771,7 +31417,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u65b0\u514b\u91cc\u591a\u5c3c\u4e9a\u7fa4\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"NE", new Dictionary<string, string>
       {
         {"aa", "Niger"},
@@ -30962,7 +31612,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5c3c\u65e5\u5c14"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"NF", new Dictionary<string, string>
       {
         {"aa", "Norfolk Island"},
@@ -31153,7 +31807,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u8bfa\u798f\u514b\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"NG", new Dictionary<string, string>
       {
         {"aa", "Nigeria"},
@@ -31344,7 +32002,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5c3c\u65e5\u5229\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"NI", new Dictionary<string, string>
       {
         {"aa", "Nicaragua"},
@@ -31535,7 +32197,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5c3c\u52a0\u62c9\u74dc"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"NL", new Dictionary<string, string>
       {
         {"aa", "Netherlands"},
@@ -31726,7 +32392,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u8377\u5170"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"NO", new Dictionary<string, string>
       {
         {"aa", "Norway"},
@@ -31917,7 +32587,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u632a\u5a01"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"NP", new Dictionary<string, string>
       {
         {"aa", "Nepal"},
@@ -32108,7 +32782,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5c3c\u6cca\u5c14"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"NR", new Dictionary<string, string>
       {
         {"aa", "Nauru"},
@@ -32299,7 +32977,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u7459\u9c81"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"NU", new Dictionary<string, string>
       {
         {"aa", "Niue"},
@@ -32490,7 +33172,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u7ebd\u57c3\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"NZ", new Dictionary<string, string>
       {
         {"aa", "New Zealand"},
@@ -32681,7 +33367,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u65b0\u897f\u5170"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"OM", new Dictionary<string, string>
       {
         {"aa", "Oman"},
@@ -32872,7 +33562,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u963f\u66fc"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"PA", new Dictionary<string, string>
       {
         {"aa", "Panama"},
@@ -33063,7 +33757,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5df4\u62ff\u9a6c"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"PE", new Dictionary<string, string>
       {
         {"aa", "Peru"},
@@ -33254,7 +33952,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u79d8\u9c81"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"PF", new Dictionary<string, string>
       {
         {"aa", "French Polynesia"},
@@ -33445,7 +34147,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u6cd5\u5c5e\u73bb\u5229\u5c3c\u897f\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"PG", new Dictionary<string, string>
       {
         {"aa", "Papua New Guinea"},
@@ -33636,7 +34342,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5df4\u5e03\u4e9a\u65b0\u51e0\u5185\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"PH", new Dictionary<string, string>
       {
         {"aa", "Philippines"},
@@ -33827,7 +34537,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u83f2\u5f8b\u5bbe"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"PK", new Dictionary<string, string>
       {
         {"aa", "Pakistan"},
@@ -34018,7 +34732,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5df4\u57fa\u65af\u5766"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"PL", new Dictionary<string, string>
       {
         {"aa", "Poland"},
@@ -34209,7 +34927,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u6ce2\u5170"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"PM", new Dictionary<string, string>
       {
         {"aa", "Saint Pierre And Miquelon"},
@@ -34400,7 +35122,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5723\u76ae\u57c3\u5c14\u548c\u5bc6\u514b\u9686\u7fa4\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"PN", new Dictionary<string, string>
       {
         {"aa", "Pitcairn"},
@@ -34591,7 +35317,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u76ae\u7279\u514b\u6069\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"PR", new Dictionary<string, string>
       {
         {"aa", "Puerto Rico"},
@@ -34782,7 +35512,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u6ce2\u591a\u9ece\u54e5"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"PS", new Dictionary<string, string>
       {
         {"aa", "Palestine"},
@@ -34973,7 +35707,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5df4\u52d2\u65af\u5766"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"PT", new Dictionary<string, string>
       {
         {"aa", "Portugal"},
@@ -35164,7 +35902,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u8461\u8404\u7259"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"PW", new Dictionary<string, string>
       {
         {"aa", "Palau"},
@@ -35355,7 +36097,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5e15\u52b3"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"PY", new Dictionary<string, string>
       {
         {"aa", "Paraguay"},
@@ -35546,7 +36292,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5df4\u62c9\u572d"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"QA", new Dictionary<string, string>
       {
         {"aa", "Qatar"},
@@ -35737,7 +36487,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5361\u5854\u5c14"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"RE", new Dictionary<string, string>
       {
         {"aa", "Reunion"},
@@ -35928,7 +36682,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u7559\u5c3c\u6c6a\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"RO", new Dictionary<string, string>
       {
         {"aa", "Romania"},
@@ -36119,7 +36877,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u7f57\u9a6c\u5c3c\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"RS", new Dictionary<string, string>
       {
         {"aa", "Serbia"},
@@ -36310,7 +37072,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u585e\u5c14\u7ef4\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"RU", new Dictionary<string, string>
       {
         {"aa", "Russia"},
@@ -36501,7 +37267,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u4fc4\u7f57\u65af"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"RW", new Dictionary<string, string>
       {
         {"aa", "Rwanda"},
@@ -36692,7 +37462,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5362\u65fa\u8fbe"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"SA", new Dictionary<string, string>
       {
         {"aa", "Saudi Arabia"},
@@ -36883,7 +37657,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u6c99\u7279\u963f\u62c9\u4f2f"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"SB", new Dictionary<string, string>
       {
         {"aa", "Solomon Islands"},
@@ -37074,7 +37852,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u6240\u7f57\u95e8\u7fa4\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"SC", new Dictionary<string, string>
       {
         {"aa", "Seychelles"},
@@ -37265,7 +38047,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u585e\u820c\u5c14\u7fa4\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"SD", new Dictionary<string, string>
       {
         {"aa", "Sudan"},
@@ -37456,7 +38242,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u82cf\u4e39"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"SE", new Dictionary<string, string>
       {
         {"aa", "Sweden"},
@@ -37647,7 +38437,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u745e\u5178"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"SG", new Dictionary<string, string>
       {
         {"aa", "Singapore"},
@@ -37838,7 +38632,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u65b0\u52a0\u5761"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"SH", new Dictionary<string, string>
       {
         {"aa", "Saint Helena"},
@@ -38029,7 +38827,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5723\u8d6b\u52d2\u62ff\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"SI", new Dictionary<string, string>
       {
         {"aa", "Slovenia"},
@@ -38220,7 +39022,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u65af\u6d1b\u6587\u5c3c\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"SJ", new Dictionary<string, string>
       {
         {"aa", "Svalbard And Jan Mayen"},
@@ -38411,7 +39217,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u65af\u74e6\u5c14\u5df4\u7279\u548c\u626c\u9a6c\u5ef6\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"SK", new Dictionary<string, string>
       {
         {"aa", "Slovakia"},
@@ -38602,7 +39412,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u65af\u6d1b\u4f10\u514b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"SL", new Dictionary<string, string>
       {
         {"aa", "Sierra Leone"},
@@ -38793,7 +39607,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u585e\u62c9\u91cc\u6602"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"SM", new Dictionary<string, string>
       {
         {"aa", "San Marino"},
@@ -38984,7 +39802,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5723\u9a6c\u529b\u8bfa"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"SN", new Dictionary<string, string>
       {
         {"aa", "Senegal"},
@@ -39175,7 +39997,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u585e\u5185\u52a0\u5c14"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"SO", new Dictionary<string, string>
       {
         {"aa", "Somalia"},
@@ -39366,7 +40192,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u7d22\u9a6c\u91cc"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"SR", new Dictionary<string, string>
       {
         {"aa", "Suriname"},
@@ -39557,7 +40387,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u82cf\u91cc\u5357"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"ST", new Dictionary<string, string>
       {
         {"aa", "Sao Tome And Principe"},
@@ -39748,7 +40582,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5723\u591a\u7f8e\u548c\u666e\u6797\u897f\u6bd4"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"SV", new Dictionary<string, string>
       {
         {"aa", "El Salvador"},
@@ -39939,7 +40777,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u8428\u5c14\u74e6\u591a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"SY", new Dictionary<string, string>
       {
         {"aa", "Syria"},
@@ -40130,7 +40972,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u53d9\u5229\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"SZ", new Dictionary<string, string>
       {
         {"aa", "Swaziland"},
@@ -40321,7 +41167,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u65af\u5a01\u58eb\u5170"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"TC", new Dictionary<string, string>
       {
         {"aa", "Turks And Caicos Islands"},
@@ -40512,7 +41362,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u7279\u514b\u65af\u7fa4\u5c9b\u548c\u51ef\u79d1\u65af\u7fa4\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"TD", new Dictionary<string, string>
       {
         {"aa", "Chad"},
@@ -40703,7 +41557,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u4e4d\u5f97"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"TF", new Dictionary<string, string>
       {
         {"aa", "French Southern Territories"},
@@ -40894,7 +41752,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u6cd5\u5c5e\u5357\u7279\u7acb\u5c3c\u8fbe"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"TG", new Dictionary<string, string>
       {
         {"aa", "Togo"},
@@ -41085,7 +41947,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u591a\u54e5"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"TH", new Dictionary<string, string>
       {
         {"aa", "Thailand"},
@@ -41276,7 +42142,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u6cf0\u56fd"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"TJ", new Dictionary<string, string>
       {
         {"aa", "Tajikistan"},
@@ -41467,7 +42337,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5854\u5409\u514b\u65af\u5766"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"TK", new Dictionary<string, string>
       {
         {"aa", "Tokelau"},
@@ -41658,7 +42532,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u8054\u5408\u7fa4\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"TL", new Dictionary<string, string>
       {
         {"aa", "Timor-Leste"},
@@ -41849,7 +42727,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u4e1c\u5e1d\u6c76"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"TM", new Dictionary<string, string>
       {
         {"aa", "Turkmenistan"},
@@ -42040,7 +42922,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u571f\u5e93\u66fc\u65af\u5766"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"TN", new Dictionary<string, string>
       {
         {"aa", "Tunisia"},
@@ -42231,7 +43117,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u7a81\u5c3c\u65af"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"TO", new Dictionary<string, string>
       {
         {"aa", "Tonga"},
@@ -42422,7 +43312,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u6c64\u52a0"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"TR", new Dictionary<string, string>
       {
         {"aa", "Turkey"},
@@ -42613,7 +43507,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u571f\u8033\u5176"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"TT", new Dictionary<string, string>
       {
         {"aa", "Trinidad and Tobago"},
@@ -42804,7 +43702,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u7279\u7acb\u5c3c\u8fbe\u548c\u591a\u5df4\u54e5"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"TV", new Dictionary<string, string>
       {
         {"aa", "Tuvalu"},
@@ -42995,7 +43897,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u56fe\u74e6\u5362"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"TW", new Dictionary<string, string>
       {
         {"aa", "Taiwan"},
@@ -43186,7 +44092,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u53f0\u6e7e\u5730\u533a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"TZ", new Dictionary<string, string>
       {
         {"aa", "Tanzania"},
@@ -43377,7 +44287,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5766\u6851\u5c3c\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"UA", new Dictionary<string, string>
       {
         {"aa", "Ukraine"},
@@ -43568,7 +44482,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u4e4c\u514b\u5170"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"UG", new Dictionary<string, string>
       {
         {"aa", "Uganda"},
@@ -43759,7 +44677,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u4e4c\u5e72\u8fbe"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"UM", new Dictionary<string, string>
       {
         {"aa", "United States Minor Outlying Islands"},
@@ -43950,7 +44872,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u7f8e\u5c5e\u5c0f\u5965\u7279\u5170\u7fa4\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"US", new Dictionary<string, string>
       {
         {"aa", "United States"},
@@ -44141,7 +45067,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u7f8e\u56fd"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"UY", new Dictionary<string, string>
       {
         {"aa", "Uruguay"},
@@ -44332,7 +45262,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u4e4c\u62c9\u572d"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"UZ", new Dictionary<string, string>
       {
         {"aa", "Uzbekistan"},
@@ -44523,7 +45457,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u4e4c\u5179\u522b\u514b\u65af\u5766"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"VA", new Dictionary<string, string>
       {
         {"aa", "Vatican"},
@@ -44714,7 +45652,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u68b5\u8482\u5188"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"VC", new Dictionary<string, string>
       {
         {"aa", "Saint Vincent And The Grenadines"},
@@ -44905,7 +45847,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5723\u6587\u68ee\u7279\u548c\u683c\u6797\u7eb3\u4e01\u65af"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"VE", new Dictionary<string, string>
       {
         {"aa", "Venezuela"},
@@ -45096,7 +46042,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u59d4\u5185\u745e\u62c9"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"VG", new Dictionary<string, string>
       {
         {"aa", "British Virgin Islands"},
@@ -45287,7 +46237,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u82f1\u5c5e\u7ef4\u4eac\u7fa4\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"VI", new Dictionary<string, string>
       {
         {"aa", "U.S. Virgin Islands"},
@@ -45478,7 +46432,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u7f8e\u5c5e\u7ef4\u4eac\u7fa4\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"VN", new Dictionary<string, string>
       {
         {"aa", "Vietnam"},
@@ -45669,7 +46627,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u8d8a\u5357"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"VU", new Dictionary<string, string>
       {
         {"aa", "Vanuatu"},
@@ -45860,7 +46822,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u74e6\u52aa\u963f\u56fe"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"WF", new Dictionary<string, string>
       {
         {"aa", "Wallis And Futuna"},
@@ -46051,7 +47017,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u74e6\u5229\u65af\u7fa4\u5c9b\u548c\u5bcc\u56fe\u7eb3\u7fa4\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"WS", new Dictionary<string, string>
       {
         {"aa", "Samoa"},
@@ -46242,7 +47212,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "*zh"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"YE", new Dictionary<string, string>
       {
         {"aa", "Yemen"},
@@ -46433,7 +47407,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u4e5f\u95e8"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"YT", new Dictionary<string, string>
       {
         {"aa", "Mayotte"},
@@ -46624,7 +47602,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u9a6c\u7ea6\u7279\u5c9b"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"ZA", new Dictionary<string, string>
       {
         {"aa", "South Africa"},
@@ -46815,7 +47797,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u5357\u975e"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"ZM", new Dictionary<string, string>
       {
         {"aa", "Zambia"},
@@ -47006,7 +47992,11 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u8d5e\u6bd4\u4e9a"},
         {"zu", "*aa"}
-      }},
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+    },
       {"ZW", new Dictionary<string, string>
       {
         {"aa", "Zimbabwe"},
@@ -47197,7 +48187,15 @@ namespace PhoneNumbers
         {"za", "*aa"},
         {"zh", "\u6d25\u5df4\u5e03\u97e6"},
         {"zu", "*aa"}
-      }}
-    };
+      }
+#if !NET35 && !NET40
+      .ToImmutableDictionary()
+#endif
+      }
+    }
+#if !NET35 && !NET40
+    .ToImmutableDictionary()
+#endif
+    ;
   }
 }
