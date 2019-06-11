@@ -718,7 +718,7 @@ namespace PhoneNumbers
             throw new NotSupportedException();
         }
 
-        public void Dispose()
+        void IDisposable.Dispose()
         {
         }
     }
