@@ -155,8 +155,10 @@ namespace PhoneNumbers
             // make it work across programming languages.
             if (removeWhitespace)
                 regex = Regex.Replace(regex, "\\s", "");
+#pragma warning disable S1848
             // ReSharper disable once ObjectCreationAsStatement
             new Regex(regex, InternalRegexOptions.Default);
+#pragma warning restore S1848
             // return regex itself if it is of correct regex syntax
             // i.e. compile did not fail with a PatternSyntaxException.
             return regex;
