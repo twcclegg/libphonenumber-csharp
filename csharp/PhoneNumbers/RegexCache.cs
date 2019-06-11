@@ -29,6 +29,7 @@ namespace PhoneNumbers
         private readonly int size;
         private readonly LinkedList<string> lru;
         private readonly Dictionary<string, Entry> cache;
+        private readonly object regexLock = new object();
 
         public RegexCache(int size)
         {
@@ -39,7 +40,7 @@ namespace PhoneNumbers
 
         public PhoneRegex GetPatternForRegex(string regex)
         {
-            lock (this)
+            lock (regexLock)
             {
                 Entry e;
                 if (!cache.TryGetValue(regex, out e))
@@ -71,7 +72,7 @@ namespace PhoneNumbers
         // This method is used for testing.
         public bool ContainsRegex(string regex)
         {
-            lock (this)
+            lock (regexLock)
             {
                 return cache.ContainsKey(regex);
             }
