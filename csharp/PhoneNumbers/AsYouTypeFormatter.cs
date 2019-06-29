@@ -69,8 +69,8 @@ namespace PhoneNumbers
         // prevents invalid punctuation (such as the star sign in Israeli star numbers) getting into the
         // output of the AYTF.
         private static readonly PhoneRegex EligibleFormatPattern =
-            new PhoneRegex("[" + PhoneNumberUtil.ValidPunctuation + "]*" +
-                "(\\$\\d" + "[" + PhoneNumberUtil.ValidPunctuation + "]*)+",
+            new PhoneRegex("[" + PhoneNumberUtil.VALID_PUNCTUATION + "]*" +
+                "(\\$\\d" + "[" + PhoneNumberUtil.VALID_PUNCTUATION + "]*)+",
                 InternalRegexOptions.Default);
         // A set of characters that, if found in a national prefix formatting rules, are an indicator to
         // us that we should separate the national prefix from the number when formatting.
@@ -606,7 +606,7 @@ namespace PhoneNumbers
         private bool AttemptToExtractIdd()
         {
             var internationalPrefix =
-                regexCache.GetPatternForRegex("\\" + PhoneNumberUtil.PlusSign + "|" +
+                regexCache.GetPatternForRegex("\\" + PhoneNumberUtil.PLUS_SIGN + "|" +
                     currentMetadata.InternationalPrefix);
             var iddMatcher = internationalPrefix.MatchBeginning(accruedInputWithoutFormatting.ToString());
             if (iddMatcher.Success)
@@ -618,7 +618,7 @@ namespace PhoneNumbers
                 prefixBeforeNationalNumber.Length = 0;
                 prefixBeforeNationalNumber.Append(
                     accruedInputWithoutFormatting.ToString().Substring(0, startOfCountryCallingCode));
-                if (accruedInputWithoutFormatting[0] != PhoneNumberUtil.PlusSign)
+                if (accruedInputWithoutFormatting[0] != PhoneNumberUtil.PLUS_SIGN)
                 {
                     prefixBeforeNationalNumber.Append(SeparatorBeforeNationalNumber);
                 }
@@ -648,7 +648,7 @@ namespace PhoneNumbers
             nationalNumber.Length = 0;
             nationalNumber.Append(numberWithoutCountryCallingCode);
             var newRegionCode = phoneUtil.GetRegionCodeForCountryCode(countryCode);
-            if (PhoneNumberUtil.RegionCodeForNonGeoEntity.Equals(newRegionCode))
+            if (PhoneNumberUtil.REGION_CODE_FOR_NON_GEO_ENTITY.Equals(newRegionCode))
             {
                 currentMetadata = phoneUtil.GetMetadataForNonGeographicalRegion(countryCode);
             }
@@ -672,7 +672,7 @@ namespace PhoneNumbers
         private char NormalizeAndAccrueDigitsAndPlusSign(char nextChar, bool rememberPosition)
         {
             char normalizedChar;
-            if (nextChar == PhoneNumberUtil.PlusSign)
+            if (nextChar == PhoneNumberUtil.PLUS_SIGN)
             {
                 normalizedChar = nextChar;
                 accruedInputWithoutFormatting.Append(nextChar);

@@ -48,14 +48,14 @@ namespace PhoneNumbers
 
         // The set of region codes for which there are short number metadata. For every region code in
         // this set there should be metadata linked into the resources.
-        private static readonly HashSet<string> ShortNumberMetadataRegionCodes =
+        private static readonly ISet<string> ShortNumberMetadataRegionCodes =
             ShortNumbersRegionCodeSet.RegionCodeSet;
 
         private MetadataManager()
         {
         }
 
-        private static void LoadAlternateFormatsMedataFromFile(string filePrefix)
+        private static void LoadAlternateFormatsMetadataFromFile(string filePrefix)
         {
 #if (NET35 || NET40)
             var asm = Assembly.GetExecutingAssembly();
@@ -91,7 +91,7 @@ namespace PhoneNumbers
                 if(!CountryCodeSet.ContainsKey(countryCallingCode))
                     return null;
                 if(!CallingCodeToAlternateFormatsMap.ContainsKey(countryCallingCode))
-                    LoadAlternateFormatsMedataFromFile(AlternateFormatsFilePrefix);
+                    LoadAlternateFormatsMetadataFromFile(AlternateFormatsFilePrefix);
                 return CallingCodeToAlternateFormatsMap.ContainsKey(countryCallingCode)
                     ? CallingCodeToAlternateFormatsMap[countryCallingCode]
                     : null;
@@ -115,7 +115,7 @@ namespace PhoneNumbers
             }
         }
 
-        internal static HashSet<string> GetSupportedShortNumberRegions()
+        internal static ISet<string> GetSupportedShortNumberRegions()
         {
             return ShortNumberMetadataRegionCodes;
         }

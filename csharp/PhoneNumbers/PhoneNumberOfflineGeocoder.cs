@@ -214,7 +214,7 @@ namespace PhoneNumbers
         private static string GetRegionDisplayName(string regionCode, Locale language)
         {
             return regionCode == null || regionCode.Equals("ZZ") ||
-                   regionCode.Equals(PhoneNumberUtil.RegionCodeForNonGeoEntity)
+                   regionCode.Equals(PhoneNumberUtil.REGION_CODE_FOR_NON_GEO_ENTITY)
                 ? "" : new Locale("", regionCode).GetDisplayCountry(language.Language);
         }
 

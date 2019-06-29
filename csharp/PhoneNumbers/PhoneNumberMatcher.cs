@@ -23,73 +23,75 @@ using System.Text.RegularExpressions;
 
 namespace PhoneNumbers
 {
+    /// <summary>
+    /// The phone number pattern used by {@link #find}, similar to
+    /// <c> PhoneNumberUtil.VALID_PHONE_NUMBER</c>, but with the following differences:
+    /// <ul>
+    ///   <li>All captures are limited in order to place an upper bound to the text matched by the pattern. </li>
+    /// </ul>
+    /// <ul>
+    ///   <li>Leading punctuation / plus signs are limited. </li>
+    ///   <li>Consecutive occurrences of punctuation are limited. </li>
+    ///   <li>Number of digits is limited. </li>
+    /// </ul>
+    /// <ul>
+    ///   <li>No whitespace is allowed at the start or end. </li>
+    ///   <li>No alpha digits (vanity numbers such as 1-800-SIX-FLAGS) are currently supported. </li>
+    /// </ul>
+    /// </summary>
     public class PhoneNumberMatcher : IEnumerator<PhoneNumberMatch>
     {
-        /**
-        * The phone number pattern used by {@link #find}, similar to
-        * {@code PhoneNumberUtil.VALID_PHONE_NUMBER}, but with the following differences:
-        * <ul>
-        *   <li>All captures are limited in order to place an upper bound to the text matched by the
-        *       pattern.
-        * <ul>
-        *   <li>Leading punctuation / plus signs are limited.
-        *   <li>Consecutive occurrences of punctuation are limited.
-        *   <li>Number of digits is limited.
-        * </ul>
-        *   <li>No whitespace is allowed at the start or end.
-        *   <li>No alpha digits (vanity numbers such as 1-800-SIX-FLAGS) are currently supported.
-        * </ul>
-        */
         private static readonly Regex Pattern;
 
-        /**
-        * Matches strings that look like publication pages. Example:
-        * <pre>Computing Complete Answers to Queries in the Presence of Limited Access Patterns.
-        * Chen Li. VLDB J. 12(3): 211-227 (2003).</pre>
-        *
-        * The string "211-227 (2003)" is not a telephone number.
-        */
+        /// <summary>
+        /// Matches strings that look like publication pages. Example:
+        /// <pre>Computing Complete Answers to Queries in the Presence of Limited Access Patterns.
+        /// Chen Li. VLDB J. 12(3): 211-227 (2003).</pre>
+        ///
+        /// The string "211-227 (2003)" is not a telephone number.
+        /// </summary>
         private static readonly Regex PubPages = new Regex("\\d{1,5}-+\\d{1,5}\\s{0,4}\\(\\d{1,4}", InternalRegexOptions.Default);
 
-        /**
-        * Matches strings that look like dates using "/" as a separator. Examples: 3/10/2011, 31/10/96 or
-        * 08/31/95.
-        */
+        /// <summary>
+        /// Matches strings that look like dates using "/" as a separator. Examples: 3/10/2011, 31/10/96 or
+        /// 08/31/95.
+        /// </summary>
         private static readonly Regex SlashSeparatedDates =
             new Regex("(?:(?:[0-3]?\\d/[01]?\\d)|(?:[01]?\\d/[0-3]?\\d))/(?:[12]\\d)?\\d{2}", InternalRegexOptions.Default);
 
-        /**
-        * Matches timestamps. Examples: "2012-01-02 08:00". Note that the reg-ex does not include the
-        * trailing ":\d\d" -- that is covered by TIME_STAMPS_SUFFIX.
-        */
+        /// <summary>
+        /// Matches timestamps. Examples: "2012-01-02 08:00". Note that the reg-ex does not include the
+        /// trailing ":\d\d" -- that is covered by TIME_STAMPS_SUFFIX.
+        /// </summary>
         private static readonly Regex TimeStamps =
             new Regex("[12]\\d{3}[-/]?[01]\\d[-/]?[0-3]\\d [0-2]\\d$", InternalRegexOptions.Default);
         private static readonly PhoneRegex TimeStampsSuffix = new PhoneRegex(":[0-5]\\d", InternalRegexOptions.Default);
 
 
-        /**
-        * Pattern to check that brackets match. Opening brackets should be closed within a phone number.
-        * This also checks that there is something inside the brackets. Having no brackets at all is also
-        * fine.
-        */
+        /// <summary>
+        /// Pattern to check that brackets match. Opening brackets should be closed within a phone number.
+        /// This also checks that there is something inside the brackets. Having no brackets at all is also fine.
+        /// </summary>
         private static readonly PhoneRegex MatchingBrackets;
 
-        /**
-        * Punctuation that may be at the start of a phone number - brackets and plus signs.
-        */
+        /// <summary>
+        /// Punctuation that may be at the start of a phone number - brackets and plus signs.
+        /// </summary>
         private static readonly PhoneRegex LeadClass;
 
-        /**
-        * Matches white-space, which may indicate the end of a phone number and the start of something
-        * else (such as a neighbouring zip-code). If white-space is found, continues to match all
-        * characters that are not typically used to start a phone number.
-        */
+        /// <summary>
+        /// Matches white-space, which may indicate the end of a phone number and the start of something
+        /// else (such as a neighbouring zip-code). If white-space is found, continues to match all
+        /// characters that are not typically used to start a phone number.
+        /// </summary>
         private static readonly PhoneRegex GroupSeparator;
 
+        ///<summary>
+        /// Builds the MATCHING_BRACKETS and PATTERN regular expressions. The building blocks below exist
+        /// to make the pattern more easily understood.
+        /// </summary>
         static PhoneNumberMatcher()
         {
-            /* Builds the MATCHING_BRACKETS and PATTERN regular expressions. The building blocks below exist
-            * to make the pattern more easily understood. */
 
             var openingParens = "(\\[\uFF08\uFF3B";
             var closingParens = ")\\]\uFF09\uFF3D";
@@ -116,16 +118,16 @@ namespace PhoneNumbers
             * single block, set high enough to accommodate the entire national number and the international
             * country code. */
             var digitBlockLimit =
-                PhoneNumberUtil.MaxLengthForNsn + PhoneNumberUtil.MaxLengthCountryCode;
+                PhoneNumberUtil.MAX_LENGTH_FOR_NSN + PhoneNumberUtil.MAX_LENGTH_COUNTRY_CODE;
             /* Limit on the number of blocks separated by punctuation. Uses digitBlockLimit since some
             * formats use spaces to separate each digit. */
             var blockLimit = Limit(0, digitBlockLimit);
 
             /* A punctuation sequence allowing white space. */
-            var punctuation = "[" + PhoneNumberUtil.ValidPunctuation + "]" + punctuationLimit;
+            var punctuation = "[" + PhoneNumberUtil.VALID_PUNCTUATION + "]" + punctuationLimit;
             /* A digits block without punctuation. */
             var digitSequence = "\\p{Nd}" + Limit(1, digitBlockLimit);
-            var leadClassChars = openingParens + PhoneNumberUtil.PlusChars;
+            var leadClassChars = openingParens + PhoneNumberUtil.PLUS_CHARS;
             var leadClass = "[" + leadClassChars + "]";
             LeadClass = new PhoneRegex(leadClass, InternalRegexOptions.Default);
             GroupSeparator = new PhoneRegex("\\p{Z}" + "[^" + leadClassChars + "\\p{Nd}]*");
@@ -146,23 +148,21 @@ namespace PhoneNumbers
             return "{" + lower + "," + upper + "}";
         }
 
-        /** The phone number utility. */
+        /// <summary>The phone number utility.</summary>
         private readonly PhoneNumberUtil phoneUtil;
-        /** The text searched for phone numbers. */
+        /// <summary>The text searched for phone numbers.</summary>
         private readonly string text;
-        /**
-        * The region (country) to assume for phone numbers without an international prefix, possibly
-        * null.
-        */
+
+        /// <summary>The region (country) to assume for phone numbers without an international prefix, possibly null.</summary>
         private readonly string preferredRegion;
-        /** The degree of validation requested. */
+        /// <summary>The degree of validation requested.</summary>
         private readonly PhoneNumberUtil.Leniency leniency;
-        /** The maximum number of retries after matching an invalid number. */
+        /// <summary>The maximum number of retries after matching an invalid number.</summary>
         private long maxTries;
 
-        /** The last successful match, null unless in {@link State#READY}. */
+        /// <summary>The last successful match, null unless in {@link State#READY}.</summary>
         private PhoneNumberMatch lastMatch;
-        /** The next index to start searching at. Undefined in {@link State#DONE}. */
+        /// <summary>The next index to start searching at. Undefined in <see cref="State.Done" />.</summary>
         private int searchIndex;
 
         // A cache for frequently used country-specific regular expressions. Set to 32 to cover ~2-3
@@ -171,21 +171,21 @@ namespace PhoneNumbers
         // that use-case won't have a lot of benefit.
         private readonly RegexCache regexCache = new RegexCache(32);
 
-        /**
-        * Creates a new instance. See the factory methods in {@link PhoneNumberUtil} on how to obtain a
-        * new instance.
-        *
-        * @param util      the phone number util to use
-        * @param text      the character sequence that we will search, null for no text
-        * @param country   the country to assume for phone numbers not written in international format
-        *                  (with a leading plus, or with the international dialing prefix of the
-        *                  specified region). May be null or "ZZ" if only numbers with a
-        *                  leading plus should be considered.
-        * @param leniency  the leniency to use when evaluating candidate phone numbers
-        * @param maxTries  the maximum number of invalid numbers to try before giving up on the text.
-        *                  This is to cover degenerate cases where the text has a lot of false positives
-        *                  in it. Must be {@code >= 0}.
-        */
+        /// <summary>
+        /// Creates a new instance. See the factory methods in {@link PhoneNumberUtil} on how to obtain a
+        /// new instance.
+        /// </summary>
+        ///
+        /// <param name="util">      the phone number util to use</param>
+        /// <param name="text">      the character sequence that we will search, null for no text</param>
+        /// <param name="country">   the country to assume for phone numbers not written in international format
+        ///                          (with a leading plus, or with the international dialing prefix of the
+        ///                          specified region). May be null or "ZZ" if only numbers with a
+        ///                          leading plus should be considered.</param>
+        /// <param name="leniency">  the leniency to use when evaluating candidate phone numbers</param>
+        /// <param name="maxTries">  the maximum number of invalid numbers to try before giving up on the text.
+        ///                          This is to cover degenerate cases where the text has a lot of false positives
+        ///                          in it. Must be <c> >= 0</c>.</param>
         public PhoneNumberMatcher(PhoneNumberUtil util, string text, string country, PhoneNumberUtil.Leniency leniency,
             long maxTries)
         {
@@ -199,13 +199,13 @@ namespace PhoneNumbers
             this.maxTries = maxTries;
         }
 
-        /**
-        * Attempts to find the next subsequence in the searched sequence on or after {@code searchIndex}
-        * that represents a phone number. Returns the next match, null if none was found.
-        *
-        * @param index  the search index to start searching at
-        * @return  the phone number match found, null if none can be found
-        */
+        /// <summary>
+        /// Attempts to find the next subsequence in the searched sequence on or after <c>searchIndex</c>
+        /// that represents a phone number. Returns the next match, null if none was found.
+        /// </summary>
+        /// 
+        /// <param name="index"> the search index to start searching at</param>
+        /// <returns> the phone number match found, null if none can be found</returns>
         private PhoneNumberMatch Find(int index)
         {
             Match matched;
@@ -230,10 +230,10 @@ namespace PhoneNumbers
             return null;
         }
 
-        /**
-        * Trims away any characters after the first match of {@code pattern} in {@code candidate},
-        * returning the trimmed version.
-        */
+        /// <summary>
+        /// Trims away any characters after the first match of <c>pattern</c> in <c>candidate</c>,
+        /// returning the trimmed version.
+        /// </summary>
         private static string TrimAfterFirstMatch(Regex pattern, string candidate)
         {
             var trailingCharsMatcher = pattern.Match(candidate);
@@ -242,11 +242,11 @@ namespace PhoneNumbers
             return candidate;
         }
 
-        /**
-        * Helper method to determine if a character is a Latin-script letter or not. For our purposes,
-        * combining marks should also return true since we assume they have been added to a preceding
-        * Latin character.
-        */
+        /// <summary>
+        /// Helper method to determine if a character is a Latin-script letter or not. For our purposes,
+        /// combining marks should also return true since we assume they have been added to a preceding
+        /// Latin character.
+        /// </summary>
         public static bool IsLatinLetter(char letter)
         {
             // Combining marks are a subset of non-spacing-mark.
@@ -295,13 +295,13 @@ namespace PhoneNumbers
             return found >= 0 ? str.Substring(0, found) : str;
         }
 
-        /**
-        * Attempts to extract a match from a {@code candidate} character sequence.
-        *
-        * @param candidate  the candidate text that might contain a phone number
-        * @param offset  the offset of {@code candidate} within {@link #text}
-        * @return  the match found, null if none can be found
-        */
+        /// <summary>
+        /// Attempts to extract a match from a <c>candidate</c> character sequence.
+        /// </summary>
+        /// 
+        /// <param name="candidate">the candidate text that might contain a phone number</param>
+        /// <param name="offset">the offset of <c>candidate</c> within <see cref="text" /></param>
+        /// <returns>the match found, null if none can be found</returns>
         private PhoneNumberMatch ExtractMatch(string candidate, int offset)
         {
             // Skip a match that is more likely a publication page reference or a date.
@@ -324,14 +324,14 @@ namespace PhoneNumbers
             // candidate.
         }
 
-        /**
-        * Attempts to extract a match from {@code candidate} if the whole candidate does not qualify as a
-        * match.
-        *
-        * @param candidate  the candidate text that might contain a phone number
-        * @param offset  the current offset of {@code candidate} within {@link #text}
-        * @return  the match found, null if none can be found
-        */
+        /// <summary>
+        /// Attempts to extract a match from {@code candidate} if the whole candidate does not qualify as a
+        /// match.
+        /// </summary>
+        /// 
+        /// <param name="candidate">the candidate text that might contain a phone number</param>
+        /// <param name="offset">the current offset of <c>candidate</c> within <see cref="text" /></param>
+        /// <returns>the match found, null if none can be found</returns>
         private PhoneNumberMatch ExtractInnerMatch(string candidate, int offset)
         {
             // Try removing either the first or last "group" in the number and see if this gives a result.
@@ -382,15 +382,15 @@ namespace PhoneNumbers
             return null;
         }
 
-        /**
-        * Parses a phone number from the {@code candidate} using {@link PhoneNumberUtil#parse} and
-        * verifies it matches the requested {@link #leniency}. If parsing and verification succeed, a
-        * corresponding {@link PhoneNumberMatch} is returned, otherwise this method returns null.
-        *
-        * @param candidate  the candidate match
-        * @param offset  the offset of {@code candidate} within {@link #text}
-        * @return  the parsed and validated phone number match, or null
-        */
+        /// <summary>
+        /// Parses a phone number from the {@code candidate} using {@link PhoneNumberUtil#parse} and
+        /// verifies it matches the requested {@link #leniency}. If parsing and verification succeed, a
+        /// corresponding <see cref="PhoneNumberMatch" /> is returned, otherwise this method returns null.
+        /// </summary>
+        ///
+        /// <param name="candidate">the candidate match</param>
+        /// <param name="offset">the offset of <c>candidate</c> within <see cref="text" /></param>
+        /// <returns>the parsed and validated phone number match, or null</returns>
         private PhoneNumberMatch ParseAndVerify(string candidate, int offset)
         {
             try
@@ -446,16 +446,17 @@ namespace PhoneNumbers
             return null;
         }
 
-        /**
-        * Returns true if the groups of digits found in our candidate phone number match our
-        * expectations.
-        *
-        * @param number  the original number we found when parsing
-        * @param normalizedCandidate  the candidate number, normalized to only contain ASCII digits,
-        *     but with non-digits (spaces etc) retained
-        * @param expectedNumberGroups  the groups of digits that we would expect to see if we
-        *     formatted this number
-        */
+        /// <summary>
+        /// Returns true if the groups of digits found in our candidate phone number match our
+        /// expectations.
+        /// </summary>
+        ///
+        /// <param name="util"> </param>
+        /// <param name="number"> the original number we found when parsing</param>
+        /// <param name="normalizedCandidate"> the candidate number, normalized to only contain ASCII digits,
+        ///     but with non-digits (spaces etc) retained</param>
+        /// <param name ="expectedNumberGroups"> the groups of digits that we would expect to see if we
+        ///     formatted this number</param>
         public delegate bool CheckGroups(PhoneNumberUtil util, PhoneNumber number,
                 StringBuilder normalizedCandidate, IList<string> expectedNumberGroups);
 
@@ -466,7 +467,7 @@ namespace PhoneNumbers
         {
             var fromIndex = 0;
             // Check each group of consecutive digits are not broken into separate groupings in the
-            // {@code normalizedCandidate} string.
+            // normalizedCandidate string.
             for (var i = 0; i < formattedNumberGroups.Count; i++)
             {
                 // Fails if the substring of {@code normalizedCandidate} starting from {@code fromIndex}
@@ -535,11 +536,11 @@ namespace PhoneNumbers
                    candidateGroups[candidateNumberGroupIndex].EndsWith(formattedNumberGroups[0]);
         }
 
-        /**
-        * Helper method to get the national-number part of a number, formatted without any national
-        * prefix, and return it as a set of digit blocks that would be formatted together following
-        * standard formatting rules.
-        */
+        /// <summary>
+        /// Helper method to get the national-number part of a number, formatted without any national
+        /// prefix, and return it as a set of digit blocks that would be formatted together following
+        /// standard formatting rules.
+        /// </summary>
         private static IList<string> GetNationalNumberGroups(PhoneNumberUtil util, PhoneNumber number) {
             // This will be in the format +CC-DG1-DG2-DGX;ext=EXT where DG1..DGX represents groups of
             // digits.
@@ -555,11 +556,11 @@ namespace PhoneNumbers
             return rfc3966Format.Substring(startIndex, endIndex - startIndex).Split('-');
         }
 
-        /**
-         * Helper method to get the national-number part of a number, formatted without any national
-         * prefix, and return it as a set of digit blocks that should be formatted together according to
-         * the formatting pattern passed in.
-         */
+        /// <summary>
+        /// Helper method to get the national-number part of a number, formatted without any national
+        /// prefix, and return it as a set of digit blocks that should be formatted together according to
+        /// the formatting pattern passed in.
+        /// </summary>
         private static IList<string> GetNationalNumberGroups(PhoneNumberUtil util, PhoneNumber number,
             NumberFormat formattingPattern)
         {
