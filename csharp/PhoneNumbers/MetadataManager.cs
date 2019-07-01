@@ -15,6 +15,9 @@
  */
 
 using System.Collections.Generic;
+#if !NET35 && !NET40
+using System.Collections.Immutable;
+#endif
 using System.Linq;
 using System.Reflection;
 
@@ -48,7 +51,12 @@ namespace PhoneNumbers
 
         // The set of region codes for which there are short number metadata. For every region code in
         // this set there should be metadata linked into the resources.
-        private static readonly ISet<string> ShortNumberMetadataRegionCodes =
+
+#if (NET35 || NET40)
+        private static readonly HashSet<string> ShortNumberMetadataRegionCodes =
+#else
+        private static readonly ImmutableHashSet<string> ShortNumberMetadataRegionCodes =
+#endif
             ShortNumbersRegionCodeSet.RegionCodeSet;
 
         private MetadataManager()
@@ -115,11 +123,12 @@ namespace PhoneNumbers
             }
         }
 
-        internal static ISet<string> GetSupportedShortNumberRegions()
-        {
-            return ShortNumberMetadataRegionCodes;
-        }
-
+#if (NET35 || NET40)
+        internal static HashSet<string> GetSupportedShortNumberRegions()
+#else
+        internal static ImmutableHashSet<string> GetSupportedShortNumberRegions()
+#endif
+            => ShortNumberMetadataRegionCodes;
 
     }
 }

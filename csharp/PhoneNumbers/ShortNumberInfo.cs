@@ -15,6 +15,9 @@
  */
 
 using System.Collections.Generic;
+#if !NET35 && !NET40
+using System.Collections.Immutable;
+#endif
 using System.Linq;
 using System.Text;
 using PhoneNumbers.Internal;
@@ -385,10 +388,12 @@ namespace PhoneNumbers
         /// <summary>
         /// Convenience method to get a list of what regions the library has metadata for.
         /// </summary>
-        internal ISet<string> GetSupportedRegions()
-        {
-            return MetadataManager.GetSupportedShortNumberRegions();
-        }
+#if (NET35 || NET40)
+        internal HashSet<string> GetSupportedRegions()
+#else
+        internal ImmutableHashSet<string> GetSupportedRegions()
+#endif
+            => MetadataManager.GetSupportedShortNumberRegions();
 
         /// <summary>
         /// Gets a valid short number for the specified region.

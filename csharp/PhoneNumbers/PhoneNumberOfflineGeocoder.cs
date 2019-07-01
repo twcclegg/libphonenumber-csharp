@@ -171,7 +171,7 @@ namespace PhoneNumbers
          * Gets a {@link PhoneNumberOfflineGeocoder} instance to carry out international phone number
          * geocoding.
          *
-         * <p> The {@link PhoneNumberOfflineGeocoder} is implemented as a singleton. Therefore, calling
+         * <p /> The {@link PhoneNumberOfflineGeocoder} is implemented as a singleton. Therefore, calling
          * this method multiple times will only result in one instance being created.
          *
          * @return  a {@link PhoneNumberOfflineGeocoder} instance
@@ -224,7 +224,7 @@ namespace PhoneNumbers
         * name of the geographical area the phone number is from if more detailed information is
         * available.
         *
-        * <p>This method assumes the validity of the number passed in has already been checked.
+        * <p />This method assumes the validity of the number passed in has already been checked.
         *
         * @param number  a valid phone number for which we want to get a text description
         * @param languageCode  the language code for which the description should be written
@@ -253,7 +253,7 @@ namespace PhoneNumbers
         * the United Kingdom (region "GB"), for the same number we may show "Mountain View, CA, United
         * States" or even just "United States".
         *
-        * <p>This method assumes the validity of the number passed in has already been checked.
+        * <p />This method assumes the validity of the number passed in has already been checked.
         *
         * @param number  the phone number for which we want to get a text description
         * @param languageCode  the language code for which the description should be written

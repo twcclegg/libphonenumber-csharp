@@ -24,7 +24,7 @@ namespace PhoneNumbers
      * Class to encapsulate the metadata filtering logic and restrict visibility into raw data
      * structures.
      *
-     * <p>
+     * <p />
      * WARNING: This is an internal API which is under development and subject to backwards-incompatible
      * changes without notice. Any changes are not guaranteed to be reflected in the versioning scheme
      * of the public API, nor in release notes.
