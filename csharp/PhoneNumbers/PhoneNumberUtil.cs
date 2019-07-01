@@ -2296,13 +2296,34 @@ namespace PhoneNumbers
 
         /// <summary>
         /// Convenience wrapper around <see cref="IsPossibleNumberWithReason(PhoneNumber)"/>. Instead of returning the reason
-        /// for failure, this method returns a bool value.
+        /// for failure, this method returns true if the number is either a possible fully-qualified number
+        /// (containing the area code and country code), or if the number could be a possible local number
+        /// (with a country code, but missing an area code). Local numbers are considered possible if they
+        ///could be possibly dialled in this format: if the area code is needed for a call to connect, the
+        /// number is not considered possible without it.
         /// </summary>
         /// <param name="number">The number that needs to be checked.</param>
         /// <returns>True if the number is possible.</returns>
         public bool IsPossibleNumber(PhoneNumber number)
         {
-            return IsPossibleNumberWithReason(number) == ValidationResult.IS_POSSIBLE;
+            var result = IsPossibleNumberWithReason(number);
+            return result == ValidationResult.IS_POSSIBLE || result == ValidationResult.IS_POSSIBLE_LOCAL_ONLY;
+        }
+
+        /// <summary>Convenience wrapper around {@link #isPossibleNumberForTypeWithReason}. Instead of returning the
+        /// reason for failure, this method returns true if the number is either a possible fully-qualified
+        /// number (containing the area code and country code), or if the number could be a possible local
+        /// number (with a country code, but missing an area code). Local numbers are considered possible
+        /// if they could be possibly dialled in this format: if the area code is needed for a call to
+        /// connect, the number is not considered possible without it. </summary>
+        ///
+        /// <param name="number">the number that needs to be checked</param>
+        /// <param name="type">the type we are interested in</param>
+        /// <returns>if the number is possible for this particular type</returns>
+        public bool IsPossibleNumberForType(PhoneNumber number, PhoneNumberType type)
+        {
+            var result = IsPossibleNumberForTypeWithReason(number, type);
+            return result == ValidationResult.IS_POSSIBLE || result == ValidationResult.IS_POSSIBLE_LOCAL_ONLY;
         }
 
         /// <summary>
