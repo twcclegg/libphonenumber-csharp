@@ -447,6 +447,10 @@ namespace PhoneNumbers
                 PhoneNumberUtil.PlusCharsPattern.MatchAll(char.ToString(nextChar)).Success;
         }
 
+        /// <summary>
+        /// Checks to see if there is an exact pattern match for these digits. If so, we should use this
+        ///instead of any other formatting template whose leadingDigitsPattern also matches the input.
+        /// </summary>
         private string AttemptToFormatAccruedDigits()
         {
             foreach (var numFormat in possibleFormats)
@@ -457,7 +461,20 @@ namespace PhoneNumbers
                     shouldAddSpaceAfterNationalPrefix =
                         NationalPrefixSeparatorsPattern.Match(numFormat.NationalPrefixFormattingRule).Success;
                     var formattedNumber = m.Replace(nationalNumber.ToString(), numFormat.Format);
-                    return AppendNationalNumber(formattedNumber);
+                    // Check that we did not remove nor add any extra digits when we matched
+                    // this formatting pattern. This usually happens after we entered the last
+                    // digit during AYTF. Eg: In case of MX, we swallow mobile token (1) when
+                    // formatted but AYTF should retain all the number entered and not change
+                    // in order to match a format (of same leading digits and length) display
+                    // in that way.
+                    var fullOutput = AppendNationalNumber(formattedNumber);
+                    var formattedNumberDigitsOnly = PhoneNumberUtil.NormalizeDiallableCharsOnly(fullOutput);
+                    if (formattedNumberDigitsOnly.Equals(accruedInputWithoutFormatting.ToString()))
+                    {
+                        // If it's the same (i.e entered number and format is same), then it's
+                        // safe to return this in formatted number as nothing is lost / added.
+                        return fullOutput;
+                    }
                 }
             }
             return "";

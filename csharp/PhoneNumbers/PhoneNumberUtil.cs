@@ -682,6 +682,17 @@ namespace PhoneNumbers
             return normalizedDigits;
         }
 
+         /// <summary>
+         /// Normalizes a string of characters representing a phone number. This strips all characters which
+         /// are not diallable on a mobile phone keypad (including all non-ASCII digits).
+         /// </summary>
+         /// <param name="number"> a string of characters representing a phone number</param>
+         /// <returns> the normalized string version of the phone number</returns>
+         public static string NormalizeDiallableCharsOnly(string number)
+         {
+            return NormalizeHelper(number, DiallableCharMappings, true /* remove non matches */);
+         }
+
         /// <summary>
         /// Converts all alpha characters in a number to their respective digits on a keypad, but retains
         /// existing formatting.
@@ -883,6 +894,13 @@ namespace PhoneNumbers
             return normalizedNumber.ToString();
         }
 
+        /// <summary>
+        /// Gets a {@link PhoneNumberUtil} instance to carry out international phone number formatting,
+        /// parsing, or validation. The instance is loaded with all phone number metadata.
+        /// The <see cref="PhoneNumberUtil" /> is implemented as a singleton.Therefore, calling getInstance
+        /// multiple times will only result in one instance being created.
+        /// </summary>
+        /// <returns> a PhoneNumberUtil instance</returns>
         public static PhoneNumberUtil GetInstance(string baseFileLocation,
             Dictionary<int, List<string>> countryCallingCodeToRegionCodeMap)
         {

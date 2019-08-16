@@ -289,6 +289,25 @@ namespace PhoneNumbers.Test
             // A number containing an invalid country calling code, which shouldn't have any NDC.
             var number = new PhoneNumber.Builder().SetCountryCode(123).SetNationalNumber(6502530000L).Build();
             Assert.Equal(0, phoneUtil.GetLengthOfNationalDestinationCode(number));
+
+            // An international toll free number, which has NDC "1234".
+            Assert.Equal(4, phoneUtil.GetLengthOfNationalDestinationCode(InternationalTollFree));
+
+            // A mobile number from China is geographical, but does not have an area code: however it still
+            // can be considered to have a national destination code.
+            var cnMobile = new PhoneNumber.Builder().SetCountryCode(86).SetNationalNumber(18912341234L).Build();
+            Assert.Equal(3, phoneUtil.GetLengthOfNationalDestinationCode(cnMobile));
+        }
+
+        [Fact]
+        public void TestGetCountryMobileToken()
+        {
+            Assert.Equal("9", PhoneNumberUtil.GetCountryMobileToken(phoneUtil.GetCountryCodeForRegion(
+                RegionCode.AR)));
+
+            // Country calling code for Sweden, which has no mobile token.
+            Assert.Equal("", PhoneNumberUtil.GetCountryMobileToken(phoneUtil.GetCountryCodeForRegion(
+                RegionCode.SE)));
         }
 
         [Fact]
