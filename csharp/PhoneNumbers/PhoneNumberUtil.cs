@@ -1341,53 +1341,98 @@ namespace PhoneNumbers
             var countryCallingCode = number.CountryCode;
             if (!HasValidCountryCallingCode(countryCallingCode))
             {
-                return number.HasRawInput ? number.RawInput : "";
+                return number.RawInput ?? "";
             }
 
-            string formattedNumber;
+            var formattedNumber = "";
             // Clear the extension, as that part cannot normally be dialed together with the main number.
             var numberNoExt = new PhoneNumber.Builder().MergeFrom(number).ClearExtension().Build();
-            var numberType = GetNumberType(numberNoExt);
             var regionCode = GetRegionCodeForCountryCode(countryCallingCode);
-            if (regionCode.Equals("CO") && regionCallingFrom.Equals("CO"))
+            var numberType = GetNumberType(numberNoExt);
+            var isValidNumber = numberType != PhoneNumberType.UNKNOWN;
+            if (regionCallingFrom == regionCode)
             {
-                formattedNumber = numberType == PhoneNumberType.FIXED_LINE
-                    ? FormatNationalNumberWithCarrierCode(numberNoExt, COLOMBIA_MOBILE_TO_FIXED_LINE_PREFIX)
-                    : Format(numberNoExt, PhoneNumberFormat.NATIONAL);
+                var isFixedLineOrMobile =
+                    numberType == PhoneNumberType.FIXED_LINE || numberType == PhoneNumberType.MOBILE
+                                                               || numberType == PhoneNumberType.FIXED_LINE_OR_MOBILE;
+                // Carrier codes may be needed in some countries. We handle this here.
+                if (regionCode == "CO" && numberType == PhoneNumberType.FIXED_LINE)
+                {
+                    formattedNumber =
+                        FormatNationalNumberWithCarrierCode(numberNoExt, COLOMBIA_MOBILE_TO_FIXED_LINE_PREFIX);
+                }
+                else if (regionCode == "BR" && isFixedLineOrMobile)
+                {
+                    // Historically, we set this to an empty string when parsing with raw input if none was
+                    // found in the input string. However, this doesn't result in a number we can dial. For this
+                    // reason, we treat the empty string the same as if it isn't set at all.
+                    formattedNumber = numberNoExt.PreferredDomesticCarrierCode.Length > 0
+                        ? formattedNumber = FormatNationalNumberWithPreferredCarrierCode(numberNoExt, "")
+                        // Brazilian fixed line and mobile numbers need to be dialed with a carrier code when
+                        // called within Brazil. Without that, most of the carriers won't connect the call.
+                        // Because of that, we return an empty string here.
+                        : "";
+                }
+                else if
+                    (countryCallingCode == NANPA_COUNTRY_CODE)
+                {
+                    // For NANPA countries, we output international format for numbers that can be dialed
+                    // internationally, since that always works, except for numbers which might potentially be
+                    // short numbers, which are always dialled in national format.
+                    var regionMetadata = GetMetadataForRegion(regionCallingFrom);
+                    if (CanBeInternationallyDialled(numberNoExt)
+                        && TestNumberLength(GetNationalSignificantNumber(numberNoExt), regionMetadata)
+                            != ValidationResult.TOO_SHORT)
+                    {
+                        formattedNumber = Format(numberNoExt, PhoneNumberFormat.INTERNATIONAL);
+                    }
+                    else
+                    {
+                        formattedNumber = Format(numberNoExt, PhoneNumberFormat.NATIONAL);
+                    }
+                }
+                else
+                {
+                    // For non-geographical countries, and Mexican, Chilean, and Uzbek fixed line and mobile
+                    // numbers, we output international format for numbers that can be dialed internationally as
+                    // that always works.
+                    if (regionCode == REGION_CODE_FOR_NON_GEO_ENTITY
+                        // MX fixed line and mobile numbers should always be formatted in international format,
+                        // even when dialed within MX. For national format to work, a carrier code needs to be
+                        // used, and the correct carrier code depends on if the caller and callee are from the
+                        // same local area. It is trickier to get that to work correctly than using
+                        // international format, which is tested to work fine on all carriers.
+                        // CL fixed line numbers need the national prefix when dialing in the national format,
+                        // but don't have it when used for display. The reverse is true for mobile numbers.  As
+                        // a result, we output them in the international format to make it work.
+                        // UZ mobile and fixed-line numbers have to be formatted in international format or
+                        // prefixed with special codes like 03, 04 (for fixed-line) and 05 (for mobile) for
+                        // dialling successfully from mobile devices. As we do not have complete information on
+                        // special codes and to be consistent with formatting across all phone types we return
+                        // the number in international format here.
+                        || (regionCode == "MX" || regionCode == "CL"
+                            || regionCode == "UZ" && isFixedLineOrMobile)
+                        && CanBeInternationallyDialled(numberNoExt))
+                    {
+                        formattedNumber = Format(numberNoExt, PhoneNumberFormat.INTERNATIONAL);
+                    }
+                    else
+                    {
+                        formattedNumber = Format(numberNoExt, PhoneNumberFormat.NATIONAL);
+                    }
+                }
             }
-            else if (regionCode.Equals("PE") && regionCallingFrom.Equals("PE"))
+            else if (isValidNumber && CanBeInternationallyDialled(numberNoExt))
             {
-                // In Peru, numbers cannot be dialled using E164 format from a mobile phone for Movistar.
-                // Instead they must be dialled in national format.
-                formattedNumber = Format(numberNoExt, PhoneNumberFormat.NATIONAL);
-            }
-            else if (regionCode.Equals("BR") && regionCallingFrom.Equals("BR") &&
-                ((numberType == PhoneNumberType.FIXED_LINE) || (numberType == PhoneNumberType.MOBILE) ||
-                (numberType == PhoneNumberType.FIXED_LINE_OR_MOBILE)))
-            {
-                // Historically, we set this to an empty string when parsing with raw input if none was
-                // found in the input string. However, this doesn't result in a number we can dial. For this
-                // reason, we treat the empty string the same as if it isn't set at all.
-                formattedNumber = numberNoExt.PreferredDomesticCarrierCode.Length > 0
-                    ? FormatNationalNumberWithPreferredCarrierCode(numberNoExt, "")
-                    // Brazilian fixed line and mobile numbers need to be dialed with a carrier code when
-                    // called within Brazil. Without that, most of the carriers won't connect the call.
-                    // Because of that, we return an empty string here.
-                    : "";
-            }
-            else if (CanBeInternationallyDialled(numberNoExt))
-            {
-                return withFormatting ? Format(numberNoExt, PhoneNumberFormat.INTERNATIONAL)
+                // We assume that short numbers are not diallable from outside their region, so if a number
+                // is not a valid regular length phone number, we treat it as if it cannot be internationally
+                // dialled.
+                return withFormatting
+                    ? Format(numberNoExt, PhoneNumberFormat.INTERNATIONAL)
                     : Format(numberNoExt, PhoneNumberFormat.E164);
             }
-            else
-            {
-                formattedNumber = (regionCallingFrom == regionCode)
-                    ? Format(numberNoExt, PhoneNumberFormat.NATIONAL) : "";
-            }
             return withFormatting ? formattedNumber
-                : NormalizeHelper(formattedNumber, DiallableCharMappings,
-                    true /* remove non matches */);
+                          : NormalizeDiallableCharsOnly(formattedNumber);
         }
 
         /// <summary>
