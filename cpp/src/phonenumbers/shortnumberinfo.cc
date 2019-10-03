@@ -91,7 +91,7 @@ bool MatchesPossibleNumberAndNationalNumber(
           lengths.end()) {
     return false;
   }
-  return matcher_api.MatchesNationalNumber(number, desc, false);
+  return matcher_api.MatchNationalNumber(number, desc, false);
 }
 }  // namespace
 
@@ -363,7 +363,7 @@ bool ShortNumberInfo::MatchesEmergencyNumberHelper(const string& number,
       allow_prefix_match &&
       regions_where_emergency_numbers_must_be_exact_->find(region_code) ==
           regions_where_emergency_numbers_must_be_exact_->end();
-  return matcher_api_->MatchesNationalNumber(
+  return matcher_api_->MatchNationalNumber(
       extracted_number, metadata->emergency(), allow_prefix_match_for_region);
 }
 
@@ -393,6 +393,20 @@ bool ShortNumberInfo::IsCarrierSpecificForRegion(const PhoneNumber& number,
   return phone_metadata &&
          MatchesPossibleNumberAndNationalNumber(*matcher_api_, national_number,
              phone_metadata->carrier_specific());
+}
+
+bool ShortNumberInfo::IsSmsServiceForRegion(const PhoneNumber& number,
+    const string& region_dialing_from) const {
+  if (!RegionDialingFromMatchesNumber(number, region_dialing_from)) {
+    return false;
+  }
+  string national_number;
+  phone_util_.GetNationalSignificantNumber(number, &national_number);
+  const PhoneMetadata* phone_metadata =
+      GetMetadataForRegion(region_dialing_from);
+  return phone_metadata &&
+         MatchesPossibleNumberAndNationalNumber(*matcher_api_, national_number,
+             phone_metadata->sms_services());
 }
 
 }  // namespace phonenumbers

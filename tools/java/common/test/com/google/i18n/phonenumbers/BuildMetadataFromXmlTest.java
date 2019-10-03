@@ -130,7 +130,6 @@ public class BuildMetadataFromXmlTest extends TestCase {
     assertEquals("0", phoneMetadata.getNationalPrefix());
     assertEquals(" x", phoneMetadata.getPreferredExtnPrefix());
     assertTrue(phoneMetadata.getMainCountryForCode());
-    assertTrue(phoneMetadata.isLeadingZeroPossible());
     assertTrue(phoneMetadata.isMobileNumberPortableRegion());
   }
 
@@ -141,7 +140,6 @@ public class BuildMetadataFromXmlTest extends TestCase {
     PhoneMetadata.Builder phoneMetadata =
         BuildMetadataFromXml.loadTerritoryTagMetadata("33", territoryElement, "");
     assertFalse(phoneMetadata.getMainCountryForCode());
-    assertFalse(phoneMetadata.isLeadingZeroPossible());
     assertFalse(phoneMetadata.isMobileNumberPortableRegion());
   }
 
@@ -233,7 +231,7 @@ public class BuildMetadataFromXmlTest extends TestCase {
 
     assertFalse(BuildMetadataFromXml.loadInternationalFormat(metadata, numberFormatElement,
                                                              nationalFormat.build()));
-    assertTrue(metadata.getIntlNumberFormat(0).isNationalPrefixOptionalWhenFormatting());
+    assertTrue(metadata.getIntlNumberFormat(0).getNationalPrefixOptionalWhenFormatting());
   }
 
   public void testLoadNationalFormat()
@@ -435,7 +433,7 @@ public class BuildMetadataFromXmlTest extends TestCase {
   }
 
   // Tests processPhoneNumberDescElement().
-  public void testProcessPhoneNumberDescElementWithInvalidInputWithRegex()
+  public void testProcessPhoneNumberDescElementWithInvalidInput()
       throws ParserConfigurationException, SAXException, IOException {
     PhoneNumberDesc.Builder generalDesc = PhoneNumberDesc.newBuilder();
     Element territoryElement = parseXmlString("<territory/>");
@@ -443,7 +441,7 @@ public class BuildMetadataFromXmlTest extends TestCase {
 
     phoneNumberDesc = BuildMetadataFromXml.processPhoneNumberDescElement(
         generalDesc, territoryElement, "invalidType");
-    assertEquals("NA", phoneNumberDesc.getNationalNumberPattern());
+    assertFalse(phoneNumberDesc.hasNationalNumberPattern());
   }
 
   public void testProcessPhoneNumberDescElementOverridesGeneralDesc()
@@ -640,7 +638,7 @@ public class BuildMetadataFromXmlTest extends TestCase {
     // Should set sameMobileAndFixedPattern to true.
     BuildMetadataFromXml.setRelevantDescPatterns(metadata, territoryElement,
         false /* isShortNumberMetadata */);
-    assertTrue(metadata.isSameMobileAndFixedLinePattern());
+    assertTrue(metadata.getSameMobileAndFixedLinePattern());
   }
 
   public void testSetRelevantDescPatternsSetsAllDescriptionsForRegularLengthNumbers()
@@ -681,6 +679,9 @@ public class BuildMetadataFromXmlTest extends TestCase {
         + "  <carrierSpecific>"
         + "    <nationalNumberPattern>\\d{5}</nationalNumberPattern>"
         + "  </carrierSpecific>"
+        + "  <smsServices>"
+        + "    <nationalNumberPattern>\\d{6}</nationalNumberPattern>"
+        + "  </smsServices>"
         + "</territory>";
     Element territoryElement = parseXmlString(xmlInput);
     PhoneMetadata.Builder metadata = PhoneMetadata.newBuilder();
@@ -691,6 +692,7 @@ public class BuildMetadataFromXmlTest extends TestCase {
     assertEquals("\\d{3}", metadata.getPremiumRate().getNationalNumberPattern());
     assertEquals("\\d{4}", metadata.getShortCode().getNationalNumberPattern());
     assertEquals("\\d{5}", metadata.getCarrierSpecific().getNationalNumberPattern());
+    assertEquals("\\d{6}", metadata.getSmsServices().getNationalNumberPattern());
   }
 
   public void testSetRelevantDescPatternsThrowsErrorIfTypePresentMultipleTimes()
@@ -753,12 +755,12 @@ public class BuildMetadataFromXmlTest extends TestCase {
     Element territoryElement = parseXmlString(xmlInput);
     PhoneMetadata metadata = BuildMetadataFromXml.loadCountryMetadata("FR", territoryElement,
         false /* isShortNumberMetadata */, true /* isAlternateFormatsMetadata */).build();
-    assertTrue(metadata.getNumberFormat(0).isNationalPrefixOptionalWhenFormatting());
+    assertTrue(metadata.getNumberFormat(0).getNationalPrefixOptionalWhenFormatting());
     // This is inherited from the territory, with $NP replaced by the actual national prefix, and
     // $FG replaced with $1.
     assertEquals("0$1", metadata.getNumberFormat(0).getNationalPrefixFormattingRule());
     // Here it is explicitly set to false.
-    assertFalse(metadata.getNumberFormat(1).isNationalPrefixOptionalWhenFormatting());
+    assertFalse(metadata.getNumberFormat(1).getNationalPrefixOptionalWhenFormatting());
   }
 
   public void testProcessPhoneNumberDescElement_PossibleLengthsSetCorrectly() throws Exception {
@@ -775,15 +777,26 @@ public class BuildMetadataFromXmlTest extends TestCase {
         + "  <possibleLengths national=\"13,4\" localOnly=\"6\"/>"
         + "</fixedLine>"
         + "</territory>");
-    PhoneNumberDesc.Builder phoneNumberDesc;
 
-    phoneNumberDesc = BuildMetadataFromXml.processPhoneNumberDescElement(
+    PhoneNumberDesc.Builder fixedLine;
+    PhoneNumberDesc.Builder mobile;
+
+    fixedLine = BuildMetadataFromXml.processPhoneNumberDescElement(
         generalDesc, territoryElement, "fixedLine");
-    assertEquals(2, phoneNumberDesc.getPossibleLengthCount());
-    assertEquals(4, phoneNumberDesc.getPossibleLength(0));
-    assertEquals(13, phoneNumberDesc.getPossibleLength(1));
-    // We don't set the local-only lengths on child elements such as fixed-line.
-    assertEquals(0, phoneNumberDesc.getPossibleLengthLocalOnlyCount());
+    mobile = BuildMetadataFromXml.processPhoneNumberDescElement(
+        generalDesc, territoryElement, "mobile");
+
+    assertEquals(2, fixedLine.getPossibleLengthCount());
+    assertEquals(4, fixedLine.getPossibleLength(0));
+    assertEquals(13, fixedLine.getPossibleLength(1));
+    assertEquals(1, fixedLine.getPossibleLengthLocalOnlyCount());
+
+    // We use [-1] to denote that there are no possible lengths; we don't leave it empty, since for
+    // compression reasons, we use the empty list to mean that the generalDesc possible lengths
+    // apply.
+    assertEquals(1, mobile.getPossibleLengthCount());
+    assertEquals(-1, mobile.getPossibleLength(0));
+    assertEquals(0, mobile.getPossibleLengthLocalOnlyCount());
   }
 
   public void testSetPossibleLengthsGeneralDesc_BuiltFromChildElements() throws Exception {
@@ -843,6 +856,9 @@ public class BuildMetadataFromXmlTest extends TestCase {
         + "<tollFree>"
         + "  <possibleLengths national=\"15\"/>"
         + "</tollFree>"
+        + "<smsServices>"
+        + "  <possibleLengths national=\"5\"/>"
+        + "</smsServices>"
         + "</territory>");
     PhoneNumberDesc.Builder generalDesc = PhoneNumberDesc.newBuilder();
     BuildMetadataFromXml.setPossibleLengthsGeneralDesc(
@@ -951,8 +967,8 @@ public class BuildMetadataFromXmlTest extends TestCase {
         generalDesc, territoryElement, "fixedLine");
     // No possible lengths should be present, because they match the general description.
     assertEquals(0, phoneNumberDesc.getPossibleLengthCount());
-    // No local-only lengths should be present for child elements such as fixed-line.
-    assertEquals(0, phoneNumberDesc.getPossibleLengthLocalOnlyCount());
+    // Local-only lengths should be present for child elements such as fixed-line.
+    assertEquals(1, phoneNumberDesc.getPossibleLengthLocalOnlyCount());
   }
 
   public void testProcessPhoneNumberDescElement_InvalidNumber() throws Exception {

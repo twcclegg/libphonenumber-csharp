@@ -79,6 +79,13 @@ public class ShortNumberInfoTest extends TestMetadataTestCase {
         shortInfo.isCarrierSpecificForRegion(carrierSpecificNumberForSomeRegion, RegionCode.BB));
   }
 
+  public void testIsSmsService() {
+    PhoneNumber smsServiceNumberForSomeRegion = new PhoneNumber();
+    smsServiceNumberForSomeRegion.setCountryCode(1).setNationalNumber(21234L);
+    assertTrue(shortInfo.isSmsServiceForRegion(smsServiceNumberForSomeRegion, RegionCode.US));
+    assertFalse(shortInfo.isSmsServiceForRegion(smsServiceNumberForSomeRegion, RegionCode.BB));
+  }
+
   public void testGetExpectedCost() {
     String premiumRateExample = shortInfo.getExampleShortNumberForCost(RegionCode.FR,
         ShortNumberInfo.ShortNumberCost.PREMIUM_RATE);
@@ -187,22 +194,11 @@ public class ShortNumberInfoTest extends TestMetadataTestCase {
         shortInfo.getExpectedCost(ambiguousTollFreeNumber));
   }
 
-  public void testGetExampleShortNumber() {
-    assertEquals("8711", shortInfo.getExampleShortNumber(RegionCode.AM));
-    assertEquals("1010", shortInfo.getExampleShortNumber(RegionCode.FR));
-    assertEquals("", shortInfo.getExampleShortNumber(RegionCode.UN001));
-    assertEquals("", shortInfo.getExampleShortNumber(null));
-  }
-
-  public void testGetExampleShortNumberForCost() {
-    assertEquals("3010", shortInfo.getExampleShortNumberForCost(RegionCode.FR,
-        ShortNumberInfo.ShortNumberCost.TOLL_FREE));
-    assertEquals("1023", shortInfo.getExampleShortNumberForCost(RegionCode.FR,
-        ShortNumberInfo.ShortNumberCost.STANDARD_RATE));
-    assertEquals("42000", shortInfo.getExampleShortNumberForCost(RegionCode.FR,
-        ShortNumberInfo.ShortNumberCost.PREMIUM_RATE));
-    assertEquals("", shortInfo.getExampleShortNumberForCost(RegionCode.FR,
-        ShortNumberInfo.ShortNumberCost.UNKNOWN_COST));
+  public void testExampleShortNumberPresence() {
+    assertFalse(shortInfo.getExampleShortNumber(RegionCode.AD).isEmpty());
+    assertFalse(shortInfo.getExampleShortNumber(RegionCode.FR).isEmpty());
+    assertTrue(shortInfo.getExampleShortNumber(RegionCode.UN001).isEmpty());
+    assertTrue(shortInfo.getExampleShortNumber(null).isEmpty());
   }
 
   public void testConnectsToEmergencyNumber_US() {

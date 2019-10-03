@@ -20,7 +20,7 @@
       Specify a Default Country:
       <input type="text" name="defaultCountry" size="2">
           (<a href="http://www.iso.org/iso/english_country_names_and_code_elements">
-          ISO 3166-1 two-letter country code</a>)
+          CLDR two-letter region code</a>)
       <h2>Step 3</h2>
       <p>
       Specify a locale for phone number geocoding (Optional, defaults to en):
@@ -33,7 +33,7 @@
       <input type="submit" value="Submit">
       <input type="reset" value="Reset">
       <p></p>
-      <a href="https://github.com/googlei18n/libphonenumber/">Back to libphonenumber</a>
+      <a href="https://github.com/google/libphonenumber/">Back to libphonenumber</a>
     </form>
   </body>
 </html>

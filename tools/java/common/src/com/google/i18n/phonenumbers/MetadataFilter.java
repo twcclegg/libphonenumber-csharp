@@ -57,8 +57,13 @@ final class MetadataFilter {
       "shortCode",
       "standardRate",
       "carrierSpecific",
+      "smsServices",
       "noInternationalDialling"));
 
+  // Note: If this set changes, the descHasData implementation must change in PhoneNumberUtil.
+  // The current implementation assumes that all PhoneNumberDesc fields are present here, since it
+  // "clears" a PhoneNumberDesc field by simply clearing all of the fields under it. See the comment
+  // above, about all 3 sets, for more about these fields.
   // @VisibleForTesting
   static final TreeSet<String> excludableChildFields = new TreeSet<String>(Arrays.asList(
       "nationalNumberPattern",
@@ -79,6 +84,9 @@ final class MetadataFilter {
 
   private final TreeMap<String, TreeSet<String>> blacklist;
 
+  // Note: If changing the blacklist here or the name of the method, update documentation about
+  // affected methods at the same time:
+  // https://github.com/google/libphonenumber/blob/master/FAQ.md#what-is-the-metadatalitejsmetadata_lite-option
   static MetadataFilter forLiteBuild() {
     // "exampleNumber" is a blacklist.
     return new MetadataFilter(parseFieldMapFromString("exampleNumber"));
@@ -159,6 +167,9 @@ final class MetadataFilter {
     }
     if (metadata.hasCarrierSpecific()) {
       metadata.setCarrierSpecific(getFiltered("carrierSpecific", metadata.getCarrierSpecific()));
+    }
+    if (metadata.hasSmsServices()) {
+      metadata.setSmsServices(getFiltered("smsServices", metadata.getSmsServices()));
     }
     if (metadata.hasNoInternationalDialling()) {
       metadata.setNoInternationalDialling(getFiltered("noInternationalDialling",
