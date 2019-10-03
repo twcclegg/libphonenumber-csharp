@@ -59,7 +59,6 @@ public class BuildMetadataFromXml {
   private static final String INTERNATIONAL_PREFIX = "internationalPrefix";
   private static final String INTL_FORMAT = "intlFormat";
   private static final String LEADING_DIGITS = "leadingDigits";
-  private static final String LEADING_ZERO_POSSIBLE = "leadingZeroPossible";
   private static final String MAIN_COUNTRY_FOR_CODE = "mainCountryForCode";
   private static final String MOBILE = "mobile";
   private static final String MOBILE_NUMBER_PORTABLE_REGION = "mobileNumberPortableRegion";
@@ -83,6 +82,7 @@ public class BuildMetadataFromXml {
   private static final String PREMIUM_RATE = "premiumRate";
   private static final String SHARED_COST = "sharedCost";
   private static final String SHORT_CODE = "shortCode";
+  private static final String SMS_SERVICES = "smsServices";
   private static final String STANDARD_RATE = "standardRate";
   private static final String TOLL_FREE = "tollFree";
   private static final String UAN = "uan";
@@ -204,7 +204,9 @@ public class BuildMetadataFromXml {
     if (element.hasAttribute(LEADING_DIGITS)) {
       metadata.setLeadingDigits(validateRE(element.getAttribute(LEADING_DIGITS)));
     }
-    metadata.setInternationalPrefix(validateRE(element.getAttribute(INTERNATIONAL_PREFIX)));
+    if (element.hasAttribute(INTERNATIONAL_PREFIX)) {
+      metadata.setInternationalPrefix(validateRE(element.getAttribute(INTERNATIONAL_PREFIX)));
+    }
     if (element.hasAttribute(PREFERRED_INTERNATIONAL_PREFIX)) {
       metadata.setPreferredInternationalPrefix(
           element.getAttribute(PREFERRED_INTERNATIONAL_PREFIX));
@@ -228,9 +230,6 @@ public class BuildMetadataFromXml {
     }
     if (element.hasAttribute(MAIN_COUNTRY_FOR_CODE)) {
       metadata.setMainCountryForCode(true);
-    }
-    if (element.hasAttribute(LEADING_ZERO_POSSIBLE)) {
-      metadata.setLeadingZeroPossible(true);
     }
     if (element.hasAttribute(MOBILE_NUMBER_PORTABLE_REGION)) {
       metadata.setMobileNumberPortableRegion(true);
@@ -329,21 +328,23 @@ public class BuildMetadataFromXml {
         if (numberFormatElement.hasAttribute(NATIONAL_PREFIX_FORMATTING_RULE)) {
           format.setNationalPrefixFormattingRule(
               getNationalPrefixFormattingRuleFromElement(numberFormatElement, nationalPrefix));
-        } else {
+        } else if (!nationalPrefixFormattingRule.equals("")) {
           format.setNationalPrefixFormattingRule(nationalPrefixFormattingRule);
         }
         if (numberFormatElement.hasAttribute(NATIONAL_PREFIX_OPTIONAL_WHEN_FORMATTING)) {
           format.setNationalPrefixOptionalWhenFormatting(
               Boolean.valueOf(numberFormatElement.getAttribute(
                   NATIONAL_PREFIX_OPTIONAL_WHEN_FORMATTING)));
-        } else {
+        } else if (format.getNationalPrefixOptionalWhenFormatting()
+            != nationalPrefixOptionalWhenFormatting) {
+          // Inherit from the parent field if it is not already the same as the default.
           format.setNationalPrefixOptionalWhenFormatting(nationalPrefixOptionalWhenFormatting);
         }
         if (numberFormatElement.hasAttribute(CARRIER_CODE_FORMATTING_RULE)) {
           format.setDomesticCarrierCodeFormattingRule(validateRE(
               getDomesticCarrierCodeFormattingRuleFromElement(numberFormatElement,
                                                               nationalPrefix)));
-        } else {
+        } else if (!carrierCodeFormattingRule.equals("")) {
           format.setDomesticCarrierCodeFormattingRule(carrierCodeFormattingRule);
         }
         loadNationalFormat(metadata, numberFormatElement, format);
@@ -424,8 +425,9 @@ public class BuildMetadataFromXml {
    * missing. For all other types, the parent description will only be used to fill in missing
    * components if the type has a partial definition. For example, if no "tollFree" element exists,
    * we assume there are no toll free numbers for that locale, and return a phone number description
-   * with "NA" for both the national and possible number patterns. Note that the parent description
-   * must therefore already be processed before this method is called on any child elements.
+   * with no national number data and [-1] for the possible lengths. Note that the parent
+   * description must therefore already be processed before this method is called on any child
+   * elements.
    *
    * @param parentDesc  a generic phone number description that will be used to fill in missing
    *     parts of the description, or null if this is the root node. This must be processed before
@@ -442,7 +444,6 @@ public class BuildMetadataFromXml {
     NodeList phoneNumberDescList = countryElement.getElementsByTagName(numberType);
     PhoneNumberDesc.Builder numberDesc = PhoneNumberDesc.newBuilder();
     if (phoneNumberDescList.getLength() == 0) {
-      numberDesc.setNationalNumberPattern("NA");
       // -1 will never match a possible phone number length, so is safe to use to ensure this never
       // matches. We don't leave it empty, since for compression reasons, we use the empty list to
       // mean that the generalDesc possible lengths apply.
@@ -463,12 +464,7 @@ public class BuildMetadataFromXml {
         TreeSet<Integer> lengths = new TreeSet<Integer>();
         TreeSet<Integer> localOnlyLengths = new TreeSet<Integer>();
         populatePossibleLengthSets(element, lengths, localOnlyLengths);
-        // NOTE: We don't use the localOnlyLengths for specific number types yet, since they aren't
-        // used in the API and won't be until a method that assesses whether a number is possible
-        // for a certain type or not is available. To ensure binary size is small, we don't set them
-        // outside the general desc at this time. If we want this data later, the empty set here
-        // should be replaced with the localOnlyLengths set above.
-        setPossibleLengths(lengths, new TreeSet<Integer>(), parentDesc, numberDesc);
+        setPossibleLengths(lengths, localOnlyLengths, parentDesc, numberDesc);
       }
 
       NodeList validPattern = element.getElementsByTagName(NATIONAL_NUMBER_PATTERN);
@@ -511,8 +507,12 @@ public class BuildMetadataFromXml {
       metadata.setVoicemail(processPhoneNumberDescElement(generalDesc, element, VOICEMAIL));
       metadata.setNoInternationalDialling(processPhoneNumberDescElement(generalDesc, element,
           NO_INTERNATIONAL_DIALLING));
-      metadata.setSameMobileAndFixedLinePattern(metadata.getMobile().getNationalNumberPattern()
-          .equals(metadata.getFixedLine().getNationalNumberPattern()));
+      boolean mobileAndFixedAreSame = metadata.getMobile().getNationalNumberPattern()
+          .equals(metadata.getFixedLine().getNationalNumberPattern());
+      if (metadata.getSameMobileAndFixedLinePattern() != mobileAndFixedAreSame) {
+        // Set this if it is not the same as the default.
+        metadata.setSameMobileAndFixedLinePattern(mobileAndFixedAreSame);
+      }
       metadata.setTollFree(processPhoneNumberDescElement(generalDesc, element, TOLL_FREE));
       metadata.setPremiumRate(processPhoneNumberDescElement(generalDesc, element, PREMIUM_RATE));
     } else {
@@ -524,6 +524,7 @@ public class BuildMetadataFromXml {
       metadata.setEmergency(processPhoneNumberDescElement(generalDesc, element, EMERGENCY));
       metadata.setTollFree(processPhoneNumberDescElement(generalDesc, element, TOLL_FREE));
       metadata.setPremiumRate(processPhoneNumberDescElement(generalDesc, element, PREMIUM_RATE));
+      metadata.setSmsServices(processPhoneNumberDescElement(generalDesc, element, SMS_SERVICES));
     }
   }
 

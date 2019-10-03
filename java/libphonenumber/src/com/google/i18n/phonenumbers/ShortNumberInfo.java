@@ -428,14 +428,14 @@ public class ShortNumberInfo {
    * @param regionCode the region where the phone number is being dialed
    * @return whether the number exactly matches an emergency services number in the given region
    */
-  public boolean isEmergencyNumber(String number, String regionCode) {
+  public boolean isEmergencyNumber(CharSequence number, String regionCode) {
     return matchesEmergencyNumberHelper(number, regionCode, false /* doesn't allow prefix match */);
   }
 
-  private boolean matchesEmergencyNumberHelper(String number, String regionCode,
+  private boolean matchesEmergencyNumberHelper(CharSequence number, String regionCode,
       boolean allowPrefixMatch) {
-    number = PhoneNumberUtil.extractPossibleNumber(number);
-    if (PhoneNumberUtil.PLUS_CHARS_PATTERN.matcher(number).lookingAt()) {
+    CharSequence possibleNumber = PhoneNumberUtil.extractPossibleNumber(number);
+    if (PhoneNumberUtil.PLUS_CHARS_PATTERN.matcher(possibleNumber).lookingAt()) {
       // Returns false if the number starts with a plus sign. We don't believe dialing the country
       // code before emergency numbers (e.g. +1911) works, but later, if that proves to work, we can
       // add additional logic here to handle it.
@@ -446,11 +446,10 @@ public class ShortNumberInfo {
       return false;
     }
 
-    String normalizedNumber = PhoneNumberUtil.normalizeDigitsOnly(number);
-    PhoneNumberDesc emergencyDesc = metadata.getEmergency();
+    String normalizedNumber = PhoneNumberUtil.normalizeDigitsOnly(possibleNumber);
     boolean allowPrefixMatchForRegion =
         allowPrefixMatch && !REGIONS_WHERE_EMERGENCY_NUMBERS_MUST_BE_EXACT.contains(regionCode);
-    return matcherApi.matchesNationalNumber(normalizedNumber, emergencyDesc,
+    return matcherApi.matchNationalNumber(normalizedNumber, metadata.getEmergency(),
         allowPrefixMatchForRegion);
   }
 
@@ -461,9 +460,9 @@ public class ShortNumberInfo {
    * valid, then its validity must first be checked using {@link #isValidShortNumber} or
    * {@link #isValidShortNumberForRegion}.
    *
-   * @param number the valid short number to check
-   * @return whether the short number is carrier-specific (assuming the input was a valid short
-   *     number).
+   * @param number  the valid short number to check
+   * @return whether the short number is carrier-specific, assuming the input was a valid short
+   *     number
    */
   public boolean isCarrierSpecific(PhoneNumber number) {
     List<String> regionCodes = getRegionCodesForCountryCode(number.getCountryCode());
@@ -485,8 +484,8 @@ public class ShortNumberInfo {
    *
    * @param number  the valid short number to check
    * @param regionDialingFrom  the region from which the number is dialed
-   * @return  whether the short number is carrier-specific (assuming the input was a valid short
-   *     number)
+   * @return  whether the short number is carrier-specific in the provided region, assuming the
+   *     input was a valid short number
    */
   public boolean isCarrierSpecificForRegion(PhoneNumber number, String regionDialingFrom) {
     if (!regionDialingFromMatchesNumber(number, regionDialingFrom)) {
@@ -498,6 +497,30 @@ public class ShortNumberInfo {
     return (phoneMetadata != null)
         && (matchesPossibleNumberAndNationalNumber(nationalNumber,
                 phoneMetadata.getCarrierSpecific()));
+  }
+
+  /**
+   * Given a valid short number, determines whether it is an SMS service (however, nothing is
+   * implied about its validity). An SMS service is where the primary or only intended usage is to
+   * receive and/or send text messages (SMSs). This includes MMS as MMS numbers downgrade to SMS if
+   * the other party isn't MMS-capable. If it is important that the number is valid, then its
+   * validity must first be checked using {@link #isValidShortNumber} or {@link
+   * #isValidShortNumberForRegion}. Returns false if the number doesn't match the region provided.
+   *
+   * @param number  the valid short number to check
+   * @param regionDialingFrom  the region from which the number is dialed
+   * @return  whether the short number is an SMS service in the provided region, assuming the input
+   *     was a valid short number
+   */
+  public boolean isSmsServiceForRegion(PhoneNumber number, String regionDialingFrom) {
+    if (!regionDialingFromMatchesNumber(number, regionDialingFrom)) {
+      return false;
+    }
+    PhoneMetadata phoneMetadata =
+        MetadataManager.getShortNumberMetadataForRegion(regionDialingFrom);
+    return phoneMetadata != null
+        && matchesPossibleNumberAndNationalNumber(getNationalSignificantNumber(number),
+            phoneMetadata.getSmsServices());
   }
 
   /**
@@ -531,6 +554,6 @@ public class ShortNumberInfo {
         && !numberDesc.getPossibleLengthList().contains(number.length())) {
       return false;
     }
-    return matcherApi.matchesNationalNumber(number, numberDesc, false);
+    return matcherApi.matchNationalNumber(number, numberDesc, false);
   }
 }

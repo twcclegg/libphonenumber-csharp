@@ -208,7 +208,7 @@ namespace PhoneNumbers.Test
         public void TestGetExampleShortNumber()
         {
             Assert.Equal("110", ShortInfo.GetExampleShortNumber(RegionCode.AD));
-            Assert.Equal("1010", ShortInfo.GetExampleShortNumber(RegionCode.FR));
+            Assert.Equal("15", ShortInfo.GetExampleShortNumber(RegionCode.FR));
             Assert.Equal("", ShortInfo.GetExampleShortNumber(RegionCode.UN001));
             Assert.Equal("", ShortInfo.GetExampleShortNumber(null));
         }
@@ -216,11 +216,11 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestGetExampleShortNumberForCost()
         {
-            Assert.Equal("3010", ShortInfo.GetExampleShortNumberForCost(RegionCode.FR,
+            Assert.Equal("15", ShortInfo.GetExampleShortNumberForCost(RegionCode.FR,
                 ShortNumberInfo.ShortNumberCost.TOLL_FREE));
-            Assert.Equal("1023", ShortInfo.GetExampleShortNumberForCost(RegionCode.FR,
+            Assert.Equal("611", ShortInfo.GetExampleShortNumberForCost(RegionCode.FR,
                 ShortNumberInfo.ShortNumberCost.STANDARD_RATE));
-            Assert.Equal("42000", ShortInfo.GetExampleShortNumberForCost(RegionCode.FR,
+            Assert.Equal("36665", ShortInfo.GetExampleShortNumberForCost(RegionCode.FR,
                 ShortNumberInfo.ShortNumberCost.PREMIUM_RATE));
             Assert.Equal("", ShortInfo.GetExampleShortNumberForCost(RegionCode.FR,
                 ShortNumberInfo.ShortNumberCost.UNKNOWN_COST));

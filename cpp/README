@@ -32,7 +32,7 @@ The example command lines below assume that you have a Debian-based GNU/Linux
 distribution. Other distributions and packaging systems will differ.
 
 Quickstart:
-  - In recent Debian-based distributions, it should be sufficent to run:
+  - In recent Debian-based distributions, it should be sufficient to run:
     $ sudo apt-get install \
       cmake cmake-curses-gui libprotobuf-dev libgtest-dev libre2-dev \
       libicu-dev libboost-dev libboost-thread-dev libboost-system-dev \
@@ -52,7 +52,7 @@ Requirements:
     $ sudo apt-get install cmake-curses-gui
 
   - Protocol Buffers
-    http://code.google.com/p/protobuf/
+    http://github.com/google/protobuf/
     Version 2.4 or more recent is required (this is available by default for
     recent Debian-based GNU/Linux distributions).
 
@@ -73,13 +73,13 @@ Requirements:
     $ ./configure && make && sudo make install
 
   - Google Test
-    http://code.google.com/p/googletest/
+    http://github.com/google/googletest
 
     Installation:
     $ sudo apt-get install libgtest-dev
 
   - RE2
-    http://code.google.com/p/re2/
+    http://github.com/google/re2
 
     Installation:
     $ sudo apt-get install libre2-dev
@@ -160,7 +160,7 @@ gtest. We don't need to install gtest, we only copy sources. For example:
 Get the libphonenumber source. For example:
   $ mkdir ~/libphonenumber_clone
   $ cd ~/libphonenumber_clone
-  $ git clone https://github.com/googlei18n/libphonenumber.git
+  $ git clone https://github.com/google/libphonenumber.git
 
 Build and test the library:
   $ cd libphonenumber/cpp
@@ -218,7 +218,7 @@ Troubleshooting CMake via ccmake
 
     You should set the following values:
       PROTOBUF_INCLUDE_DIR         /usr/local/include
-      PROTOBUF_LIB                 /usr/local/lib/libprotobuf.so
+      PROTOBUF_LIB                 /usr/local/lib/libprotobuf.dylib
       PROTOC_BIN                   /usr/local/bin/protoc
 
     Now press 'c' then 'g' to configure the new parameters and exit ccmake.
@@ -263,6 +263,22 @@ Troubleshooting CMake via ccmake
 
 Building the library on Windows (Visual Studio)
 -----------------------------------------------
+We recommend that libphonenumber on Windows be built with Visual Studio 2015
+Update 2 (https://www.visualstudio.com/en-us/news/releasenotes/vs2015-update2-vs)
+or later.
+
+This enables support of plain UTF-8 source files, for which you also need to specify
+the /utf-8 option in build files; see "New Options in VS2015 Update 2" at
+https://blogs.msdn.microsoft.com/vcblog/2016/02/22/new-options-for-managing-character-sets-in-the-microsoft-cc-compiler/,
+or a Chrome patch for an example:
+https://codereview.chromium.org/2488853002/diff/80001/build/config/compiler/BUILD.gn
+
+Without this version and the option, your compilation will have warnings when
+setting the codepage for non-Unicode applications on Windows to one of the CJK
+code pages, since libphonenumber has UTF-8 strings in source files. While these
+are only comments (as opposed to string literals) the warnings can be
+suppressed, but we reserve the right to introduce UTF-8 string literals.
+
 The library was tested with Visual Studio 2010.
 
 You will need to manually fetch and install the following dependencies:
