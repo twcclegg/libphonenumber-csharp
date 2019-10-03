@@ -218,9 +218,9 @@ namespace PhoneNumbers.Test
         {
             Assert.Equal("15", ShortInfo.GetExampleShortNumberForCost(RegionCode.FR,
                 ShortNumberInfo.ShortNumberCost.TOLL_FREE));
-            Assert.Equal("1023", ShortInfo.GetExampleShortNumberForCost(RegionCode.FR,
+            Assert.Equal("611", ShortInfo.GetExampleShortNumberForCost(RegionCode.FR,
                 ShortNumberInfo.ShortNumberCost.STANDARD_RATE));
-            Assert.Equal("42000", ShortInfo.GetExampleShortNumberForCost(RegionCode.FR,
+            Assert.Equal("36665", ShortInfo.GetExampleShortNumberForCost(RegionCode.FR,
                 ShortNumberInfo.ShortNumberCost.PREMIUM_RATE));
             Assert.Equal("", ShortInfo.GetExampleShortNumberForCost(RegionCode.FR,
                 ShortNumberInfo.ShortNumberCost.UNKNOWN_COST));
