@@ -4,15 +4,7 @@ PhoneNumbers C# Library
 This is a C# port of libphonenumber, originally from:
   http://code.google.com/p/libphonenumber/.
 
-Original Java code is Copyright (C) 2009-2016 Google Inc.
-
-
-Project Layout
---------------
-
-The project is a copy of the original libphonenumber with C# code
-added in csharp/ root directory. The intent is to keep pulling from
-the main repository and update the C# port accordingly.
+Original Java code is Copyright (C) 2009-2020 Google Inc.
 
 lib/
   NUnit, Google.ProtoBuffersLite binaries and various conversion
@@ -22,32 +14,14 @@ PhoneNumbers/
   Port of libphonenumber Java library
 
 PhoneNumbers.Test/
-  Port of libphonenumber Java tests in NUnit format.
+  Port of libphonenumber Java tests in xunit format.
 
 
 Building
 --------
 
-Open csharp/PhoneNumbers.sln VS2015 solution file to get an overview
+Open csharp/PhoneNumbers.sln VS2019 solution file to get an overview
 of the code. "Build All" should put the libraries at the usual places.
-
-
-Running Tests
--------------
-
-To run the tests, either use a GUI tool or download NUnit binaries from:
-
-  http://www.nunit.org/index.php?p=download
-
-Extract the executables and add the following invocation to
-PhoneNumbers.Test Debug panel:
-
-* Start external program: C:\path\to\nunit3-console.exe
-* Command line arguments: PhoneNumbers.Test.dll /wait /test=PhoneNumbers.Test
-
-Then run PhoneNumbers.Test, the test console window should appear and
-the tests run.
-
 
 Known Issues
 ------------
@@ -63,33 +37,3 @@ Todo
 - Restore the Java logging calls?
 - Find a suitable replace for Java CharSequence in phone numbers parsing API.
 - Migrate geocoder and related files
-
-
-Porting New Versions
---------------------
-
-This port was first converted from Subversion to Mercurial with
-hgsubversion extension, from the source repository:
-
-  http://libphonenumber.googlecode.com/svn
-
-To update the port:
-
-- Ensure you have a recent Mercurial and hgsubversion setup on your
-system.
-
-- Update the port SVN metadata with:
-
-  $ hg svn rebuildmeta
-
-And possibly add the following to .hg/hgrc:
-
-  [paths]
-  default = http://libphonenumber.googlecode.com/svn
-
-At this point, hg incoming should display new revisions.
-
-- Pull new changes, update to "csharp" branch and merge with
-  "default".
-
-- Fire your favorite diff tool and start porting changes.
