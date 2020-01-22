@@ -379,8 +379,7 @@ namespace PhoneNumbers
             if (HasExtension != other.HasExtension || HasExtension && !Extension.Equals(other.Extension)) return false;
             if (HasItalianLeadingZero != other.HasItalianLeadingZero || HasItalianLeadingZero &&
                 !ItalianLeadingZero.Equals(other.ItalianLeadingZero)) return false;
-            if (HasNumberOfLeadingZeros != other.HasNumberOfLeadingZeros || HasNumberOfLeadingZeros &&
-                !NumberOfLeadingZeros.Equals(other.NumberOfLeadingZeros)) return false;
+            if (!NumberOfLeadingZeros.Equals(other.NumberOfLeadingZeros)) return false;
             if (HasRawInput != other.HasRawInput || HasRawInput && !RawInput.Equals(other.RawInput)) return false;
             if (HasCountryCodeSource != other.HasCountryCodeSource ||
                 HasCountryCodeSource && !CountryCodeSource.Equals(other.CountryCodeSource)) return false;
