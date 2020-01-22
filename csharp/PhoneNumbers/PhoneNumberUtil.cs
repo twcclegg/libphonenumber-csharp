@@ -1796,8 +1796,10 @@ namespace PhoneNumbers
         /// <returns>The national significant number of the PhoneNumber object passed in.</returns>
         public string GetNationalSignificantNumber(PhoneNumber number)
         {
-            // If a leading zero has been set, we prefix this now. Note this is not a national prefix.
-            var nationalNumber = new StringBuilder(number.ItalianLeadingZero ? "0" : "");
+            // If a leading zero(s) has been set, we prefix this now. Note this is not a national prefix.
+            var nationalNumber = new StringBuilder();
+            if (number.ItalianLeadingZero && number.NumberOfLeadingZeros > 0)
+                nationalNumber.Append('0', number.NumberOfLeadingZeros);
             nationalNumber.Append(number.NationalNumber);
             return nationalNumber.ToString();
         }
@@ -3267,6 +3269,12 @@ namespace PhoneNumbers
             if (secondNumber.HasExtension &&
                 secondNumber.Extension.Length == 0)
                 secondNumber.ClearExtension();
+
+            // This field is only relevant if there are leading zeros at all.
+            if (!firstNumber.ItalianLeadingZero)
+                firstNumber.ClearNumberOfLeadingZeros();
+            if (!secondNumber.ItalianLeadingZero)
+                secondNumber.ClearNumberOfLeadingZeros();
 
             // Early exit if both had extensions and these are different.
             if (firstNumber.HasExtension && secondNumber.HasExtension &&
