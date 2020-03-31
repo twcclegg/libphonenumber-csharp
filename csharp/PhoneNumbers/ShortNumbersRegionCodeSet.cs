@@ -237,6 +237,7 @@ namespace PhoneNumbers
             "SN",
             "SO",
             "SR",
+            "SS",
             "ST",
             "SV",
             "SX",
