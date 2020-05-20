@@ -376,7 +376,7 @@ namespace PhoneNumbers
             // For parsing, we are slightly more lenient in our interpretation than for matching. Here we
             // allow a "comma" as a possible extension indicator. When matching, this is hardly ever used to
             // indicate this.
-            var singleExtnSymbolsForParsing = "," + singleExtnSymbolsForMatching;
+            var singleExtnSymbolsForParsing = ",;" + singleExtnSymbolsForMatching;
 
             ExtnPatternsForParsing = CreateExtnPattern(singleExtnSymbolsForParsing);
             ExtnPatternsForMatching = CreateExtnPattern(singleExtnSymbolsForMatching);
