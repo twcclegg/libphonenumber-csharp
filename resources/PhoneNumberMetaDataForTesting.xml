@@ -864,7 +864,11 @@
         <exampleNumber>24099123</exampleNumber>
       </fixedLine>
       <mobile>
-        <nationalNumberPattern>2(?:[027]\d{7}|9\d{6,7}|1(?:0\d{5,7}|[12]\d{5,6}|[3-9]\d{5})|4[1-9]\d{6}|8\d{7,8})</nationalNumberPattern>
+        <nationalNumberPattern>
+          2[0-27-9]\d{7,8}|
+          21\d{6}|
+          22\d{6,8}
+        </nationalNumberPattern>
         <possibleLengths national="[8-10]"/>
         <exampleNumber>201234567</exampleNumber>
       </mobile>
