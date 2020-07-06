@@ -1139,6 +1139,9 @@ namespace PhoneNumbers.Test
 
             var nzNumber = new PhoneNumber.Builder().SetCountryCode(64).SetNationalNumber(21387835L).Build();
             Assert.True(phoneUtil.IsValidNumber(nzNumber));
+            
+            nzNumber = new PhoneNumber.Builder().SetCountryCode(64).SetNationalNumber(22387835L).Build();
+            Assert.True(phoneUtil.IsValidNumber(nzNumber));            
         }
 
         [Fact]
