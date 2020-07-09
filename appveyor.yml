@@ -12,7 +12,7 @@ image: Visual Studio 2017
 configuration: Release
 environment:
   COVERALLS_REPO_TOKEN:
-    secure: tHOHVQ3dw2NqnKUW3EQbBIe+ytxPnGjJ13psSpwYhxbWlvtl6CKVmqigzfCR2nSc
+    secure: vncyomjYijKQKcbLpvs7DFLyNWPjW7tk9KNF/bTV5J/RxOnFydZfsJSsp7SMlvUg
 pull_requests:
   do_not_increment_build_number: true
 branches:
