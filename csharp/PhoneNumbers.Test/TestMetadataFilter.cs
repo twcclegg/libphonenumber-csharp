@@ -868,8 +868,8 @@ namespace PhoneNumbers.Test
             })
             {
                 Assert.False(desc.HasNationalNumberPattern);
-                Assert.Equal(desc.PossibleLengthList.Count, 0);
-                Assert.Equal(desc.PossibleLengthLocalOnlyList.Count, 0);
+                Assert.Equal(0, desc.PossibleLengthList.Count);
+                Assert.Equal(0, desc.PossibleLengthLocalOnlyList.Count);
                 Assert.False(desc.HasExampleNumber);
             }
         }

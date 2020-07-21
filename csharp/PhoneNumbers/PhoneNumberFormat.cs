@@ -1,6 +1,6 @@
 namespace PhoneNumbers
-{   
-    
+{
+
     /**
     * INTERNATIONAL and NATIONAL formats are consistent with the definition in ITU-T Recommendation
     * E123. For example, the number of the Google Switzerland office will be written as

@@ -439,7 +439,7 @@ namespace PhoneNumbers
             }
             return numberDesc;
         }
-        
+
         private static void SetRelevantDescPatterns(PhoneMetadata.Builder metadata, XElement element,
             bool isShortNumberMetadata)
         {

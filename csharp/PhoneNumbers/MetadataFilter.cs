@@ -254,7 +254,7 @@ namespace PhoneNumbers
                     throw new Exception("Incorrect location of parantheses in " + group);
                 }
             }
-			
+
             foreach (var wildcardChild in wildcardChildren)
 			{
 				foreach (var parent in ExcludableParentFields)

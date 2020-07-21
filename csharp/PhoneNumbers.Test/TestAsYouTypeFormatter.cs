@@ -74,7 +74,7 @@ namespace PhoneNumbers.Test
             Assert.Equal("+48 88 123", formatter.InputDigit('3'));
             Assert.Equal("+48 88 123 1", formatter.InputDigit('1'));
             // A plus sign can only appear at the beginning of the number; otherwise, no formatting is
-            // applied. 
+            // applied.
             Assert.Equal("+48881231+", formatter.InputDigit('+'));
             Assert.Equal("+48881231+2", formatter.InputDigit('2'));
         }

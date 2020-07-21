@@ -86,8 +86,8 @@ namespace PhoneNumbers.Test
             var fixedLineTypes = MakeSet(PhoneNumberType.FIXED_LINE,
                                             PhoneNumberType.FIXED_LINE_OR_MOBILE);
             CheckNumbersValidAndCorrectType(PhoneNumberType.FIXED_LINE, fixedLineTypes);
-            Assert.Equal(0, invalidCases.Count);
-            Assert.Equal(0, wrongTypeCases.Count);
+            Assert.Empty(invalidCases);
+            Assert.Empty(wrongTypeCases);
         }
 
         [Fact]
@@ -96,8 +96,8 @@ namespace PhoneNumbers.Test
             var mobileTypes = MakeSet(PhoneNumberType.MOBILE,
                                                           PhoneNumberType.FIXED_LINE_OR_MOBILE);
             CheckNumbersValidAndCorrectType(PhoneNumberType.MOBILE, mobileTypes);
-            Assert.Equal(0, invalidCases.Count);
-            Assert.Equal(0, wrongTypeCases.Count);
+            Assert.Empty(invalidCases);
+            Assert.Empty(wrongTypeCases);
         }
 
         [Fact]
@@ -106,8 +106,8 @@ namespace PhoneNumbers.Test
 
             var tollFreeTypes = MakeSet(PhoneNumberType.TOLL_FREE);
             CheckNumbersValidAndCorrectType(PhoneNumberType.TOLL_FREE, tollFreeTypes);
-            Assert.Equal(0, invalidCases.Count);
-            Assert.Equal(0, wrongTypeCases.Count);
+            Assert.Empty(invalidCases);
+            Assert.Empty(wrongTypeCases);
         }
 
         [Fact]
@@ -115,8 +115,8 @@ namespace PhoneNumbers.Test
         {
             var premiumRateTypes = MakeSet(PhoneNumberType.PREMIUM_RATE);
             CheckNumbersValidAndCorrectType(PhoneNumberType.PREMIUM_RATE, premiumRateTypes);
-            Assert.Equal(0, invalidCases.Count);
-            Assert.Equal(0, wrongTypeCases.Count);
+            Assert.Empty(invalidCases);
+            Assert.Empty(wrongTypeCases);
         }
 
         [Fact]
@@ -124,8 +124,8 @@ namespace PhoneNumbers.Test
         {
             var voipTypes = MakeSet(PhoneNumberType.VOIP);
             CheckNumbersValidAndCorrectType(PhoneNumberType.VOIP, voipTypes);
-            Assert.Equal(0, invalidCases.Count);
-            Assert.Equal(0, wrongTypeCases.Count);
+            Assert.Empty(invalidCases);
+            Assert.Empty(wrongTypeCases);
         }
 
         [Fact]
@@ -133,8 +133,8 @@ namespace PhoneNumbers.Test
         {
             var pagerTypes = MakeSet(PhoneNumberType.PAGER);
             CheckNumbersValidAndCorrectType(PhoneNumberType.PAGER, pagerTypes);
-            Assert.Equal(0, invalidCases.Count);
-            Assert.Equal(0, wrongTypeCases.Count);
+            Assert.Empty(invalidCases);
+            Assert.Empty(wrongTypeCases);
         }
 
         [Fact]
@@ -142,8 +142,8 @@ namespace PhoneNumbers.Test
         {
             var uanTypes = MakeSet(PhoneNumberType.UAN);
             CheckNumbersValidAndCorrectType(PhoneNumberType.UAN, uanTypes);
-            Assert.Equal(0, invalidCases.Count);
-            Assert.Equal(0, wrongTypeCases.Count);
+            Assert.Empty(invalidCases);
+            Assert.Empty(wrongTypeCases);
         }
 
         [Fact]
@@ -151,8 +151,8 @@ namespace PhoneNumbers.Test
         {
             var voicemailTypes = MakeSet(PhoneNumberType.VOICEMAIL);
             CheckNumbersValidAndCorrectType(PhoneNumberType.VOICEMAIL, voicemailTypes);
-            Assert.Equal(0, invalidCases.Count);
-            Assert.Equal(0, wrongTypeCases.Count);
+            Assert.Empty(invalidCases);
+            Assert.Empty(wrongTypeCases);
         }
 
         [Fact]
@@ -160,8 +160,8 @@ namespace PhoneNumbers.Test
         {
             var sharedCostTypes = MakeSet(PhoneNumberType.SHARED_COST);
             CheckNumbersValidAndCorrectType(PhoneNumberType.SHARED_COST, sharedCostTypes);
-            Assert.Equal(0, invalidCases.Count);
-            Assert.Equal(0, wrongTypeCases.Count);
+            Assert.Empty(invalidCases);
+            Assert.Empty(wrongTypeCases);
         }
 
 
