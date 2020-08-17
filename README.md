@@ -36,7 +36,11 @@ C# port of Google's [libphonenumber library](https://github.com/googlei18n/libph
 ## ToDo
 
   * port read/write source xml data to binary for better performance and smaller .nupkg size (WIP)
-  * update / add / port new unit tests from java source
+  * update / add / port new unit tests and logging from java source
+
+## Building
+  * This library targets several frameworks. As such to build the solution as is `.NET Portable Library targeting pack` and `.NET Framework 3.5 development tools` must be installed and finally copy the portable files to the dotnet sdk: `xcopy "C:\Program Files (x86)\MSBuild\Microsoft\Portable" "C:\Program Files\dotnet\sdk\$(dotnet --version)\Microsoft\Portable\" /S /E`
+  * Alternately to avoid these dependencies the PhoneNumbers.csproj can be edited to exclude unneeded frameworks.
 
 ## How to unfold automatic generated files
   * Install Jetbrains - Resharper for Visual Studio
