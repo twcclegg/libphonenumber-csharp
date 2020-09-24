@@ -102,7 +102,7 @@ namespace PhoneNumbers
         public PhoneNumberOfflineGeocoder(string phonePrefixDataDirectory, Assembly asm = null)
         {
             var files = new SortedDictionary<int, HashSet<string>>();
-#if NETSTANDARD1_3
+#if NETSTANDARD1_3 || PORTABLE
             asm ??= typeof(PhoneNumberOfflineGeocoder).GetTypeInfo().Assembly;
 #else
             asm ??= typeof(PhoneNumberOfflineGeocoder).Assembly;
@@ -243,9 +243,9 @@ namespace PhoneNumbers
         * <p>For example, for a user from the region "US" (United States), we would show "Mountain View,
         * CA" for a particular number, omitting the United States from the description. For a user from
         * the United Kingdom (region "GB"), for the same number we may show "Mountain View, CA, United
-        * States" or even just "United States".
+        * States" or even just "United States".</p>
         *
-        * <p />This method assumes the validity of the number passed in has already been checked.
+        * This method assumes the validity of the number passed in has already been checked.
         *
         * @param number  the phone number for which we want to get a text description
         * @param languageCode  the language code for which the description should be written

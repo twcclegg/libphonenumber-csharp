@@ -84,7 +84,7 @@ namespace PhoneNumbers
             bool nameSuffix = true)
         {
             XDocument document;
-#if NETSTANDARD1_3
+#if NETSTANDARD1_3 || PORTABLE
             asm ??= typeof(PhoneNumberUtil).GetTypeInfo().Assembly;
 #else
             asm ??= typeof(PhoneNumberUtil).Assembly;

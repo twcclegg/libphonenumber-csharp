@@ -2814,7 +2814,11 @@ namespace PhoneNumbers
                     return false;
                 if (carrierCode != null && numOfGroups > 2)
                     carrierCode.Append(prefixMatch.Groups[1].Value);
-                number?.Clear().Append(transformedNumber);
+                if (number != null)
+                {
+                    number.Length = 0;
+                    number.Append(transformedNumber);
+                }
                 return true;
             }
             return false;

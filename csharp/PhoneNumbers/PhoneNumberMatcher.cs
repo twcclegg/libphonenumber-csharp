@@ -162,7 +162,7 @@ namespace PhoneNumbers
 
         /// <summary>The last successful match, null unless in {@link State#READY}.</summary>
         private PhoneNumberMatch lastMatch;
-        /// <summary>The next index to start searching at. Undefined in <see cref="State.Done" />.</summary>
+        /// <summary>The next index to start searching at.</summary>
         private int searchIndex;
 
         // A cache for frequently used country-specific regular expressions. Set to 32 to cover ~2-3
