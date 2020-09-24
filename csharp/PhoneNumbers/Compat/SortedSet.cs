@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace PhoneNumbers
 {
-    public class SortedSet<T> : ISet<T>
+    public class SortedSet<T> : ICollection<T>
     {
         private readonly SortedDictionary<T, object> items;
 
@@ -109,6 +109,19 @@ namespace PhoneNumbers
 
                 return mineEnded && theirsEnded;
             }
+        }
+
+        public bool Overlaps(SortedSet<T> other)
+        {
+            if (Count == 0 || other.Count == 0)
+                return false;
+
+            foreach (T item in other)
+            {
+                if (Contains(item))
+                    return true;
+            }
+            return false;
         }
     }
 }

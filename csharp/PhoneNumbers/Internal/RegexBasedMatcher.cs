@@ -39,14 +39,6 @@ namespace PhoneNumbers.Internal
         }
 
         private static bool Match(string number, PhoneRegex pattern, bool allowPrefixMatch)
-        {
-            var matcher = pattern.MatchBeginning(number);
-            if (!matcher.Success)
-            {
-                return false;
-            }
-
-            return pattern.MatchAll(number).Success || allowPrefixMatch;
-        }
+            => allowPrefixMatch ? pattern.IsMatchBeginning(number) : pattern.IsMatchAll(number);
     }
 }

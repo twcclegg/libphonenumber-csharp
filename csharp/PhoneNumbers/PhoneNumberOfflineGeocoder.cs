@@ -88,52 +88,49 @@ namespace PhoneNumbers
 
         private readonly PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
         private readonly string phonePrefixDataDirectory;
+        private readonly Assembly assembly;
 
         // The mappingFileProvider knows for which combination of countryCallingCode and language a phone
         // prefix mapping file is available in the file system, so that a file can be loaded when needed.
-        private MappingFileProvider mappingFileProvider = new MappingFileProvider();
+        private readonly MappingFileProvider mappingFileProvider;
 
         // A mapping from countryCallingCode_lang to the corresponding phone prefix map that has been
         // loaded.
         private readonly Dictionary<string, AreaCodeMap> availablePhonePrefixMaps = new Dictionary<string, AreaCodeMap>();
 
         // @VisibleForTesting
-        public PhoneNumberOfflineGeocoder(string phonePrefixDataDirectory)
-        {
-            this.phonePrefixDataDirectory = phonePrefixDataDirectory;
-            LoadMappingFileProvider();
-        }
-
-        private void LoadMappingFileProvider()
+        public PhoneNumberOfflineGeocoder(string phonePrefixDataDirectory, Assembly asm = null)
         {
             var files = new SortedDictionary<int, HashSet<string>>();
-#if NET35 || NET40
-            var asm = Assembly.GetExecutingAssembly();
+#if NETSTANDARD1_3
+            asm ??= typeof(PhoneNumberOfflineGeocoder).GetTypeInfo().Assembly;
 #else
-            var asm = typeof(PhoneNumberOfflineGeocoder).GetTypeInfo().Assembly;
+            asm ??= typeof(PhoneNumberOfflineGeocoder).Assembly;
 #endif
             var allNames = asm.GetManifestResourceNames();
             var prefix = asm.GetName().Name + "." + phonePrefixDataDirectory;
-            var names = allNames.Where(n => n.StartsWith(prefix));
+            var names = allNames.Where(n => n.StartsWith(prefix, StringComparison.Ordinal));
             foreach (var n in names)
             {
                 var name = n.Substring(prefix.Length).Split('.');
                 int country;
                 try
                 {
-                    country = int.Parse(name[1]);
+                    country = int.Parse(name[1], CultureInfo.InvariantCulture);
                 }
                 catch(FormatException)
                 {
                     throw new Exception("Failed to parse geocoding file name: " + name);
                 }
                 var language = name[0];
-                if (!files.ContainsKey(country))
-                    files[country] = new HashSet<string>();
-                files[country].Add(language);
+                if (!files.TryGetValue(country, out var languages))
+                    files[country] = languages = new HashSet<string>();
+                languages.Add(language);
             }
             mappingFileProvider = new MappingFileProvider();
             mappingFileProvider.ReadFileConfigs(files);
+            this.assembly = asm;
+            this.phonePrefixDataDirectory = prefix;
         }
 
         private AreaCodeMap GetPhonePrefixDescriptions(
@@ -144,26 +141,21 @@ namespace PhoneNumbers
             {
                 return null;
             }
-            if (!availablePhonePrefixMaps.ContainsKey(fileName))
+            lock (availablePhonePrefixMaps)
             {
-                LoadAreaCodeMapFromFile(fileName);
+                if (!availablePhonePrefixMaps.TryGetValue(fileName, out var map))
+                    map = LoadAreaCodeMapFromFile(fileName);
+                return map;
             }
-            return availablePhonePrefixMaps.TryGetValue(fileName, out var map) ? map : null;
         }
 
-        private void LoadAreaCodeMapFromFile(string fileName)
+        private AreaCodeMap LoadAreaCodeMapFromFile(string fileName)
         {
-#if NET35 || NET40
-            var asm = Assembly.GetExecutingAssembly();
-#else
-            var asm = typeof(PhoneNumberOfflineGeocoder).GetTypeInfo().Assembly;
-#endif
-            var prefix = asm.GetName().Name + "." + phonePrefixDataDirectory;
-            var resName = prefix + fileName;
-            using (var fp = asm.GetManifestResourceStream(resName))
+            var resName = phonePrefixDataDirectory + fileName;
+            using (var fp = assembly.GetManifestResourceStream(resName))
             {
                 var areaCodeMap = AreaCodeParser.ParseAreaCodeMap(fp);
-                availablePhonePrefixMaps[fileName] = areaCodeMap;
+                return availablePhonePrefixMaps[fileName] = areaCodeMap;
             }
         }
 

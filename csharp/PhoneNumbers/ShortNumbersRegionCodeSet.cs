@@ -30,12 +30,10 @@ namespace PhoneNumbers
     {
         // A set of all region codes for which data is available.
 #if !NET35 && !NET40
-        internal static readonly ImmutableHashSet<string> RegionCodeSet =
+        internal static readonly ImmutableHashSet<string> RegionCodeSet = ImmutableHashSet.Create(
 #else
-        internal static readonly HashSet<string> RegionCodeSet =
+        internal static readonly HashSet<string> RegionCodeSet = new HashSet<string> {
 #endif
-            new HashSet<string>
-        {
             "AC",
             "AD",
             "AE",
@@ -277,10 +275,10 @@ namespace PhoneNumbers
             "ZA",
             "ZM",
             "ZW"
-        }
 #if !NET35 && !NET40
-        .ToImmutableHashSet()
-#endif
-        ;
+        );
+#else
+        };
+#endif    
     }
 }

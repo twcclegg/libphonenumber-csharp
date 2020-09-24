@@ -26,8 +26,8 @@ namespace PhoneNumbers.Test
     [Collection("TestMetadataTestCase")]
     public class TestPhoneNumberOfflineGeocoder
     {
-        private PhoneNumberOfflineGeocoder geocoder;
-        private const string TEST_MAPPING_DATA_DIRECTORY = "test.geocoding.";
+        private static readonly PhoneNumberOfflineGeocoder geocoder =
+            new PhoneNumberOfflineGeocoder("geocoding.", typeof(TestPhoneNumberOfflineGeocoder).Assembly);
 
         // Set up some test numbers to re-use.
         private static readonly PhoneNumber KONumber1 =
@@ -57,17 +57,10 @@ namespace PhoneNumbers.Test
         private static readonly PhoneNumber InternationalTollFree =
             new PhoneNumber.Builder().SetCountryCode(800).SetNationalNumber(12345678L).Build();
 
-        public TestPhoneNumberOfflineGeocoder()
-        {
-            PhoneNumberUtil.ResetInstance();
-            geocoder = new PhoneNumberOfflineGeocoder(TEST_MAPPING_DATA_DIRECTORY);
-        }
-
         [Fact]
         public void TestInstantiationWithRegularData()
         {
-            PhoneNumberUtil.ResetInstance();
-            geocoder = PhoneNumberOfflineGeocoder.GetInstance();
+            Assert.NotNull(PhoneNumberOfflineGeocoder.GetInstance());
         }
 
         [Fact]

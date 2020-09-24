@@ -27,22 +27,6 @@ namespace PhoneNumbers.Test
     */
     public class TestMetadataTestCase
     {
-        public const string TestMetaDataFilePrefix = "PhoneNumberMetaDataForTesting.xml";
-
-        public readonly PhoneNumberUtil PhoneUtil;
-
-        // ReSharper disable once MemberCanBeProtected.Global
-        public TestMetadataTestCase()
-        {
-            PhoneUtil = InitializePhoneUtilForTesting();
-        }
-
-        static PhoneNumberUtil InitializePhoneUtilForTesting()
-        {
-            PhoneNumberUtil.ResetInstance();
-            return PhoneNumberUtil.GetInstance(
-                TestMetaDataFilePrefix,
-                CountryCodeToRegionCodeMapForTesting.GetCountryCodeToRegionCodeMap());
-        }
+        public static readonly PhoneNumberUtil PhoneUtil = new PhoneNumberUtil("PhoneNumberMetaDataForTesting.xml", typeof(TestMetadataTestCase).Assembly);
     }
 }

@@ -27,13 +27,13 @@ namespace PhoneNumbers.Test
     * @author Shaopeng Jia
     */
     [Collection("TestMetadataTestCase")]
-    public class TestAsYouTypeFormatter : IClassFixture<TestMetadataTestCase>
+    public class TestAsYouTypeFormatter
     {
         private readonly PhoneNumberUtil phoneUtil;
 
-        public TestAsYouTypeFormatter(TestMetadataTestCase metadata)
+        public TestAsYouTypeFormatter()
         {
-            phoneUtil = metadata.PhoneUtil;
+            phoneUtil = TestMetadataTestCase.PhoneUtil;
         }
 
         [Fact]

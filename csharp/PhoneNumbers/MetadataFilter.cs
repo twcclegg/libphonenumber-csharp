@@ -259,14 +259,13 @@ namespace PhoneNumbers
 			{
 				foreach (var parent in ExcludableParentFields)
 				{
-				    fieldMap.TryGetValue(parent, out var children);
-					if (children == null)
+					if (!fieldMap.TryGetValue(parent, out var children))
 					{
 						children = new SortedSet<string>();
 						fieldMap.Add(parent, children);
 					}
 					if (!children.Add(wildcardChild)
-						&& fieldMap[parent].Count != ExcludableChildFields.Count)
+						&& children.Count != ExcludableChildFields.Count)
 						throw new Exception(
 							wildcardChild + " is present by itself so remove it from " + parent + "'s group");
 				}
@@ -283,13 +282,12 @@ namespace PhoneNumbers
         {
             var complement = new Dictionary<string, SortedSet<string>>();
             foreach (var parent in ExcludableParentFields)
-                if (!fieldMap.ContainsKey(parent))
+                if (!fieldMap.TryGetValue(parent, out var otherChildren))
                 {
                     complement.Add(parent, new SortedSet<string>(ExcludableChildFields));
                 }
                 else
                 {
-                    var otherChildren = fieldMap[parent];
                     // If the other map has all the children for this parent then we don't want to include the
                     // parent as a key.
                     if (otherChildren.Count != ExcludableChildFields.Count)
@@ -318,21 +316,30 @@ namespace PhoneNumbers
 
         internal bool ShouldDrop(string childlessField)
         {
+#if DEBUG
             if (!ExcludableChildlessFields.Contains(childlessField))
                 throw new Exception(childlessField + " is not an excludable childless field");
+#endif
             return blacklist.ContainsKey(childlessField);
         }
 
         private PhoneNumberDesc GetFiltered(string type, PhoneNumberDesc desc)
         {
+#if DEBUG
+            if (!ExcludableParentFields.Contains(type))
+                throw new Exception(type + " is not an excludable parent field");
+#endif
+            if (!blacklist.TryGetValue(type, out var children))
+                return desc;
+
             var builder = new PhoneNumberDesc.Builder().MergeFrom(desc);
-            if (ShouldDrop(type, "nationalNumberPattern"))
+            if (children.Contains("nationalNumberPattern"))
                 builder.ClearNationalNumberPattern();
-            if (ShouldDrop(type, "possibleLength"))
+            if (children.Contains("possibleLength"))
                 builder.ClearPossibleLength();
-            if (ShouldDrop(type, "possibleLengthLocalOnly"))
+            if (children.Contains("possibleLengthLocalOnly"))
                 builder.ClearPossibleLengthLocalOnly();
-            if (ShouldDrop(type, "exampleNumber"))
+            if (children.Contains("exampleNumber"))
                 builder.ClearExampleNumber();
             return builder.Build();
         }
