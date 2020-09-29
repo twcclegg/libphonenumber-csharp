@@ -31,13 +31,13 @@ namespace PhoneNumbers.Test
     * @author Lara Rennie
     */
     [Collection("TestMetadataTestCase")]
-    public class TestPhoneNumberUtil : IClassFixture<TestMetadataTestCase>
+    public class TestPhoneNumberUtil
     {
         private readonly PhoneNumberUtil phoneUtil;
 
-        public TestPhoneNumberUtil(TestMetadataTestCase metadata)
+        public TestPhoneNumberUtil()
         {
-            phoneUtil = metadata.PhoneUtil;
+            phoneUtil = TestMetadataTestCase.PhoneUtil;
         }
 
         // Set up some test numbers to re-use.

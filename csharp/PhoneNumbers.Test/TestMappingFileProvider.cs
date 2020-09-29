@@ -41,24 +41,24 @@ namespace PhoneNumbers.Test
             mappingProvider.ReadFileConfigs(mapping);
         }
 
-        [Fact(Skip = "No binary yet")]
+        [Fact]
         public void TestGetFileName()
         {
-            Assert.Equal("1_en", mappingProvider.GetFileName(1, "en", "", ""));
-            Assert.Equal("1_en", mappingProvider.GetFileName(1, "en", "", "US"));
-            Assert.Equal("1_en", mappingProvider.GetFileName(1, "en", "", "GB"));
-            Assert.Equal("41_de", mappingProvider.GetFileName(41, "de", "", "CH"));
+            Assert.Equal("en.1.txt", mappingProvider.GetFileName(1, "en", "", ""));
+            Assert.Equal("en.1.txt", mappingProvider.GetFileName(1, "en", "", "US"));
+            Assert.Equal("en.1.txt", mappingProvider.GetFileName(1, "en", "", "GB"));
+            Assert.Equal("de.41.txt", mappingProvider.GetFileName(41, "de", "", "CH"));
             Assert.Equal("", mappingProvider.GetFileName(44, "en", "", "GB"));
-            Assert.Equal("86_zh", mappingProvider.GetFileName(86, "zh", "", ""));
-            Assert.Equal("86_zh", mappingProvider.GetFileName(86, "zh", "Hans", ""));
-            Assert.Equal("86_zh", mappingProvider.GetFileName(86, "zh", "", "CN"));
+            Assert.Equal("zh.86.txt", mappingProvider.GetFileName(86, "zh", "", ""));
+            Assert.Equal("zh.86.txt", mappingProvider.GetFileName(86, "zh", "Hans", ""));
+            Assert.Equal("zh.86.txt", mappingProvider.GetFileName(86, "zh", "", "CN"));
             Assert.Equal("", mappingProvider.GetFileName(86, "", "", "CN"));
-            Assert.Equal("86_zh", mappingProvider.GetFileName(86, "zh", "Hans", "CN"));
-            Assert.Equal("86_zh", mappingProvider.GetFileName(86, "zh", "Hans", "SG"));
-            Assert.Equal("86_zh", mappingProvider.GetFileName(86, "zh", "", "SG"));
-            Assert.Equal("86_zh_Hant", mappingProvider.GetFileName(86, "zh", "", "TW"));
-            Assert.Equal("86_zh_Hant", mappingProvider.GetFileName(86, "zh", "", "HK"));
-            Assert.Equal("86_zh_Hant", mappingProvider.GetFileName(86, "zh", "Hant", "TW"));
+            Assert.Equal("zh.86.txt", mappingProvider.GetFileName(86, "zh", "Hans", "CN"));
+            Assert.Equal("zh.86.txt", mappingProvider.GetFileName(86, "zh", "Hans", "SG"));
+            Assert.Equal("zh.86.txt", mappingProvider.GetFileName(86, "zh", "", "SG"));
+            Assert.Equal("zh_Hant.86.txt", mappingProvider.GetFileName(86, "zh", "", "TW"));
+            Assert.Equal("zh_Hant.86.txt", mappingProvider.GetFileName(86, "zh", "", "HK"));
+            Assert.Equal("zh_Hant.86.txt", mappingProvider.GetFileName(86, "zh", "Hant", "TW"));
         }
     }
 }

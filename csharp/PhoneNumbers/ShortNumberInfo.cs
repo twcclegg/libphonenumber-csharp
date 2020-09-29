@@ -15,9 +15,6 @@
  */
 
 using System.Collections.Generic;
-#if !NET35 && !NET40
-using System.Collections.Immutable;
-#endif
 using System.Linq;
 using System.Text;
 using PhoneNumbers.Internal;
@@ -386,16 +383,6 @@ namespace PhoneNumbers
         }
 
         /// <summary>
-        /// Convenience method to get a list of what regions the library has metadata for.
-        /// </summary>
-#if (NET35 || NET40)
-        internal HashSet<string> GetSupportedRegions()
-#else
-        internal ImmutableHashSet<string> GetSupportedRegions()
-#endif
-            => MetadataManager.GetSupportedShortNumberRegions();
-
-        /// <summary>
         /// Gets a valid short number for the specified region.
         /// </summary>
         /// <param name="regionCode">the region for which an example short number is needed</param>
@@ -487,7 +474,7 @@ namespace PhoneNumbers
             bool allowPrefixMatch)
         {
             var possibleNumber = PhoneNumberUtil.ExtractPossibleNumber(number);
-            if (PhoneNumberUtil.PlusCharsPattern.MatchBeginning(possibleNumber).Success)
+            if (possibleNumber.Length > 0 && PhoneNumberUtil.IsPlusChar(possibleNumber[0]))
             {
                 // Returns false if the number starts with a plus sign. We don't believe dialing the country
                 // code before emergency numbers (e.g. +1911) works, but later, if that proves to work, we can

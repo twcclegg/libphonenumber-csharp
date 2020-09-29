@@ -1,4 +1,4 @@
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace PhoneNumbers
 {
@@ -9,15 +9,11 @@ namespace PhoneNumbers
     /// <threadsafety static="true" instance="false"/>
     internal static class InternalRegexOptions
     {
-        public static RegexOptions Default { get; }
-
-        static InternalRegexOptions()
-        {
+        public const RegexOptions
 #if PORTABLE
-            Default = RegexOptions.None;
+            Default = RegexOptions.CultureInvariant;
 #else
-            Default = RegexOptions.Compiled;
+            Default = RegexOptions.Compiled | RegexOptions.CultureInvariant;
 #endif
-        }
     }
 }

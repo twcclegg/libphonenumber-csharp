@@ -84,7 +84,7 @@ namespace PhoneNumbers
         /// else (such as a neighbouring zip-code). If white-space is found, continues to match all
         /// characters that are not typically used to start a phone number.
         /// </summary>
-        private static readonly PhoneRegex GroupSeparator;
+        private static readonly Regex GroupSeparator;
 
         ///<summary>
         /// Builds the MATCHING_BRACKETS and PATTERN regular expressions. The building blocks below exist
@@ -130,7 +130,7 @@ namespace PhoneNumbers
             var leadClassChars = openingParens + PhoneNumberUtil.PLUS_CHARS;
             var leadClass = "[" + leadClassChars + "]";
             LeadClass = new PhoneRegex(leadClass, InternalRegexOptions.Default);
-            GroupSeparator = new PhoneRegex("\\p{Z}" + "[^" + leadClassChars + "\\p{Nd}]*");
+            GroupSeparator = new Regex("\\p{Z}" + "[^" + leadClassChars + "\\p{Nd}]*", InternalRegexOptions.Default);
 
             /* Phone number pattern allowing optional punctuation. */
             Pattern = new Regex(
@@ -162,7 +162,7 @@ namespace PhoneNumbers
 
         /// <summary>The last successful match, null unless in {@link State#READY}.</summary>
         private PhoneNumberMatch lastMatch;
-        /// <summary>The next index to start searching at. Undefined in <see cref="State.Done" />.</summary>
+        /// <summary>The next index to start searching at.</summary>
         private int searchIndex;
 
         // A cache for frequently used country-specific regular expressions. Set to 32 to cover ~2-3
@@ -305,13 +305,13 @@ namespace PhoneNumbers
         private PhoneNumberMatch ExtractMatch(string candidate, int offset)
         {
             // Skip a match that is more likely a publication page reference or a date.
-            if (PubPages.Match(candidate).Success || SlashSeparatedDates.Match(candidate).Success)
+            if (PubPages.IsMatch(candidate) || SlashSeparatedDates.IsMatch(candidate))
                 return null;
             // Skip potential time-stamps.
-            if (TimeStamps.Match(candidate).Success)
+            if (TimeStamps.IsMatch(candidate))
             {
                 var followingText = text.Substring(offset + candidate.Length);
-                if (TimeStampsSuffix.MatchBeginning(followingText).Success)
+                if (TimeStampsSuffix.IsMatchBeginning(followingText))
                     return null;
             }
 
@@ -397,7 +397,7 @@ namespace PhoneNumbers
             {
                 // Check the candidate doesn't contain any formatting which would indicate that it really
                 // isn't a phone number.
-                if (!MatchingBrackets.MatchAll(candidate).Success)
+                if (!MatchingBrackets.IsMatchAll(candidate))
                     return null;
 
                 // If leniency is set to VALID or stricter, we also want to skip numbers that are surrounded
@@ -406,7 +406,7 @@ namespace PhoneNumbers
                 {
                     // If the candidate is not at the start of the text, and does not start with phone-number
                     // punctuation, check the previous character.
-                    if (offset > 0 && !LeadClass.MatchBeginning(candidate).Success)
+                    if (offset > 0 && !LeadClass.IsMatchBeginning(candidate))
                     {
                         var previousChar = text[offset - 1];
                         // We return null if it is a latin letter or an invalid punctuation symbol.
@@ -489,7 +489,7 @@ namespace PhoneNumbers
                         // for extensions.
                         var nationalSignificantNumber = util.GetNationalSignificantNumber(number);
                         return normalizedCandidate.ToString().Substring(fromIndex - formattedNumberGroups[i].Length)
-                            .StartsWith(nationalSignificantNumber);
+                            .StartsWith(nationalSignificantNumber, StringComparison.Ordinal);
                     }
                 }
             }
@@ -533,7 +533,7 @@ namespace PhoneNumbers
             // Now check the first group. There may be a national prefix at the start, so we only check
             // that the candidate group ends with the formatted number group.
             return candidateNumberGroupIndex >= 0 &&
-                   candidateGroups[candidateNumberGroupIndex].EndsWith(formattedNumberGroups[0]);
+                   candidateGroups[candidateNumberGroupIndex].EndsWith(formattedNumberGroups[0], StringComparison.Ordinal);
         }
 
         /// <summary>
@@ -576,7 +576,7 @@ namespace PhoneNumbers
             // TODO: Evaluate how this works for other locales (testing has been limited to NANPA regions)
             // and optimise if necessary.
             var normalizedCandidate =
-                PhoneNumberUtil.NormalizeDigits(candidate, true /* keep non-digits */);
+                PhoneNumberUtil.NormalizeDigits(new StringBuilder(candidate), true /* keep non-digits */);
             var formattedNumberGroups = GetNationalNumberGroups(util, number);
             if (checker(util, number, normalizedCandidate, formattedNumberGroups))
             {
@@ -594,7 +594,7 @@ namespace PhoneNumbers
                         // There is only one leading digits pattern for alternate formats.
                         var pattern =
                             regexCache.GetPatternForRegex(alternateFormat.GetLeadingDigitsPattern(0));
-                        if (!pattern.MatchBeginning(nationalSignificantNumber).Success) {
+                        if (!pattern.IsMatchBeginning(nationalSignificantNumber)) {
                             // Leading digits don't match; try another one.
                             continue;
                         }

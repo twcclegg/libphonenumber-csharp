@@ -24,13 +24,13 @@ using Xunit;
 namespace PhoneNumbers.Test
 {
     [Collection("TestMetadataTestCase")]
-    public class TestPhoneNumberMatcher: IClassFixture<TestMetadataTestCase>
+    public class TestPhoneNumberMatcher
     {
         private readonly PhoneNumberUtil phoneUtil;
 
-        public TestPhoneNumberMatcher(TestMetadataTestCase metadata)
+        public TestPhoneNumberMatcher()
         {
-            phoneUtil = metadata.PhoneUtil;
+            phoneUtil = TestMetadataTestCase.PhoneUtil;
         }
 
         /** See {@link PhoneNumberUtilTest#testParseNationalNumber()}. */
