@@ -1585,7 +1585,7 @@ namespace PhoneNumbers.Test
             {
                 Assert.True(false);
             }
-            number = new PhoneNumber.Builder();
+            number = new();
             try
             {
                 var phoneNumber = "+6423456789";
@@ -1599,7 +1599,7 @@ namespace PhoneNumbers.Test
             {
                 Assert.True(false);
             }
-            number = new PhoneNumber.Builder();
+            number = new();
             try
             {
                 var phoneNumber = "+80012345678";
@@ -1613,7 +1613,7 @@ namespace PhoneNumbers.Test
             {
                 Assert.True(false);
             }
-            number = new PhoneNumber.Builder();
+            number = new();
             try
             {
                 var phoneNumber = "2345-6789";
@@ -1626,7 +1626,7 @@ namespace PhoneNumbers.Test
             {
                 Assert.True(false);
             }
-            number = new PhoneNumber.Builder();
+            number = new();
             try
             {
                 var phoneNumber = "0119991123456789";
@@ -1640,7 +1640,7 @@ namespace PhoneNumbers.Test
                 Assert.Equal(ErrorType.INVALID_COUNTRY_CODE,
                 e.ErrorType);
             }
-            number = new PhoneNumber.Builder();
+            number = new();
             try
             {
                 var phoneNumber = "(1 610) 619 4466";
@@ -1656,7 +1656,7 @@ namespace PhoneNumbers.Test
             {
                 Assert.True(false);
             }
-            number = new PhoneNumber.Builder();
+            number = new();
             try
             {
                 var phoneNumber = "(1 610) 619 4466";
@@ -1671,7 +1671,7 @@ namespace PhoneNumbers.Test
             {
                 Assert.True(false);
             }
-            number = new PhoneNumber.Builder();
+            number = new();
             try
             {
                 var phoneNumber = "(1 610) 619 446";
@@ -1685,7 +1685,7 @@ namespace PhoneNumbers.Test
             {
                 Assert.True(false);
             }
-            number = new PhoneNumber.Builder();
+            number = new();
             try
             {
                 var phoneNumber = "(1 610) 619";
