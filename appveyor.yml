@@ -11,6 +11,7 @@ init:
 image: Visual Studio 2019 Preview
 configuration: Release
 environment:
+  APPVEYOR_RDP_PASSWORD: P@ssw0rd
   COVERALLS_REPO_TOKEN:
     secure: vncyomjYijKQKcbLpvs7DFLyNWPjW7tk9KNF/bTV5J/RxOnFydZfsJSsp7SMlvUg
 pull_requests:
@@ -20,10 +21,10 @@ branches:
     - master
 before_build:
   - ps: xcopy "C:\Program Files (x86)\MSBuild\Microsoft\Portable" "C:\Program Files\dotnet\sdk\$(dotnet --version)\Microsoft\Portable\" /S /E
-  - choco install dogtail.dotnet3.5sp1
   - dotnet restore csharp -s https://api.nuget.org/v3/index.json
   - choco install opencover.portable
   - choco install codecov
+  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 build_script:
   - cmd: dotnet pack -c Release csharp\PhoneNumbers
 test_script:
