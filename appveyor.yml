@@ -25,6 +25,7 @@ before_build:
   - choco install opencover.portable
   - choco install codecov
   - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+  - ps: $blockRdp = $true;
 build_script:
   - cmd: dotnet pack -c Release csharp\PhoneNumbers
 test_script:
