@@ -87,7 +87,7 @@ namespace PhoneNumbers.Test
         public void TestGetSmallerMapStorageChoosesDefaultImpl()
         {
             var mapStorage =
-                new AreaCodeMap().GetSmallerMapStorage(CreateDefaultStorageMapCandidate());
+                new AreaCodeMap().GetSmallerMapStorageInternal(CreateDefaultStorageMapCandidate());
             Assert.False(mapStorage.GetType() == typeof(FlyweightMapStorage));
         }
 
@@ -95,7 +95,7 @@ namespace PhoneNumbers.Test
         public void TestGetSmallerMapStorageChoosesFlyweightImpl()
         {
             var mapStorage =
-                new AreaCodeMap().GetSmallerMapStorage(CreateFlyweightStorageMapCandidate());
+                new AreaCodeMap().GetSmallerMapStorageInternal(CreateFlyweightStorageMapCandidate());
             Assert.True(mapStorage.GetType() == typeof(FlyweightMapStorage));
         }
 

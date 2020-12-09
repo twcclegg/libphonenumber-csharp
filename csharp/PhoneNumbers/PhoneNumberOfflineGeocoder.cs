@@ -68,7 +68,7 @@ namespace PhoneNumbers
         private static string GetCountryName(string country, string language)
         {
             var names = LocaleData.Data[country];
-            if (!names.TryGetValue(language, out string name))
+            if (!names.TryGetValue(language, out var name))
                 return null;
             if (name.Length > 0 && name[0] == '*')
                 return names[name.Substring(1)];
@@ -98,8 +98,7 @@ namespace PhoneNumbers
         // loaded.
         private readonly Dictionary<string, AreaCodeMap> availablePhonePrefixMaps = new Dictionary<string, AreaCodeMap>();
 
-        // @VisibleForTesting
-        public PhoneNumberOfflineGeocoder(string phonePrefixDataDirectory, Assembly asm = null)
+        internal PhoneNumberOfflineGeocoder(string phonePrefixDataDirectory, Assembly asm = null)
         {
             var files = new SortedDictionary<int, HashSet<string>>();
 #if NETSTANDARD1_3 || PORTABLE
@@ -152,11 +151,9 @@ namespace PhoneNumbers
         private AreaCodeMap LoadAreaCodeMapFromFile(string fileName)
         {
             var resName = phonePrefixDataDirectory + fileName;
-            using (var fp = assembly.GetManifestResourceStream(resName))
-            {
-                var areaCodeMap = AreaCodeParser.ParseAreaCodeMap(fp);
-                return availablePhonePrefixMaps[fileName] = areaCodeMap;
-            }
+            using var fp = assembly.GetManifestResourceStream(resName);
+            var areaCodeMap = AreaCodeParser.ParseAreaCodeMap(fp);
+            return availablePhonePrefixMaps[fileName] = areaCodeMap;
         }
 
         /**
@@ -172,7 +169,7 @@ namespace PhoneNumbers
         {
             lock (ThisLock)
             {
-                return instance ?? (instance = new PhoneNumberOfflineGeocoder(MAPPING_DATA_DIRECTORY));
+                return instance ??= new PhoneNumberOfflineGeocoder(MAPPING_DATA_DIRECTORY);
             }
         }
 
@@ -205,8 +202,7 @@ namespace PhoneNumbers
         */
         private static string GetRegionDisplayName(string regionCode, Locale language)
         {
-            return regionCode == null || regionCode.Equals("ZZ") ||
-                   regionCode.Equals(PhoneNumberUtil.REGION_CODE_FOR_NON_GEO_ENTITY)
+            return regionCode?.Equals("ZZ") != false || regionCode.Equals(PhoneNumberUtil.REGION_CODE_FOR_NON_GEO_ENTITY)
                 ? "" : new Locale("", regionCode).GetDisplayCountry(language.Language);
         }
 
@@ -224,12 +220,8 @@ namespace PhoneNumbers
         */
         public string GetDescriptionForValidNumber(PhoneNumber number, Locale languageCode)
         {
-            var langStr = languageCode.Language;
-            var scriptStr = "";  // No script is specified
-            var regionStr = languageCode.Country;
-
             var areaDescription =
-                GetAreaDescriptionForNumber(number, langStr, scriptStr, regionStr);
+                GetAreaDescriptionForNumber(number, languageCode.Language, string.Empty, languageCode.Country);
             return (areaDescription.Length > 0)
                 ? areaDescription : GetCountryNameForNumber(number, languageCode);
         }
@@ -260,16 +252,12 @@ namespace PhoneNumbers
         {
             // If the user region matches the number's region, then we just show the lower-level
             // description, if one exists - if no description exists, we will show the region(country) name
-            // for the number.
+            // for the number. Otherwise, we just show the region(country) name for now.
             var regionCode = phoneUtil.GetRegionCodeForNumber(number);
-            if (userRegion.Equals(regionCode))
-            {
-                return GetDescriptionForValidNumber(number, languageCode);
-            }
-            // Otherwise, we just show the region(country) name for now.
-            return GetRegionDisplayName(regionCode, languageCode);
-            // TODO: Concatenate the lower-level and country-name information in an appropriate
-            // way for each language.
+            return userRegion.Equals(regionCode)
+                ? GetDescriptionForValidNumber(number, languageCode)
+                : GetRegionDisplayName(regionCode, languageCode);
+            // TODO: Concatenate the lower-level and country-name information in an appropriate way for each language.
         }
 
         /**

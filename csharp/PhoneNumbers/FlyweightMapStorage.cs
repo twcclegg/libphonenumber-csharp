@@ -28,7 +28,7 @@ namespace PhoneNumbers
     *
     * @author Philippe Liard
     */
-    public class FlyweightMapStorage : AreaCodeMapStorageStrategy
+    public class FlyweightMapStorage : PhonePrefixMapStorageStrategy
     {
         // Size of short and integer types in bytes.
         private static readonly int ShortNumBytes = sizeof(short);
@@ -92,9 +92,18 @@ namespace PhoneNumbers
                 index++;
             }
             PossibleLengths.Clear();
-            PossibleLengths.AddRange(possibleLengthsSet);
-            PossibleLengths.Sort();
+            PossibleLengths.UnionWith(possibleLengthsSet);
             CreateDescriptionPool(descriptionsSet, areaCodeMap);
+        }
+
+        public override void WriteExternal(Stream stream)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void ReadExternal(Stream inputStream)
+        {
+            throw new NotImplementedException();
         }
 
         /**

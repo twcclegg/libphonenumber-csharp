@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PhoneNumbers
 {
@@ -27,11 +29,11 @@ namespace PhoneNumbers
     {
         private readonly PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
 
-        private AreaCodeMapStorageStrategy areaCodeMapStorage;
+        private PhonePrefixMapStorageStrategy phonePrefixMapStorage;
 
-        public AreaCodeMapStorageStrategy GetAreaCodeMapStorage()
+        public PhonePrefixMapStorageStrategy GetAreaCodeMapStorage()
         {
-            return areaCodeMapStorage;
+            return phonePrefixMapStorage;
         }
 
         /**
@@ -47,32 +49,35 @@ namespace PhoneNumbers
         /// <param name="mapStorage"></param>
         /// <param name="areaCodeMap"></param>
         /// <returns></returns>
-        private static int GetSizeOfAreaCodeMapStorage(AreaCodeMapStorageStrategy mapStorage,
+        private static int GetSizeOfAreaCodeMapStorage(PhonePrefixMapStorageStrategy mapStorage,
             SortedDictionary<int, string> areaCodeMap)
         {
             mapStorage.ReadFromSortedMap(areaCodeMap);
             return mapStorage.GetStorageSize();
         }
 
-        private static AreaCodeMapStorageStrategy CreateDefaultMapStorage()
+        private static PhonePrefixMapStorageStrategy CreateDefaultMapStorage()
         {
             return new DefaultMapStorage();
         }
 
-        private static AreaCodeMapStorageStrategy CreateFlyweightMapStorage()
+        private static PhonePrefixMapStorageStrategy CreateFlyweightMapStorage()
         {
             return new FlyweightMapStorage();
         }
 
         /// <summary>
-        /// Gets the smaller area code map storage strategy according to the provided area code map. It
-        /// actually uses (outputs the data to a stream) both strategies and retains the best one which
-        /// make this method quite expensive.
-        /// <!-- @VisibleForTesting -->
+        /// Gets the smaller area code map storage strategy according to the provided area code map.
+        /// It actually uses (outputs the data to a stream) both strategies and retains the best one
+        /// which make this method quite expensive.
         /// </summary>
         /// <param name="areaCodeMap"></param>
         /// <returns></returns>
-        public AreaCodeMapStorageStrategy GetSmallerMapStorage(SortedDictionary<int, string> areaCodeMap)
+        [Obsolete("This method was public to be @VisibleForTesting, it will be moved to internal in a future release.")]
+        public PhonePrefixMapStorageStrategy GetSmallerMapStorage(SortedDictionary<int, string> areaCodeMap)
+            => GetSmallerMapStorageInternal(areaCodeMap);
+
+        internal PhonePrefixMapStorageStrategy GetSmallerMapStorageInternal(SortedDictionary<int, string> areaCodeMap)
         {
             var flyweightMapStorage = CreateFlyweightMapStorage();
             var sizeOfFlyweightMapStorage = GetSizeOfAreaCodeMapStorage(flyweightMapStorage, areaCodeMap);
@@ -93,7 +98,7 @@ namespace PhoneNumbers
         /// geographical areas, sorted in ascending order of the phone number prefixes as integers.</param>
         public void ReadAreaCodeMap(SortedDictionary<int, string> sortedAreaCodeMap)
         {
-            areaCodeMapStorage = GetSmallerMapStorage(sortedAreaCodeMap);
+            phonePrefixMapStorage = GetSmallerMapStorageInternal(sortedAreaCodeMap);
         }
 
         /// <summary>
@@ -106,7 +111,7 @@ namespace PhoneNumbers
         /// <returns>The description of the geographical area.</returns>
         public string Lookup(PhoneNumber number)
         {
-            var numOfEntries = areaCodeMapStorage.GetNumOfEntries();
+            var numOfEntries = phonePrefixMapStorage.GetNumOfEntries();
             if (numOfEntries == 0)
             {
                 return null;
@@ -114,11 +119,11 @@ namespace PhoneNumbers
             var phonePrefix =
                 long.Parse(number.CountryCode + phoneUtil.GetNationalSignificantNumber(number));
             var currentIndex = numOfEntries - 1;
-            var currentSetOfLengths = areaCodeMapStorage.GetPossibleLengths();
+            var currentSetOfLengths = phonePrefixMapStorage.GetPossibleLengths();
             var length = currentSetOfLengths.Count;
             while (length > 0)
             {
-                var possibleLength = currentSetOfLengths[length - 1];
+                var possibleLength = currentSetOfLengths.ElementAt(length - 1);
                 var phonePrefixStr = phonePrefix.ToString();
                 if (phonePrefixStr.Length > possibleLength)
                 {
@@ -129,12 +134,12 @@ namespace PhoneNumbers
                 {
                     return null;
                 }
-                var currentPrefix = areaCodeMapStorage.GetPrefix(currentIndex);
+                var currentPrefix = phonePrefixMapStorage.GetPrefix(currentIndex);
                 if (phonePrefix == currentPrefix)
                 {
-                    return areaCodeMapStorage.GetDescription(currentIndex);
+                    return phonePrefixMapStorage.GetDescription(currentIndex);
                 }
-                while (length > 0 && currentSetOfLengths[length - 1] >= possibleLength)
+                while (length > 0 && currentSetOfLengths.ElementAt(length - 1) >= possibleLength)
                     length--;
             }
             return null;
@@ -156,7 +161,7 @@ namespace PhoneNumbers
             while (start <= end)
             {
                 current = (start + end) / 2;
-                var currentValue = areaCodeMapStorage.GetPrefix(current);
+                var currentValue = phonePrefixMapStorage.GetPrefix(current);
                 if (currentValue == value)
                 {
                     return current;
@@ -180,7 +185,7 @@ namespace PhoneNumbers
         /// <returns></returns>
         public override string ToString()
         {
-            return areaCodeMapStorage.ToString();
+            return phonePrefixMapStorage.ToString();
         }
     }
 }

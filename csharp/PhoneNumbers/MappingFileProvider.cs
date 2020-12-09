@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -179,6 +180,11 @@ namespace PhoneNumbers
         {
             if (subsequentLocalePart.Length > 0)
                 fullLocale.Append('_').Append(subsequentLocalePart);
+        }
+
+        public void ReadExternal(Stream source)
+        {
+            throw new NotImplementedException();
         }
     }
 }

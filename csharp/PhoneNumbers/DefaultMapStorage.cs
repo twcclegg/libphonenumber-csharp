@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace PhoneNumbers
@@ -27,7 +28,7 @@ namespace PhoneNumbers
     *
     * @author Shaopeng Jia
     */
-    public class DefaultMapStorage : AreaCodeMapStorageStrategy
+    public class DefaultMapStorage : PhonePrefixMapStorageStrategy
     {
         private int[] phoneNumberPrefixes;
         private string[] descriptions;
@@ -63,8 +64,17 @@ namespace PhoneNumbers
                 possibleLengthsSet.Add(lengthOfPrefix);
             }
             PossibleLengths.Clear();
-            PossibleLengths.AddRange(possibleLengthsSet);
-            PossibleLengths.Sort();
+            PossibleLengths.UnionWith(possibleLengthsSet);
+        }
+
+        public override void WriteExternal(Stream stream)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void ReadExternal(Stream inputStream)
+        {
+            throw new NotImplementedException();
         }
     }
 }
