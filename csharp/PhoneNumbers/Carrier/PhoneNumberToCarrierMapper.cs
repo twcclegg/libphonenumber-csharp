@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace PhoneNumbers.Carrier
@@ -27,7 +28,7 @@ namespace PhoneNumbers.Carrier
     {
         private static PhoneNumberToCarrierMapper instance;
 
-        private const string MAPPING_DATA_DIRECTORY = "/com/google/i18n/phtonenumbers/carrier/data/";
+        private const string MAPPING_DATA_DIRECTORY = "../resources/carrier/";
 
         private readonly PrefixFileReader prefixFileReader;
 
@@ -39,7 +40,7 @@ namespace PhoneNumbers.Carrier
         {
             lock (obj)
             {
-                prefixFileReader = new PrefixFileReader(phonePrefixDataDirectory);
+                prefixFileReader ??= new PrefixFileReader(phonePrefixDataDirectory, Assembly.GetCallingAssembly());
             }
         }
 

@@ -16,8 +16,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PhoneNumbers
 {
@@ -71,7 +73,11 @@ namespace PhoneNumbers
             return descriptionPool[indexInDescriptionPool];
         }
 
+#if !NET35
+        public override void ReadFromSortedMap(ImmutableSortedDictionary<int, string> areaCodeMap)
+#else
         public override void ReadFromSortedMap(SortedDictionary<int, string> areaCodeMap)
+#endif
         {
             var descriptionsSet = new HashSet<string>();
             NumOfEntries = areaCodeMap.Count;
@@ -98,18 +104,19 @@ namespace PhoneNumbers
 
         public override void WriteExternal(Stream stream)
         {
-            throw new NotImplementedException();
+            using var writer = new BinaryWriter(stream);
         }
 
-        public override void ReadExternal(Stream inputStream)
+        public override void ReadExternal(Stream stream)
         {
-            throw new NotImplementedException();
+            using var reader = new BinaryReader(stream);
         }
 
         /**
         * Creates the description pool from the provided set of string descriptions and area code map.
         */
-        private void CreateDescriptionPool(HashSet<string> descriptionsSet, SortedDictionary<int, string> areaCodeMap)
+        private void CreateDescriptionPool(ICollection<string> descriptionsSet,
+            IReadOnlyDictionary<int, string> areaCodeMap)
         {
             // Create the description pool.
             descIndexSizeInBytes = GetOptimalNumberOfBytesForValue(descriptionsSet.Count - 1);

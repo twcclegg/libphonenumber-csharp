@@ -52,7 +52,7 @@ namespace PhoneNumbers.Test
                 {1650345, "San Mateo, CA"},
                 {1867993, "Dawson, YT"},
                 {1972480, "Richardson, TX"}
-            }.ToImmutableDictionary();
+            }.ToImmutableSortedDictionary();
 
             phonePrefixMapForUS.ReadPhonePrefixMap(sortedMapForUS);
 
@@ -64,30 +64,30 @@ namespace PhoneNumbers.Test
                 {390131, "Alessandria"},
                 {390321, "Novara"},
                 {390975, "Potenza"}
-            }.ToImmutableDictionary();
+            }.ToImmutableSortedDictionary();
 
             phonePrefixMapForIT.ReadPhonePrefixMap(sortedMapForIT);
         }
 
-        private static ImmutableDictionary<int, string> CreateDefaultStorageMapCandidate()
+        private static ImmutableSortedDictionary<int, string> CreateDefaultStorageMapCandidate()
             // Make the phone prefixes bigger to store them using integer.
             => new Dictionary<int, string>
             {
                 {121212345, "New York"},
                 {148034434, "Arizona"
                 }
-            }.ToImmutableDictionary();
+            }.ToImmutableSortedDictionary();
 
-        private static ImmutableDictionary<int, string> CreateFlyweightStorageMapCandidate()
+        private static ImmutableSortedDictionary<int, string> CreateFlyweightStorageMapCandidate()
             => new Dictionary<int, string>
             {
                 {1212, "New York"},
                 {1213, "New York"},
                 {1214, "New York"},
                 {1480, "Arizona"}
-            }.ToImmutableDictionary();
+            }.ToImmutableSortedDictionary();
 
-        [Fact(Skip="NotImplemented")]
+        [Fact]
         public void GetSmallerMapStorageChoosesDefaultImpl()
         {
             var mapStorage =
@@ -95,7 +95,7 @@ namespace PhoneNumbers.Test
             Assert.False(mapStorage is FlyweightMapStorage);
         }
 
-        [Fact(Skip="NotImplemented")]
+        [Fact]
         public void GetSmallerMapStorageChoosesFlyweightImpl()
         {
             var mapStorage =
@@ -103,7 +103,7 @@ namespace PhoneNumbers.Test
             Assert.True(mapStorage is FlyweightMapStorage);
         }
 
-        [Fact(Skip="NotImplemented")]
+        [Fact]
         public void LookupInvalidNumber_US()
         {
             // central office code cannot start with 1.
@@ -111,56 +111,56 @@ namespace PhoneNumbers.Test
             Assert.Equal("New York", phonePrefixMapForUS.Lookup(number.Build()));
         }
 
-        [Fact(Skip="NotImplemented")]
+        [Fact]
         public void LookupNumber_NJ()
         {
             number.SetCountryCode(1).SetNationalNumber(2016641234L);
             Assert.Equal("Westwood, NJ", phonePrefixMapForUS.Lookup(number.Build()));
         }
 
-        [Fact(Skip="NotImplemented")]
+        [Fact]
         public void LookupNumber_NY()
         {
             number.SetCountryCode(1).SetNationalNumber(2126641234L);
             Assert.Equal("New York", phonePrefixMapForUS.Lookup(number.Build()));
         }
 
-        [Fact(Skip="NotImplemented")]
+        [Fact]
         public void LookupNumber_CA_1()
         {
             number.SetCountryCode(1).SetNationalNumber(6503451234L);
             Assert.Equal("San Mateo, CA", phonePrefixMapForUS.Lookup(number.Build()));
         }
 
-        [Fact(Skip="NotImplemented")]
+        [Fact]
         public void LookupNumber_CA_2()
         {
             number.SetCountryCode(1).SetNationalNumber(6502531234L);
             Assert.Equal("California", phonePrefixMapForUS.Lookup(number.Build()));
         }
 
-        [Fact(Skip="NotImplemented")]
+        [Fact]
         public void LookupNumberFound_TX()
         {
             number.SetCountryCode(1).SetNationalNumber(9724801234L);
             Assert.Equal("Richardson, TX", phonePrefixMapForUS.Lookup(number.Build()));
         }
 
-        [Fact(Skip="NotImplemented")]
+        [Fact]
         public void LookupNumberNotFound_TX()
         {
             number.SetCountryCode(1).SetNationalNumber(9724811234L);
             Assert.Null(phonePrefixMapForUS.Lookup(number.Build()));
         }
 
-        [Fact(Skip="NotImplemented")]
+        [Fact]
         public void LookupNumber_CH()
         {
             number.SetCountryCode(41).SetNationalNumber(446681300L);
             Assert.Null(phonePrefixMapForUS.Lookup(number.Build()));
         }
 
-        [Fact(Skip="NotImplemented")]
+        [Fact]
         public void LookupNumber_IT()
         {
             number.SetCountryCode(39).SetNationalNumber(212345678L).SetItalianLeadingZero(true);
@@ -200,7 +200,7 @@ namespace PhoneNumbers.Test
             return newPhonePrefixMap;
         }
 
-        [Fact(Skip="NotImplemented")]
+        [Fact]
         public void ReadWriteExternalWithDefaultStrategy()
         {
             var localPhonePrefixMap = new PhonePrefixMap();
@@ -211,7 +211,7 @@ namespace PhoneNumbers.Test
             Assert.Equal(localPhonePrefixMap.ToString(), newPhonePrefixMap.ToString());
         }
 
-        [Fact(Skip="NotImplemented")]
+        [Fact]
         public void ReadWriteExternalWithFlyweightStrategy()
         {
             var localPhonePrefixMap = new PhonePrefixMap();

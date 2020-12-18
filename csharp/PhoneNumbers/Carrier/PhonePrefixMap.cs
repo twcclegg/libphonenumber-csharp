@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PhoneNumbers.Carrier
 {
@@ -51,30 +52,28 @@ namespace PhoneNumbers.Carrier
      * Gets the size of the provided phone prefix map storage. The map storage passed-in will be
      * filled as a result.
      */
-        private static int GetSizeOfPhonePrefixMapStorage(PhonePrefixMapStorageStrategy mapStorage,
+        private static long GetSizeOfPhonePrefixMapStorage(PhonePrefixMapStorageStrategy mapStorage,
 #if !NET35
-            ImmutableDictionary<int, string> phonePrefixMap)
+            ImmutableSortedDictionary<int, string> phonePrefixMap)
 #else
             SortedDictionary<int, string> phonePrefixMap)
 #endif
         {
-            return 0;
-            // mapStorage.ReadFromSortedMap(phonePrefixMap);
-            // var byteArrayOutputStream = new ByteArrayOutputStream();
-            // var objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-            // mapStorage.WriteExternal(objectOutputStream);
-            // objectOutputStream.flush();
-            // int sizeOfStorage = byteArrayOutputStream.size();
-            // objectOutputStream.close();
-            // return sizeOfStorage;
+            mapStorage.ReadFromSortedMap(phonePrefixMap);
+            using var stream = new MemoryStream();
+            mapStorage.WriteExternal(stream);
+            stream.Flush();
+            var sizeOfStorage = stream.Length;
+            stream.Close();
+            return sizeOfStorage;
         }
 
-        private PhonePrefixMapStorageStrategy createDefaultMapStorage()
+        private PhonePrefixMapStorageStrategy CreateDefaultMapStorage()
         {
             return new DefaultMapStorage();
         }
 
-        private PhonePrefixMapStorageStrategy createFlyweightMapStorage()
+        private PhonePrefixMapStorageStrategy CreateFlyweightMapStorage()
         {
             return new FlyweightMapStorage();
         }
@@ -84,15 +83,19 @@ namespace PhoneNumbers.Carrier
      * It actually uses (outputs the data to a stream) both strategies and retains the best one which
      * make this method quite expensive.
      */
-        internal PhonePrefixMapStorageStrategy GetSmallerMapStorage(ImmutableDictionary<int, string> phonePrefixMap)
+#if !NET35
+        internal PhonePrefixMapStorageStrategy GetSmallerMapStorage(ImmutableSortedDictionary<int, string> phonePrefixMap)
+#else
+        internal PhonePrefixMapStorageStrategy GetSmallerMapStorage(SortedDictionary<int, string> phonePrefixMap)
+#endif
         {
             try
             {
-                var flyweightMapStorage = createFlyweightMapStorage();
+                var flyweightMapStorage = CreateFlyweightMapStorage();
                 var sizeOfFlyweightMapStorage = GetSizeOfPhonePrefixMapStorage(flyweightMapStorage,
                     phonePrefixMap);
 
-                var defaultMapStorage = createDefaultMapStorage();
+                var defaultMapStorage = CreateDefaultMapStorage();
                 var sizeOfDefaultMapStorage = GetSizeOfPhonePrefixMapStorage(defaultMapStorage,
                     phonePrefixMap);
 
@@ -102,7 +105,7 @@ namespace PhoneNumbers.Carrier
             }
             catch (IOException)
             {
-                return createFlyweightMapStorage();
+                return CreateFlyweightMapStorage();
             }
         }
 
@@ -114,18 +117,19 @@ namespace PhoneNumbers.Carrier
      * @param sortedPhonePrefixMap    a map from phone number prefixes to descriptions of those prefixes
      * sorted in ascending order of the phone number prefixes as integers.
      */
-        public void ReadPhonePrefixMap(ImmutableDictionary<int, string> sortedPhonePrefixMap)
+#if !NET35
+        public void ReadPhonePrefixMap(ImmutableSortedDictionary<int, string> sortedPhonePrefixMap)
+#else
+        public void ReadPhonePrefixMap(SortedDictionary<int, string> sortedPhonePrefixMap)
+#endif
         {
             phonePrefixMapStorage = GetSmallerMapStorage(sortedPhonePrefixMap);
         }
 
-        /**
-     * Supports Java Serialization.
-     */
-        public void ReadExternal(Stream objectInput)
+        internal Task ReadExternal(Stream stream)
         {
             // Read the phone prefix map storage strategy flag.
-            var useFlyweightMapStorage = objectInput.ReadByte() == 1;
+            var useFlyweightMapStorage = stream.ReadByte() == 1;
             if (useFlyweightMapStorage)
             {
                 phonePrefixMapStorage = new FlyweightMapStorage();
@@ -135,16 +139,12 @@ namespace PhoneNumbers.Carrier
                 phonePrefixMapStorage = new DefaultMapStorage();
             }
 
-            phonePrefixMapStorage.ReadExternal(objectInput);
+            return phonePrefixMapStorage.ReadExternal(stream);
         }
 
-        /**
-     * Supports Java Serialization.
-     */
-        public void WriteExternal(Stream objectOutput)
+        public async Task WriteExternal(Stream objectStream)
         {
-            objectOutput.WriteByte((byte) (phonePrefixMapStorage is FlyweightMapStorage ? 1 : 0));
-            phonePrefixMapStorage.WriteExternal(objectOutput);
+            throw new System.NotImplementedException();
         }
 
         /**
@@ -224,7 +224,7 @@ namespace PhoneNumbers.Carrier
                 {
                     return current;
                 }
-                else if (currentValue > value)
+                if (currentValue > value)
                 {
                     current--;
                     end = current;

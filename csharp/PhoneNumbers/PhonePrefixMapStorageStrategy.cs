@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace PhoneNumbers
 {
@@ -56,7 +57,11 @@ namespace PhoneNumbers
         /// </summary>
         /// <param name="sortedAreaCodeMap">A sorted map that maps phone number prefixes including country
         /// calling code to description strings.</param>
+#if !NET35
+        public abstract void ReadFromSortedMap(ImmutableSortedDictionary<int, string> sortedAreaCodeMap);
+#else
         public abstract void ReadFromSortedMap(SortedDictionary<int, string> sortedAreaCodeMap);
+#endif
 
         /// <summary>
         /// The number of entries contained in the area code map.
@@ -89,7 +94,7 @@ namespace PhoneNumbers
             return output.ToString();
         }
 
-        public abstract void WriteExternal(Stream outputStream);
-        public abstract void ReadExternal(Stream inputStream);
+        public abstract Task WriteExternal(Stream stream);
+        public abstract Task ReadExternal(Stream stream);
     }
 }

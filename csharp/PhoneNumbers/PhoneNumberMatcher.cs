@@ -137,7 +137,7 @@ namespace PhoneNumbers
                 "(?:" + leadClass + punctuation + ")" + leadLimit +
                 digitSequence + "(?:" + punctuation + digitSequence + ")" + blockLimit +
                 "(?:" + PhoneNumberUtil.ExtnPatternsForMatching + ")?",
-                PhoneNumberUtil.RegexFlags);
+                PhoneNumberUtil.REGEX_FLAGS);
         }
 
         /** Returns a regular expression quantifier with an upper and lower limit. */

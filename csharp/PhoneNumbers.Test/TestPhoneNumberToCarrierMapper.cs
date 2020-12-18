@@ -29,7 +29,7 @@ namespace PhoneNumbers.Test
         private readonly PhoneNumberToCarrierMapper carrierMapper =
             new PhoneNumberToCarrierMapper(TEST_MAPPING_DATA_DIRECTORY);
 
-        private const string TEST_MAPPING_DATA_DIRECTORY = "/com/google/i18n/phonenumbers/carrier/testing_data/";
+        private const string TEST_MAPPING_DATA_DIRECTORY = "PhoneNumbers.Test.Carrier.TestingData.";
 
         // Set up some test numbers to re-use.
         private static readonly PhoneNumber AoMobile1 =
@@ -74,7 +74,7 @@ namespace PhoneNumbers.Test
         private static readonly PhoneNumber InternationalTollFree =
             new PhoneNumber.Builder().SetCountryCode(800).SetNationalNumber(12345678L).Build();
 
-        [Fact(Skip="NotImplemented")]
+        [Fact]
         public void TestGetNameForMobilePortableRegion()
         {
             Assert.Equal("British carrier",
@@ -87,7 +87,7 @@ namespace PhoneNumbers.Test
             Assert.Equal("", carrierMapper.GetSafeDisplayName(UkMobile1, Locale.English));
         }
 
-        [Fact(Skip="NotImplemented")]
+        [Fact]
         public void TestGetNameForNonMobilePortableRegion()
         {
             Assert.Equal("Angolan carrier",
@@ -96,7 +96,7 @@ namespace PhoneNumbers.Test
                 carrierMapper.GetSafeDisplayName(AoMobile1, Locale.English));
         }
 
-        [Fact(Skip="NotImplemented")]
+        [Fact]
         public void TestGetNameForFixedLineNumber()
         {
             Assert.Equal("", carrierMapper.GetNameForNumber(AoFixed1, Locale.English));
@@ -108,20 +108,20 @@ namespace PhoneNumbers.Test
             Assert.Equal("", carrierMapper.GetNameForValidNumber(UkFixed2, Locale.English));
         }
 
-        [Fact(Skip="NotImplemented")]
+        [Fact]
         public void TestGetNameForFixedOrMobileNumber()
         {
             Assert.Equal("US carrier", carrierMapper.GetNameForNumber(USFixedOrMobile,
                 Locale.English));
         }
 
-        [Fact(Skip="NotImplemented")]
+        [Fact]
         public void TestGetNameForPagerNumber()
         {
             Assert.Equal("British pager", carrierMapper.GetNameForNumber(UkPager, Locale.English));
         }
 
-        [Fact(Skip="NotImplemented")]
+        [Fact]
         public void TestGetNameForNumberWithNoDataFile()
         {
             Assert.Equal("", carrierMapper.GetNameForNumber(NumberWithInvalidCountryCode,
@@ -134,14 +134,14 @@ namespace PhoneNumbers.Test
                 Locale.English));
         }
 
-        [Fact(Skip="NotImplemented")]
+        [Fact]
         public void TestGetNameForNumberWithMissingPrefix()
         {
             Assert.Equal("", carrierMapper.GetNameForNumber(UkMobile2, Locale.English));
             Assert.Equal("", carrierMapper.GetNameForNumber(AoMobile2, Locale.English));
         }
 
-        [Fact(Skip="NotImplemented")]
+        [Fact]
         public void TestGetNameForInvalidNumber()
         {
             Assert.Equal("", carrierMapper.GetNameForNumber(UkInvalidNumber, Locale.English));

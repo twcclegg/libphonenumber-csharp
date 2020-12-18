@@ -17,7 +17,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -25,6 +24,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 [assembly: InternalsVisibleTo("PhoneNumbers.Test")]
+[assembly: InternalsVisibleTo("BuildTools")]
 namespace PhoneNumbers
 {
     /// <summary>
@@ -46,9 +46,9 @@ namespace PhoneNumbers
     public class PhoneNumberUtil
     {
         // Flags to use when compiling regular expressions for phone numbers.
-        internal const RegexOptions RegexFlags = RegexOptions.IgnoreCase | InternalRegexOptions.Default;
+        internal const RegexOptions REGEX_FLAGS = RegexOptions.IgnoreCase | InternalRegexOptions.Default;
         // The minimum and maximum length of the national significant number.
-        internal const int MIN_LENGTH_FOR_NSN = 2;
+        private const int MIN_LENGTH_FOR_NSN = 2;
         // The ITU says the maximum length should be 15, but we have found longer numbers in Germany.
         internal const int MAX_LENGTH_FOR_NSN = 16;
         // The maximum length of the country calling code.
@@ -56,8 +56,8 @@ namespace PhoneNumbers
         // We don't allow input strings for parsing to be longer than 250 chars. This prevents malicious
         // input from overflowing the regular-expression engine.
         private const int MAX_INPUT_STRING_LENGTH = 250;
-        internal const string META_DATA_FILE_PREFIX = "PhoneNumberMetaData.xml";
-        internal const string UNKNOWN_REGION = "ZZ";
+        private const string META_DATA_FILE_PREFIX = "PhoneNumberMetaData.xml";
+        private const string UNKNOWN_REGION = "ZZ";
 
         // A mapping from a country calling code to the region codes which denote the region represented
         // by that country calling code. In the case of multiple regions sharing a calling code, such as
@@ -177,7 +177,7 @@ namespace PhoneNumbers
         // extension so that the first number is parsed correctly.
         private const string SECOND_NUMBER_START = "[\\\\/] *x";
 
-        internal static readonly char[] SecondNumberStartChars = new[] { '\\', '/' };
+        private static readonly char[] SecondNumberStartChars = new[] { '\\', '/' };
         internal static readonly Regex SecondNumberStartPattern = new Regex(SECOND_NUMBER_START, InternalRegexOptions.Default);
 
         // We use this pattern to check if the phone number has at least three letters in it - if so, then
@@ -375,10 +375,10 @@ namespace PhoneNumbers
             ExtnPatternsForParsing = CreateExtnPattern(singleExtnSymbolsForParsing);
             ExtnPatternsForMatching = CreateExtnPattern(singleExtnSymbolsForMatching);
 
-            ExtnPattern = new Regex("(?:" + ExtnPatternsForParsing + ")$", RegexFlags);
+            ExtnPattern = new Regex("(?:" + ExtnPatternsForParsing + ")$", REGEX_FLAGS);
 
             ValidPhoneNumberPattern =
-                new PhoneRegex(validPhoneNumber + "(?:" + ExtnPatternsForParsing + ")?", RegexFlags);
+                new PhoneRegex(validPhoneNumber + "(?:" + ExtnPatternsForParsing + ")?", REGEX_FLAGS);
         }
 
         private static PhoneNumberUtil instance;
@@ -531,9 +531,10 @@ namespace PhoneNumbers
             }
         }
 
-        internal PhoneNumberUtil(string baseFileLocation, Assembly asm = null, Dictionary<int, List<string>> countryCallingCodeToRegionCodeMap = null)
+        internal PhoneNumberUtil(string baseFileLocation, Assembly assembly = null,
+            Dictionary<int, List<string>> countryCallingCodeToRegionCodeMap = null)
         {
-            var phoneMetadata = BuildMetadataFromXml.BuildPhoneMetadataCollection(baseFileLocation, asm);
+            var phoneMetadata = BuildMetadataFromXml.BuildPhoneMetadataCollection(baseFileLocation, assembly);
             this.countryCallingCodeToRegionCodeMap = countryCallingCodeToRegionCodeMap ??= BuildMetadataFromXml.BuildCountryCodeToRegionCodeMap(phoneMetadata);
 
             foreach (var regionCodes in countryCallingCodeToRegionCodeMap)
@@ -651,8 +652,8 @@ namespace PhoneNumbers
 
         internal static StringBuilder NormalizeDigits(StringBuilder number, bool keepNonDigits)
         {
-            int pos = 0;
-            for (int i = 0; i < number.Length; i++)
+            var pos = 0;
+            for (var i = 0; i < number.Length; i++)
             {
                 var c = number[i];
                 if ((uint)(c - '0') <= 9)
@@ -885,7 +886,7 @@ namespace PhoneNumbers
             for (var i = 0; i < number.Length; i++)
             {
                 var character = number[i];
-                if (normalizationReplacements.TryGetValue(char.ToUpperInvariant(character), out char newDigit))
+                if (normalizationReplacements.TryGetValue(char.ToUpperInvariant(character), out var newDigit))
                     number[pos++] = newDigit;
                 else if (!removeNonMatches)
                     number[pos++] = character;
@@ -2183,7 +2184,7 @@ namespace PhoneNumbers
         /// code.</returns>
         public string GetRegionCodeForNumber(PhoneNumber number)
         {
-            countryCallingCodeToRegionCodeMap.TryGetValue(number.CountryCode, out List<string> regions);
+            countryCallingCodeToRegionCodeMap.TryGetValue(number.CountryCode, out var regions);
             if (regions == null)
             {
                 return null;
@@ -2220,10 +2221,18 @@ namespace PhoneNumbers
         /// <returns></returns>
         public string GetRegionCodeForCountryCode(int countryCallingCode)
         {
-            return countryCallingCodeToRegionCodeMap.TryGetValue(countryCallingCode, out List<string> regionCodes)
+            return countryCallingCodeToRegionCodeMap.TryGetValue(countryCallingCode, out var regionCodes)
                 ? regionCodes[0]
                 : UNKNOWN_REGION;
         }
+
+        /// <summary>
+        /// Returns a list with the region codes that match the specific country calling code. For non-geographical
+        /// country calling codes, the region code 001 is returned. Also, in the case of no region code being found,
+        /// an empty list is returned.
+        /// </summary>
+        public List<string> GetRegionCodesForCountryCode(int countryCallingCode)
+            => countryCallingCodeToRegionCodeMap[countryCallingCode] ?? new List<string>(0);
 
         /// <summary>
         /// Returns the country calling code for a specific region. For example, this would be 1 for the
@@ -2757,7 +2766,7 @@ namespace PhoneNumbers
             if (number.Length == 0)
                 return PhoneNumber.Types.CountryCodeSource.FROM_DEFAULT_COUNTRY;
             // Check to see if the number begins with one or more plus signs.
-            int m = 0;
+            var m = 0;
             while (m < number.Length && IsPlusChar(number[m])) m++;
             if (m > 0)
             {
@@ -3067,7 +3076,7 @@ namespace PhoneNumbers
             }
             catch (NumberParseException e) when (e.ErrorType == ErrorType.INVALID_COUNTRY_CODE)
             {
-                int m = 0;
+                var m = 0;
                 while (m < nationalNumberString.Length && IsPlusChar(nationalNumberString[m])) m++;
                 if (m > 0)
                 {

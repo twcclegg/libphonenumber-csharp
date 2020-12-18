@@ -1,4 +1,4 @@
-﻿/*
+﻿/*/*
  * Copyright (C) 2011 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,10 +12,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ #1#
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace PhoneNumbers
@@ -40,7 +41,7 @@ namespace PhoneNumbers
          * Creates an empty {@link AreaCodeMap}. The default constructor is necessary for implementing
          * {@link Externalizable}. The empty map could later be populated by
          * {@link #readAreaCodeMap(java.util.SortedMap)} or {@link #readExternal(java.io.ObjectInput)}.
-         */
+         #1#
 
         /// <summary>
         /// Gets the size of the provided area code map storage. The map storage passed-in will be filled
@@ -50,7 +51,11 @@ namespace PhoneNumbers
         /// <param name="areaCodeMap"></param>
         /// <returns></returns>
         private static int GetSizeOfAreaCodeMapStorage(PhonePrefixMapStorageStrategy mapStorage,
+#if !NET35
+            ImmutableSortedDictionary<int, string> areaCodeMap)
+#else
             SortedDictionary<int, string> areaCodeMap)
+#endif
         {
             mapStorage.ReadFromSortedMap(areaCodeMap);
             return mapStorage.GetStorageSize();
@@ -75,9 +80,13 @@ namespace PhoneNumbers
         /// <returns></returns>
         [Obsolete("This method was public to be @VisibleForTesting, it will be moved to internal in a future release.")]
         public PhonePrefixMapStorageStrategy GetSmallerMapStorage(SortedDictionary<int, string> areaCodeMap)
-            => GetSmallerMapStorageInternal(areaCodeMap);
+            => GetSmallerMapStorageInternal(areaCodeMap.ToImmutableSortedDictionary());
 
+#if !NET35
+        internal PhonePrefixMapStorageStrategy GetSmallerMapStorageInternal(ImmutableSortedDictionary<int, string> areaCodeMap)
+#else
         internal PhonePrefixMapStorageStrategy GetSmallerMapStorageInternal(SortedDictionary<int, string> areaCodeMap)
+#endif
         {
             var flyweightMapStorage = CreateFlyweightMapStorage();
             var sizeOfFlyweightMapStorage = GetSizeOfAreaCodeMapStorage(flyweightMapStorage, areaCodeMap);
@@ -188,4 +197,4 @@ namespace PhoneNumbers
             return phonePrefixMapStorage.ToString();
         }
     }
-}
+}*/

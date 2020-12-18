@@ -80,21 +80,23 @@ namespace PhoneNumbers
         public static PhoneMetadataCollection BuildPhoneMetadataCollection(string name, bool liteBuild, bool specialBuild, bool isShortNumberMetadata, bool isAlternateFormatsMetadata)
             => BuildPhoneMetadataCollection(name, null, liteBuild, specialBuild, isShortNumberMetadata, isAlternateFormatsMetadata, nameSuffix: false);
 
-        internal static PhoneMetadataCollection BuildPhoneMetadataCollection(string name, Assembly asm = null,
+        internal static PhoneMetadataCollection BuildPhoneMetadataCollection(string name, Assembly assembly = null,
             bool liteBuild = false, bool specialBuild = false, bool isShortNumberMetadata = false,
             bool isAlternateFormatsMetadata = false, bool nameSuffix = true)
         {
             XDocument document;
 #if NETSTANDARD1_3 || PORTABLE
-            asm ??= typeof(PhoneNumberUtil).GetTypeInfo().Assembly;
+            assembly ??= typeof(PhoneNumber).GetTypeInfo().Assembly;
 #else
-            asm ??= typeof(PhoneNumberUtil).Assembly;
+            assembly ??= typeof(PhoneNumber).Assembly;
 #endif
 
             if (nameSuffix)
-                name = asm.GetManifestResourceNames().FirstOrDefault(n => n.EndsWith(name, StringComparison.Ordinal)) ?? throw new ArgumentException(name + " resource not found");
+                name = assembly.GetManifestResourceNames()
+                           .FirstOrDefault(n => n.EndsWith(name, StringComparison.Ordinal)) ??
+                       throw new ArgumentException(name + " resource not found");
 
-            using (var input = asm.GetManifestResourceStream(name))
+            using (var input = assembly.GetManifestResourceStream(name))
             {
 #if NET35
                 document = XDocument.Load(new XmlTextReader(input));

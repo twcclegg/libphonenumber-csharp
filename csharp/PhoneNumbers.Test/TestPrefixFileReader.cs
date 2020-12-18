@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+using System.Reflection;
 using PhoneNumbers.Carrier;
 using Xunit;
 
@@ -26,8 +27,10 @@ namespace PhoneNumbers.Test
  */
     public class PrefixFileReaderTest
     {
-        private readonly PrefixFileReader reader = new PrefixFileReader(TEST_MAPPING_DATA_DIRECTORY);
-        private const string TEST_MAPPING_DATA_DIRECTORY = "/com/google/i18n/phonenumbers/geocoding/testing_data/";
+        private const string TEST_MAPPING_DATA_DIRECTORY = "PhoneNumbers.Test.Carrier.TestingData.";
+
+        private readonly PrefixFileReader reader = new PrefixFileReader(TEST_MAPPING_DATA_DIRECTORY,
+            Assembly.GetAssembly(typeof(PrefixFileReaderTest)));
 
         private static readonly PhoneNumber KONumber =
             new PhoneNumber.Builder().SetCountryCode(82).SetNationalNumber(22123456L).Build();
@@ -40,7 +43,7 @@ namespace PhoneNumbers.Test
         private static readonly PhoneNumber SENumber =
             new PhoneNumber.Builder().SetCountryCode(46).SetNationalNumber(81234567L).Build();
 
-        [Fact(Skip="NotImplemented")]
+        [Fact]
         public void TestGetDescriptionForNumberWithMapping() {
             Assert.Equal("Kalifornien",
                 reader.GetDescriptionForNumber(USNumber1, "de", "", "CH"));
@@ -52,12 +55,12 @@ namespace PhoneNumbers.Test
                 reader.GetDescriptionForNumber(KONumber, "en", "", ""));
         }
 
-        [Fact(Skip="NotImplemented")]
+        [Fact]
         public void TestGetDescriptionForNumberWithMissingMapping() {
             Assert.Equal("", reader.GetDescriptionForNumber(USNumber3, "en", "", ""));
         }
 
-        [Fact(Skip="NotImplemented")]
+        [Fact]
         public void TestGetDescriptionUsingFallbackLanguage() {
             // Mapping file exists but the number isn't present, causing it to fallback.
             Assert.Equal("New York, NY",
@@ -67,12 +70,12 @@ namespace PhoneNumbers.Test
                 reader.GetDescriptionForNumber(USNumber2, "sv", "", ""));
         }
 
-        [Fact(Skip="NotImplemented")]
+        [Fact]
         public void TestGetDescriptionForNonFallbackLanguage() {
             Assert.Equal("", reader.GetDescriptionForNumber(USNumber2, "ko", "", ""));
         }
 
-        [Fact(Skip="NotImplemented")]
+        [Fact]
         public void TestGetDescriptionForNumberWithoutMappingFile() {
             Assert.Equal("", reader.GetDescriptionForNumber(SENumber, "sv", "", ""));
             Assert.Equal("", reader.GetDescriptionForNumber(SENumber, "en", "", ""));
