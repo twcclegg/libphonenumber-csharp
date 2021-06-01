@@ -92,7 +92,7 @@ namespace PhoneNumbers.Test
         {
             var xmlInput =
                 "<territory countryCode='33' leadingDigits='2' internationalPrefix='00'" +
-                "           preferredInternationalPrefix='0011' nationalPrefixForParsing='0'" +
+                "           preferredInternationalPrefix='00~11' nationalPrefixForParsing='0'" +
                 "           nationalPrefixTransformRule='9$1'" + // nationalPrefix manually injected.
                 "           preferredExtnPrefix=' x' mainCountryForCode='true'" +
                 "           leadingZeroPossible='true' mobileNumberPortableRegion='true'>" +
@@ -103,7 +103,7 @@ namespace PhoneNumbers.Test
             Assert.Equal(33, phoneMetadata.CountryCode);
             Assert.Equal("2", phoneMetadata.LeadingDigits);
             Assert.Equal("00", phoneMetadata.InternationalPrefix);
-            Assert.Equal("0011", phoneMetadata.PreferredInternationalPrefix);
+            Assert.Equal("00~11", phoneMetadata.PreferredInternationalPrefix);
             Assert.Equal("0", phoneMetadata.NationalPrefixForParsing);
             Assert.Equal("9$1", phoneMetadata.NationalPrefixTransformRule);
             Assert.Equal("0", phoneMetadata.NationalPrefix);

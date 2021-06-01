@@ -609,6 +609,9 @@ namespace PhoneNumbers.Test
             // are accepted as possible international prefixes in our test metadta.)
             Assert.Equal("0011 39 02 3661 8300",
                 phoneUtil.FormatOutOfCountryCallingNumber(ITNumber, RegionCode.AU));
+
+            // Testing preferred international prefixes with ~ are supported (designates waiting).
+            Assert.Equal("8~10 39 02 3661 8300", phoneUtil.FormatOutOfCountryCallingNumber(ITNumber, RegionCode.UZ));
         }
 
         [Fact]

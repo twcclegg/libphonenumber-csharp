@@ -1462,17 +1462,18 @@ namespace PhoneNumbers
             var metadataForRegionCallingFrom = GetMetadataForRegion(regionCallingFrom);
             var internationalPrefix = metadataForRegionCallingFrom.InternationalPrefix;
 
-            // For regions that have multiple international prefixes, the international format of the
-            // number is returned, unless there is a preferred international prefix.
+            // In general, if there is a preferred international prefix, use that. Otherwise, for regions
+            // that have multiple international prefixes, the international format of the number is
+            // returned since we would not know which one to use.
             var internationalPrefixForFormatting = "";
-            if (UniqueInternationalPrefix.IsMatchAll(internationalPrefix))
-            {
-                internationalPrefixForFormatting = internationalPrefix;
-            }
-            else if (metadataForRegionCallingFrom.HasPreferredInternationalPrefix)
+            if (metadataForRegionCallingFrom.HasPreferredInternationalPrefix)
             {
                 internationalPrefixForFormatting =
                     metadataForRegionCallingFrom.PreferredInternationalPrefix;
+            }
+            else if (UniqueInternationalPrefix.IsMatchAll(internationalPrefix))
+            {
+                internationalPrefixForFormatting = internationalPrefix;
             }
 
             var regionCode = GetRegionCodeForCountryCode(countryCallingCode);
