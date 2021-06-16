@@ -8,7 +8,7 @@ init:
       {
         Update-AppveyorBuild -Version "$(((nuget list libphonenumber-csharp -Source https://api.nuget.org/v3/index.json | findstr "libphonenumber-csharp[^.-]") -split ' ')[1])-$($env:APPVEYOR_REPO_COMMIT.substring(0,7))"
       }
-image: Visual Studio 2019
+image: Visual Studio 2017
 configuration: Release
 environment:
   COVERALLS_REPO_TOKEN:
