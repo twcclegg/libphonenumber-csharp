@@ -48,7 +48,7 @@ namespace PhoneNumbers
         // The minimum and maximum length of the national significant number.
         internal const int MIN_LENGTH_FOR_NSN = 2;
         // The ITU says the maximum length should be 15, but we have found longer numbers in Germany.
-        internal const int MAX_LENGTH_FOR_NSN = 16;
+        internal const int MAX_LENGTH_FOR_NSN = 17;
         // The maximum length of the country calling code.
         internal const int MAX_LENGTH_COUNTRY_CODE = 3;
         // We don't allow input strings for parsing to be longer than 250 chars. This prevents malicious
