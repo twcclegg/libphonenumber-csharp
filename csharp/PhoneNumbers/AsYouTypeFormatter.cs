@@ -72,7 +72,7 @@ namespace PhoneNumbers
         private static readonly PhoneRegex EligibleFormatPattern =
             new PhoneRegex("[" + PhoneNumberUtil.VALID_PUNCTUATION + "]*" +
                 "\\$1" + "[" + PhoneNumberUtil.VALID_PUNCTUATION + "]*(\\$\\d" +
-                "[" + PhoneNumberUtil.VALID_PUNCTUATION + "]*)*"),
+                "[" + PhoneNumberUtil.VALID_PUNCTUATION + "]*)*",
                 InternalRegexOptions.Default);
         // A set of characters that, if found in a national prefix formatting rules, are an indicator to
         // us that we should separate the national prefix from the number when formatting.
