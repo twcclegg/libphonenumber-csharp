@@ -106,7 +106,7 @@ namespace PhoneNumbers
             bool isAlternateFormatsMetadata = false)
         {
 #if NET35
-            var document = XDocument.Load(new XmlTextReader(input));
+            var document = XDocument.Load(new XmlTextReader(metadataStream));
 #else
             var document = XDocument.Load(metadataStream);
 #endif
