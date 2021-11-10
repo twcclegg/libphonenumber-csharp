@@ -80,10 +80,10 @@ namespace PhoneNumbers
             => BuildPhoneMetadata(name, null, liteBuild, specialBuild, isShortNumberMetadata, isAlternateFormatsMetadata, nameSuffix: false);
 
         internal static PhoneMetadataCollection BuildPhoneMetadata(string name, Assembly asm = null,
-            bool liteBuild = false, bool specialBuild = false, bool isShortNumberMetadata = false, bool isAlternateFormatsMetadata = false,
+            bool liteBuild = false, bool specialBuild = false, bool isShortNumberMetadata = false,
+            bool isAlternateFormatsMetadata = false,
             bool nameSuffix = true)
         {
-            XDocument document;
 #if NETSTANDARD1_3 || PORTABLE
             asm ??= typeof(PhoneNumberUtil).GetTypeInfo().Assembly;
 #else
@@ -91,16 +91,26 @@ namespace PhoneNumbers
 #endif
 
             if (nameSuffix)
-                name = asm.GetManifestResourceNames().FirstOrDefault(n => n.EndsWith(name, StringComparison.Ordinal)) ?? throw new ArgumentException(name + " resource not found");
+                name = asm.GetManifestResourceNames().FirstOrDefault(n => n.EndsWith(name, StringComparison.Ordinal)) ??
+                       throw new ArgumentException(name + " resource not found");
 
             using (var input = asm.GetManifestResourceStream(name))
             {
-#if NET35
-                document = XDocument.Load(new XmlTextReader(input));
-#else
-                document = XDocument.Load(input);
-#endif
+                return BuildPhoneMetadataFromStream(input, liteBuild, specialBuild, isShortNumberMetadata,
+                    isAlternateFormatsMetadata);
             }
+        }
+
+        internal static PhoneMetadataCollection BuildPhoneMetadataFromStream(Stream metadataStream,
+            bool liteBuild = false, bool specialBuild = false, bool isShortNumberMetadata = false,
+            bool isAlternateFormatsMetadata = false)
+        {
+#if NET35
+            var document = XDocument.Load(new XmlTextReader(input));
+#else
+            var document = XDocument.Load(metadataStream);
+#endif
+
 
             var metadataCollection = new PhoneMetadataCollection.Builder();
             var metadataFilter = GetMetadataFilter(liteBuild, specialBuild);
@@ -114,6 +124,7 @@ namespace PhoneNumbers
                 metadataFilter.FilterMetadata(metadata);
                 metadataCollection.AddMetadata(metadata);
             }
+
             return metadataCollection.Build();
         }
 
