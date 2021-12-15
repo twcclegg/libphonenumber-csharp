@@ -658,16 +658,16 @@ namespace PhoneNumbers.Test
             // +529011234567, proactively ensuring that no formatting is applied, where a format is chosen
             // that would otherwise have led to some digits being dropped.
             formatter.Clear();
-            Assert.Equal("9", formatter.inputDigit('9'));
-            Assert.Equal("90", formatter.inputDigit('0'));
-            Assert.Equal("901", formatter.inputDigit('1'));
-            Assert.Equal("9011", formatter.inputDigit('1'));
-            Assert.Equal("90112", formatter.inputDigit('2'));
-            Assert.Equal("901123", formatter.inputDigit('3'));
-            Assert.Equal("9011234", formatter.inputDigit('4'));
-            Assert.Equal("90112345", formatter.inputDigit('5'));
-            Assert.Equal("901123456", formatter.inputDigit('6'));
-            Assert.Equal("9011234567", formatter.inputDigit('7'));
+            Assert.Equal("9", formatter.InputDigit('9'));
+            Assert.Equal("90", formatter.InputDigit('0'));
+            Assert.Equal("901", formatter.InputDigit('1'));
+            Assert.Equal("9011", formatter.InputDigit('1'));
+            Assert.Equal("90112", formatter.InputDigit('2'));
+            Assert.Equal("901123", formatter.InputDigit('3'));
+            Assert.Equal("9011234", formatter.InputDigit('4'));
+            Assert.Equal("90112345", formatter.InputDigit('5'));
+            Assert.Equal("901123456", formatter.InputDigit('6'));
+            Assert.Equal("9011234567", formatter.InputDigit('7'));
 
             // +52 55 1234 5678
             formatter.Clear();
