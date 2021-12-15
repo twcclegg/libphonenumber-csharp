@@ -548,6 +548,25 @@ namespace PhoneNumbers
             }
             regionToMetadataMap.Remove(REGION_CODE_FOR_NON_GEO_ENTITY);
         }
+        
+        internal PhoneNumberUtil(Stream metaDataStream,  Dictionary<int, List<string>> countryCallingCodeToRegionCodeMap = null)
+        {
+            var phoneMetadata = BuildMetadataFromXml.BuildPhoneMetadataFromStream(metaDataStream);
+            this.countryCallingCodeToRegionCodeMap = countryCallingCodeToRegionCodeMap ??= BuildMetadataFromXml.BuildCountryCodeToRegionCodeMap(phoneMetadata);
+
+            foreach (var regionCodes in countryCallingCodeToRegionCodeMap)
+                supportedRegions.UnionWith(regionCodes.Value);
+            supportedRegions.Remove(REGION_CODE_FOR_NON_GEO_ENTITY);
+            if (countryCallingCodeToRegionCodeMap.TryGetValue(NANPA_COUNTRY_CODE, out var regions))
+                nanpaRegions.UnionWith(regions);
+
+            foreach (var m in phoneMetadata.MetadataList)
+            {
+                countryCodeToNonGeographicalMetadataMap[m.CountryCode] = m;
+                regionToMetadataMap[m.Id] = m;
+            }
+            regionToMetadataMap.Remove(REGION_CODE_FOR_NON_GEO_ENTITY);
+        }
 
         /// <summary>
         /// Attempts to extract a possible number from the string passed in. This currently strips all
@@ -907,6 +926,40 @@ namespace PhoneNumbers
         {
             lock (ThisLock)
                 return instance ??= new PhoneNumberUtil(baseFileLocation, null, countryCallingCodeToRegionCodeMap);
+        }
+        
+        /// <summary>
+        /// Gets a {@link PhoneNumberUtil} instance to carry out international phone number formatting,
+        /// parsing, or validation. The instance is loaded with all phone number metadata.
+        /// The <see cref="PhoneNumberUtil" /> is implemented as a singleton.Therefore, calling getInstance
+        /// multiple times will only result in one instance being created.
+        /// </summary>
+        /// <returns> a PhoneNumberUtil instance</returns>
+        public static PhoneNumberUtil GetInstance(Stream metadataStream, Dictionary<int, List<string>> countryCallingCodeToRegionCodeMap = null)
+        {
+            lock (ThisLock)
+                return instance ??= new PhoneNumberUtil(metadataStream);
+        }
+
+        /// <summary>
+        /// Re-instantiates the {@link PhoneNumberUtil} singleton with new metadata.
+        /// </summary>
+        /// <param name="metadataStream">Stream of new metadata</param>
+        public static void RefreshMetadata(Stream metadataStream)
+        {
+            lock (ThisLock)
+            {
+                var bak = instance;
+                instance = null;
+                try
+                {
+                    instance = new PhoneNumberUtil(metadataStream,  null);
+                }
+                catch (Exception)
+                {
+                    instance = bak;
+                }
+            }
         }
 
         /// <summary>
