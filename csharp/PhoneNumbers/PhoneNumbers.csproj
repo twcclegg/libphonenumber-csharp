@@ -7,7 +7,7 @@
     <PackageId>libphonenumber-csharp</PackageId>
     <VersionPrefix>$(APPVEYOR_BUILD_VERSION)</VersionPrefix>
     <Authors>Patrick Mézard;Tom Clegg;Jarrod Alexander;Google;libphonenumber contributors</Authors>
-    <TargetFrameworks>net35;net40;net46;netstandard1.3;netstandard2.0;portable-net45+win8+wpa81+wp8</TargetFrameworks>
+    <TargetFrameworks>net462;netstandard2.0;portable-net45+win8+wpa81+wp8</TargetFrameworks>
     <LangVersion>8.0</LangVersion>
     <AssemblyName>PhoneNumbers</AssemblyName>
     <PackageId>libphonenumber-csharp</PackageId>
@@ -25,10 +25,6 @@
     <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <FrameworkPathOverride Condition=" '$(TargetFramework)' == 'net35' ">$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\v3.5\Profile\Client</FrameworkPathOverride>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(TargetFramework)' == 'portable-net45+win8+wpa81+wp8'">
     <TargetFrameworkIdentifier>.NETPortable</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
@@ -43,11 +39,7 @@
     <EmbeddedResource Include="..\..\resources\geocoding\**" LinkBase="geocoding" />
   </ItemGroup>
 
-  <ItemGroup Condition="$(TargetFramework)!=net35">
-    <Compile Remove="compat\SortedSet.cs" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' != 'net35' AND '$(TargetFramework)' != 'net40'">
+  <ItemGroup>
     <PackageReference Include="System.Collections.Immutable" Version="1.7.1" />
   </ItemGroup>
 </Project>

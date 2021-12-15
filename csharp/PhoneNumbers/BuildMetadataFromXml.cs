@@ -21,9 +21,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-#if NET35
-using System.Xml;
-#endif
 using System.Xml.Linq;
 
 namespace PhoneNumbers
@@ -84,7 +81,8 @@ namespace PhoneNumbers
             bool isAlternateFormatsMetadata = false,
             bool nameSuffix = true)
         {
-#if NETSTANDARD1_3 || PORTABLE
+            XDocument document;
+#if PORTABLE
             asm ??= typeof(PhoneNumberUtil).GetTypeInfo().Assembly;
 #else
             asm ??= typeof(PhoneNumberUtil).Assembly;
@@ -105,12 +103,7 @@ namespace PhoneNumbers
             bool liteBuild = false, bool specialBuild = false, bool isShortNumberMetadata = false,
             bool isAlternateFormatsMetadata = false)
         {
-#if NET35
-            var document = XDocument.Load(new XmlTextReader(metadataStream));
-#else
             var document = XDocument.Load(metadataStream);
-#endif
-
 
             var metadataCollection = new PhoneMetadataCollection.Builder();
             var metadataFilter = GetMetadataFilter(liteBuild, specialBuild);
@@ -664,11 +657,7 @@ namespace PhoneNumbers
                         desc.PossibleLengthList.Add(length);
                     else
                         throw new Exception(
-#if NET35
-                            $"Out-of-range possible length found ({length}), parent lengths {string.Join(", ", parentDesc.PossibleLengthList.Select(x => x.ToString()).ToArray())}.");
-#else
                             $"Out-of-range possible length found ({length}), parent lengths {string.Join(", ", parentDesc.PossibleLengthList)}.");
-#endif
             // We check that the local-only length isn't also a normal possible length (only relevant for
             // the general-desc, since within elements such as fixed-line we would throw an exception if we
             // saw this) before adding it to the collection of possible local-only lengths.
@@ -679,11 +668,7 @@ namespace PhoneNumbers
                         desc.PossibleLengthLocalOnlyList.Add(length);
                     else
                         throw new Exception(
-#if NET35
-                            $"Out-of-range local-only possible length found ({length}), parent length {string.Join(", ", parentDesc.PossibleLengthLocalOnlyList.Select(x => x.ToString()).ToArray())}.");
-#else
                             $"Out-of-range local-only possible length found ({length}), parent length {string.Join(", ", parentDesc.PossibleLengthLocalOnlyList)}.");
-#endif
         }
 
 
