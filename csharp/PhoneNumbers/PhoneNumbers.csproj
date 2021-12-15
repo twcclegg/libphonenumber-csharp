@@ -14,11 +14,11 @@
     <PackageTags>phonenumber phone libphonenumber e164 e.164 international</PackageTags>
     <PackageProjectUrl>https://github.com/twcclegg/libphonenumber-csharp</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PackageIconUrl>https://raw.githubusercontent.com/twcclegg/libphonenumber-csharp/master/icon.png</PackageIconUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/twcclegg/libphonenumber-csharp/main/icon.png</PackageIconUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryUrl>https://github.com/twcclegg/libphonenumber-csharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <RepositoryBranch>master</RepositoryBranch>
+    <RepositoryBranch>main</RepositoryBranch>
     <RepositoryCommit>$APPVEYOR_REPO_COMMIT</RepositoryCommit>
     <DebugType>full</DebugType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>

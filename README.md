@@ -1,5 +1,5 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/76abbk0qveot0mbo/branch/master?svg=true)](https://ci.appveyor.com/project/twcclegg/libphonenumber-csharp/branch/master)
-[![codecov](https://codecov.io/gh/twcclegg/libphonenumber-csharp/branch/master/graph/badge.svg)](https://codecov.io/gh/twcclegg/libphonenumber-csharp)
+[![Build status](https://ci.appveyor.com/api/projects/status/76abbk0qveot0mbo/branch/main?svg=true)](https://ci.appveyor.com/project/twcclegg/libphonenumber-csharp/branch/main)
+[![codecov](https://codecov.io/gh/twcclegg/libphonenumber-csharp/branch/main/graph/badge.svg)](https://codecov.io/gh/twcclegg/libphonenumber-csharp)
 [![NuGet](https://img.shields.io/nuget/dt/libphonenumber-csharp.svg)](https://www.nuget.org/packages/libphonenumber-csharp/)
 
 
@@ -9,7 +9,7 @@ C# port of Google's [libphonenumber library](https://github.com/googlei18n/libph
 
   The original Apache License 2.0 was preserved.
 
-  See [this](https://github.com/twcclegg/libphonenumber-csharp/blob/master/csharp/README.txt "csharp/README.txt") for details about the port.
+  See [this](https://github.com/twcclegg/libphonenumber-csharp/blob/main/csharp/README.txt "csharp/README.txt") for details about the port.
 
 ## Example
 

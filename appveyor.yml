@@ -17,7 +17,7 @@ pull_requests:
   do_not_increment_build_number: true
 branches:
   only:
-    - master
+    - main
 before_build:
   - ps: xcopy "C:\Program Files (x86)\MSBuild\Microsoft\Portable" "C:\Program Files\dotnet\sdk\$(dotnet --version)\Microsoft\Portable\" /S /E
   - dotnet restore csharp -s https://api.nuget.org/v3/index.json
