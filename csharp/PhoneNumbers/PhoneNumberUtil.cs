@@ -529,26 +529,12 @@ namespace PhoneNumbers
             }
         }
 
-        // Visible for testing
-        internal PhoneNumberUtil(string baseFileLocation, Assembly asm = null, Dictionary<int, List<string>> countryCallingCodeToRegionCodeMap = null)
+        internal PhoneNumberUtil(string baseFileLocation, Assembly asm = null,
+            Dictionary<int, List<string>> countryCallingCodeToRegionCodeMap = null) : this(
+            BuildMetadataFromXml.GetStream(baseFileLocation, asm), countryCallingCodeToRegionCodeMap)
         {
-            var phoneMetadata = BuildMetadataFromXml.BuildPhoneMetadata(baseFileLocation, asm);
-            this.countryCallingCodeToRegionCodeMap = countryCallingCodeToRegionCodeMap ??= BuildMetadataFromXml.BuildCountryCodeToRegionCodeMap(phoneMetadata);
-
-            foreach (var regionCodes in countryCallingCodeToRegionCodeMap)
-                supportedRegions.UnionWith(regionCodes.Value);
-            supportedRegions.Remove(REGION_CODE_FOR_NON_GEO_ENTITY);
-            if (countryCallingCodeToRegionCodeMap.TryGetValue(NANPA_COUNTRY_CODE, out var regions))
-                nanpaRegions.UnionWith(regions);
-
-            foreach (var m in phoneMetadata.MetadataList)
-            {
-                countryCodeToNonGeographicalMetadataMap[m.CountryCode] = m;
-                regionToMetadataMap[m.Id] = m;
-            }
-            regionToMetadataMap.Remove(REGION_CODE_FOR_NON_GEO_ENTITY);
         }
-        
+
         internal PhoneNumberUtil(Stream metaDataStream,  Dictionary<int, List<string>> countryCallingCodeToRegionCodeMap = null)
         {
             var phoneMetadata = BuildMetadataFromXml.BuildPhoneMetadataFromStream(metaDataStream);
@@ -927,39 +913,20 @@ namespace PhoneNumbers
             lock (ThisLock)
                 return instance ??= new PhoneNumberUtil(baseFileLocation, null, countryCallingCodeToRegionCodeMap);
         }
-        
-        /// <summary>
-        /// Gets a {@link PhoneNumberUtil} instance to carry out international phone number formatting,
-        /// parsing, or validation. The instance is loaded with all phone number metadata.
-        /// The <see cref="PhoneNumberUtil" /> is implemented as a singleton.Therefore, calling getInstance
-        /// multiple times will only result in one instance being created.
-        /// </summary>
-        /// <returns> a PhoneNumberUtil instance</returns>
-        public static PhoneNumberUtil GetInstance(Stream metadataStream, Dictionary<int, List<string>> countryCallingCodeToRegionCodeMap = null)
-        {
-            lock (ThisLock)
-                return instance ??= new PhoneNumberUtil(metadataStream);
-        }
 
         /// <summary>
-        /// Re-instantiates the {@link PhoneNumberUtil} singleton with new metadata.
+        /// Create a new {@link PhoneNumberUtil} instance to carry out international phone number formatting, parsing,
+        /// or validation. The instance is loaded with all metadata by using the metadataLoader specified.
+        /// <p>This method should only be used in the rare case in which you want to manage your own metadata loading.
+        /// Calling this method multiple times is very expensive, as each time a new instance is created from scratch.
+        /// When in doubt, use {@link #getInstance}.
+        /// </p>
         /// </summary>
         /// <param name="metadataStream">Stream of new metadata</param>
-        public static void RefreshMetadata(Stream metadataStream)
+        /// <returns>a PhoneNumberUtil instance</returns>
+        public static PhoneNumberUtil CreateInstance(Stream metadataStream)
         {
-            lock (ThisLock)
-            {
-                var bak = instance;
-                instance = null;
-                try
-                {
-                    instance = new PhoneNumberUtil(metadataStream,  null);
-                }
-                catch (Exception)
-                {
-                    instance = bak;
-                }
-            }
+            return new PhoneNumberUtil(metadataStream);
         }
 
         /// <summary>

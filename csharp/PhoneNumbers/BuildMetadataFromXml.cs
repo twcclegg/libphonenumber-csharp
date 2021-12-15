@@ -81,7 +81,13 @@ namespace PhoneNumbers
             bool isAlternateFormatsMetadata = false,
             bool nameSuffix = true)
         {
-            XDocument document;
+            using var input = GetStream(name, asm, nameSuffix);
+            return BuildPhoneMetadataFromStream(input, liteBuild, specialBuild, isShortNumberMetadata,
+                isAlternateFormatsMetadata);
+        }
+
+        internal static Stream GetStream(string name, Assembly asm = null, bool nameSuffix = true)
+        {
 #if PORTABLE
             asm ??= typeof(PhoneNumberUtil).GetTypeInfo().Assembly;
 #else
@@ -92,11 +98,7 @@ namespace PhoneNumbers
                 name = asm.GetManifestResourceNames().FirstOrDefault(n => n.EndsWith(name, StringComparison.Ordinal)) ??
                        throw new ArgumentException(name + " resource not found");
 
-            using (var input = asm.GetManifestResourceStream(name))
-            {
-                return BuildPhoneMetadataFromStream(input, liteBuild, specialBuild, isShortNumberMetadata,
-                    isAlternateFormatsMetadata);
-            }
+            return asm.GetManifestResourceStream(name);
         }
 
         internal static PhoneMetadataCollection BuildPhoneMetadataFromStream(Stream metadataStream,
