@@ -26,17 +26,33 @@
 
   <ItemGroup>
     <EmbeddedResource Include="..\..\resources\*.xml" Exclude="..\..\resources\PhoneNumberMetadataForTesting.xml" />
+  </ItemGroup>
+
+  <!-- Skip zipped geocoding data for unsupported frameworks -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net35' OR '$(TargetFramework)' == 'net40' OR '$(TargetFramework)' == 'portable-net45+win8+wpa81+wp8' OR !Exists('..\..\resources\geocoding.zip')">
     <EmbeddedResource Include="..\..\resources\geocoding\**" LinkBase="geocoding" />
     <EmbeddedResource Include="..\..\resources\timezones\map_data.txt" LinkBase="timezones" />
     <None Include="..\..\icon.png" Pack="true" PackagePath=""/>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'net35' AND '$(TargetFramework)' != 'net40' AND '$(TargetFramework)' != 'portable-net45+win8+wpa81+wp8' AND Exists('..\..\resources\geocoding.zip')">
+    <EmbeddedResource Include="..\..\resources\geocoding.zip" />
   </ItemGroup>
 
   <ItemGroup  Condition="'$(TargetFramework)' == 'netstandard2.0' ">
     <PackageReference Include="System.Collections.Immutable" Version="1.7.1" />
   </ItemGroup>
 
+  </ItemGroup>
+
   <ItemGroup  Condition="'$(TargetFramework)' == 'net7.0' ">
     <PackageReference Include="System.Collections.Immutable" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'net35' AND '$(TargetFramework)' != 'net40' AND '$(TargetFramework)' != 'portable-net45+win8+wpa81+wp8'">
+    <PackageReference Include="System.IO.Compression">
+      <Version>4.3.0</Version>
+    </PackageReference>
   </ItemGroup>
 
 </Project>

@@ -22,6 +22,7 @@ before_build:
   - dotnet restore csharp -s https://api.nuget.org/v3/index.json
   - choco install opencover.portable
   - choco install codecov
+  - ps: Compress-Archive -Path "resources\geocoding\*" -DestinationPath "resources\geocoding.zip"
 build_script:
   - dotnet pack -c Release csharp\PhoneNumbers
   - dotnet pack -c Release csharp\PhoneNumbers.Extensions

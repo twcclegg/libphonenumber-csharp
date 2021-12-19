@@ -17,8 +17,13 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+
+#if NET46_OR_GREATER || NETSTANDARD1_3_OR_GREATER
+using System.IO.Compression;
+#endif
 
 namespace PhoneNumbers
 {
@@ -90,6 +95,10 @@ namespace PhoneNumbers
         private readonly string phonePrefixDataDirectory;
         private readonly Assembly assembly;
 
+#if NET46_OR_GREATER || NETSTANDARD1_3_OR_GREATER
+        private readonly string phoneDataZipFile;
+#endif
+
         // The mappingFileProvider knows for which combination of countryCallingCode and language a phone
         // prefix mapping file is available in the file system, so that a file can be loaded when needed.
         private readonly MappingFileProvider mappingFileProvider;
@@ -100,10 +109,74 @@ namespace PhoneNumbers
 
         internal PhoneNumberOfflineGeocoder(string phonePrefixDataDirectory, Assembly asm = null)
         {
-            var files = new SortedDictionary<int, HashSet<string>>();
+            SortedDictionary<int, HashSet<string>> files;
             asm ??= typeof(PhoneNumberOfflineGeocoder).Assembly;
+            string prefix = asm.GetName().Name + "." + phonePrefixDataDirectory;
+
+#if NET46_OR_GREATER || NETSTANDARD1_3_OR_GREATER
+            string zipFile = prefix + "zip";
+
+            var zipStream = asm.GetManifestResourceStream(zipFile);
+
+            if (zipStream != null)
+            {
+                using (zipStream)
+                {
+                    files = LoadFilesFromZip(zipStream);
+                }
+                this.phoneDataZipFile = zipFile;
+            }
+            else
+#endif
+            {
+                files = LoadFilesFromManifestResources(asm, prefix);
+            }
+
+            mappingFileProvider = new MappingFileProvider();
+            mappingFileProvider.ReadFileConfigs(files);
+            this.assembly = asm;
+            this.phonePrefixDataDirectory = prefix;
+        }
+
+#if NET46_OR_GREATER || NETSTANDARD1_3_OR_GREATER
+        private static SortedDictionary<int, HashSet<string>> LoadFilesFromZip(Stream zipStream)
+        {
+            var files = new SortedDictionary<int, HashSet<string>>();
+
+            using (var archive = new ZipArchive(zipStream, ZipArchiveMode.Read))
+            {
+                foreach (var entry in archive.Entries)
+                {
+                    if (string.IsNullOrWhiteSpace(entry.Name))
+                    {
+                        continue;
+                    }
+
+                    int country;
+                    try
+                    {
+                        country = int.Parse(Path.GetFileNameWithoutExtension(entry.FullName), CultureInfo.InvariantCulture);
+                    }
+                    catch (FormatException)
+                    {
+                        throw new Exception("Failed to parse zipped geocoding file name: " + entry.FullName);
+                    }
+                    var language = Path.GetDirectoryName(entry.FullName);
+                    if (!files.TryGetValue(country, out var languages))
+                        files[country] = languages = new HashSet<string>();
+                    languages.Add(language);
+                }
+            }
+
+            return files;
+        }
+#endif
+
+        private static SortedDictionary<int, HashSet<string>> LoadFilesFromManifestResources(Assembly asm, string prefix)
+        {
+            var files = new SortedDictionary<int, HashSet<string>>();
+
             var allNames = asm.GetManifestResourceNames();
-            var prefix = asm.GetName().Name + "." + phonePrefixDataDirectory;
             var names = allNames.Where(n => n.StartsWith(prefix, StringComparison.Ordinal));
             foreach (var n in names)
             {
@@ -122,10 +195,8 @@ namespace PhoneNumbers
                     files[country] = languages = new HashSet<string>();
                 languages.Add(language);
             }
-            mappingFileProvider = new MappingFileProvider();
-            mappingFileProvider.ReadFileConfigs(files);
-            this.assembly = asm;
-            this.phonePrefixDataDirectory = prefix;
+
+            return files;
         }
 
         private AreaCodeMap GetPhonePrefixDescriptions(
@@ -146,13 +217,60 @@ namespace PhoneNumbers
 
         private AreaCodeMap LoadAreaCodeMapFromFile(string fileName)
         {
-            var resName = phonePrefixDataDirectory + fileName;
-            using (var fp = assembly.GetManifestResourceStream(resName))
+#if NET46_OR_GREATER || NETSTANDARD1_3_OR_GREATER
+            var fp = phoneDataZipFile != null
+                ? GetManifestZipFileStream(assembly, phoneDataZipFile, fileName)
+                : GetManifestFileStream(assembly, phonePrefixDataDirectory, fileName);
+
+            using (fp)
+#else
+            using (var fp = GetManifestFileStream(assembly, phonePrefixDataDirectory, fileName))
+#endif
             {
                 var areaCodeMap = AreaCodeParser.ParseAreaCodeMap(fp);
                 return availablePhonePrefixMaps[fileName] = areaCodeMap;
             }
         }
+
+        private static Stream GetManifestFileStream(Assembly asm, string phonePrefixDataDirectory, string fileName)
+        {
+            var resName = phonePrefixDataDirectory + fileName;
+            var stream = asm.GetManifestResourceStream(resName);
+            if (stream == null)
+            {
+                throw new InvalidOperationException("Manifest file stream was null.");
+            }
+            return stream;
+        }
+
+#if NET46_OR_GREATER || NETSTANDARD1_3_OR_GREATER
+        private static Stream GetManifestZipFileStream(Assembly asm, string phoneDataZipFile, string fileName)
+        {
+            using (var zipStream = asm.GetManifestResourceStream(phoneDataZipFile))
+            {
+                if (zipStream == null)
+                {
+                    throw new InvalidOperationException("Manifest zip file stream was null.");
+                }
+
+                using (var archive = new ZipArchive(zipStream, ZipArchiveMode.Read))
+                {
+                    var entry = archive.Entries.First(p => p.Name == fileName);
+
+                    using (var entryStream = entry.Open())
+                    {
+                        MemoryStream fileStream = new MemoryStream();
+
+                        entryStream.CopyTo(fileStream);
+
+                        fileStream.Position = 0;
+
+                        return fileStream;
+                    }
+                }
+            }
+        }
+#endif
 
         /**
          * Gets a {@link PhoneNumberOfflineGeocoder} instance to carry out international phone number
