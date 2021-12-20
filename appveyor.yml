@@ -23,6 +23,7 @@ before_build:
   - choco install opencover.portable
   - choco install codecov
   - ps: Compress-Archive -Path "resources\geocoding\*" -DestinationPath "resources\geocoding.zip"
+  - ps: Compress-Archive -Path "resources\test\geocoding\*" -DestinationPath "resources\test\testgeocoding.zip"
 build_script:
   - dotnet pack -c Release csharp\PhoneNumbers
   - dotnet pack -c Release csharp\PhoneNumbers.Extensions

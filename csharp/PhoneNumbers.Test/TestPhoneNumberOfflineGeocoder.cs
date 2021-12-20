@@ -41,7 +41,7 @@ namespace PhoneNumbers.Test
     [Collection("TestZippedMetadataTestCase")]
     public class TestZippedPhoneNumberOfflineGeocoder : TestPhoneNumberOfflineGeocoderBase
     {
-        private static readonly PhoneNumberOfflineGeocoder geocoderInstance = new PhoneNumberOfflineGeocoder("zippedgeocoding.", typeof(TestPhoneNumberOfflineGeocoder).Assembly);
+        private static readonly PhoneNumberOfflineGeocoder geocoderInstance = new PhoneNumberOfflineGeocoder("testgeocoding.", typeof(TestPhoneNumberOfflineGeocoder).Assembly);
 
         protected override PhoneNumberOfflineGeocoder geocoder => geocoderInstance;
     }
