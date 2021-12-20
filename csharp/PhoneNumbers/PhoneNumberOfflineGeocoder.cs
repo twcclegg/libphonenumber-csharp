@@ -21,7 +21,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-#if NET46_OR_GREATER || NETSTANDARD1_3_OR_GREATER
+#if NET46 || NETSTANDARD1_3 || NETSTANDARD2_0
 using System.IO.Compression;
 using System.Text.RegularExpressions;
 #endif
@@ -96,7 +96,7 @@ namespace PhoneNumbers
         private readonly string phonePrefixDataDirectory;
         private readonly Assembly assembly;
 
-#if NET46_OR_GREATER || NETSTANDARD1_3_OR_GREATER
+#if NET46 || NETSTANDARD1_3 || NETSTANDARD2_0
         private readonly string phoneDataZipFile;
 #endif
 
@@ -114,7 +114,7 @@ namespace PhoneNumbers
             asm ??= typeof(PhoneNumberOfflineGeocoder).Assembly;
             string prefix = asm.GetName().Name + "." + phonePrefixDataDirectory;
 
-#if NET46_OR_GREATER || NETSTANDARD1_3_OR_GREATER
+#if NET46 || NETSTANDARD1_3 || NETSTANDARD2_0
             string zipFile = prefix + "zip";
 
             var zipStream = asm.GetManifestResourceStream(zipFile);
@@ -139,7 +139,7 @@ namespace PhoneNumbers
             this.phonePrefixDataDirectory = prefix;
         }
 
-#if NET46_OR_GREATER || NETSTANDARD1_3_OR_GREATER
+#if NET46 || NETSTANDARD1_3 || NETSTANDARD2_0
         private static SortedDictionary<int, HashSet<string>> LoadFileNamesFromZip(Stream zipStream)
         {
             var files = new SortedDictionary<int, HashSet<string>>();
@@ -219,7 +219,7 @@ namespace PhoneNumbers
 
         private AreaCodeMap LoadAreaCodeMapFromFile(string fileName)
         {
-#if NET46_OR_GREATER || NETSTANDARD1_3_OR_GREATER
+#if NET46 || NETSTANDARD1_3 || NETSTANDARD2_0
             var fp = phoneDataZipFile != null
                 ? GetManifestZipFileStream(assembly, phoneDataZipFile, fileName)
                 : GetManifestFileStream(assembly, phonePrefixDataDirectory, fileName);
@@ -240,7 +240,7 @@ namespace PhoneNumbers
             return asm.GetManifestResourceStream(resName);
         }
 
-#if NET46_OR_GREATER || NETSTANDARD1_3_OR_GREATER
+#if NET46 || NETSTANDARD1_3 || NETSTANDARD2_0
         private static Stream GetManifestZipFileStream(Assembly asm, string phoneDataZipFile, string fileName)
         {
             using (var zipStream = asm.GetManifestResourceStream(phoneDataZipFile))
