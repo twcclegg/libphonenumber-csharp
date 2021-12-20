@@ -26,6 +26,7 @@
   <ItemGroup>
     <EmbeddedResource Include="..\..\resources\PhoneNumberMetadataForTesting.xml" />
     <EmbeddedResource Include="..\..\resources\test\geocoding\**" LinkBase="geocoding" />
+    <EmbeddedResource Include="..\..\resources\test\zippedgeocoding.zip" />
   </ItemGroup>
 
   <ItemGroup>

@@ -23,6 +23,7 @@ using System.Reflection;
 
 #if NET46_OR_GREATER || NETSTANDARD1_3_OR_GREATER
 using System.IO.Compression;
+using System.Text.RegularExpressions;
 #endif
 
 namespace PhoneNumbers
@@ -122,14 +123,14 @@ namespace PhoneNumbers
             {
                 using (zipStream)
                 {
-                    files = LoadFilesFromZip(zipStream);
+                    files = LoadFileNamesFromZip(zipStream);
                 }
                 this.phoneDataZipFile = zipFile;
             }
             else
 #endif
             {
-                files = LoadFilesFromManifestResources(asm, prefix);
+                files = LoadFileNamesFromManifestResources(asm, prefix);
             }
 
             mappingFileProvider = new MappingFileProvider();
@@ -139,7 +140,7 @@ namespace PhoneNumbers
         }
 
 #if NET46_OR_GREATER || NETSTANDARD1_3_OR_GREATER
-        private static SortedDictionary<int, HashSet<string>> LoadFilesFromZip(Stream zipStream)
+        private static SortedDictionary<int, HashSet<string>> LoadFileNamesFromZip(Stream zipStream)
         {
             var files = new SortedDictionary<int, HashSet<string>>();
 
@@ -152,16 +153,17 @@ namespace PhoneNumbers
                         continue;
                     }
 
+                    var name = entry.FullName.Split('.')[0].Split('\\');
                     int country;
                     try
                     {
-                        country = int.Parse(Path.GetFileNameWithoutExtension(entry.FullName), CultureInfo.InvariantCulture);
+                        country = int.Parse(name[1], CultureInfo.InvariantCulture);
                     }
                     catch (FormatException)
                     {
                         throw new Exception("Failed to parse zipped geocoding file name: " + entry.FullName);
                     }
-                    var language = Path.GetDirectoryName(entry.FullName);
+                    var language = name[0];
                     if (!files.TryGetValue(country, out var languages))
                         files[country] = languages = new HashSet<string>();
                     languages.Add(language);
@@ -172,7 +174,7 @@ namespace PhoneNumbers
         }
 #endif
 
-        private static SortedDictionary<int, HashSet<string>> LoadFilesFromManifestResources(Assembly asm, string prefix)
+        private static SortedDictionary<int, HashSet<string>> LoadFileNamesFromManifestResources(Assembly asm, string prefix)
         {
             var files = new SortedDictionary<int, HashSet<string>>();
 
@@ -235,12 +237,7 @@ namespace PhoneNumbers
         private static Stream GetManifestFileStream(Assembly asm, string phonePrefixDataDirectory, string fileName)
         {
             var resName = phonePrefixDataDirectory + fileName;
-            var stream = asm.GetManifestResourceStream(resName);
-            if (stream == null)
-            {
-                throw new InvalidOperationException("Manifest file stream was null.");
-            }
-            return stream;
+            return asm.GetManifestResourceStream(resName);
         }
 
 #if NET46_OR_GREATER || NETSTANDARD1_3_OR_GREATER
@@ -255,11 +252,11 @@ namespace PhoneNumbers
 
                 using (var archive = new ZipArchive(zipStream, ZipArchiveMode.Read))
                 {
-                    var entry = archive.Entries.First(p => p.Name == fileName);
+                    var entry = archive.Entries.First(p => Regex.Replace(p.FullName, "[\\\\/]", ".") == fileName);
 
                     using (var entryStream = entry.Open())
                     {
-                        MemoryStream fileStream = new MemoryStream();
+                        var fileStream = new MemoryStream();
 
                         entryStream.CopyTo(fileStream);
 

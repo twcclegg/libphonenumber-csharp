@@ -19,15 +19,41 @@ using Xunit;
 namespace PhoneNumbers.Test
 {
     /**
-    * Unit tests for PhoneNumberOfflineGeocoder.java
+    * Base Unit tests using geocoder with unzipped geocoding data
+    */
+    [Collection("TestMetadataTestCase")]
+    public class TestPhoneNumberOfflineGeocoder : TestPhoneNumberOfflineGeocoderBase
+    {
+        private static readonly PhoneNumberOfflineGeocoder geocoderInstance = new PhoneNumberOfflineGeocoder("geocoding.", typeof(TestPhoneNumberOfflineGeocoder).Assembly);
+
+        protected override PhoneNumberOfflineGeocoder geocoder => geocoderInstance;
+
+        [Fact]
+        public void TestInstantiationWithRegularData()
+        {
+            Assert.NotNull(PhoneNumberOfflineGeocoder.GetInstance());
+        }
+    }
+
+    /**
+    * Base Unit tests using geocoder with zipped geocoding data
+    */
+    [Collection("TestZippedMetadataTestCase")]
+    public class TestZippedPhoneNumberOfflineGeocoder : TestPhoneNumberOfflineGeocoderBase
+    {
+        private static readonly PhoneNumberOfflineGeocoder geocoderInstance = new PhoneNumberOfflineGeocoder("zippedgeocoding.", typeof(TestPhoneNumberOfflineGeocoder).Assembly);
+
+        protected override PhoneNumberOfflineGeocoder geocoder => geocoderInstance;
+    }
+
+    /**
+    * Base Unit tests for PhoneNumberOfflineGeocoder.java
     *
     * @author Shaopeng Jia
     */
-    [Collection("TestMetadataTestCase")]
-    public class TestPhoneNumberOfflineGeocoder
+    public abstract class TestPhoneNumberOfflineGeocoderBase
     {
-        private static readonly PhoneNumberOfflineGeocoder geocoder =
-            new PhoneNumberOfflineGeocoder("geocoding.", typeof(TestPhoneNumberOfflineGeocoder).Assembly);
+        protected abstract PhoneNumberOfflineGeocoder geocoder { get; }
 
         // Set up some test numbers to re-use.
         private static readonly PhoneNumber KONumber1 =
@@ -56,12 +82,6 @@ namespace PhoneNumbers.Test
             new PhoneNumber.Builder().SetCountryCode(999).SetNationalNumber(2423651234L).Build();
         private static readonly PhoneNumber InternationalTollFree =
             new PhoneNumber.Builder().SetCountryCode(800).SetNationalNumber(12345678L).Build();
-
-        [Fact]
-        public void TestInstantiationWithRegularData()
-        {
-            Assert.NotNull(PhoneNumberOfflineGeocoder.GetInstance());
-        }
 
         [Fact]
         public void TestGetDescriptionForNumberWithNoDataFile()
