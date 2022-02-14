@@ -19,9 +19,7 @@
  */
 
 using System.Collections.Generic;
-#if !NET35 && !NET40
 using System.Collections.Immutable;
-#endif
 
 namespace PhoneNumbers
 {
@@ -29,11 +27,7 @@ namespace PhoneNumbers
     internal class ShortNumbersRegionCodeSet
     {
         // A set of all region codes for which data is available.
-#if !NET35 && !NET40
         internal static readonly ImmutableHashSet<string> RegionCodeSet = ImmutableHashSet.Create(
-#else
-        internal static readonly HashSet<string> RegionCodeSet = new HashSet<string> {
-#endif
             "AC",
             "AD",
             "AE",
@@ -275,10 +269,6 @@ namespace PhoneNumbers
             "ZA",
             "ZM",
             "ZW"
-#if !NET35 && !NET40
         );
-#else
-        };
-#endif    
     }
 }
