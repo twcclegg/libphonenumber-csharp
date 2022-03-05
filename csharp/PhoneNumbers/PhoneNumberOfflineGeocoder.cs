@@ -18,13 +18,10 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
-
-#if NET46 || NETSTANDARD1_3 || NETSTANDARD2_0
-using System.IO.Compression;
 using System.Text.RegularExpressions;
-#endif
 
 namespace PhoneNumbers
 {
@@ -94,11 +91,8 @@ namespace PhoneNumbers
 
         private readonly PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
         private readonly string phonePrefixDataDirectory;
-        private readonly Assembly assembly;
-
-#if NET46 || NETSTANDARD1_3 || NETSTANDARD2_0
         private readonly string phoneDataZipFile;
-#endif
+        private readonly Assembly assembly;
 
         // The mappingFileProvider knows for which combination of countryCallingCode and language a phone
         // prefix mapping file is available in the file system, so that a file can be loaded when needed.
@@ -114,7 +108,6 @@ namespace PhoneNumbers
             asm ??= typeof(PhoneNumberOfflineGeocoder).Assembly;
             string prefix = asm.GetName().Name + "." + phonePrefixDataDirectory;
 
-#if NET46 || NETSTANDARD1_3 || NETSTANDARD2_0
             string zipFile = prefix + "zip";
 
             var zipStream = asm.GetManifestResourceStream(zipFile);
@@ -128,7 +121,6 @@ namespace PhoneNumbers
                 this.phoneDataZipFile = zipFile;
             }
             else
-#endif
             {
                 files = LoadFileNamesFromManifestResources(asm, prefix);
             }
@@ -139,7 +131,6 @@ namespace PhoneNumbers
             this.phonePrefixDataDirectory = prefix;
         }
 
-#if NET46 || NETSTANDARD1_3 || NETSTANDARD2_0
         private static SortedDictionary<int, HashSet<string>> LoadFileNamesFromZip(Stream zipStream)
         {
             var files = new SortedDictionary<int, HashSet<string>>();
@@ -172,7 +163,6 @@ namespace PhoneNumbers
 
             return files;
         }
-#endif
 
         private static SortedDictionary<int, HashSet<string>> LoadFileNamesFromManifestResources(Assembly asm, string prefix)
         {
@@ -219,7 +209,7 @@ namespace PhoneNumbers
 
         private AreaCodeMap LoadAreaCodeMapFromFile(string fileName)
         {
-#if NET46 || NETSTANDARD1_3 || NETSTANDARD2_0
+#if !PORTABLE
             var fp = phoneDataZipFile != null
                 ? GetManifestZipFileStream(assembly, phoneDataZipFile, fileName)
                 : GetManifestFileStream(assembly, phonePrefixDataDirectory, fileName);
@@ -240,7 +230,6 @@ namespace PhoneNumbers
             return asm.GetManifestResourceStream(resName);
         }
 
-#if NET46 || NETSTANDARD1_3 || NETSTANDARD2_0
         private static Stream GetManifestZipFileStream(Assembly asm, string phoneDataZipFile, string fileName)
         {
             using (var zipStream = asm.GetManifestResourceStream(phoneDataZipFile))
@@ -267,7 +256,6 @@ namespace PhoneNumbers
                 }
             }
         }
-#endif
 
         /**
          * Gets a {@link PhoneNumberOfflineGeocoder} instance to carry out international phone number
