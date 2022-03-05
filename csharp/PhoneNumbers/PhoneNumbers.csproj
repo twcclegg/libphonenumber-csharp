@@ -28,6 +28,10 @@
     <EmbeddedResource Include="..\..\resources\*.xml" Exclude="..\..\resources\PhoneNumberMetadataForTesting.xml" />
   </ItemGroup>
 
+  <ItemGroup Condition="!Exists('..\..\resources\geocoding.zip')">
+    <EmbeddedResource Include="..\..\resources\geocoding\**" LinkBase="geocoding" />
+  </ItemGroup>
+
   <ItemGroup Condition="Exists('..\..\resources\geocoding.zip')">
     <EmbeddedResource Include="..\..\resources\timezones\map_data.txt" LinkBase="timezones" />
     <None Include="..\..\icon.png" Pack="true" PackagePath=""/>
