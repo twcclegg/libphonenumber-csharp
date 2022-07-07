@@ -88,12 +88,7 @@ namespace PhoneNumbers
 
         internal static Stream GetStream(string name, Assembly asm = null, bool nameSuffix = true)
         {
-#if PORTABLE
-            asm ??= typeof(PhoneNumberUtil).GetTypeInfo().Assembly;
-#else
             asm ??= typeof(PhoneNumberUtil).Assembly;
-#endif
-
             if (nameSuffix)
                 name = asm.GetManifestResourceNames().FirstOrDefault(n => n.EndsWith(name, StringComparison.Ordinal)) ??
                        throw new ArgumentException(name + " resource not found");

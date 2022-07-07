@@ -10,10 +10,6 @@ namespace PhoneNumbers
     internal static class InternalRegexOptions
     {
         public const RegexOptions
-#if PORTABLE
-            Default = RegexOptions.CultureInvariant;
-#else
             Default = RegexOptions.Compiled | RegexOptions.CultureInvariant;
-#endif
     }
 }

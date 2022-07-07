@@ -102,11 +102,7 @@ namespace PhoneNumbers
         public PhoneNumberOfflineGeocoder(string phonePrefixDataDirectory, Assembly asm = null)
         {
             var files = new SortedDictionary<int, HashSet<string>>();
-#if PORTABLE
-            asm ??= typeof(PhoneNumberOfflineGeocoder).GetTypeInfo().Assembly;
-#else
             asm ??= typeof(PhoneNumberOfflineGeocoder).Assembly;
-#endif
             var allNames = asm.GetManifestResourceNames();
             var prefix = asm.GetName().Name + "." + phonePrefixDataDirectory;
             var names = allNames.Where(n => n.StartsWith(prefix, StringComparison.Ordinal));

@@ -7,8 +7,8 @@
     <PackageId>libphonenumber-csharp</PackageId>
     <VersionPrefix>$(APPVEYOR_BUILD_VERSION)</VersionPrefix>
     <Authors>Patrick Mézard;Tom Clegg;Jarrod Alexander;Google;libphonenumber contributors</Authors>
-    <TargetFrameworks>net462;netstandard2.0;portable-net45+win8+wpa81+wp8</TargetFrameworks>
-    <LangVersion>8.0</LangVersion>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>preview</LangVersion>
     <AssemblyName>PhoneNumbers</AssemblyName>
     <PackageId>libphonenumber-csharp</PackageId>
     <PackageTags>phonenumber phone libphonenumber e164 e.164 international</PackageTags>
@@ -16,6 +16,7 @@
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageIconUrl>https://raw.githubusercontent.com/twcclegg/libphonenumber-csharp/main/icon.png</PackageIconUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <RepositoryUrl>https://github.com/twcclegg/libphonenumber-csharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryBranch>main</RepositoryBranch>
@@ -23,15 +24,6 @@
     <DebugType>full</DebugType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetFramework)' == 'portable-net45+win8+wpa81+wp8'">
-    <TargetFrameworkIdentifier>.NETPortable</TargetFrameworkIdentifier>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Profile259</TargetFrameworkProfile>
-    <DefineConstants>PORTABLE</DefineConstants>
-    <NugetTargetMoniker>.NETPortable,Version=v0.0,Profile=Profile259</NugetTargetMoniker>
-    <LanguageTargets>$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets</LanguageTargets>
   </PropertyGroup>
 
   <ItemGroup>

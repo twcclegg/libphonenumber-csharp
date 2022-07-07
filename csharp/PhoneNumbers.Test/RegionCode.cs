@@ -20,6 +20,7 @@
         public const string CH = "CH";
         public const string CL = "CL";
         public const string CN = "CN";
+        public const string CO = "CO";
         public const string CS = "CS";
         public const string CX = "CX";
         public const string DE = "DE";

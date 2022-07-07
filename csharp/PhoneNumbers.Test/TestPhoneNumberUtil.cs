@@ -53,6 +53,8 @@ namespace PhoneNumbers.Test
             new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(2423570000L).Build();
         private static readonly PhoneNumber BSNumber =
             new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(2423651234L).Build();
+        private static readonly PhoneNumber COFixedLINE =
+            new PhoneNumber.Builder().SetCountryCode(57).SetNationalNumber(6012345678L).Build();
         // Note that this is the same as the example number for DE in the metadata.
         private static readonly PhoneNumber DENumber =
             new PhoneNumber.Builder().SetCountryCode(49).SetNationalNumber(30123456L).Build();
@@ -773,6 +775,19 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestFormatNumberForMobileDialing()
         {
+            // Numbers are normally dialed in national format in-country, and international format from
+            // outside the country.
+            Assert.Equal("6012345678",
+                phoneUtil.FormatNumberForMobileDialing(COFixedLINE, RegionCode.CO, false));
+            Assert.Equal("030123456",
+                phoneUtil.FormatNumberForMobileDialing(DENumber, RegionCode.DE, false));
+            Assert.Equal("+4930123456",
+                phoneUtil.FormatNumberForMobileDialing(DENumber, RegionCode.CH, false));
+            PhoneNumber deNumberWithExtn = new PhoneNumber.Builder().MergeFrom(DENumber).SetExtension("1234").Build();
+            Assert.Equal("030123456",
+                phoneUtil.FormatNumberForMobileDialing(deNumberWithExtn, RegionCode.DE, false));
+            Assert.Equal("+4930123456",
+                phoneUtil.FormatNumberForMobileDialing(deNumberWithExtn, RegionCode.CH, false));
             // US toll free numbers are marked as noInternationalDialling in the test metadata for testing
             // purposes.
             Assert.Equal("800 253 0000",

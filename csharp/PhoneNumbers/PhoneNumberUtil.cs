@@ -72,10 +72,6 @@ namespace PhoneNumbers
         private readonly HashSet<string> nanpaRegions = new HashSet<string>();
         private const int NANPA_COUNTRY_CODE = 1;
 
-        // The prefix that needs to be inserted in front of a Colombian landline number when dialed from
-        // a mobile phone in Colombia.
-        private const string COLOMBIA_MOBILE_TO_FIXED_LINE_PREFIX = "3";
-
 
         // Map of country calling codes that use a mobile token before the area code. One example of when
         // this is relevant is when determining the length of the national destination code, which should
@@ -1351,12 +1347,7 @@ namespace PhoneNumbers
                     numberType == PhoneNumberType.FIXED_LINE || numberType == PhoneNumberType.MOBILE
                                                                || numberType == PhoneNumberType.FIXED_LINE_OR_MOBILE;
                 // Carrier codes may be needed in some countries. We handle this here.
-                if (regionCode == "CO" && numberType == PhoneNumberType.FIXED_LINE)
-                {
-                    formattedNumber =
-                        FormatNationalNumberWithCarrierCode(numberNoExt, COLOMBIA_MOBILE_TO_FIXED_LINE_PREFIX);
-                }
-                else if (regionCode == "BR" && isFixedLineOrMobile)
+                if (regionCode == "BR" && isFixedLineOrMobile)
                 {
                     // Historically, we set this to an empty string when parsing with raw input if none was
                     // found in the input string. However, this doesn't result in a number we can dial. For this
@@ -1519,14 +1510,14 @@ namespace PhoneNumbers
         }
 
         /// <summary>
-        /// Formats a phone number using the original phone number format that the number is parsed from.
-        /// The original format is embedded in the country_code_source field of the PhoneNumber object
-        /// passed in. If such information is missing, the number will be formatted into the NATIONAL
-        /// format by default. When we don't have a formatting pattern for the number, the method returns
-        /// the raw input when it is available.
-        /// <para>
-        /// Note this method guarantees no digit will be inserted, removed or modified as a result of
-        /// formatting.</para>
+        /// Formats a phone number using the original phone number format (e.g. INTERNATIONAL or NATIONAL)
+        /// that the number is parsed from, provided that the number has been parsed with {@link parseAndKeepRawInput}.
+        /// Otherwise the number will be formatted in NATIONAL format.The original format is embedded in the
+        /// country_code_source field of the PhoneNumber object passed in, which is only set when parsing keeps the
+        /// raw input. When we don't have a formatting pattern for the number, the method falls back to returning
+        /// the raw input.
+        ///
+        /// Note this method guarantees no digit will be inserted, removed or modified as a result of formatting.
         /// </summary>
         /// <param name="number">The phone number that needs to be formatted in its original number format.</param>
         /// <param name="regionCallingFrom">The region whose IDD needs to be prefixed if the original number
