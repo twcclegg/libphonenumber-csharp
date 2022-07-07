@@ -54,7 +54,7 @@ namespace PhoneNumbers
         // We don't allow input strings for parsing to be longer than 250 chars. This prevents malicious
         // input from overflowing the regular-expression engine.
         private const int MAX_INPUT_STRING_LENGTH = 250;
-        internal const string META_DATA_FILE_PREFIX = "PhoneNumberMetaData.xml";
+        internal const string META_DATA_FILE_PREFIX = "PhoneNumberMetadata.xml";
         internal const string UNKNOWN_REGION = "ZZ";
 
         // A mapping from a country calling code to the region codes which denote the region represented

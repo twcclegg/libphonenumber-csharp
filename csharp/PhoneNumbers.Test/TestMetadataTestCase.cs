@@ -27,6 +27,6 @@ namespace PhoneNumbers.Test
     */
     public class TestMetadataTestCase
     {
-        public static readonly PhoneNumberUtil PhoneUtil = new PhoneNumberUtil("PhoneNumberMetaDataForTesting.xml", typeof(TestMetadataTestCase).Assembly);
+        public static readonly PhoneNumberUtil PhoneUtil = new PhoneNumberUtil("PhoneNumberMetadataForTesting.xml", typeof(TestMetadataTestCase).Assembly);
     }
 }

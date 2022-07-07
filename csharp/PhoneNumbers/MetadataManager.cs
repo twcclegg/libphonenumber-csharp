@@ -22,7 +22,7 @@ namespace PhoneNumbers
     /**
     * Class encapsulating loading of PhoneNumber Metadata information. Currently this is used only for
     * additional data files such as PhoneNumberAlternateFormats, but in the future it is envisaged it
-    * would handle the main metadata file (PhoneNumberMetaData.xml) as well.
+    * would handle the main metadata file (PhoneNumberMetadata.xml) as well.
     *
     * @author Lara Rennie
     */
