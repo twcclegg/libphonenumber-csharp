@@ -73,27 +73,28 @@ class DumpLocale {
     System.out.println("//");
     System.out.println("// Auto-generated file, do not edit by hand.");
     System.out.println("//");
-	System.out.println("using System;");
-	System.out.println("using System.Collections.Generic;");
-	System.out.println("using System.Collections.Immutable;");
-	System.out.println("");
-	System.out.println("namespace PhoneNumbers");
-	System.out.println("{");
-	System.out.println("  public class LocaleData");
-	System.out.println("  {");
+    System.out.println("using System;");
+    System.out.println("using System.Collections.Generic;");
+    System.out.println("using System.Collections.Immutable;");
+    System.out.println("");
+    System.out.println("namespace PhoneNumbers");
+    System.out.println("{");
+    System.out.println("    public class LocaleData");
+    System.out.println("    {");
   }
 
   public static void main(String[] args) {
     printProlog();
-    System.out.println("    public static readonly ImmutableDictionary<string, ImmutableDictionary<string, string>> Data = new Dictionary<string, ImmutableDictionary<string, string>>");
-	System.out.println("    {");
+    System.out.println("        public static readonly ImmutableDictionary<string, ImmutableDictionary<string, string>> Data = new Dictionary<string, ImmutableDictionary<string, string>>");
+    System.out.println("        {");
     String[] all_countries = Locale.getISOCountries();
     String[] all_langs = Locale.getISOLanguages();
     // Name => first language code that maps to that name
     HashMap<String, String> name_to_lang = new HashMap<String, String>();
     for (String country: all_countries) {
-      System.out.println("      {\""+country+"\", new Dictionary<string, string>");
-	  System.out.println("      {");
+      System.out.println("            { \""+country+"\",");
+      System.out.println("              new Dictionary<string, string>");
+      System.out.println("              { ");
       Locale country_locale = new Locale("", country);
       for (String lang: all_langs) {
         Locale lang_locale = new Locale(lang);
@@ -103,20 +104,21 @@ class DumpLocale {
           if (previous_lang != null) {
             // Already seen this name before.  Print the name as "*<otherlang>"
             // on the assumption that this will save a lot of space (about 30%)
-            System.out.println("        {\""+lang+"\", \"*" + previous_lang + "\"},");
+            System.out.println("                { \""+lang+"\", \"*" + previous_lang + "\" },");
           } else {
             // First time we've seen this name
             name_to_lang.put(country_in_lang, lang);
-            System.out.print("        {\""+lang+"\", ");
+            System.out.print("                { \""+lang+"\", ");
             printName(country_in_lang);
-            System.out.println("},");
+            System.out.println(" },");
           }
         }
       }
-      System.out.println("      }}.ToImmutableDictionary(),");
+      System.out.println("              }.ToImmutableDictionary()");
+      System.out.println("            },");
     }
-	System.out.println("    }.ToImmutableDictionary();");
-	System.out.println("  }");
+    System.out.println("        }.ToImmutableDictionary();");
+    System.out.println("    }");
     System.out.println("}");
   }
 }
