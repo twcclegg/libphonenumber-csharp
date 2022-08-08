@@ -1724,6 +1724,10 @@ namespace PhoneNumbers.Test
         {
             // National prefix attached.
             Assert.Equal(NZNumber, phoneUtil.Parse("033316005", RegionCode.NZ));
+            // Some fields are not filled in by parse, but only by parseAndKeepRawInput.
+            Assert.False(NZNumber.HasCountryCodeSource);
+            Assert.Equal(PhoneNumber.Types.CountryCodeSource.UNSPECIFIED, NZNumber.CountryCodeSource);
+
             Assert.Equal(NZNumber, phoneUtil.Parse("33316005", RegionCode.NZ));
             // National prefix attached and some formatting present.
             Assert.Equal(NZNumber, phoneUtil.Parse("03-331 6005", RegionCode.NZ));
@@ -1732,7 +1736,8 @@ namespace PhoneNumbers.Test
             Assert.Equal(NZNumber, phoneUtil.Parse("tel:03-331-6005;phone-context=+64", RegionCode.NZ));
             Assert.Equal(NZNumber, phoneUtil.Parse("tel:331-6005;phone-context=+64-3", RegionCode.NZ));
             Assert.Equal(NZNumber, phoneUtil.Parse("tel:331-6005;phone-context=+64-3", RegionCode.US));
-
+            Assert.Equal(NZNumber, phoneUtil.Parse(
+                "My number is tel:03-331-6005;phone-context=+64", RegionCode.NZ));
             // Test parsing RFC3966 format with optional user-defined parameters. The parameters will appear
             // after the context if present.
             Assert.Equal(NZNumber, phoneUtil.Parse("tel:03-331-6005;phone-context=+64;a=%A1",

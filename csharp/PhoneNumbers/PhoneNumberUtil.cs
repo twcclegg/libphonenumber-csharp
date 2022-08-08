@@ -534,7 +534,8 @@ namespace PhoneNumbers
         internal PhoneNumberUtil(Stream metaDataStream,  Dictionary<int, List<string>> countryCallingCodeToRegionCodeMap = null)
         {
             var phoneMetadata = BuildMetadataFromXml.BuildPhoneMetadataFromStream(metaDataStream);
-            this.countryCallingCodeToRegionCodeMap = countryCallingCodeToRegionCodeMap ??= BuildMetadataFromXml.BuildCountryCodeToRegionCodeMap(phoneMetadata);
+            this.countryCallingCodeToRegionCodeMap = countryCallingCodeToRegionCodeMap ??=
+                BuildMetadataFromXml.BuildCountryCodeToRegionCodeMap(phoneMetadata);
 
             foreach (var regionCodes in countryCallingCodeToRegionCodeMap)
                 supportedRegions.UnionWith(regionCodes.Value);

@@ -96,10 +96,9 @@ namespace PhoneNumbers
 
         // A mapping from countryCallingCode_lang to the corresponding phone prefix map that has been
         // loaded.
-        private readonly Dictionary<string, AreaCodeMap> availablePhonePrefixMaps = new Dictionary<string, AreaCodeMap>();
+        private readonly Dictionary<string, AreaCodeMap> availablePhonePrefixMaps = new();
 
-        // @VisibleForTesting
-        public PhoneNumberOfflineGeocoder(string phonePrefixDataDirectory, Assembly asm = null)
+        internal PhoneNumberOfflineGeocoder(string phonePrefixDataDirectory, Assembly asm = null)
         {
             var files = new SortedDictionary<int, HashSet<string>>();
             asm ??= typeof(PhoneNumberOfflineGeocoder).Assembly;

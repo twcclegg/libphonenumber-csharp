@@ -75,7 +75,8 @@ class DumpLocale {
     System.out.println("//");
 	System.out.println("using System;");
 	System.out.println("using System.Collections.Generic;");
-	System.out.println("//");
+	System.out.println("using System.Collections.Immutable;");
+	System.out.println("");
 	System.out.println("namespace PhoneNumbers");
 	System.out.println("{");
 	System.out.println("  public class LocaleData");
@@ -84,14 +85,14 @@ class DumpLocale {
 
   public static void main(String[] args) {
     printProlog();
-    System.out.println("    public static readonly Dictionary<String, Dictionary<String, String>> Data = new Dictionary<String, Dictionary<String, String>>");
+    System.out.println("    public static readonly ImmutableDictionary<string, ImmutableDictionary<string, string>> Data = new Dictionary<string, ImmutableDictionary<string, string>>");
 	System.out.println("    {");
     String[] all_countries = Locale.getISOCountries();
     String[] all_langs = Locale.getISOLanguages();
     // Name => first language code that maps to that name
     HashMap<String, String> name_to_lang = new HashMap<String, String>();
     for (String country: all_countries) {
-      System.out.println("      {\""+country+"\", new Dictionary<String, String>");
+      System.out.println("      {\""+country+"\", new Dictionary<string, string>");
 	  System.out.println("      {");
       Locale country_locale = new Locale("", country);
       for (String lang: all_langs) {
@@ -112,9 +113,9 @@ class DumpLocale {
           }
         }
       }
-      System.out.println("      }},");
+      System.out.println("      }}.ToImmutableDictionary(),");
     }
-	System.out.println("    };");
+	System.out.println("    }.ToImmutableDictionary();");
 	System.out.println("  }");
     System.out.println("}");
   }
