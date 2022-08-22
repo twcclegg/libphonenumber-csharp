@@ -51,5 +51,5 @@ cp -r resources/* ../libphonenumber-csharp/resources
 cd ../libphonenumber-csharp
 cd csharp/lib
 javac DumpLocale.java && java DumpLocale > ../PhoneNumbers/LocaleData.cs
-git add .
+git add -A
 git commit -m "$UPSTREAM"
