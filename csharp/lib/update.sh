@@ -28,13 +28,13 @@ then
 fi
 
 cd ~/GitHub/libphonenumber-csharp/
-if [ $(git branch --show-current) != "main"]
+if [ $(git branch --show-current) != "main" ]
 then
     echo "must be on main branch"
     exit
 fi
 
-if [ -n $(git status --porcelain) ]
+if [ -n "$(git status --porcelain)" ]
 then
     echo "working directory is not clean"
     exit
