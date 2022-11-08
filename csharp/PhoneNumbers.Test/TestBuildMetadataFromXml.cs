@@ -95,7 +95,7 @@ namespace PhoneNumbers.Test
                 "           preferredInternationalPrefix='00~11' nationalPrefixForParsing='0'" +
                 "           nationalPrefixTransformRule='9$1'" + // nationalPrefix manually injected.
                 "           preferredExtnPrefix=' x' mainCountryForCode='true'" +
-                "           leadingZeroPossible='true' mobileNumberPortableRegion='true'>" +
+                "           mobileNumberPortableRegion='true'>" +
                 "</territory>";
             var territoryElement = ParseXmlString(xmlInput);
             var phoneMetadata =
@@ -120,7 +120,6 @@ namespace PhoneNumbers.Test
             var phoneMetadata =
                 BuildMetadataFromXml.LoadTerritoryTagMetadata("33", territoryElement, "");
             Assert.False(phoneMetadata.MainCountryForCode);
-            Assert.False(phoneMetadata.LeadingZeroPossible);
         }
 
         [Fact]

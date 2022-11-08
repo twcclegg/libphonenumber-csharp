@@ -80,7 +80,6 @@ namespace PhoneNumbers
             "nationalPrefixTransformRule",
             "sameMobileAndFixedLinePattern",
             "mainCountryForCode",
-            "leadingZeroPossible",
             "mobileNumberPortableRegion"
         };
 
@@ -173,8 +172,6 @@ namespace PhoneNumbers
                 metadata.ClearSameMobileAndFixedLinePattern();
             if (ShouldDrop("mainCountryForCode"))
                 metadata.ClearMainCountryForCode();
-            if (ShouldDrop("leadingZeroPossible"))
-                metadata.ClearLeadingZeroPossible();
             if (ShouldDrop("mobileNumberPortableRegion"))
                 metadata.ClearMobileNumberPortableRegion();
         }

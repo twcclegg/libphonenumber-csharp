@@ -182,10 +182,6 @@ namespace PhoneNumbers
 
         public string LeadingDigits { get; private set; } = "";
 
-        public bool HasLeadingZeroPossible { get; private set; }
-
-        public bool LeadingZeroPossible { get; private set; }
-
         public bool HasMobileNumberPortableRegion { get; private set; }
 
         public bool MobileNumberPortableRegion { get; private set; }
@@ -455,14 +451,6 @@ namespace PhoneNumbers
                 set => SetLeadingDigits(value);
             }
 
-            public bool HasLeadingZeroPossible => MessageBeingBuilt.HasLeadingZeroPossible;
-
-            public bool LeadingZeroPossible
-            {
-                get => MessageBeingBuilt.LeadingZeroPossible;
-                set => SetLeadingZeroPossible(value);
-            }
-
             public bool HasMobileNumberPortableRegion => MessageBeingBuilt.HasMobileNumberPortableRegion;
 
             public bool MobileNumberPortableRegion
@@ -536,7 +524,6 @@ namespace PhoneNumbers
                     MessageBeingBuilt.intlNumberFormat_.AddRange(other.intlNumberFormat_);
                 if (other.HasMainCountryForCode) MainCountryForCode = other.MainCountryForCode;
                 if (other.HasLeadingDigits) LeadingDigits = other.LeadingDigits;
-                if (other.HasLeadingZeroPossible) LeadingZeroPossible = other.LeadingZeroPossible;
                 if (other.HasMobileNumberPortableRegion) MobileNumberPortableRegion = other.MobileNumberPortableRegion;
                 return this;
             }
@@ -1388,20 +1375,6 @@ namespace PhoneNumbers
                 return this;
             }
 
-            public Builder SetLeadingZeroPossible(bool value)
-            {
-                MessageBeingBuilt.HasLeadingZeroPossible = true;
-                MessageBeingBuilt.LeadingZeroPossible = value;
-                return this;
-            }
-
-            public Builder ClearLeadingZeroPossible()
-            {
-                MessageBeingBuilt.HasLeadingZeroPossible = false;
-                MessageBeingBuilt.LeadingZeroPossible = false;
-                return this;
-            }
-
             public Builder SetMobileNumberPortableRegion(bool value)
             {
                 MessageBeingBuilt.HasMobileNumberPortableRegion = true;
@@ -1455,7 +1428,6 @@ namespace PhoneNumbers
                 hash ^= i.GetHashCode();
             if (HasMainCountryForCode) hash ^= MainCountryForCode.GetHashCode();
             if (HasLeadingDigits) hash ^= LeadingDigits.GetHashCode();
-            if (HasLeadingZeroPossible) hash ^= LeadingZeroPossible.GetHashCode();
             if (HasMobileNumberPortableRegion) hash ^= MobileNumberPortableRegion.GetHashCode();
             return hash;
         }
@@ -1519,8 +1491,6 @@ namespace PhoneNumbers
                 !MainCountryForCode.Equals(other.MainCountryForCode)) return false;
             if (HasLeadingDigits != other.HasLeadingDigits ||
                 HasLeadingDigits && !LeadingDigits.Equals(other.LeadingDigits)) return false;
-            if (HasLeadingZeroPossible != other.HasLeadingZeroPossible || HasLeadingZeroPossible &&
-                !LeadingZeroPossible.Equals(other.LeadingZeroPossible)) return false;
             if (HasMobileNumberPortableRegion != other.HasMobileNumberPortableRegion || HasMobileNumberPortableRegion &&
                 !MobileNumberPortableRegion.Equals(other.MobileNumberPortableRegion)) return false;
             return true;

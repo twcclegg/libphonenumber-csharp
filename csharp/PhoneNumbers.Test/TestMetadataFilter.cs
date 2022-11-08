@@ -98,7 +98,6 @@ namespace PhoneNumbers.Test
                 { "nationalPrefixTransformRule", new SortedSet<string>() },
                 { "sameMobileAndFixedLinePattern", new SortedSet<string>() },
                 { "mainCountryForCode", new SortedSet<string>() },
-                { "leadingZeroPossible", new SortedSet<string>() },
                 { "mobileNumberPortableRegion", new SortedSet<string>() }
             };
 
@@ -645,7 +644,6 @@ namespace PhoneNumbers.Test
                 { "nationalPrefixTransformRule", new SortedSet<string>() },
                 { "sameMobileAndFixedLinePattern", new SortedSet<string>() },
                 { "mainCountryForCode", new SortedSet<string>() },
-                { "leadingZeroPossible", new SortedSet<string>() },
                 { "mobileNumberPortableRegion", new SortedSet<string>() }
             };
 
@@ -677,7 +675,6 @@ namespace PhoneNumbers.Test
                 { "nationalPrefixTransformRule", new SortedSet<string>() },
                 { "sameMobileAndFixedLinePattern", new SortedSet<string>() },
                 { "mainCountryForCode", new SortedSet<string>() },
-                { "leadingZeroPossible", new SortedSet<string>() },
                 { "mobileNumberPortableRegion", new SortedSet<string>() }
             };
 
@@ -761,7 +758,6 @@ namespace PhoneNumbers.Test
                 { "nationalPrefixTransformRule", new SortedSet<string>() },
                 { "sameMobileAndFixedLinePattern", new SortedSet<string>() },
                 { "mainCountryForCode", new SortedSet<string>() },
-                { "leadingZeroPossible", new SortedSet<string>() },
                 { "mobileNumberPortableRegion", new SortedSet<string>() }
             };
 
