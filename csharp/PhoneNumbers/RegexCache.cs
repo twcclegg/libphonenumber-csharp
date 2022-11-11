@@ -14,68 +14,29 @@
  * limitations under the License.
  */
 
-using System.Collections.Generic;
+using System;
+using System.Collections.Concurrent;
 
 namespace PhoneNumbers
 {
     public class RegexCache
     {
-        private class Entry
-        {
-            public PhoneRegex Regex;
-            public LinkedListNode<string> Node;
-        }
-
-        private readonly int size;
-        private readonly LinkedList<string> lru;
-        private readonly Dictionary<string, Entry> cache;
-        private readonly object regexLock = new object();
+        private readonly ConcurrentDictionary<string, PhoneRegex> cache;
 
         public RegexCache(int size)
         {
-            this.size = size;
-            cache = new Dictionary<string, Entry>(size);
-            lru = new LinkedList<string>();
+            cache = new ConcurrentDictionary<string, PhoneRegex>(Environment.ProcessorCount, size);
         }
 
         public PhoneRegex GetPatternForRegex(string regex)
         {
-            lock (regexLock)
-            {
-                Entry e;
-                if (!cache.TryGetValue(regex, out e))
-                {
-                    // Insert new node
-                    var r = new PhoneRegex(regex);
-                    var n = lru.AddFirst(regex);
-                    cache[regex] = e = new Entry { Regex = r, Node = n };
-                    // Check cache size
-                    if (lru.Count > size)
-                    {
-                        var o = lru.Last.Value;
-                        cache.Remove(o);
-                        lru.RemoveLast();
-                    }
-                }
-                else
-                {
-                    if (e.Node != lru.First)
-                    {
-                        lru.Remove(e.Node);
-                        lru.AddFirst(e.Node);
-                    }
-                }
-                return e.Regex;
-            }
+            return cache.GetOrAdd(regex, (k) => new PhoneRegex(regex));
         }
 
         // This method is used for testing.
         public bool ContainsRegex(string regex)
         {
-            lock (regexLock)
-            {
-                return cache.ContainsKey(regex);
-            }
+            return cache.ContainsKey(regex);
         }
     }
 }

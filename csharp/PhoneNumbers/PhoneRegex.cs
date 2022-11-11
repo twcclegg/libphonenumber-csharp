@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+using System;
 using System.Text.RegularExpressions;
 
 namespace PhoneNumbers
@@ -22,9 +23,9 @@ namespace PhoneNumbers
     {
         private readonly string pattern;
         private readonly RegexOptions options;
-        private Regex regex;
-        private Regex allRegex;
-        private Regex beginRegex;
+        private Lazy<Regex> regex;
+        private Lazy<Regex> allRegex;
+        private Lazy<Regex> beginRegex;
 
         public PhoneRegex(string pattern)
             : this(pattern, RegexOptions.None)
@@ -35,34 +36,20 @@ namespace PhoneNumbers
         {
             this.pattern = pattern;
             this.options = options | InternalRegexOptions.Default;
+
+            regex = new Lazy<Regex>(() => new Regex(pattern, options), true);
+            allRegex = new Lazy<Regex>(() => new Regex($"^(?:{pattern})$", options), true);
+            beginRegex = new Lazy<Regex>(() => new Regex($"^(?:{pattern})", options), true);
         }
 
-        private Regex GetRegex()
-        {
-            if (regex is null) lock (this) regex ??= new Regex(pattern, options);
-            return regex;
-        }
+        public bool IsMatch(string value) => regex.Value.IsMatch(value);
+        public Match Match(string value) => regex.Value.Match(value);
+        public string Replace(string value, string replacement) => regex.Value.Replace(value, replacement);
 
-        private Regex GetAllRegex()
-        {
-            if (allRegex is null) lock (this) allRegex ??= new Regex($"^(?:{pattern})$", options);
-            return allRegex;
-        }
+        public bool IsMatchAll(string value) => allRegex.Value.IsMatch(value);
+        public Match MatchAll(string value) => allRegex.Value.Match(value);
 
-        private Regex GetBeginRegex()
-        {
-            if (beginRegex is null) lock (this) beginRegex ??= new Regex($"^(?:{pattern})", options);
-            return beginRegex;
-        }
-
-        public bool IsMatch(string value) => GetRegex().IsMatch(value);
-        public Match Match(string value) => GetRegex().Match(value);
-        public string Replace(string value, string replacement) => GetRegex().Replace(value, replacement);
-
-        public bool IsMatchAll(string value) => GetAllRegex().IsMatch(value);
-        public Match MatchAll(string value) => GetAllRegex().Match(value);
-
-        public bool IsMatchBeginning(string value) => GetBeginRegex().IsMatch(value);
-        public Match MatchBeginning(string value) => GetBeginRegex().Match(value);
+        public bool IsMatchBeginning(string value) => beginRegex.Value.IsMatch(value);
+        public Match MatchBeginning(string value) => beginRegex.Value.Match(value);
     }
 }
