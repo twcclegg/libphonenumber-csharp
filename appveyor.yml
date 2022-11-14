@@ -8,7 +8,7 @@ init:
       {
         Update-AppveyorBuild -Version "$(((nuget list libphonenumber-csharp -Source https://api.nuget.org/v3/index.json | findstr "libphonenumber-csharp[^.-]") -split ' ')[1])-$($env:APPVEYOR_REPO_COMMIT.substring(0,7))"
       }
-image: Visual Studio 2017
+image: Visual Studio 2022
 configuration: Release
 environment:
   COVERALLS_REPO_TOKEN:
@@ -19,7 +19,6 @@ branches:
   only:
     - main
 before_build:
-  - ps: xcopy "C:\Program Files (x86)\MSBuild\Microsoft\Portable" "C:\Program Files\dotnet\sdk\$(dotnet --version)\Microsoft\Portable\" /S /E
   - dotnet restore csharp -s https://api.nuget.org/v3/index.json
   - choco install opencover.portable
   - choco install codecov
