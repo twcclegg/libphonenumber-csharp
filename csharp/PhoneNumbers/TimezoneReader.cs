@@ -33,13 +33,16 @@ namespace PhoneNumbers
             }
         }
 
-        private static List<T> ToList<T>(System.Collections.IEnumerable coll)
+        public static List<T> ToList<T>(System.Collections.IEnumerable coll)
         {
             List<T> list = new List<T>();
-            foreach (var it in coll)
+            if (null != coll)
             {
-                if (it is T tit)
-                    list.Add(tit);
+                foreach (var it in coll)
+                {
+                    if (it is T tit)
+                        list.Add(tit);
+                }
             }
 
             return list;
@@ -138,12 +141,9 @@ namespace PhoneNumbers
 
         private static List<string> LineReader(StreamReader reader, char fieldDelimiter = '|')
         {
-            while (!reader.EndOfStream)
+            string line;
+            while (null != (line = reader.ReadLine()))
             {
-                var line = reader.ReadLine();
-                if (null == line)
-                    break;
-
                 line = line.Trim();
                 if (line.Length < 1 || '#' == line[0])
                     continue;

@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
+using System.Xml;
 using Xunit;
 ///using static System.Net.Mime.MediaTypeNames;
 
@@ -67,17 +68,14 @@ namespace PhoneNumbers.Test
         public void TestReader()
         {
             var ianaTZListDelimiter = new char[] { '&' };
-            byte[] ssBytes = Array.Empty<byte>();
-            var emptyStream = new System.IO.MemoryStream(ssBytes);
-            var emptyMap = TimezoneReader.GetPrefixMap(emptyStream, ianaTZListDelimiter);
-            Assert.Equal(0, emptyMap.Count);
-            Assert.Equal(0, TimezoneReader.GetPrefixMap(null, ianaTZListDelimiter).Count);
-            emptyStream = new System.IO.MemoryStream(ssBytes);
-            var emptyNetMap = TimezoneReader.GetIanaWindowsMap(emptyStream);
-            Assert.Equal(0, emptyNetMap.Count);
-            Assert.Equal(0, TimezoneReader.GetIanaWindowsMap(null).Count);
+            Assert.Empty(TimezoneReader.ToList<XmlNode>(null));
+            Assert.Empty(TimezoneReader.ToList<XmlNode>(ianaTZListDelimiter));
+            Assert.Empty(TimezoneReader.GetPrefixMap(new System.IO.MemoryStream(Array.Empty<byte>()), ianaTZListDelimiter));
+            Assert.Empty(TimezoneReader.GetPrefixMap(null, ianaTZListDelimiter));
+            Assert.Empty(TimezoneReader.GetIanaWindowsMap(new System.IO.MemoryStream(Array.Empty<byte>())));
+            Assert.Empty(TimezoneReader.GetIanaWindowsMap(null));
 
-            ssBytes = System.Text.Encoding.UTF8.GetBytes(MapTestData);
+            byte[] ssBytes = System.Text.Encoding.UTF8.GetBytes(MapTestData);
             using var ms = new System.IO.MemoryStream(ssBytes);
             var map = TimezoneReader.GetPrefixMap(ms, ianaTZListDelimiter);
             Assert.NotNull(map);
