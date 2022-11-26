@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
+using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using Xunit;
+///using static System.Net.Mime.MediaTypeNames;
 
 namespace PhoneNumbers.Test
 {
@@ -24,64 +27,36 @@ namespace PhoneNumbers.Test
     {
         private static long[][] numbers =
         {
-            new long[] { 45, 35353535L },
+            new long[] { 45, 35353535L }, // denmark
             new long[] { 45, 53831292L },
-            new long[] { 1, 5106761618L },
+            new long[] { 1, 5106761618L }, // usa
             new long[] { 1, 4155192079L },
             new long[] { 1, 8002156195L },
-            new long[] { 91, 8826466567L },
+            new long[] { 91, 8826466567L }, // india
             new long[] { 91, 7065185423L },
-            new long[] { 44, 7562397981L },
-            new long[] { 48, 535019729L },
+            new long[] { 44, 7562397981L }, // uk
+            new long[] { 48, 535019729L },  // poland
+            new long[] { 82, 22123456L },   // south korea
+            new long[] { 82, 322123456L },
+            new long[] { 82, 6421234567L },
+            new long[] { 82, 1234L },
+            new long[] { 1, 6502530000L }, // usa
+            new long[] { 1, 6509600000L },
+            new long[] { 1, 2128120000L },
+            new long[] { 1, 6174240000L },
+            new long[] { 1, 123456789L },
+            new long[] { 1, 2423651234L },
+            new long[] { 61, 236618300L }, // australia sydney
+            new long[] { 61, 851087300L }, // australia perth
+            new long[] { 999, 2423651234L }, // nowhere, invalid country code
+            new long[] { 800, 12345678L }, // international toll free
+            new long[] { 0, 0L }, // not a number, has no country code, no region
         };
-        private static readonly PhoneNumberOfflineGeocoder geocoder =
-            new PhoneNumberOfflineGeocoder("geocoding.", typeof(TestPhoneNumberOfflineGeocoder).Assembly);
 
         private static readonly List<PhoneNumber> testNumbers = new List<PhoneNumber>();
-        // Set up some test numbers to re-use.
-        private static readonly PhoneNumber KONumber1 =
-            new PhoneNumber.Builder().SetCountryCode(82).SetNationalNumber(22123456L).Build();
-        private static readonly PhoneNumber KONumber2 =
-            new PhoneNumber.Builder().SetCountryCode(82).SetNationalNumber(322123456L).Build();
-        private static readonly PhoneNumber KONumber3 =
-            new PhoneNumber.Builder().SetCountryCode(82).SetNationalNumber(6421234567L).Build();
-        private static readonly PhoneNumber KOInvalidNumber =
-           new PhoneNumber.Builder().SetCountryCode(82).SetNationalNumber(1234L).Build();
-        private static readonly PhoneNumber USNumber1 =
-            new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(6502530000L).Build();
-        private static readonly PhoneNumber USNumber2 =
-            new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(6509600000L).Build();
-        private static readonly PhoneNumber USNumber3 =
-            new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(2128120000L).Build();
-        private static readonly PhoneNumber USNumber4 =
-            new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(6174240000L).Build();
-        private static readonly PhoneNumber USInvalidNumber =
-            new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(123456789L).Build();
-        private static readonly PhoneNumber BSNumber1 =
-            new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(2423651234L).Build();
-        private static readonly PhoneNumber AUNumber =
-            new PhoneNumber.Builder().SetCountryCode(61).SetNationalNumber(236618300L).Build();
-        private static readonly PhoneNumber NumberWithInvalidCountryCode =
-            new PhoneNumber.Builder().SetCountryCode(999).SetNationalNumber(2423651234L).Build();
-        private static readonly PhoneNumber InternationalTollFree =
-            new PhoneNumber.Builder().SetCountryCode(800).SetNationalNumber(12345678L).Build();
 
         public TestTimezoneMapper()
         {
-            testNumbers.Add(KONumber1);
-            testNumbers.Add(KONumber2);
-            testNumbers.Add(KONumber3);
-            testNumbers.Add(KOInvalidNumber);
-            testNumbers.Add(USNumber1);
-            testNumbers.Add(USNumber2);
-            testNumbers.Add(USNumber3);
-            testNumbers.Add(USNumber4);
-            testNumbers.Add(USInvalidNumber);
-            testNumbers.Add(BSNumber1);
-            testNumbers.Add(AUNumber);
-            testNumbers.Add(NumberWithInvalidCountryCode);
-            testNumbers.Add(InternationalTollFree);
-
             foreach (var n in numbers)
             {
                 testNumbers.Add(new PhoneNumber.Builder().SetCountryCode((int)n[0]).SetNationalNumber((ulong)n[1]).Build());
@@ -91,14 +66,25 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestReader()
         {
-            var ssBytes = System.Text.UTF8Encoding.UTF8.GetBytes(MapTestData);
+            var ianaTZListDelimiter = new char[] { '&' };
+            byte[] ssBytes = Array.Empty<byte>();
+            var emptyStream = new System.IO.MemoryStream(ssBytes);
+            var emptyMap = TimezoneReader.GetPrefixMap(emptyStream, ianaTZListDelimiter);
+            Assert.Equal(0, emptyMap.Count);
+            Assert.Equal(0, TimezoneReader.GetPrefixMap(null, ianaTZListDelimiter).Count);
+            emptyStream = new System.IO.MemoryStream(ssBytes);
+            var emptyNetMap = TimezoneReader.GetIanaWindowsMap(emptyStream);
+            Assert.Equal(0, emptyNetMap.Count);
+            Assert.Equal(0, TimezoneReader.GetIanaWindowsMap(null).Count);
+
+            ssBytes = System.Text.Encoding.UTF8.GetBytes(MapTestData);
             using var ms = new System.IO.MemoryStream(ssBytes);
-            var map = TimezoneReader.GetPrefixMap(ms, new char[] { '&' });
+            var map = TimezoneReader.GetPrefixMap(ms, ianaTZListDelimiter);
             Assert.NotNull(map);
-            Assert.Equal(10, map.Count);
+            Assert.Equal(11, map.Count);
             Assert.True(map.ContainsKey(1));
             Assert.True(1 < map[1].Length);
-            ssBytes = System.Text.UTF8Encoding.UTF8.GetBytes(XMLTestData);
+            ssBytes = System.Text.Encoding.UTF8.GetBytes(XMLTestData);
             using var xms = new System.IO.MemoryStream(ssBytes);
             var ianaNetMap = TimezoneReader.GetIanaWindowsMap(xms);
             Assert.NotNull(ianaNetMap);
@@ -122,19 +108,58 @@ namespace PhoneNumbers.Test
             }
         }
 
+        [Fact]
+        public void TestMapperWithNoData()
+        {
+            var emptyMapper = new TimezoneMapper(new Dictionary<int, string[]>(), new Dictionary<string, List<string[]>>(), new List<TimeZoneInfo>());
+            foreach (var pn in testNumbers)
+            {
+                var res1 = emptyMapper.GetTimezones(pn);
+                Assert.NotNull(res1);
+                var res2 = emptyMapper.TryGetTimeZoneInfo(pn, out var tzinfo);
+                Assert.True(res2 == (null != tzinfo));
+                var res3 = emptyMapper.GetOffsetsFromUtc(pn);
+                Assert.NotNull(res3);
+            }
+        }
+
+        [Fact]
+        public void TestMapperWithBadData()
+        {
+            var ssBytes = System.Text.Encoding.UTF8.GetBytes(MapTestData);
+            using var ms = new System.IO.MemoryStream(ssBytes);
+            var map = TimezoneReader.GetPrefixMap(ms, new char[] { '&' });
+            Assert.NotNull(map);
+            Assert.Equal(11, map.Count);
+            Assert.True(map.ContainsKey(1));
+            Assert.True(1 < map[1].Length);
+            ssBytes = System.Text.Encoding.UTF8.GetBytes(XMLTestData);
+            using var xms = new System.IO.MemoryStream(ssBytes);
+            var ianaNetMap = TimezoneReader.GetIanaWindowsMap(xms);
+            Assert.NotNull(ianaNetMap);
+            Assert.Equal(15, ianaNetMap.Count);
+            Assert.True(ianaNetMap.ContainsKey("Africa/Casablanca"));
+            Assert.Equal(2, ianaNetMap["Africa/Casablanca"].Count);
+
+            var wrongMapper = new TimezoneMapper(map, ianaNetMap, new List<TimeZoneInfo>());
+            foreach (var pn in testNumbers)
+            {
+                var res1 = wrongMapper.GetTimezones(pn);
+                Assert.NotNull(res1);
+                var res2 = wrongMapper.TryGetTimeZoneInfo(pn, out var tzinfo);
+                Assert.True(res2 == (null != tzinfo));
+                var res3 = wrongMapper.GetOffsetsFromUtc(pn);
+                Assert.NotNull(res3);
+            }
+        }
+
         private static string MapTestData = @"# Copyright (C) 2012 The Libphonenumber Authors
 
 # Licensed under the Apache License, Version 2.0 (the ""License"");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 
-# http://www.apache.org/licenses/LICENSE-2.0
-
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an ""AS IS"" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+ _________ _________ ___________ this is for tests - do not remove
 
 1|America/New_York&America/Chicago&America/Winnipeg&America/Los_Angeles
 1201|America/New_York
@@ -145,6 +170,7 @@ namespace PhoneNumbers.Test
 1650960|America/Los_Angeles
 1989|Ameriac/Los_Angeles
 612|Australia/Sydney
+61851087|Australia/Perth
 82|Asia/Seoul
 ";
         private static string XMLTestData = @"<?xml version=""1.0"" encoding=""UTF-8"" ?>
@@ -192,7 +218,13 @@ namespace PhoneNumbers.Test
 
 <!-- (UTC+08:00) Perth -->
 <mapZone other=""W. Australia Standard Time"" territory=""001"" type=""Australia/Perth""/>
-<mapZone other=""W. Australia Standard Time"" territory=""AU"" type=""Australia/Perth""/>
+<!-- entry is intentionally different and incorrect, for test cases (dotnet name not found) -->
+<mapZone other=""W. Australia"" territory=""AU"" type=""Australia/Perth""/>
+
+<!-- for test cases (no attributes) -->
+<mapZone/>
+<mapZone/>
+
 </mapTimezones>
 </windowsZones>
 </supplementalData>";

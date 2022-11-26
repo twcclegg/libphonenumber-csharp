@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 
 namespace PhoneNumbers
@@ -14,15 +13,14 @@ namespace PhoneNumbers
         private readonly PhoneNumberUtil phoneUtil;
         private readonly int maxPrefixLength;
 
-        private TimezoneMapper(IDictionary<int, string[]> source, IDictionary<string, List<string[]>> dotnetSource)
+        internal TimezoneMapper(IDictionary<int, string[]> source, IDictionary<string, List<string[]>> dotnetSource, IList<TimeZoneInfo> initZones)
         {
-            map = source.ToImmutableDictionary();
+            map = source;
             var keys = map.Keys.ToList();
             maxPrefixLength = keys.Any() ? keys.Max().ToString().Length : 0;
-            dotnetmap = dotnetSource.ToImmutableDictionary();
-            var syszones = TimeZoneInfo.GetSystemTimeZones();
+            dotnetmap = dotnetSource;
             tziCache = new ConcurrentDictionary<string, TimeZoneInfo>();
-            foreach (var timeZone in syszones)
+            foreach (var timeZone in initZones)
             {
                 tziCache.TryAdd(timeZone.Id, timeZone);
             }
@@ -53,14 +51,19 @@ namespace PhoneNumbers
         private bool TryFetchTimeZoneInfo(string dotnetName, out TimeZoneInfo timeZoneInfo)
         {
             timeZoneInfo = null;
-            if (!tziCache.ContainsKey(dotnetName))
+            try
             {
-                tziCache.TryAdd(dotnetName, TimeZoneInfo.FindSystemTimeZoneById(dotnetName));
-            }
-            if (tziCache.TryGetValue(dotnetName, out var tzinfo))
-            {
-                timeZoneInfo = tzinfo;
+                if (!tziCache.TryGetValue(dotnetName, out timeZoneInfo))
+                {
+                    timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(dotnetName);
+                    tziCache.TryAdd(dotnetName, timeZoneInfo);
+                }
+
                 return true;
+            }
+            catch
+            {
+                // intentionally ignored (unrecognized time zone name)
             }
 
             return false;
@@ -108,9 +111,6 @@ namespace PhoneNumbers
         public int[] GetOffsetsFromUtc(PhoneNumber phoneNumber)
         {
             string regionCode = phoneUtil.GetRegionCodeForNumber(phoneNumber) ?? PhoneNumberUtil.REGION_CODE_FOR_NON_GEO_ENTITY;
-            if (string.IsNullOrEmpty(regionCode))
-                return Array.Empty<int>();
-
             var tzs = GetTimezones(phoneNumber);
             int[] offsets = new int[tzs.Length];
             for (int i = 0; i < tzs.Length; i++)
@@ -151,7 +151,7 @@ namespace PhoneNumbers
             using var dfp = asm.GetManifestResourceStream(dnMapping);
             var dotnetMap = TimezoneReader.GetIanaWindowsMap(dfp);
 
-            return new TimezoneMapper(prefixMap, dotnetMap);
+            return new TimezoneMapper(prefixMap, dotnetMap, TimeZoneInfo.GetSystemTimeZones().ToList());
         }
 
         private static readonly object lockObj = new object();

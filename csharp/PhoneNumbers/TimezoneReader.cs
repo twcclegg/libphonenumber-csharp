@@ -36,13 +36,10 @@ namespace PhoneNumbers
         private static List<T> ToList<T>(System.Collections.IEnumerable coll)
         {
             List<T> list = new List<T>();
-            if (null != coll)
+            foreach (var it in coll)
             {
-                foreach (var it in coll)
-                {
-                    if (it is T tit)
-                        list.Add(tit);
-                }
+                if (it is T tit)
+                    list.Add(tit);
             }
 
             return list;
@@ -53,7 +50,14 @@ namespace PhoneNumbers
             List<TZMapDTO> fullList = new List<TZMapDTO>();
             string[] topLevelXPath = { "//mapZone" };
             XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.LoadXml(reader.ReadToEnd());
+            try
+            {
+                xmlDoc.Load(reader);
+            }
+            catch
+            {
+                return fullList;
+            }
 
             foreach (var tlx in topLevelXPath)
             {
@@ -62,7 +66,7 @@ namespace PhoneNumbers
 
                 foreach (XmlNode node in allNodes)
                 {
-                    if (null != node.Attributes)
+                    if (0 < node.Attributes.Count)
                     {
                         int counter = 0;
                         string wzName = string.Empty;
@@ -114,13 +118,8 @@ namespace PhoneNumbers
         ///
         private static IDictionary<string, List<string[]>> ReadIanaWindowsMap(StreamReader reader)
         {
-            if (null == reader || reader.EndOfStream || !reader.BaseStream.CanRead)
-            {
-                return ImmutableDictionary<string, List<string[]>>.Empty;
-            }
-
             var res = GetTZList(reader);
-            if (res is null || res.Count < 1)
+            if (res.Count < 1)
             {
                 return ImmutableDictionary<string, List<string[]>>.Empty;
             }
@@ -149,11 +148,11 @@ namespace PhoneNumbers
                 if (line.Length < 1 || '#' == line[0])
                     continue;
 
-                var indexOfPipe = line.IndexOf(fieldDelimiter);
-                if (indexOfPipe == -1)
+                var indexOfDelimiter = line.IndexOf(fieldDelimiter);
+                if (indexOfDelimiter == -1)
                     continue;
 
-                var lineFields = new string[] { line.Substring(0, indexOfPipe), line.Substring(indexOfPipe + 1) };
+                var lineFields = new string[] { line.Substring(0, indexOfDelimiter), line.Substring(indexOfDelimiter + 1) };
                 return new List<string>(lineFields);
             }
 
@@ -169,6 +168,9 @@ namespace PhoneNumbers
         /// <returns></returns>
         public static IDictionary<int, string[]> GetPrefixMap(Stream fp, char[] splitters)
         {
+            if (null == fp)
+                return ImmutableDictionary<int, string[]>.Empty;
+
             var tmpMap = new SortedDictionary<int, string[]>();
             using (var lines = new StreamReader(fp, Encoding.UTF8))
             {
@@ -192,6 +194,9 @@ namespace PhoneNumbers
         /// <returns>Mapping from IANA time zone names to .Net/Windows time zone names.</returns>
         public static IDictionary<string, List<string[]>> GetIanaWindowsMap(Stream fp)
         {
+            if (null == fp)
+                return ImmutableDictionary<string, List<string[]>>.Empty;
+
             using (var xmlReader = new StreamReader(fp, Encoding.UTF8))
             {
                 return ReadIanaWindowsMap(xmlReader);
