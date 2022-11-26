@@ -1,0 +1,172 @@
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+
+namespace PhoneNumbers
+{
+    public class TimezoneMapper
+    {
+        private readonly IDictionary<int, string[]> map;
+        private readonly IDictionary<string, List<string[]>> dotnetmap;
+        private readonly ConcurrentDictionary<string, TimeZoneInfo> tziCache;
+        private readonly PhoneNumberUtil phoneUtil;
+        private readonly int maxPrefixLength;
+
+        private TimezoneMapper(IDictionary<int, string[]> source, IDictionary<string, List<string[]>> dotnetSource)
+        {
+            map = source.ToImmutableDictionary();
+            var keys = map.Keys.ToList();
+            maxPrefixLength = keys.Any() ? keys.Max().ToString().Length : 0;
+            dotnetmap = dotnetSource.ToImmutableDictionary();
+            var syszones = TimeZoneInfo.GetSystemTimeZones();
+            tziCache = new ConcurrentDictionary<string, TimeZoneInfo>();
+            foreach (var timeZone in syszones)
+            {
+                tziCache.TryAdd(timeZone.Id, timeZone);
+            }
+            phoneUtil = PhoneNumberUtil.GetInstance();
+        }
+
+        /// <summary>
+        /// Attempts to match longest prefix of <paramref name="phoneNumber"/> against a fixed list
+        /// of valid prefixes, and returns the array of IANA timezone names associated with the prefix.
+        /// </summary>
+        /// <param name="phoneNumber">A presumed valid PhoneNumber object</param>
+        /// <returns>the (possibly empty) array of IANA timezone names associated with <paramref name="phoneNumber"/></returns>
+        public string[] GetTimezones(PhoneNumber phoneNumber)
+        {
+            long phonePrefix = long.Parse(phoneNumber.CountryCode + PhoneNumberUtil.GetInstance().GetNationalSignificantNumber(phoneNumber));
+            var text = phonePrefix.ToString();
+            int nDigits = Math.Min(text.Length, maxPrefixLength);
+            while (nDigits > 0)
+            {
+                if (int.TryParse(text.Substring(0, nDigits), out int prefix) && map.ContainsKey(prefix))
+                    return map[prefix];
+
+                --nDigits;
+            }
+            return Array.Empty<string>();
+        }
+
+        private bool TryFetchTimeZoneInfo(string dotnetName, out TimeZoneInfo timeZoneInfo)
+        {
+            timeZoneInfo = null;
+            if (!tziCache.ContainsKey(dotnetName))
+            {
+                tziCache.TryAdd(dotnetName, TimeZoneInfo.FindSystemTimeZoneById(dotnetName));
+            }
+            if (tziCache.TryGetValue(dotnetName, out var tzinfo))
+            {
+                timeZoneInfo = tzinfo;
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Attempts to match longest prefix of <paramref name="phoneNumber"/> against a fixed list
+        /// of valid prefixes, and returns .Net TimeZoneInfo instance associated with that prefix.
+        /// </summary>
+        /// <param name="phoneNumber">A presumed valid PhoneNumber object</param>
+        /// <param name="timeZoneInfo">This out parameter references the associated .Net TimeZoneInfo instance, if a match is found. Otherwise, this out parameter is null</param>
+        /// <returns>True if a match is found, false otherwise.</returns>
+        public bool TryGetTimeZoneInfo(PhoneNumber phoneNumber, out TimeZoneInfo timeZoneInfo)
+        {
+            timeZoneInfo = null;
+            var tzs = GetTimezones(phoneNumber);
+            if (tzs.Any())
+            {
+                string regionCode = phoneUtil.GetRegionCodeForNumber(phoneNumber) ?? PhoneNumberUtil.REGION_CODE_FOR_NON_GEO_ENTITY;
+                var tzx = tzs[0];
+                if (dotnetmap.ContainsKey(tzx))
+                {
+                    var list = dotnetmap[tzx];
+                    string[] dotnetNameArray = list.FirstOrDefault(a => a[0].Equals(regionCode)) ?? list[0];
+                    string dotnetName = dotnetNameArray[1];
+
+                    if (TryFetchTimeZoneInfo(dotnetName, out var tzinfo))
+                    {
+                        timeZoneInfo = tzinfo;
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Attempts to match longest prefix of <paramref name="phoneNumber"/> against a fixed list
+        /// of valid prefixes, and returns the array of offsets, in minutes from UTC, for each timezone associated with
+        /// the prefix.
+        /// </summary>
+        /// <param name="phoneNumber">A presumed valid PhoneNumber object.</param>
+        /// <returns>the (possibly empty) array of offsets, in minutes from UTC, for each timezone associated with <paramref name="phoneNumber"/></returns>
+        public int[] GetOffsetsFromUtc(PhoneNumber phoneNumber)
+        {
+            string regionCode = phoneUtil.GetRegionCodeForNumber(phoneNumber) ?? PhoneNumberUtil.REGION_CODE_FOR_NON_GEO_ENTITY;
+            if (string.IsNullOrEmpty(regionCode))
+                return Array.Empty<int>();
+
+            var tzs = GetTimezones(phoneNumber);
+            int[] offsets = new int[tzs.Length];
+            for (int i = 0; i < tzs.Length; i++)
+            {
+                offsets[i] = 0;
+                if (dotnetmap.ContainsKey(tzs[i]))
+                {
+                    var list = dotnetmap[tzs[i]];
+                    var res = list.FirstOrDefault(a => a[0].Equals(regionCode)) ?? list[0];
+
+                    if (TryFetchTimeZoneInfo(res[1], out var tzinfo))
+                    {
+                        var altTime = TimeZoneInfo.ConvertTime(DateTimeOffset.UtcNow, tzinfo);
+                        offsets[i] = (int)Math.Floor(altTime.Offset.TotalMinutes);
+                    }
+                }
+            }
+
+            return offsets;
+        }
+
+        private const string TZMAP_DATA_DIRECTORY = "timezones.";
+        private const string TZMAP_Filename = "map_data.txt";
+        private const string DotnetMAP_Filename = "windowsZones.xml";
+        private static TimezoneMapper Create(string timezoneDataDirectory)
+        {
+            char[] splitters = { '&' };
+            var asm = typeof(TimezoneMapper).Assembly;
+            var allNames = asm.GetManifestResourceNames();
+            var prefix = asm.GetName().Name + "." + timezoneDataDirectory;
+            var names = allNames.Where(n => n.StartsWith(prefix, StringComparison.Ordinal)).ToList();
+            // read files
+            var mapFile = names.Where(s => s.EndsWith(TZMAP_Filename, StringComparison.Ordinal)).First();
+            var dnMapping = names.Where(s => s.EndsWith(DotnetMAP_Filename, StringComparison.Ordinal)).First();
+            using var fp = asm.GetManifestResourceStream(mapFile);
+            var prefixMap = TimezoneReader.GetPrefixMap(fp, splitters);
+
+            using var dfp = asm.GetManifestResourceStream(dnMapping);
+            var dotnetMap = TimezoneReader.GetIanaWindowsMap(dfp);
+
+            return new TimezoneMapper(prefixMap, dotnetMap);
+        }
+
+        private static readonly object lockObj = new object();
+        private static TimezoneMapper instance = null;
+        public static TimezoneMapper GetInstance()
+        {
+            lock (lockObj)
+            {
+                if (null == instance)
+                {
+                    instance = Create(TZMAP_DATA_DIRECTORY);
+                }
+
+                return instance;
+            }
+        }
+    }
+}
