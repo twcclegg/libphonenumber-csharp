@@ -7,13 +7,13 @@ namespace PhoneNumbers
 {
     public class TimezoneMapper
     {
-        private readonly IDictionary<int, string[]> map;
+        private readonly IDictionary<long, string[]> map;
         private readonly IDictionary<string, List<string[]>> dotnetmap;
         private readonly ConcurrentDictionary<string, TimeZoneInfo> tziCache;
         private readonly PhoneNumberUtil phoneUtil;
         private readonly int maxPrefixLength;
 
-        internal TimezoneMapper(IDictionary<int, string[]> source, IDictionary<string, List<string[]>> dotnetSource, IList<TimeZoneInfo> initZones)
+        internal TimezoneMapper(IDictionary<long, string[]> source, IDictionary<string, List<string[]>> dotnetSource, IList<TimeZoneInfo> initZones)
         {
             map = source;
             var keys = map.Keys.ToList();
@@ -40,7 +40,7 @@ namespace PhoneNumbers
             int nDigits = Math.Min(text.Length, maxPrefixLength);
             while (nDigits > 0)
             {
-                if (int.TryParse(text.Substring(0, nDigits), out int prefix) && map.ContainsKey(prefix))
+                if (long.TryParse(text.Substring(0, nDigits), out long prefix) && map.ContainsKey(prefix))
                     return map[prefix];
 
                 --nDigits;

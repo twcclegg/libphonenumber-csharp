@@ -110,7 +110,7 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestMapperWithNoData()
         {
-            var emptyMapper = new TimezoneMapper(new Dictionary<int, string[]>(), new Dictionary<string, List<string[]>>(), new List<TimeZoneInfo>());
+            var emptyMapper = new TimezoneMapper(new Dictionary<long, string[]>(), new Dictionary<string, List<string[]>>(), new List<TimeZoneInfo>());
             foreach (var pn in testNumbers)
             {
                 var res1 = emptyMapper.GetTimezones(pn);

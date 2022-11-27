@@ -166,19 +166,19 @@ namespace PhoneNumbers
         /// <param name="fp">Input stream for 'map_data.txt'</param>
         /// <param name="splitters">array of char that delimits separate time zones in a string.</param>
         /// <returns></returns>
-        public static IDictionary<int, string[]> GetPrefixMap(Stream fp, char[] splitters)
+        public static IDictionary<long, string[]> GetPrefixMap(Stream fp, char[] splitters)
         {
             if (null == fp)
-                return ImmutableDictionary<int, string[]>.Empty;
+                return ImmutableDictionary<long, string[]>.Empty;
 
-            var tmpMap = new SortedDictionary<int, string[]>();
+            var tmpMap = new SortedDictionary<long, string[]>();
             using (var lines = new StreamReader(fp, Encoding.UTF8))
             {
                 List<string> line;
                 while (null != (line = LineReader(lines)))
                 {
                     var pnPrefix = line[0];
-                    tmpMap[int.Parse(pnPrefix)] = line[1].Split(splitters, StringSplitOptions.RemoveEmptyEntries);
+                    tmpMap[long.Parse(pnPrefix)] = line[1].Split(splitters, StringSplitOptions.RemoveEmptyEntries);
                 }
             }
 
