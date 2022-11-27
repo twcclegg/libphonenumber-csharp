@@ -37,9 +37,9 @@ namespace PhoneNumbers.Test
             new long[] { 91, 7065185423L },
             new long[] { 44, 7562397981L }, // uk
             new long[] { 48, 535019729L },  // poland
-            new long[] { 82, 22123456L },   // south korea
-            new long[] { 82, 322123456L },
-            new long[] { 82, 6421234567L },
+            new long[] { 82, 22123456L },   // south korea 8
+            new long[] { 82, 322123456L },  // south korea 9
+            new long[] { 82, 6421234567L }, // south korea 10
             new long[] { 82, 1234L },
             new long[] { 1, 6502530000L }, // usa
             new long[] { 1, 6509600000L },
@@ -95,6 +95,7 @@ namespace PhoneNumbers.Test
         public void TestMapper()
         {
             var mapper = TimezoneMapper.GetInstance();
+            Assert.Same(mapper, TimezoneMapper.GetInstance());
             foreach (var pn in testNumbers)
             {
                 var res1 = mapper.GetTimezones(pn);

@@ -35,7 +35,7 @@ namespace PhoneNumbers
         /// <returns>the (possibly empty) array of IANA timezone names associated with <paramref name="phoneNumber"/></returns>
         public string[] GetTimezones(PhoneNumber phoneNumber)
         {
-            long phonePrefix = long.Parse(phoneNumber.CountryCode + PhoneNumberUtil.GetInstance().GetNationalSignificantNumber(phoneNumber));
+            long phonePrefix = long.Parse(phoneNumber.CountryCode + phoneUtil.GetNationalSignificantNumber(phoneNumber));
             var text = phonePrefix.ToString();
             int nDigits = Math.Min(text.Length, maxPrefixLength);
             while (nDigits > 0)
