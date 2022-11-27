@@ -11,13 +11,10 @@ namespace PhoneNumbers
         private readonly IDictionary<string, List<string[]>> dotnetmap;
         private readonly ConcurrentDictionary<string, TimeZoneInfo> tziCache;
         private readonly PhoneNumberUtil phoneUtil;
-        private readonly int maxPrefixLength;
 
         internal TimezoneMapper(IDictionary<long, string[]> source, IDictionary<string, List<string[]>> dotnetSource, IList<TimeZoneInfo> initZones)
         {
             map = source;
-            var keys = map.Keys.ToList();
-            maxPrefixLength = keys.Any() ? keys.Max().ToString().Length : 0;
             dotnetmap = dotnetSource;
             tziCache = new ConcurrentDictionary<string, TimeZoneInfo>();
             foreach (var timeZone in initZones)
@@ -36,15 +33,15 @@ namespace PhoneNumbers
         public string[] GetTimezones(PhoneNumber phoneNumber)
         {
             long phonePrefix = long.Parse(phoneNumber.CountryCode + phoneUtil.GetNationalSignificantNumber(phoneNumber));
-            var text = phonePrefix.ToString();
-            int nDigits = Math.Min(text.Length, maxPrefixLength);
-            while (nDigits > 0)
-            {
-                if (long.TryParse(text.Substring(0, nDigits), out long prefix) && map.ContainsKey(prefix))
-                    return map[prefix];
 
-                --nDigits;
+            while (0L < phonePrefix)
+            {
+                if (map.ContainsKey(phonePrefix))
+                    return map[phonePrefix];
+
+                phonePrefix /= 10L;
             }
+
             return Array.Empty<string>();
         }
 
