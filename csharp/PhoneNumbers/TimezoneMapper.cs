@@ -32,7 +32,7 @@ namespace PhoneNumbers
         /// <returns>the (possibly empty) array of IANA timezone names associated with <paramref name="phoneNumber"/></returns>
         public string[] GetTimezones(PhoneNumber phoneNumber)
         {
-            long phonePrefix = long.Parse(phoneNumber.CountryCode + phoneUtil.GetNationalSignificantNumber(phoneNumber));
+            long phonePrefix = long.Parse(string.Concat(phoneNumber.CountryCode.ToString(), phoneUtil.GetNationalSignificantNumber(phoneNumber)));
 
             while (0L < phonePrefix)
             {
@@ -66,6 +66,21 @@ namespace PhoneNumbers
             return false;
         }
 
+        private string[] FindRegion(string regionName, string[] timezoneNames)
+        {
+            foreach (var zoneName in timezoneNames)
+            {
+                if (dotnetmap.ContainsKey(zoneName))
+                {
+                    var result = dotnetmap[zoneName].FirstOrDefault(a => a[0].Equals(regionName));
+                    if (null != result)
+                        return result;
+                }
+            }
+
+            return Array.Empty<string>();
+        }
+
         /// <summary>
         /// Attempts to match longest prefix of <paramref name="phoneNumber"/> against a fixed list
         /// of valid prefixes, and returns .Net TimeZoneInfo instance associated with that prefix.
@@ -80,18 +95,11 @@ namespace PhoneNumbers
             if (tzs.Any())
             {
                 string regionCode = phoneUtil.GetRegionCodeForNumber(phoneNumber) ?? PhoneNumberUtil.REGION_CODE_FOR_NON_GEO_ENTITY;
-                var tzx = tzs[0];
-                if (dotnetmap.ContainsKey(tzx))
-                {
-                    var list = dotnetmap[tzx];
-                    string[] dotnetNameArray = list.FirstOrDefault(a => a[0].Equals(regionCode)) ?? list[0];
-                    string dotnetName = dotnetNameArray[1];
+                string[] aa = FindRegion(regionCode, tzs);
 
-                    if (TryFetchTimeZoneInfo(dotnetName, out var tzinfo))
-                    {
-                        timeZoneInfo = tzinfo;
-                        return true;
-                    }
+                if (aa.Any() && TryFetchTimeZoneInfo(aa[1], out timeZoneInfo))
+                {
+                    return true;
                 }
             }
 
