@@ -1,7 +1,7 @@
 ﻿namespace PhoneNumbers.Test
 {
     // Class containing string constants of region codes for easier testing.
-    public class RegionCode
+    public static class RegionCode
     {
         // Region code for global networks (e.g. +800 numbers).
         public const string UN001 = "001";
