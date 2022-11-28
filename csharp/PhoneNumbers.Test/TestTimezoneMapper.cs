@@ -107,6 +107,41 @@ namespace PhoneNumbers.Test
             }
         }
 
+        [Theory]
+        [InlineData(0, 0, false, "", "")]
+        [InlineData(1, 2125151, true, "America/New_York", "Eastern Standard Time")]
+        [InlineData(800, 2156195, false, "", "")]
+        [InlineData(800, 12345678L, false, "", "")]
+        [InlineData(1, 8002156195, true, "America/Adak", "Aleutian Standard Time")]
+        [InlineData(1, 2, true, "America/Adak", "Aleutian Standard Time")]
+        [InlineData(45, 35353535L, true, "Europe/Copenhagen", "Romance Standard Time")]
+        [InlineData(1, 4155192079L, true, "America/Los_Angeles", "Pacific Standard Time")]
+        [InlineData(91, 8826466567L, true, "Asia/Calcutta", "India Standard Time")]
+        [InlineData(82, 22123456L, true, "Asia/Seoul", "Korea Standard Time")]
+        [InlineData(61, 236618300L, true, "Australia/Sydney", "AUS Eastern Standard Time")]
+        [InlineData(61, 851087300L, true, "Australia/Perth", "W. Australia Standard Time")]
+        [InlineData(999, 2423651234L, false, "", "")]
+        [InlineData(1, 123456789L, true, "America/Adak", "Aleutian Standard Time")]
+        [InlineData(44, 7562397981L, true, "Europe/Guernsey", "GMT Standard Time")]
+        [InlineData(48, 535019729L, true, "Europe/Warsaw", "Central European Standard Time")]
+        public void TestMapperOutcomes(int countryCode, long nationalNumber, bool hasTimezones, string tzName, string dnName)
+        {
+            var phoneNumber = new PhoneNumber.Builder().SetCountryCode(countryCode).SetNationalNumber((ulong)nationalNumber).Build();
+            var mapper = TimezoneMapper.GetInstance();
+            var res = mapper.GetTimezones(phoneNumber);
+            Assert.Equal(hasTimezones, 0 < res.Length);
+            if (hasTimezones)
+            {
+                Assert.Equal(tzName, res[0]);
+            }
+            bool bHasDotnetTimeZoneInfo = mapper.TryGetTimeZoneInfo(phoneNumber, out var timeZoneInfo);
+            Assert.Equal(hasTimezones, bHasDotnetTimeZoneInfo);
+            if (bHasDotnetTimeZoneInfo)
+            {
+                Assert.Equal(dnName, timeZoneInfo.Id);
+            }
+        }
+
         [Fact]
         public void TestMapperWithNoData()
         {

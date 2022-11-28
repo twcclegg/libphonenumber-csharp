@@ -95,9 +95,9 @@ namespace PhoneNumbers
             if (tzs.Any())
             {
                 string regionCode = phoneUtil.GetRegionCodeForNumber(phoneNumber) ?? PhoneNumberUtil.REGION_CODE_FOR_NON_GEO_ENTITY;
-                string[] aa = FindRegion(regionCode, tzs);
+                string[] regzonePair = FindRegion(regionCode, tzs);
 
-                if (aa.Any() && TryFetchTimeZoneInfo(aa[1], out timeZoneInfo))
+                if (regzonePair.Any() && TryFetchTimeZoneInfo(regzonePair[1], out timeZoneInfo))
                 {
                     return true;
                 }
