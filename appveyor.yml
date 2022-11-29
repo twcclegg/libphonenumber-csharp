@@ -26,10 +26,11 @@ build_script:
   - dotnet pack -c Release csharp\PhoneNumbers
   - dotnet pack -c Release csharp\PhoneNumbers.Extensions
 test_script:
-  - OpenCover.Console.exe -register:user -target:dotnet.exe -targetargs:"test csharp\PhoneNumbers.Test\PhoneNumbers.Test.csproj csharp\PhoneNumbers.Extensions.Test\PhoneNumbers.Extensions.Test.csproj" -filter:"+[PhoneNumbers]* -[PhoneNumbers.Test]*" -excludebyattribute:*.CompilerGenerated*^ -oldStyle
+  - OpenCover.Console.exe -register:user -target:dotnet.exe -targetargs:"test csharp\PhoneNumbers.sln" -filter:"+[PhoneNumbers]* -[PhoneNumbers.Test]*" -excludebyattribute:*.CompilerGenerated*^ -oldStyle
   - codecov -f results.xml
 artifacts:
   - path: csharp\PhoneNumbers\bin\Release\libphonenumber-csharp.*
+  - path: csharp\PhoneNumbers.Extensions\bin\Release\libphonenumber-csharp.extensions.*
 nuget:
   account_feed: true
 deploy:
