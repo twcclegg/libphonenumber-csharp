@@ -18,7 +18,6 @@ pull_requests:
 branches:
   only:
     - main
-    - extensions
 before_build:
   - dotnet restore csharp -s https://api.nuget.org/v3/index.json
   - choco install opencover.portable
@@ -36,5 +35,7 @@ nuget:
   account_feed: true
 deploy:
   - provider: NuGet
+    on:
+      appveyor_repo_tag: true
     api_key:
       secure: oMtGNwL8mjahcYs1NSplqFjlqR0QOPXVAvJtvE3F/ueXJcgoImVsU/Szt2RFIahp

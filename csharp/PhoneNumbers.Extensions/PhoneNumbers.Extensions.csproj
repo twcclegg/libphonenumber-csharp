@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <Description>Supporting features to go along with libphonenumber-csharp above and beyond the feature set of Java libphonenumber. Adds functionality better match C# paradigms, etc.</Description>
+        <Description>Supporting features to go along with libphonenumber-csharp above and beyond the feature set of Java libphonenumber. Adds functionality better matching C# paradigms, etc.</Description>
         <Title>libphonenumber-csharp.extensions</Title>
         <AssemblyName>PhoneNumbers.Extensions</AssemblyName>
         <PackageId>libphonenumber-csharp.extensions</PackageId>

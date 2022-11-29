@@ -27,7 +27,6 @@
             }
             catch
             {
-
                 number = null;
                 return false;
             }
