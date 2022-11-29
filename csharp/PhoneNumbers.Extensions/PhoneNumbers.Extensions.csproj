@@ -28,6 +28,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <None Include="..\..\icon.png" Pack="true" PackagePath=""/>
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\PhoneNumbers\PhoneNumbers.csproj" />
     </ItemGroup>
 
