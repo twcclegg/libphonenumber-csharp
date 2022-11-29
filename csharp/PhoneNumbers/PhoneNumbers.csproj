@@ -14,7 +14,7 @@
     <PackageTags>phonenumber phone libphonenumber e164 e.164 international</PackageTags>
     <PackageProjectUrl>https://github.com/twcclegg/libphonenumber-csharp</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PackageIconUrl>https://raw.githubusercontent.com/twcclegg/libphonenumber-csharp/main/icon.png</PackageIconUrl>
+    <PackageIcon>icon.png</PackageIcon>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <RepositoryUrl>https://github.com/twcclegg/libphonenumber-csharp</RepositoryUrl>
@@ -23,7 +23,8 @@
     <RepositoryCommit>$APPVEYOR_REPO_COMMIT</RepositoryCommit>
     <DebugType>full</DebugType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>$(NoWarn);1591</NoWarn>
+    <NoWarn>$(NoWarn);1591;CA1062;CA1707</NoWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
@@ -31,6 +32,7 @@
     <EmbeddedResource Include="..\..\resources\geocoding\**" LinkBase="geocoding" />
     <EmbeddedResource Include="..\..\resources\timezones\map_data.txt" LinkBase="timezones" />
     <EmbeddedResource Include="..\..\resources\timezones\windowsZones.xml" LinkBase="timezones" />
+    <None Include="..\..\icon.png" Pack="true" PackagePath=""/>
   </ItemGroup>
 
   <ItemGroup>

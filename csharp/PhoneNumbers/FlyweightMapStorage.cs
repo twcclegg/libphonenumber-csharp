@@ -31,7 +31,7 @@ namespace PhoneNumbers
     public class FlyweightMapStorage : AreaCodeMapStorageStrategy
     {
         // Size of short and integer types in bytes.
-        private static readonly int ShortNumBytes = sizeof(short);
+        private const int ShortNumBytes = sizeof(short);
 
         private static readonly int IntNumBytes = sizeof(int);
 

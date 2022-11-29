@@ -21,8 +21,7 @@ using System.Collections.Generic;
 
 namespace PhoneNumbers
 {
-
-    public class CountryCodeToRegionCodeMap
+    public static class CountryCodeToRegionCodeMap
     {
         // A mapping from a country code to the region codes which denote the
         // country/region represented by that country code. In the case of multiple
