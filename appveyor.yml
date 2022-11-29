@@ -18,6 +18,7 @@ pull_requests:
 branches:
   only:
     - main
+    - extensions
 before_build:
   - dotnet restore csharp -s https://api.nuget.org/v3/index.json
   - choco install opencover.portable
