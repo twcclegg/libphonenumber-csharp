@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace PhoneNumbers.Extensions
+﻿namespace PhoneNumbers.Extensions
 {
     public static class PhoneNumber
     {
@@ -25,18 +23,14 @@ namespace PhoneNumbers.Extensions
             try
             {
                 number = PhoneNumberUtil.Parse(input, region);
-                if (PhoneNumberUtil.IsValidNumber(number))
-                {
-                    return true;
-                }
+                return PhoneNumberUtil.IsValidNumber(number);
             }
             catch
             {
-                // ignored
-            }
 
-            number = null;
-            return false;
+                number = null;
+                return false;
+            }
         }
     }
 }

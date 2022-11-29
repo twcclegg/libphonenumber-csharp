@@ -1,7 +1,30 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <Description>Supporting features to go along with libphonenumber-csharp above and beyond the feature set of Java libphonenumber. Adds functionality better match C# paradigms, etc.</Description>
+        <Title>libphonenumber-csharp.extensions</Title>
+        <AssemblyName>PhoneNumbers.Extensions</AssemblyName>
+        <PackageId>libphonenumber-csharp.extensions</PackageId>
+        <VersionPrefix>$(APPVEYOR_BUILD_VERSION)-alpha1</VersionPrefix>
+        <Authors>Thomas Clegg</Authors>
         <TargetFramework>netstandard2.0</TargetFramework>
+        <LangVersion>preview</LangVersion>
+        <PackageTags>phonenumber phone libphonenumber e164 e.164 international extensions</PackageTags>
+        <PackageProjectUrl>https://github.com/twcclegg/libphonenumber-csharp</PackageProjectUrl>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        <PackageIcon>icon.png</PackageIcon>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <RepositoryUrl>https://github.com/twcclegg/libphonenumber-csharp</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryBranch>main</RepositoryBranch>
+        <RepositoryCommit>$APPVEYOR_REPO_COMMIT</RepositoryCommit>
+        <DebugType>full</DebugType>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);1591;CA1014;CA1031;CA1062;CA1707</NoWarn>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <EnableNETAnalyzers>true</EnableNETAnalyzers>
+        <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+        <AnalysisLevel>5</AnalysisLevel>
     </PropertyGroup>
 
     <ItemGroup>

@@ -6,16 +6,13 @@
     <AssemblyName>PhoneNumbers</AssemblyName>
     <PackageId>libphonenumber-csharp</PackageId>
     <VersionPrefix>$(APPVEYOR_BUILD_VERSION)</VersionPrefix>
-    <Authors>Patrick Mézard;Tom Clegg;Jarrod Alexander;Google;libphonenumber contributors</Authors>
+    <Authors>Patrick Mézard;Thomas Clegg;Jarrod Alexander;Google;libphonenumber contributors</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>preview</LangVersion>
-    <AssemblyName>PhoneNumbers</AssemblyName>
-    <PackageId>libphonenumber-csharp</PackageId>
     <PackageTags>phonenumber phone libphonenumber e164 e.164 international</PackageTags>
     <PackageProjectUrl>https://github.com/twcclegg/libphonenumber-csharp</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <RepositoryUrl>https://github.com/twcclegg/libphonenumber-csharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>

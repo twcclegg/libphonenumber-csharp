@@ -41,6 +41,5 @@ public class TestExtensions
     public void TestInvalidNumberForRegion()
     {
         Assert.False(PhoneNumber.TryParseValid("1235557704", "US", out var number));
-        Assert.Null(number);
     }
 }
