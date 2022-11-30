@@ -2,10 +2,10 @@
 
 using System;
 using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using scg = System.Collections.Generic;
 
 namespace PhoneNumbers
 {
@@ -79,8 +79,8 @@ namespace PhoneNumbers
         public const int LeadingZeroPossibleFieldNumber = 26;
 
         public const int MobileNumberPortableRegionFieldNumber = 32;
-        private readonly scg.List<NumberFormat> intlNumberFormat_ = new scg.List<NumberFormat>();
-        private readonly scg.List<NumberFormat> numberFormat_ = new scg.List<NumberFormat>();
+        private readonly List<NumberFormat> intlNumberFormat_ = new List<NumberFormat>();
+        private readonly List<NumberFormat> numberFormat_ = new List<NumberFormat>();
 
         public static PhoneMetadata DefaultInstance { get; } = new Builder().BuildPartial();
 
@@ -166,11 +166,11 @@ namespace PhoneNumbers
 
         public bool SameMobileAndFixedLinePattern { get; private set; }
 
-        public scg.IList<NumberFormat> NumberFormatList => numberFormat_;
+        public IList<NumberFormat> NumberFormatList => numberFormat_;
 
         public int NumberFormatCount => numberFormat_.Count;
 
-        public scg.IList<NumberFormat> IntlNumberFormatList => intlNumberFormat_;
+        public IList<NumberFormat> IntlNumberFormatList => intlNumberFormat_;
 
         public int IntlNumberFormatCount => intlNumberFormat_.Count;
 
@@ -427,11 +427,11 @@ namespace PhoneNumbers
                 set => SetSameMobileAndFixedLinePattern(value);
             }
 
-            public scg.IList<NumberFormat> NumberFormatList => MessageBeingBuilt.numberFormat_;
+            public IList<NumberFormat> NumberFormatList => MessageBeingBuilt.numberFormat_;
 
             public int NumberFormatCount => MessageBeingBuilt.NumberFormatCount;
 
-            public scg.IList<NumberFormat> IntlNumberFormatList => MessageBeingBuilt.intlNumberFormat_;
+            public IList<NumberFormat> IntlNumberFormatList => MessageBeingBuilt.intlNumberFormat_;
 
             public int IntlNumberFormatCount => MessageBeingBuilt.IntlNumberFormatCount;
 
@@ -1289,7 +1289,7 @@ namespace PhoneNumbers
                 return this;
             }
 
-            public Builder AddRangeNumberFormat(scg.IEnumerable<NumberFormat> values)
+            public Builder AddRangeNumberFormat(IEnumerable<NumberFormat> values)
             {
                 MessageBeingBuilt.numberFormat_.AddRange(values);
                 return this;
@@ -1334,7 +1334,7 @@ namespace PhoneNumbers
                 return this;
             }
 
-            public Builder AddRangeIntlNumberFormat(scg.IEnumerable<NumberFormat> values)
+            public Builder AddRangeIntlNumberFormat(IEnumerable<NumberFormat> values)
             {
                 MessageBeingBuilt.intlNumberFormat_.AddRange(values);
                 return this;
