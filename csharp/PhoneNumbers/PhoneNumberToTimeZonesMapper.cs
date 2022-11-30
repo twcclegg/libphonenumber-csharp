@@ -17,6 +17,19 @@ namespace PhoneNumbers
             phoneUtil = PhoneNumberUtil.GetInstance();
         }
 
+        private List<string> LookUpPrefix(long phonePrefix)
+        {
+            while (0L < phonePrefix)
+            {
+                if (map.ContainsKey(phonePrefix))
+                    return map[phonePrefix].ToList();
+
+                phonePrefix /= 10L;
+            }
+
+            return UNKNOWN_TIMEZONE.ToList();
+        }
+
         /// <summary>
         ///
         /// Returns a list of time zones to which a phone number belongs.
@@ -36,17 +49,7 @@ namespace PhoneNumbers
         /// </returns>
         public List<string> GetTimeZonesForGeographicalNumber(PhoneNumber number)
         {
-            long phonePrefix = long.Parse(string.Concat(number.CountryCode.ToString(), phoneUtil.GetNationalSignificantNumber(number)));
-
-            while (0L < phonePrefix)
-            {
-                if (map.ContainsKey(phonePrefix))
-                    return map[phonePrefix].ToList();
-
-                phonePrefix /= 10L;
-            }
-
-            return UNKNOWN_TIMEZONE.ToList();
+            return LookUpPrefix(long.Parse(string.Concat(number.CountryCode.ToString(), phoneUtil.GetNationalSignificantNumber(number))));
         }
 
         /// <summary>
@@ -69,6 +72,10 @@ namespace PhoneNumbers
             PhoneNumberType numberType = phoneUtil.GetNumberType(number);
             if (PhoneNumberType.UNKNOWN == numberType)
                 return UNKNOWN_TIMEZONE.ToList();
+            else if (!phoneUtil.IsNumberGeographical(numberType, number.CountryCode))
+            {
+                return LookUpPrefix((long)number.CountryCode);
+            }
 
             return GetTimeZonesForGeographicalNumber(number);
         }
