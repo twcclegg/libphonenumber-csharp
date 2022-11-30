@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace PhoneNumbers
@@ -8,12 +9,12 @@ namespace PhoneNumbers
     {
         private static readonly string[] UNKNOWN_TIMEZONE = { "Etc/Unknown" };
 
-        private readonly IDictionary<long, string[]> map;
+        private readonly ImmutableDictionary<long, string[]> map;
         private readonly PhoneNumberUtil phoneUtil;
 
         internal PhoneNumberToTimeZonesMapper(IDictionary<long, string[]> source)
         {
-            map = source;
+            map = source.ToImmutableDictionary();
             phoneUtil = PhoneNumberUtil.GetInstance();
         }
 

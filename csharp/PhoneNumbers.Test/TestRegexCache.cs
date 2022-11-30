@@ -47,8 +47,6 @@ namespace PhoneNumbers.Test
 
             regexCache.GetPatternForRegex(regex3);
             Assert.True(regexCache.ContainsRegex(regex3));
-
-            Assert.True(regexCache.ContainsRegex(regex2));
             Assert.True(regexCache.ContainsRegex(regex1));
         }
     }

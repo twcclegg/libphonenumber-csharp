@@ -6,7 +6,7 @@ using System.Text;
 
 namespace PhoneNumbers
 {
-    public static class TimezoneMapDataReader
+    internal static class TimezoneMapDataReader
     {
         private static List<string> LineReader(StreamReader reader, char fieldDelimiter = '|')
         {
@@ -35,7 +35,7 @@ namespace PhoneNumbers
         /// <param name="fp">Input stream for 'map_data.txt'</param>
         /// <param name="splitters">array of char that delimits separate time zones in a string.</param>
         /// <returns></returns>
-        public static IDictionary<long, string[]> GetPrefixMap(Stream fp, char[] splitters)
+        internal static IDictionary<long, string[]> GetPrefixMap(Stream fp, char[] splitters)
         {
             if (null == fp)
                 return ImmutableDictionary<long, string[]>.Empty;
