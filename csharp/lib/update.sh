@@ -18,6 +18,14 @@ getReleaseDelta() {
     curl https://api.github.com/repos/$1/compare/$2...$3 | jq .files[].filename
 }
 
+getAppVeyorStatus() {
+    $(curl https://ci.appveyor.com/api/projects/twcclegg/libphonenumber-csharp | jq -r .build.status)
+}
+
+createRelease() {
+    curl -f -H "Authorization: Bearer $GITHUB_TOKEN" -d "{\"tag_name\":\"$2\",\",name\":\"$2\"}" "https://api.github.com/repos/$1/releases"
+}
+
 UPSTREAM=$(getLatestGitHubRelease google/libphonenumber)
 DEPLOYED=$(getLatestNugetRelease libphonenumber-csharp)
 
@@ -68,3 +76,21 @@ rm DumpLocale.class
 git add -A
 git commit -m "$UPSTREAM"
 git push
+sleep 15
+
+echo "build pending"
+while
+    sleep 15
+    echo -n "."
+    RESULT=$(getAppVeyorStatus twcclegg/libphonenumber-csharp)
+    [ $RESULT = "running" ]
+do true
+done
+
+if [ $RESULT != "success" ]
+then
+    echo "build failed"
+    exit
+fi
+
+createRelease twcclegg/libphonenumber-csharp $UPSTREAM
