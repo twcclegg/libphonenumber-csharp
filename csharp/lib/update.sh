@@ -19,13 +19,14 @@ getReleaseDelta() {
 }
 
 getAppVeyorStatus() {
-    $(curl https://ci.appveyor.com/api/projects/twcclegg/libphonenumber-csharp | jq -r .build.status)
+    curl -s https://ci.appveyor.com/api/projects/twcclegg/libphonenumber-csharp | jq -r .build.status
 }
 
 createRelease() {
     curl -f -H "Authorization: Bearer $GITHUB_TOKEN" -d "{\"tag_name\":\"$2\",\",name\":\"$2\"}" "https://api.github.com/repos/$1/releases"
 }
 
+GITHUB_TOKEN=$1
 UPSTREAM=$(getLatestGitHubRelease google/libphonenumber)
 DEPLOYED=$(getLatestNugetRelease libphonenumber-csharp)
 
@@ -78,7 +79,7 @@ git commit -m "$UPSTREAM"
 git push
 sleep 15
 
-echo "build pending"
+echo -n "build pending"
 while
     sleep 15
     echo -n "."
