@@ -19,7 +19,7 @@ getReleaseDelta() {
 }
 
 getAppVeyorStatus() {
-    curl -s https://ci.appveyor.com/api/projects/twcclegg/libphonenumber-csharp | jq -r .build.status
+    curl -s https://ci.appveyor.com/api/projects/$1 | jq -r .build.status
 }
 
 createRelease() {
@@ -78,8 +78,9 @@ git add -A
 git commit -m "$UPSTREAM"
 git push
 sleep 15
-
 echo -n "build pending"
+sleep 60
+
 while
     sleep 15
     echo -n "."
@@ -90,7 +91,7 @@ done
 
 if [ $RESULT != "success" ]
 then
-    echo "build failed"
+    echo "\nbuild failed: $RESULT"
     exit
 fi
 
