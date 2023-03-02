@@ -31,7 +31,12 @@
     <None Include="..\..\icon.png" Pack="true" PackagePath=""/>
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup  Condition="'$(TargetFramework)' == 'netstandard2.0' ">
     <PackageReference Include="System.Collections.Immutable" Version="1.7.1" />
   </ItemGroup>
+
+  <ItemGroup  Condition="'$(TargetFramework)' == 'net7.0' ">
+    <PackageReference Include="System.Collections.Immutable" Version="7.0.0" />
+  </ItemGroup>
+
 </Project>
