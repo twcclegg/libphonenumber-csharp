@@ -88,6 +88,7 @@ while
     [ $RESULT = "running" ]
 do true
 done
+echo
 
 if [ $RESULT != "success" ]
 then
