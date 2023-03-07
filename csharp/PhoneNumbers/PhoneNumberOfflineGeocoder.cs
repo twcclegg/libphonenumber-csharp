@@ -209,15 +209,11 @@ namespace PhoneNumbers
 
         private AreaCodeMap LoadAreaCodeMapFromFile(string fileName)
         {
-#if !PORTABLE
             var fp = phoneDataZipFile != null
                 ? GetManifestZipFileStream(assembly, phoneDataZipFile, fileName)
                 : GetManifestFileStream(assembly, phonePrefixDataDirectory, fileName);
 
             using (fp)
-#else
-            using (var fp = GetManifestFileStream(assembly, phonePrefixDataDirectory, fileName))
-#endif
             {
                 var areaCodeMap = AreaCodeParser.ParseAreaCodeMap(fp);
                 return availablePhonePrefixMaps[fileName] = areaCodeMap;
