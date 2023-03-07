@@ -17,8 +17,11 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace PhoneNumbers
 {
@@ -88,6 +91,7 @@ namespace PhoneNumbers
 
         private readonly PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
         private readonly string phonePrefixDataDirectory;
+        private readonly string phoneDataZipFile;
         private readonly Assembly assembly;
 
         // The mappingFileProvider knows for which combination of countryCallingCode and language a phone
@@ -100,10 +104,71 @@ namespace PhoneNumbers
 
         internal PhoneNumberOfflineGeocoder(string phonePrefixDataDirectory, Assembly asm = null)
         {
-            var files = new SortedDictionary<int, HashSet<string>>();
+            SortedDictionary<int, HashSet<string>> files;
             asm ??= typeof(PhoneNumberOfflineGeocoder).Assembly;
+            string prefix = asm.GetName().Name + "." + phonePrefixDataDirectory;
+
+            string zipFile = prefix + "zip";
+
+            var zipStream = asm.GetManifestResourceStream(zipFile);
+
+            if (zipStream != null)
+            {
+                using (zipStream)
+                {
+                    files = LoadFileNamesFromZip(zipStream);
+                }
+                this.phoneDataZipFile = zipFile;
+            }
+            else
+            {
+                files = LoadFileNamesFromManifestResources(asm, prefix);
+            }
+
+            mappingFileProvider = new MappingFileProvider();
+            mappingFileProvider.ReadFileConfigs(files);
+            this.assembly = asm;
+            this.phonePrefixDataDirectory = prefix;
+        }
+
+        private static SortedDictionary<int, HashSet<string>> LoadFileNamesFromZip(Stream zipStream)
+        {
+            var files = new SortedDictionary<int, HashSet<string>>();
+
+            using (var archive = new ZipArchive(zipStream, ZipArchiveMode.Read))
+            {
+                foreach (var entry in archive.Entries)
+                {
+                    if (string.IsNullOrWhiteSpace(entry.Name))
+                    {
+                        continue;
+                    }
+
+                    var name = entry.FullName.Split('.')[0].Split('\\');
+                    int country;
+                    try
+                    {
+                        country = int.Parse(name[1], CultureInfo.InvariantCulture);
+                    }
+                    catch (FormatException)
+                    {
+                        throw new Exception("Failed to parse zipped geocoding file name: " + entry.FullName);
+                    }
+                    var language = name[0];
+                    if (!files.TryGetValue(country, out var languages))
+                        files[country] = languages = new HashSet<string>();
+                    languages.Add(language);
+                }
+            }
+
+            return files;
+        }
+
+        private static SortedDictionary<int, HashSet<string>> LoadFileNamesFromManifestResources(Assembly asm, string prefix)
+        {
+            var files = new SortedDictionary<int, HashSet<string>>();
+
             var allNames = asm.GetManifestResourceNames();
-            var prefix = asm.GetName().Name + "." + phonePrefixDataDirectory;
             var names = allNames.Where(n => n.StartsWith(prefix, StringComparison.Ordinal));
             foreach (var n in names)
             {
@@ -122,10 +187,8 @@ namespace PhoneNumbers
                     files[country] = languages = new HashSet<string>();
                 languages.Add(language);
             }
-            mappingFileProvider = new MappingFileProvider();
-            mappingFileProvider.ReadFileConfigs(files);
-            this.assembly = asm;
-            this.phonePrefixDataDirectory = prefix;
+
+            return files;
         }
 
         private AreaCodeMap GetPhonePrefixDescriptions(
@@ -146,11 +209,47 @@ namespace PhoneNumbers
 
         private AreaCodeMap LoadAreaCodeMapFromFile(string fileName)
         {
-            var resName = phonePrefixDataDirectory + fileName;
-            using (var fp = assembly.GetManifestResourceStream(resName))
+            var fp = phoneDataZipFile != null
+                ? GetManifestZipFileStream(assembly, phoneDataZipFile, fileName)
+                : GetManifestFileStream(assembly, phonePrefixDataDirectory, fileName);
+
+            using (fp)
             {
                 var areaCodeMap = AreaCodeParser.ParseAreaCodeMap(fp);
                 return availablePhonePrefixMaps[fileName] = areaCodeMap;
+            }
+        }
+
+        private static Stream GetManifestFileStream(Assembly asm, string phonePrefixDataDirectory, string fileName)
+        {
+            var resName = phonePrefixDataDirectory + fileName;
+            return asm.GetManifestResourceStream(resName);
+        }
+
+        private static Stream GetManifestZipFileStream(Assembly asm, string phoneDataZipFile, string fileName)
+        {
+            using (var zipStream = asm.GetManifestResourceStream(phoneDataZipFile))
+            {
+                if (zipStream == null)
+                {
+                    throw new InvalidOperationException("Manifest zip file stream was null.");
+                }
+
+                using (var archive = new ZipArchive(zipStream, ZipArchiveMode.Read))
+                {
+                    var entry = archive.Entries.First(p => Regex.Replace(p.FullName, "[\\\\/]", ".") == fileName);
+
+                    using (var entryStream = entry.Open())
+                    {
+                        var fileStream = new MemoryStream();
+
+                        entryStream.CopyTo(fileStream);
+
+                        fileStream.Position = 0;
+
+                        return fileStream;
+                    }
+                }
             }
         }
 

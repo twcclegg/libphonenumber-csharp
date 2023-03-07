@@ -198,3 +198,7 @@ FakesAssemblies/
 .vs/
 .DS_Store
 .idea
+
+# Zipped Geocoding Data
+geocoding.zip
+testgeocoding.zip
