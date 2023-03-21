@@ -5,7 +5,7 @@
         <Title>libphonenumber-csharp.extensions</Title>
         <AssemblyName>PhoneNumbers.Extensions</AssemblyName>
         <PackageId>libphonenumber-csharp.extensions</PackageId>
-        <VersionPrefix>$(APPVEYOR_BUILD_VERSION)-alpha1</VersionPrefix>
+        <VersionPrefix>$(APPVEYOR_BUILD_VERSION)</VersionPrefix>
         <Authors>Thomas Clegg</Authors>
         <TargetFrameworks>netstandard2.0;net7.0</TargetFrameworks>
         <LangVersion>preview</LangVersion>
@@ -28,11 +28,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="..\..\icon.png" Pack="true" PackagePath=""/>
+        <None Include="..\..\icon.png" Pack="true" PackagePath="" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\PhoneNumbers\PhoneNumbers.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="System.Text.Json" Version="7.0.2" />
     </ItemGroup>
 
 </Project>
