@@ -1765,10 +1765,6 @@ namespace PhoneNumbers.Test
                 phoneUtil.Parse("tel:253-0000;phone-context=www.google.com", RegionCode.US));
             Assert.Equal(USLocalNumber,
                 phoneUtil.Parse("tel:253-0000;isub=12345;phone-context=www.google.com", RegionCode.US));
-            // This is invalid because no "+" sign is present as part of phone-context. The phone context
-            // is simply ignored in this case just as if it contains a domain.
-            Assert.Equal(USLocalNumber,
-                phoneUtil.Parse("tel:2530000;isub=12345;phone-context=1-650", RegionCode.US));
             Assert.Equal(USLocalNumber,
                 phoneUtil.Parse("tel:2530000;isub=12345;phone-context=1234.com", RegionCode.US));
 
@@ -2232,12 +2228,22 @@ namespace PhoneNumbers.Test
                 // succeed in being parsed.
                 var invalidRfcPhoneContext = "tel:555-1234;phone-context=1-331";
                 phoneUtil.Parse(invalidRfcPhoneContext, RegionCode.ZZ);
-                Assert.True(false);
+                Assert.Fail("phone-context is missing '+' sign: should fail.");
             }
             catch (NumberParseException e)
             {
                 // Expected this exception.
-                Assert.Equal(ErrorType.INVALID_COUNTRY_CODE, e.ErrorType);
+                Assert.Equal(ErrorType.NOT_A_NUMBER, e.ErrorType);
+            }
+
+            try {
+                // Only the phone-context symbol is present, but no data.
+                var invalidRfcPhoneContext = ";phone-context=";
+                phoneUtil.Parse(invalidRfcPhoneContext, RegionCode.ZZ);
+                Assert.Fail("phone-context can't be empty: should fail.");
+            } catch (NumberParseException e) {
+                // Expected this exception.
+                Assert.Equal(ErrorType.NOT_A_NUMBER, e.ErrorType);
             }
         }
 

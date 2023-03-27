@@ -137,7 +137,7 @@ namespace PhoneNumbers
                 "(?:" + leadClass + punctuation + ")" + leadLimit +
                 digitSequence + "(?:" + punctuation + digitSequence + ")" + blockLimit +
                 "(?:" + PhoneNumberUtil.ExtnPatternsForMatching + ")?",
-                PhoneNumberUtil.RegexFlags);
+                PhoneNumberUtil.REGEX_FLAGS);
         }
 
         /** Returns a regular expression quantifier with an upper and lower limit. */
@@ -298,7 +298,7 @@ namespace PhoneNumbers
         /// <summary>
         /// Attempts to extract a match from a <c>candidate</c> character sequence.
         /// </summary>
-        /// 
+        ///
         /// <param name="candidate">the candidate text that might contain a phone number</param>
         /// <param name="offset">the offset of <c>candidate</c> within <see cref="text" /></param>
         /// <returns>the match found, null if none can be found</returns>

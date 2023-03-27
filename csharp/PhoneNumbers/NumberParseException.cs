@@ -18,12 +18,15 @@ using System;
 
 namespace PhoneNumbers
 {
+    /// The reason that a string could not be interpreted as a phone number.
     public enum ErrorType
     {
+        /// The country code supplied did not belong to a supported country or non-geographical entity.
         INVALID_COUNTRY_CODE,
-        // This generally indicates the string passed in had less than 3 digits in it. More
-        // specifically, the number failed to match the regular expression VALID_PHONE_NUMBER in
-        // PhoneNumberUtil.java.
+        /// This indicates the string passed is not a valid number. Either the string had less than 3
+        /// digits in it or had an invalid phone-context parameter. More specifically, the number failed
+        /// to match the regular expression VALID_PHONE_NUMBER, RFC3966_GLOBAL_NUMBER_DIGITS, or
+        /// RFC3966_DOMAINNAME in PhoneNumberUtil.cs.
         NOT_A_NUMBER,
         // This indicates the string started with an international dialing prefix, but after this was
         // stripped from the number, had less digits than any valid phone number (including country

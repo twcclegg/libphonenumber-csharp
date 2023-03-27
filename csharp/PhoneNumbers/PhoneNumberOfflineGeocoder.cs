@@ -71,7 +71,7 @@ namespace PhoneNumbers
         private static string GetCountryName(string country, string language)
         {
             var names = LocaleData.Data[country];
-            if (!names.TryGetValue(language, out string name))
+            if (!names.TryGetValue(language, out var name))
                 return null;
             if (name.Length > 0 && name[0] == '*')
                 return names[name.Substring(1)];
@@ -106,9 +106,9 @@ namespace PhoneNumbers
         {
             SortedDictionary<int, HashSet<string>> files;
             asm ??= typeof(PhoneNumberOfflineGeocoder).Assembly;
-            string prefix = asm.GetName().Name + "." + phonePrefixDataDirectory;
+            var prefix = asm.GetName().Name + "." + phonePrefixDataDirectory;
 
-            string zipFile = prefix + "zip";
+            var zipFile = prefix + "zip";
 
             var zipStream = asm.GetManifestResourceStream(zipFile);
 
@@ -118,7 +118,7 @@ namespace PhoneNumbers
                 {
                     files = LoadFileNamesFromZip(zipStream);
                 }
-                this.phoneDataZipFile = zipFile;
+                phoneDataZipFile = zipFile;
             }
             else
             {
@@ -127,7 +127,7 @@ namespace PhoneNumbers
 
             mappingFileProvider = new MappingFileProvider();
             mappingFileProvider.ReadFileConfigs(files);
-            this.assembly = asm;
+            assembly = asm;
             this.phonePrefixDataDirectory = prefix;
         }
 
@@ -135,30 +135,28 @@ namespace PhoneNumbers
         {
             var files = new SortedDictionary<int, HashSet<string>>();
 
-            using (var archive = new ZipArchive(zipStream, ZipArchiveMode.Read))
+            using var archive = new ZipArchive(zipStream, ZipArchiveMode.Read);
+            foreach (var entry in archive.Entries)
             {
-                foreach (var entry in archive.Entries)
+                if (string.IsNullOrWhiteSpace(entry.Name))
                 {
-                    if (string.IsNullOrWhiteSpace(entry.Name))
-                    {
-                        continue;
-                    }
-
-                    var name = entry.FullName.Split('.')[0].Split('\\');
-                    int country;
-                    try
-                    {
-                        country = int.Parse(name[1], CultureInfo.InvariantCulture);
-                    }
-                    catch (FormatException)
-                    {
-                        throw new Exception("Failed to parse zipped geocoding file name: " + entry.FullName);
-                    }
-                    var language = name[0];
-                    if (!files.TryGetValue(country, out var languages))
-                        files[country] = languages = new HashSet<string>();
-                    languages.Add(language);
+                    continue;
                 }
+
+                var name = entry.FullName.Split('.')[0].Split('\\');
+                int country;
+                try
+                {
+                    country = int.Parse(name[1], CultureInfo.InvariantCulture);
+                }
+                catch (FormatException)
+                {
+                    throw new Exception("Failed to parse zipped geocoding file name: " + entry.FullName);
+                }
+                var language = name[0];
+                if (!files.TryGetValue(country, out var languages))
+                    files[country] = languages = new HashSet<string>();
+                languages.Add(language);
             }
 
             return files;
