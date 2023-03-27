@@ -802,12 +802,12 @@ namespace PhoneNumbers.Test
             MetadataFilter.ForLiteBuild().FilterMetadata(metadata);
 
             // id, country_code, and international_prefix should never be cleared.
-            Assert.Equal(metadata.Id, ID);
-            Assert.Equal(metadata.CountryCode, COUNTRY_CODE);
-            Assert.Equal(metadata.InternationalPrefix, INTERNATIONAL_PREFIX);
+            Assert.Equal(ID, metadata.Id);
+            Assert.Equal(COUNTRY_CODE, metadata.CountryCode);
+            Assert.Equal(INTERNATIONAL_PREFIX, metadata.InternationalPrefix);
 
             // preferred_international_prefix should not be cleared in liteBuild.
-            Assert.Equal(metadata.PreferredInternationalPrefix, PREFERRED_INTERNATIONAL_PREFIX);
+            Assert.Equal(PREFERRED_INTERNATIONAL_PREFIX, metadata.PreferredInternationalPrefix);
 
             // All PhoneNumberDescs must have only example_number cleared.
             foreach (var desc in new List<PhoneNumberDesc> {
@@ -816,9 +816,9 @@ namespace PhoneNumbers.Test
                 metadata.Mobile,
                 metadata.TollFree})
             {
-                Assert.Equal(desc.NationalNumberPattern, NATIONAL_NUMBER_PATTERN);
-                Assert.True(ContentsEqual(desc.PossibleLengthList.ToList(), PossibleLengths));
-                Assert.True(ContentsEqual(desc.PossibleLengthLocalOnlyList.ToList(), PossibleLengthsLocalOnly));
+                Assert.Equal(NATIONAL_NUMBER_PATTERN, desc.NationalNumberPattern);
+                Assert.True(ContentsEqual(PossibleLengths, desc.PossibleLengthList.ToList()));
+                Assert.True(ContentsEqual(PossibleLengthsLocalOnly, desc.PossibleLengthLocalOnlyList.ToList()));
                 Assert.False(desc.HasExampleNumber);
             }
         }
@@ -834,9 +834,9 @@ namespace PhoneNumbers.Test
             MetadataFilter.ForSpecialBuild().FilterMetadata(metadata);
 
             // id, country_code, and international_prefix should never be cleared.
-            Assert.Equal(metadata.Id, ID);
-            Assert.Equal(metadata.CountryCode, COUNTRY_CODE);
-            Assert.Equal(metadata.InternationalPrefix, INTERNATIONAL_PREFIX);
+            Assert.Equal(ID, metadata.Id);
+            Assert.Equal(COUNTRY_CODE, metadata.CountryCode);
+            Assert.Equal(INTERNATIONAL_PREFIX, metadata.InternationalPrefix);
 
             // preferred_international_prefix should be cleared in specialBuild.
             Assert.False(metadata.HasPreferredInternationalPrefix);
@@ -848,13 +848,13 @@ namespace PhoneNumbers.Test
                 metadata.Mobile
             })
             {
-                Assert.Equal(desc.NationalNumberPattern, NATIONAL_NUMBER_PATTERN);
-                Assert.True(ContentsEqual(desc.PossibleLengthList.ToList(), PossibleLengths));
-                Assert.True(ContentsEqual(desc.PossibleLengthLocalOnlyList.ToList(), PossibleLengthsLocalOnly));
+                Assert.Equal(NATIONAL_NUMBER_PATTERN, desc.NationalNumberPattern);
+                Assert.True(ContentsEqual(PossibleLengths, desc.PossibleLengthList.ToList()));
+                Assert.True(ContentsEqual(PossibleLengthsLocalOnly, desc.PossibleLengthLocalOnlyList.ToList()));
             }
 
             Assert.False(metadata.GeneralDesc.HasExampleNumber);
-            Assert.Equal(metadata.Mobile.ExampleNumber, EXAMPLE_NUMBER);
+            Assert.Equal(EXAMPLE_NUMBER, metadata.Mobile.ExampleNumber);
 
             // All other PhoneNumberDescs must have all fields cleared.
             foreach (var desc in new List<PhoneNumberDesc>
@@ -880,25 +880,25 @@ namespace PhoneNumbers.Test
             MetadataFilter.EmptyFilter().FilterMetadata(metadata);
 
             // None of the fields should be cleared.
-            Assert.Equal(metadata.Id, ID);
-            Assert.Equal(metadata.CountryCode, COUNTRY_CODE);
-            Assert.Equal(metadata.InternationalPrefix, INTERNATIONAL_PREFIX);
-            Assert.Equal(metadata.PreferredInternationalPrefix, PREFERRED_INTERNATIONAL_PREFIX);
+            Assert.Equal(ID, metadata.Id);
+            Assert.Equal(COUNTRY_CODE, metadata.CountryCode);
+            Assert.Equal(INTERNATIONAL_PREFIX, metadata.InternationalPrefix);
+            Assert.Equal(PREFERRED_INTERNATIONAL_PREFIX, metadata.PreferredInternationalPrefix);
             foreach (var desc in new List<PhoneNumberDesc> {
                 metadata.GeneralDesc,
                 metadata.FixedLine,
                 metadata.Mobile,
                 metadata.TollFree})
             {
-                Assert.Equal(desc.NationalNumberPattern, NATIONAL_NUMBER_PATTERN);
-                Assert.True(ContentsEqual(desc.PossibleLengthList.ToList(), PossibleLengths));
-                Assert.True(ContentsEqual(desc.PossibleLengthLocalOnlyList.ToList(), PossibleLengthsLocalOnly));
+                Assert.Equal(NATIONAL_NUMBER_PATTERN, desc.NationalNumberPattern);
+                Assert.True(ContentsEqual(PossibleLengths, desc.PossibleLengthList.ToList()));
+                Assert.True(ContentsEqual(PossibleLengthsLocalOnly, desc.PossibleLengthLocalOnlyList.ToList()));
             }
 
             Assert.False(metadata.GeneralDesc.HasExampleNumber);
-            Assert.Equal(metadata.FixedLine.ExampleNumber, EXAMPLE_NUMBER);
-            Assert.Equal(metadata.Mobile.ExampleNumber, EXAMPLE_NUMBER);
-            Assert.Equal(metadata.TollFree.ExampleNumber, EXAMPLE_NUMBER);
+            Assert.Equal(EXAMPLE_NUMBER, metadata.FixedLine.ExampleNumber);
+            Assert.Equal(EXAMPLE_NUMBER, metadata.Mobile.ExampleNumber);
+            Assert.Equal(EXAMPLE_NUMBER, metadata.TollFree.ExampleNumber);
         }
 
         [Fact]
