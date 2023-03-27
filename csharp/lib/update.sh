@@ -1,5 +1,11 @@
 #! /bin/bash
 
+if [ $# -ne 1 ]
+then
+    echo "GitHub token required"
+    exit
+fi
+
 if [ ! command -v jq &> /dev/null ]
 then
     echo "jq required"
