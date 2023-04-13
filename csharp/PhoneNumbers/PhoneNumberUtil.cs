@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -224,7 +225,7 @@ namespace PhoneNumbers
         private const string RFC3966_DOMAINNAME =
         "^(" + RFC3966_DOMAINLABEL + "\\.)*" + RFC3966_TOPLABEL + "\\.?$";
         private static readonly PhoneRegex RFC3966_DOMAINNAME_PATTERN = new PhoneRegex(RFC3966_DOMAINNAME);
-        
+
     ///
     /// Helper initialiser method to create the regular-expression pattern to match extensions.
     /// Note that there are currently six capturing groups for the extension itself. If this number is
@@ -1200,7 +1201,107 @@ namespace PhoneNumbers
             return countryCallingCodeToRegionCodeMap.ContainsKey(countryCallingCode);
         }
 
+#if NET6_0_OR_GREATER
         /// <summary>
+        /// Formats a phone number in the specified format using default rules. Note that this does not
+        /// promise to produce a phone number that the user can dial from where they are - although we do
+        /// format in either 'national' or 'international' format depending on what the client asks for, we
+        /// do not currently support a more abbreviated format, such as for users in the same "area" who
+        /// could potentially dial the number without area code. Note that if the phone number has a
+        /// country calling code of 0 or an otherwise invalid country calling code, we cannot work out
+        /// which formatting rules to apply so we return the national significant number with no formatting
+        /// applied.
+        /// </summary>
+        /// <param name="number">The phone number to be formatted.</param>
+        /// <param name="numberFormat">The format the phone number should be formatted into.</param>
+        /// <returns>The formatted phone number.</returns>
+        public string Format(PhoneNumber number, PhoneNumberFormat numberFormat)
+        {
+            if (number.NationalNumber == 0 && number.HasRawInput)
+            {
+                var rawInput = number.RawInput;
+                if (rawInput.Length > 0)
+                {
+                    return rawInput;
+                }
+            }
+
+            Span<char> formattedNumber = stackalloc char[90];
+            var index = 0;
+            Format(ref formattedNumber, ref index, number, numberFormat);
+            return new string(formattedNumber.Slice(0, index));
+        }
+
+        private void Format(ref Span<char> span, ref int index, PhoneNumber number, PhoneNumberFormat numberFormat)
+        {
+            Span<char> nationalSignificantNumber = stackalloc char[20];
+            SetNationalSignificantNumberToSpan(ref nationalSignificantNumber, number, out var nationalSignificantNumberLength);
+
+            var countryCallingCode = number.CountryCode;
+            if (numberFormat == PhoneNumberFormat.E164)
+            {
+                // Early exit for E164 case since no formatting of the national number needs to be applied.
+                // Extensions are not formatted.
+                PrefixNumberWithCountryCallingCode(ref span, ref index, countryCallingCode, PhoneNumberFormat.E164);
+                for (var i = 0; i < nationalSignificantNumberLength; i++)
+                {
+                    span[index++] =  nationalSignificantNumber[i];
+                }
+
+                return;
+            }
+
+            // Note getRegionCodeForCountryCode() is used because formatting information for regions which
+            // share a country calling code is contained by only one region for performance reasons. For
+            // example, for NANPA regions it will be contained in the metadata for US.
+            var regionCode = GetRegionCodeForCountryCode(countryCallingCode);
+            if (!HasValidCountryCallingCode(countryCallingCode))
+            {
+                for (var i = 0; i < nationalSignificantNumberLength; i++)
+                {
+                    span[index++] =  nationalSignificantNumber[i];
+                }
+
+                return;
+            }
+
+            PrefixNumberWithCountryCallingCode(ref span, ref index, countryCallingCode, numberFormat);
+            var metadata = GetMetadataForRegionOrCallingCode(countryCallingCode, regionCode);
+            AppendToSpan(ref span, ref index, FormatNsn(new string(nationalSignificantNumber.Slice(0, nationalSignificantNumberLength)), metadata, numberFormat));
+            MaybeAppendFormattedExtension(ref span, ref index, number, metadata, numberFormat);
+        }
+
+        /**
+        * Appends the formatted extension of a phone number to formattedNumber, if the phone number had
+        * an extension specified.
+        */
+        private static void MaybeAppendFormattedExtension(ref Span<char> span, ref int index,PhoneNumber number, PhoneMetadata metadata,
+            PhoneNumberFormat numberFormat)
+        {
+            if (!number.HasExtension || number.Extension.Length <= 0)
+            {
+                return;
+            }
+
+            if (numberFormat == PhoneNumberFormat.RFC3966)
+            {
+                AppendToSpan(ref span, ref index, RFC3966_EXTN_PREFIX);
+                AppendToSpan(ref span, ref index, number.Extension);
+                return;
+            }
+
+            if (metadata.HasPreferredExtnPrefix)
+            {
+                AppendToSpan(ref span, ref index, metadata.PreferredExtnPrefix);
+                AppendToSpan(ref span, ref index, number.Extension);
+                return;
+            }
+
+            AppendToSpan(ref span, ref index, DEFAULT_EXTN_PREFIX);
+            AppendToSpan(ref span, ref index, number.Extension);
+        }
+#else
+/// <summary>
         /// Formats a phone number in the specified format using default rules. Note that this does not
         /// promise to produce a phone number that the user can dial from where they are - although we do
         /// format in either 'national' or 'international' format depending on what the client asks for, we
@@ -1266,6 +1367,7 @@ namespace PhoneNumbers
             MaybeAppendFormattedExtension(number, metadata, numberFormat, formattedNumber);
             PrefixNumberWithCountryCallingCode(countryCallingCode, numberFormat, formattedNumber);
         }
+#endif
 
         /// <summary>
         /// Formats a phone number in the specified format using client-defined formatting rules. Note that
@@ -1857,6 +1959,123 @@ namespace PhoneNumbers
             return formattedNumber.ToString();
         }
 
+#if NET6_0_OR_GREATER
+        /// <summary>
+        /// Gets the national significant number of the a phone number. Note a national significant number
+        /// doesn't contain a national prefix or any formatting.
+        /// </summary>
+        /// <param name="number">The PhoneNumber object for which the national significant number is needed.</param>
+        /// <returns>The national significant number of the PhoneNumber object passed in.</returns>
+        public string GetNationalSignificantNumber(PhoneNumber number)
+        {
+            // If a leading zero(s) has been set, we prefix this now. Note this is not a national prefix.
+            Span<char> nationalSignificantNumber = stackalloc char[20];
+            SetNationalSignificantNumberToSpan(ref nationalSignificantNumber, number, out var length);
+            return new string(nationalSignificantNumber.Slice(0, length));
+        }
+
+        private static void SetNationalSignificantNumberToSpan(ref Span<char> nationalNumber, PhoneNumber number, out int nationalSignificantNumberLength)
+        {
+            nationalSignificantNumberLength = 0;
+            if (number.ItalianLeadingZero)
+            {
+                for (int i = 0; i < number.NumberOfLeadingZeros; i++)
+                {
+                    nationalNumber[nationalSignificantNumberLength++] = '0';
+                }
+            }
+
+            AppendNumberToSpan(ref nationalNumber, ref nationalSignificantNumberLength, number.NationalNumber);
+        }
+
+        private static void AppendNumberToSpan(ref Span<char> span, ref int index, ulong numberToAppend)
+        {
+            if (numberToAppend == 0)
+            {
+                span[index++] = '0';
+            }
+
+            var numberLength = numberToAppend switch
+            {
+                < 10    => 1,
+                < 100   => 2,
+                < 1_000 => 3,
+                _       => (int)Math.Floor(Math.Log10(numberToAppend)) + 1,
+            };
+
+            var maxIndex = index + numberLength - 1;
+            var startIndex = index;
+            while (numberToAppend > 0)
+            {
+                span[maxIndex + startIndex - index++] = (char)('0' + numberToAppend % 10);
+                numberToAppend /= 10;
+            }
+        }
+
+        private static void AppendNumberToSpan(ref Span<char> span, ref int index, int numberToAppend)
+        {
+            if (numberToAppend == 0)
+            {
+                span[index++] = '0';
+            }
+
+            var numberLength = numberToAppend switch
+            {
+                < 10    => 1,
+                < 100   => 2,
+                < 1_000 => 3,
+                _       => (int)Math.Floor(Math.Log10(numberToAppend)) + 1,
+            };
+
+            var maxIndex = index + numberLength - 1;
+            var startIndex = index;
+            while (numberToAppend > 0)
+            {
+                span[maxIndex + startIndex - index++] = (char)('0' + numberToAppend % 10);
+                numberToAppend /= 10;
+            }
+        }
+
+        /**
+        * A helper function that is used by format and formatByPattern.
+        */
+        private void PrefixNumberWithCountryCallingCode(ref Span<char> span,
+            ref int currentIndex,
+            int countryCallingCode,
+            PhoneNumberFormat numberFormat)
+        {
+            switch (numberFormat)
+            {
+                case PhoneNumberFormat.E164:
+                    span[currentIndex++] = PLUS_SIGN;
+                    AppendNumberToSpan(ref span, ref currentIndex, countryCallingCode);
+                    return;
+                case PhoneNumberFormat.INTERNATIONAL:
+                    span[currentIndex++] = PLUS_SIGN;
+                    AppendNumberToSpan(ref span, ref currentIndex, countryCallingCode);
+                    span[currentIndex++] = ' ';
+                    return;
+                case PhoneNumberFormat.RFC3966:
+                    AppendToSpan(ref span, ref currentIndex, RFC3966_PREFIX);
+                    span[currentIndex++] = PLUS_SIGN;
+                    AppendNumberToSpan(ref span, ref currentIndex, countryCallingCode);
+                    span[currentIndex++] = '-';
+                    return;
+                case PhoneNumberFormat.NATIONAL:
+                    return;
+                default:
+                    return;
+            }
+        }
+
+        private static void AppendToSpan(ref Span<char> destination, ref int index, string valueToAppend)
+        {
+            foreach (var c in valueToAppend)
+            {
+                destination[index++] = c;
+            }
+        }
+#else
         /// <summary>
         /// Gets the national significant number of the a phone number. Note a national significant number
         /// doesn't contain a national prefix or any formatting.
@@ -1872,7 +2091,7 @@ namespace PhoneNumbers
             nationalNumber.Append(number.NationalNumber);
             return nationalNumber.ToString();
         }
-
+#endif
         /**
         * A helper function that is used by format and formatByPattern.
         */
@@ -1889,7 +2108,7 @@ namespace PhoneNumbers
                     return;
                 case PhoneNumberFormat.RFC3966:
                     formattedNumber.Insert(0, "-").Insert(0, countryCallingCode).Insert(0, PLUS_SIGN)
-                         .Insert(0, RFC3966_PREFIX);
+                        .Insert(0, RFC3966_PREFIX);
                     return;
                 case PhoneNumberFormat.NATIONAL:
                     return;
