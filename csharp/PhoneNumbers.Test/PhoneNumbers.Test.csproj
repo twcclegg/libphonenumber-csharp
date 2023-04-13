@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netframeword4.8.1;net7.0</TargetFrameworks>
+    <TargetFrameworks>netframeword4.8;net7.0</TargetFrameworks>
     <AssemblyName>PhoneNumbers.Test</AssemblyName>
     <PackageId>PhoneNumbers.Test</PackageId>
     <DebugType>full</DebugType>
