@@ -69,12 +69,14 @@ namespace PhoneNumbers.Test
             Assert.Empty(TimezoneMapDataReader.GetPrefixMap(null, ianaTZListDelimiter));
 
             byte[] ssBytes = System.Text.Encoding.UTF8.GetBytes(MapTestData);
-            using var ms = new System.IO.MemoryStream(ssBytes);
-            var map = TimezoneMapDataReader.GetPrefixMap(ms, ianaTZListDelimiter);
-            Assert.NotNull(map);
-            Assert.Equal(11, map.Count);
-            Assert.True(map.ContainsKey(1));
-            Assert.True(1 < map[1].Length);
+            using (var ms = new System.IO.MemoryStream(ssBytes))
+            {
+                var map = TimezoneMapDataReader.GetPrefixMap(ms, ianaTZListDelimiter);
+                Assert.NotNull(map);
+                Assert.Equal(11, map.Count);
+                Assert.True(map.ContainsKey(1));
+                Assert.True(1 < map[1].Length);
+            }
         }
 
         [Fact]
@@ -145,19 +147,21 @@ namespace PhoneNumbers.Test
         public void TestMapperWithBadData()
         {
             var ssBytes = System.Text.Encoding.UTF8.GetBytes(MapTestData);
-            using var ms = new System.IO.MemoryStream(ssBytes);
-            var map = TimezoneMapDataReader.GetPrefixMap(ms, new char[] { '&' });
-            Assert.NotNull(map);
-            Assert.Equal(11, map.Count);
-            Assert.True(map.ContainsKey(1));
-            Assert.True(1 < map[1].Length);
-
-            var wrongMapper = new PhoneNumberToTimeZonesMapper(map);
-            foreach (var pn in testNumbers)
+            using (var ms = new System.IO.MemoryStream(ssBytes))
             {
-                var list = wrongMapper.GetTimeZonesForNumber(pn);
-                Assert.NotNull(list);
-                Assert.NotEmpty(list);
+                var map = TimezoneMapDataReader.GetPrefixMap(ms, new char[] { '&' });
+                Assert.NotNull(map);
+                Assert.Equal(11, map.Count);
+                Assert.True(map.ContainsKey(1));
+                Assert.True(1 < map[1].Length);
+
+                var wrongMapper = new PhoneNumberToTimeZonesMapper(map);
+                foreach (var pn in testNumbers)
+                {
+                    var list = wrongMapper.GetTimeZonesForNumber(pn);
+                    Assert.NotNull(list);
+                    Assert.NotEmpty(list);
+                }
             }
         }
 
