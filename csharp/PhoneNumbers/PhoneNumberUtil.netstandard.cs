@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace PhoneNumbers
@@ -169,6 +170,284 @@ namespace PhoneNumbers
 
             MaybeAppendFormattedExtension(number, metadata, numberFormat, formattedNumber);
             PrefixNumberWithCountryCallingCode(countryCallingCode, numberFormat, formattedNumber);
+            return formattedNumber.ToString();
+        }
+
+        /// <summary>
+        /// Formats a phone number in national format for dialing using the carrier as specified in the
+        /// carrierCode. The carrierCode will always be used regardless of whether the
+        /// phone number already has a preferred domestic carrier code stored. If carrierCode
+        /// contains an empty string, returns the number in national format without any carrier code.
+        /// </summary>
+        /// <param name="number">The phone number to be formatted.</param>
+        /// <param name="carrierCode">The carrier selection code to be used.</param>
+        /// <returns>
+        /// The formatted phone number in national format for dialing using the carrier as
+        /// specified in the carrierCode.
+        /// </returns>
+        public string FormatNationalNumberWithCarrierCode(PhoneNumber number, string carrierCode)
+        {
+            var countryCallingCode = number.CountryCode;
+            var nationalSignificantNumber = GetNationalSignificantNumber(number);
+            // Note getRegionCodeForCountryCode() is used because formatting information for regions which
+            // share a country calling code is contained by only one region for performance reasons. For
+            // example, for NANPA regions it will be contained in the metadata for US.
+            var regionCode = GetRegionCodeForCountryCode(countryCallingCode);
+            if (!HasValidCountryCallingCode(countryCallingCode))
+            {
+                return nationalSignificantNumber;
+            }
+
+            var formattedNumber = new StringBuilder(20);
+            var metadata = GetMetadataForRegionOrCallingCode(countryCallingCode, regionCode);
+            formattedNumber.Append(FormatNsn(nationalSignificantNumber,
+                metadata,
+                PhoneNumberFormat.NATIONAL,
+                carrierCode));
+            MaybeAppendFormattedExtension(number, metadata, PhoneNumberFormat.NATIONAL, formattedNumber);
+            PrefixNumberWithCountryCallingCode(countryCallingCode, PhoneNumberFormat.NATIONAL, formattedNumber);
+            return formattedNumber.ToString();
+        }
+
+        /// <summary>
+        /// Formats a phone number for out-of-country dialing purposes.If no regionCallingFrom is
+        /// supplied, we format the number in its INTERNATIONAL format.If the country calling code is the
+        /// same as that of the region where the number is from, then NATIONAL formatting will be applied.
+        /// <para>
+        /// If the number itself has a country calling code of zero or an otherwise invalid country
+        /// calling code, then we return the number with no formatting applied.
+        /// </para>
+        /// <para>
+        /// Note this function takes care of the case for calling inside of NANPA and between Russia and
+        /// Kazakhstan (who share the same country calling code). In those cases, no international prefix
+        /// is used.For regions which have multiple international prefixes, the number in its
+        /// INTERNATIONAL format will be returned instead.
+        /// </para>
+        /// </summary>
+        /// <param name="number">The phone number to be formatted.</param>
+        /// <param name="regionCallingFrom">The region where the call is being placed.</param>
+        /// <returns>The formatted phone number.</returns>
+        public string FormatOutOfCountryCallingNumber(PhoneNumber number, string regionCallingFrom)
+        {
+            if (!IsValidRegionCode(regionCallingFrom))
+            {
+                // LOGGER.log(Level.WARNING,
+                //      "Trying to format number from invalid region "
+                //      + regionCallingFrom
+                //      + ". International formatting applied.");
+                return Format(number, PhoneNumberFormat.INTERNATIONAL);
+            }
+
+            var countryCallingCode = number.CountryCode;
+            var nationalSignificantNumber = GetNationalSignificantNumber(number);
+            if (!HasValidCountryCallingCode(countryCallingCode))
+            {
+                return nationalSignificantNumber;
+            }
+
+            if (countryCallingCode == NANPA_COUNTRY_CODE)
+            {
+                if (IsNANPACountry(regionCallingFrom))
+                {
+                    // For NANPA regions, return the national format for these regions but prefix it with the
+                    // country calling code.
+                    return countryCallingCode + " " + Format(number, PhoneNumberFormat.NATIONAL);
+                }
+            }
+            else if (countryCallingCode == GetCountryCodeForValidRegion(regionCallingFrom))
+            {
+                // For regions that share a country calling code, the country calling code need not be dialled.
+                // This also applies when dialling within a region, so this if clause covers both these cases.
+                // Technically this is the case for dialling from La Reunion to other overseas departments of
+                // France (French Guiana, Martinique, Guadeloupe), but not vice versa - so we don't cover this
+                // edge case for now and for those cases return the version including country calling code.
+                // Details here: http://www.petitfute.com/voyage/225-info-pratiques-reunion
+                return Format(number, PhoneNumberFormat.NATIONAL);
+            }
+
+            var metadataForRegionCallingFrom = GetMetadataForRegion(regionCallingFrom);
+            var internationalPrefix = metadataForRegionCallingFrom.InternationalPrefix;
+
+            // In general, if there is a preferred international prefix, use that. Otherwise, for regions
+            // that have multiple international prefixes, the international format of the number is
+            // returned since we would not know which one to use.
+            var internationalPrefixForFormatting = "";
+            if (metadataForRegionCallingFrom.HasPreferredInternationalPrefix)
+            {
+                internationalPrefixForFormatting =
+                    metadataForRegionCallingFrom.PreferredInternationalPrefix;
+            }
+            else if (UniqueInternationalPrefix.IsMatchAll(internationalPrefix))
+            {
+                internationalPrefixForFormatting = internationalPrefix;
+            }
+
+            var regionCode = GetRegionCodeForCountryCode(countryCallingCode);
+            var metadataForRegion =
+                GetMetadataForRegionOrCallingCode(countryCallingCode, regionCode);
+            var formattedNationalNumber =
+                FormatNsn(nationalSignificantNumber,
+                    metadataForRegion,
+                    PhoneNumberFormat.INTERNATIONAL);
+            var formattedNumber = new StringBuilder(formattedNationalNumber);
+            MaybeAppendFormattedExtension(number,
+                metadataForRegion,
+                PhoneNumberFormat.INTERNATIONAL,
+                formattedNumber);
+            if (internationalPrefixForFormatting.Length > 0)
+            {
+                formattedNumber.Insert(0, " ")
+                    .Insert(0, countryCallingCode)
+                    .Insert(0, " ")
+                    .Insert(0, internationalPrefixForFormatting);
+            }
+            else
+            {
+                PrefixNumberWithCountryCallingCode(countryCallingCode,
+                    PhoneNumberFormat.INTERNATIONAL,
+                    formattedNumber);
+            }
+
+            return formattedNumber.ToString();
+        }
+
+        /// <summary>
+        /// Formats a phone number for out-of-country dialing purposes.
+        /// Note that in this version, if the number was entered originally using alpha characters and
+        /// this version of the number is stored in raw_input, this representation of the number will be
+        /// used rather than the digit representation. Grouping information, as specified by characters
+        /// such as "-" and " ", will be retained.
+        /// <p>
+        /// <b>Caveats:</b>
+        /// </p>
+        /// <ul>
+        /// <li>
+        /// This will not produce good results if the country calling code is both present in the raw
+        /// input _and_ is the start of the national number. This is not a problem in the regions
+        /// which typically use alpha numbers.
+        /// </li>
+        /// <li>
+        /// This will also not produce good results if the raw input has any grouping information
+        /// within the first three digits of the national number, and if the function needs to strip
+        /// preceding digits/words in the raw input before these digits. Normally people group the
+        /// first three digits together so this is not a huge problem - and will be fixed if it
+        /// proves to be so.
+        /// </li>
+        /// </ul>
+        /// </summary>
+        /// <param name="number">the phone number that needs to be formatted</param>
+        /// <param name="regionCallingFrom">the region where the call is being placed</param>
+        /// <returns>the formatted phone number</returns>
+        public string FormatOutOfCountryKeepingAlphaChars(PhoneNumber number, string regionCallingFrom)
+        {
+            var rawInput = number.RawInput;
+            // If there is no raw input, then we can't keep alpha characters because there aren't any.
+            // In this case, we return formatOutOfCountryCallingNumber.
+            if (rawInput.Length == 0)
+            {
+                return FormatOutOfCountryCallingNumber(number, regionCallingFrom);
+            }
+
+            var countryCode = number.CountryCode;
+            if (!HasValidCountryCallingCode(countryCode))
+            {
+                return rawInput;
+            }
+
+            // Strip any prefix such as country calling code, IDD, that was present. We do this by comparing
+            // the number in raw_input with the parsed number.
+            // To do this, first we normalize punctuation. We retain number grouping symbols such as " "
+            // only.
+            rawInput = NormalizeHelper(rawInput, AllPlusNumberGroupingSymbols, true);
+            // Now we trim everything before the first three digits in the parsed number. We choose three
+            // because all valid alpha numbers have 3 digits at the start - if it does not, then we don't
+            // trim anything at all. Similarly, if the national number was less than three digits, we don't
+            // trim anything at all.
+            var nationalNumber = GetNationalSignificantNumber(number);
+            if (nationalNumber.Length > 3)
+            {
+                var firstNationalNumberDigit =
+                    rawInput.IndexOf(nationalNumber.Substring(0, 3), StringComparison.Ordinal);
+                if (firstNationalNumberDigit != -1)
+                {
+                    rawInput = rawInput.Substring(firstNationalNumberDigit);
+                }
+            }
+
+            var metadataForRegionCallingFrom = GetMetadataForRegion(regionCallingFrom);
+            if (countryCode == NANPA_COUNTRY_CODE)
+            {
+                if (IsNANPACountry(regionCallingFrom))
+                {
+                    return countryCode + " " + rawInput;
+                }
+            }
+            else if (IsValidRegionCode(regionCallingFrom) &&
+                     countryCode == GetCountryCodeForValidRegion(regionCallingFrom))
+            {
+                var formattingPattern =
+                    ChooseFormattingPatternForNumber(metadataForRegionCallingFrom.NumberFormatList,
+                        nationalNumber);
+                if (formattingPattern == null)
+                    // If no pattern above is matched, we format the original input.
+                {
+                    return rawInput;
+                }
+
+                var newFormat = new NumberFormat.Builder();
+                newFormat.MergeFrom(formattingPattern);
+                // The first group is the first group of digits that the user wrote together.
+                newFormat.SetPattern("(\\d+)(.*)");
+                // Here we just concatenate them back together after the national prefix has been fixed.
+                newFormat.SetFormat("$1$2");
+                // Now we format using this pattern instead of the default pattern, but with the national
+                // prefix prefixed if necessary.
+                // This will not work in the cases where the pattern (and not the leading digits) decide
+                // whether a national prefix needs to be used, since we have overridden the pattern to match
+                // anything, but that is not the case in the metadata to date.
+                return FormatNsnUsingPattern(rawInput, newFormat.Build(), PhoneNumberFormat.NATIONAL);
+            }
+
+            var internationalPrefixForFormatting = "";
+            // If an unsupported region-calling-from is entered, or a country with multiple international
+            // prefixes, the international format of the number is returned, unless there is a preferred
+            // international prefix.
+            if (metadataForRegionCallingFrom != null)
+            {
+                var internationalPrefix = metadataForRegionCallingFrom.InternationalPrefix;
+                internationalPrefixForFormatting =
+                    UniqueInternationalPrefix.IsMatchAll(internationalPrefix)
+                        ? internationalPrefix
+                        : metadataForRegionCallingFrom.PreferredInternationalPrefix;
+            }
+
+            var formattedNumber = new StringBuilder(rawInput);
+            var regionCode = GetRegionCodeForCountryCode(countryCode);
+            var metadataForRegion = GetMetadataForRegionOrCallingCode(countryCode, regionCode);
+            MaybeAppendFormattedExtension(number,
+                metadataForRegion,
+                PhoneNumberFormat.INTERNATIONAL,
+                formattedNumber);
+            if (internationalPrefixForFormatting.Length > 0)
+            {
+                formattedNumber.Insert(0, " ")
+                    .Insert(0, countryCode)
+                    .Insert(0, " ")
+                    .Insert(0, internationalPrefixForFormatting);
+            }
+            else
+            {
+                // Invalid region entered as country-calling-from (so no metadata was found for it) or the
+                // region chosen has multiple international dialling prefixes.
+                // LOGGER.log(Level.WARNING,
+                // "Trying to format number from invalid region "
+                // + regionCallingFrom
+                // + ". International formatting applied.");
+                PrefixNumberWithCountryCallingCode(countryCode,
+                    PhoneNumberFormat.INTERNATIONAL,
+                    formattedNumber);
+            }
+
             return formattedNumber.ToString();
         }
 #endif
