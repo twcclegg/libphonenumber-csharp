@@ -1201,7 +1201,6 @@ namespace PhoneNumbers
             return countryCallingCodeToRegionCodeMap.ContainsKey(countryCallingCode);
         }
 
-#if NET6_0_OR_GREATER
         /// <summary>
         /// Formats a phone number in the specified format using default rules. Note that this does not
         /// promise to produce a phone number that the user can dial from where they are - although we do
@@ -1226,12 +1225,19 @@ namespace PhoneNumbers
                 }
             }
 
+#if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
             Span<char> formattedNumber = stackalloc char[90];
             var index = 0;
             Format(ref formattedNumber, ref index, number, numberFormat);
             return new string(formattedNumber.Slice(0, index));
+#else
+            var sb = new StringBuilder(20);
+            Format(number, numberFormat, sb);
+            return sb.ToString();
+#endif
         }
 
+#if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
         private void Format(ref Span<char> span, ref int index, PhoneNumber number, PhoneNumberFormat numberFormat)
         {
             Span<char> nationalSignificantNumber = stackalloc char[20];
@@ -1300,42 +1306,14 @@ namespace PhoneNumbers
             AppendToSpan(ref span, ref index, DEFAULT_EXTN_PREFIX);
             AppendToSpan(ref span, ref index, number.Extension);
         }
-#else
-/// <summary>
-        /// Formats a phone number in the specified format using default rules. Note that this does not
-        /// promise to produce a phone number that the user can dial from where they are - although we do
-        /// format in either 'national' or 'international' format depending on what the client asks for, we
-        /// do not currently support a more abbreviated format, such as for users in the same "area" who
-        /// could potentially dial the number without area code. Note that if the phone number has a
-        /// country calling code of 0 or an otherwise invalid country calling code, we cannot work out
-        /// which formatting rules to apply so we return the national significant number with no formatting
-        /// applied.
+#endif
+        /// <summary>
+        /// Same as <see cref="Format(PhoneNumber,PhoneNumberFormat)"/>, but accepts a mutable StringBuilder as
+        /// a parameter to decrease object creation when invoked many times.
         /// </summary>
         /// <param name="number">The phone number to be formatted.</param>
         /// <param name="numberFormat">The format the phone number should be formatted into.</param>
-        /// <returns>The formatted phone number.</returns>
-        public string Format(PhoneNumber number, PhoneNumberFormat numberFormat)
-        {
-            if (number.NationalNumber == 0 && number.HasRawInput)
-            {
-                var rawInput = number.RawInput;
-                if (rawInput.Length > 0)
-                {
-                    return rawInput;
-                }
-            }
-            var formattedNumber = new StringBuilder(20);
-            Format(number, numberFormat, formattedNumber);
-            return formattedNumber.ToString();
-        }
-
-        /// <summary>
-        /// Same as <see cref="Format(PhoneNumber, PhoneNumberFormat)"/>, but accepts a mutable StringBuilder as
-        /// a parameter to decrease object creation when invoked many times.
-        /// </summary>
-        /// <param name="number"></param>
-        /// <param name="numberFormat"></param>
-        /// <param name="formattedNumber"></param>
+        /// <param name="formattedNumber">Destination <see cref="StringBuilder"/> insntance</param>
         public void Format(PhoneNumber number, PhoneNumberFormat numberFormat,
             StringBuilder formattedNumber)
         {
@@ -1367,7 +1345,6 @@ namespace PhoneNumbers
             MaybeAppendFormattedExtension(number, metadata, numberFormat, formattedNumber);
             PrefixNumberWithCountryCallingCode(countryCallingCode, numberFormat, formattedNumber);
         }
-#endif
 
         /// <summary>
         /// Formats a phone number in the specified format using client-defined formatting rules. Note that
@@ -1959,7 +1936,7 @@ namespace PhoneNumbers
             return formattedNumber.ToString();
         }
 
-#if NET6_0_OR_GREATER
+#if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
         /// <summary>
         /// Gets the national significant number of the a phone number. Note a national significant number
         /// doesn't contain a national prefix or any formatting.
