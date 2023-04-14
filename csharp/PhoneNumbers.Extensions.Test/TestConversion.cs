@@ -23,7 +23,7 @@ namespace PhoneNumbers.Extensions.Test
         {
             var number = Util.Parse(input, region);
             var json = JsonSerializer.Serialize(new TestPhoneNumber(number));
-#if NET7_0_OR_GREATER
+#if NET6_0_OR_GREATER
             var str = JsonSerializer.Deserialize<TestString>(json)!.PhoneNumber;
 #else
             var str = JsonSerializer.Deserialize<TestString>(json).PhoneNumber;
@@ -45,7 +45,7 @@ namespace PhoneNumbers.Extensions.Test
         {
             var number = Util.Parse(input, region);
             var json = JsonSerializer.Serialize(new TestPhoneNumber_Old(number));
-#if NET7_0_OR_GREATER
+#if NET6_0_OR_GREATER
             var str = JsonSerializer.Deserialize<TestString>(json)!.PhoneNumber;
 #else
             var str = JsonSerializer.Deserialize<TestString>(json).PhoneNumber;
@@ -62,9 +62,13 @@ namespace PhoneNumbers.Extensions.Test
         {
 #if NET7_0_OR_GREATER
             var json = $$"""{"PhoneNumber": "{{value}}"}""";
-            var number = JsonSerializer.Deserialize<TestPhoneNumber>(json)!.PhoneNumber;
 #else
             var json = $@"{{""PhoneNumber"": ""{value}""}}";
+#endif
+
+#if NET6_0_OR_GREATER
+            var number = JsonSerializer.Deserialize<TestPhoneNumber>(json)!.PhoneNumber;
+#else
             var number = JsonSerializer.Deserialize<TestPhoneNumber>(json).PhoneNumber;
 #endif
             Assert.Equal(value, Util.Format(number, PhoneNumberFormat.E164));
@@ -80,16 +84,20 @@ namespace PhoneNumbers.Extensions.Test
             var sb = new StringBuilder(20);
 #if NET7_0_OR_GREATER
             var json = $$"""{"PhoneNumber": "{{value}}"}""";
-            var number = JsonSerializer.Deserialize<TestPhoneNumber>(json)!.PhoneNumber;
 #else
             var json = $@"{{""PhoneNumber"": ""{value}""}}";
+#endif
+
+#if NET6_0_OR_GREATER
+            var number = JsonSerializer.Deserialize<TestPhoneNumber>(json)!.PhoneNumber;
+#else
             var number = JsonSerializer.Deserialize<TestPhoneNumber>(json).PhoneNumber;
 #endif
             Util.Format(number, PhoneNumberFormat.E164, sb);
             Assert.Equal(value, sb.ToString());
         }
     }
-#if NET7_0_OR_GREATER
+#if NET6_0_OR_GREATER
     public record TestPhoneNumber(
         [property: JsonConverter(typeof(PhoneNumberConverter))]
         PhoneNumbers.PhoneNumber PhoneNumber);
