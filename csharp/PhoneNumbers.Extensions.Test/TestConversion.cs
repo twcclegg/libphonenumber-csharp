@@ -23,7 +23,11 @@ namespace PhoneNumbers.Extensions.Test
         {
             var number = Util.Parse(input, region);
             var json = JsonSerializer.Serialize(new TestPhoneNumber(number));
+#if NET7_0_OR_GREATER
             var str = JsonSerializer.Deserialize<TestString>(json)!.PhoneNumber;
+#else
+            var str = JsonSerializer.Deserialize<TestString>(json).PhoneNumber;
+#endif
             Assert.Equal(expected, str);
         }
 
@@ -41,7 +45,11 @@ namespace PhoneNumbers.Extensions.Test
         {
             var number = Util.Parse(input, region);
             var json = JsonSerializer.Serialize(new TestPhoneNumber_Old(number));
+#if NET7_0_OR_GREATER
             var str = JsonSerializer.Deserialize<TestString>(json)!.PhoneNumber;
+#else
+            var str = JsonSerializer.Deserialize<TestString>(json).PhoneNumber;
+#endif
             Assert.Equal(expected, str);
         }
 
@@ -52,8 +60,13 @@ namespace PhoneNumbers.Extensions.Test
         [InlineData("+50022215")]
         public void TestDeserialization(string value)
         {
+#if NET7_0_OR_GREATER
             var json = $$"""{"PhoneNumber": "{{value}}"}""";
             var number = JsonSerializer.Deserialize<TestPhoneNumber>(json)!.PhoneNumber;
+#else
+            var json = $@"{{""PhoneNumber"": ""{value}""}}";
+            var number = JsonSerializer.Deserialize<TestPhoneNumber>(json).PhoneNumber;
+#endif
             Assert.Equal(value, Util.Format(number, PhoneNumberFormat.E164));
         }
 
@@ -65,16 +78,58 @@ namespace PhoneNumbers.Extensions.Test
         public void TestDeserialization_OldVersion(string value)
         {
             var sb = new StringBuilder(20);
+#if NET7_0_OR_GREATER
             var json = $$"""{"PhoneNumber": "{{value}}"}""";
             var number = JsonSerializer.Deserialize<TestPhoneNumber>(json)!.PhoneNumber;
+#else
+            var json = $@"{{""PhoneNumber"": ""{value}""}}";
+            var number = JsonSerializer.Deserialize<TestPhoneNumber>(json).PhoneNumber;
+#endif
             Util.Format(number, PhoneNumberFormat.E164, sb);
             Assert.Equal(value, sb.ToString());
         }
     }
-
+#if NET7_0_OR_GREATER
     public record TestPhoneNumber(
-        [property: JsonConverter(typeof(PhoneNumberConverter))] PhoneNumbers.PhoneNumber PhoneNumber);
+        [property: JsonConverter(typeof(PhoneNumberConverter))]
+        PhoneNumbers.PhoneNumber PhoneNumber);
+
     public record TestPhoneNumber_Old(
-        [property: JsonConverter(typeof(PhoneNumberConverter_Old))] PhoneNumbers.PhoneNumber PhoneNumber);
+        [property: JsonConverter(typeof(PhoneNumberConverter_Old))]
+        PhoneNumbers.PhoneNumber PhoneNumber);
+
     public record TestString(string PhoneNumber);
+#else
+    public class TestPhoneNumber
+    {
+        public TestPhoneNumber(PhoneNumbers.PhoneNumber phoneNumber)
+        {
+            PhoneNumber = phoneNumber;
+        }
+
+        [JsonConverter(typeof(PhoneNumberConverter))]
+        public PhoneNumbers.PhoneNumber PhoneNumber { get; set; }
+    }
+
+    public class TestPhoneNumber_Old
+    {
+        public TestPhoneNumber_Old(PhoneNumbers.PhoneNumber phoneNumber)
+        {
+            PhoneNumber = phoneNumber;
+        }
+
+        [JsonConverter(typeof(PhoneNumberConverter_Old))]
+        public PhoneNumbers.PhoneNumber PhoneNumber { get; set; }
+    }
+
+    public class TestString
+    {
+        public TestString(string phoneNumber)
+        {
+            PhoneNumber = phoneNumber;
+        }
+
+        public string PhoneNumber { get; set; }
+    }
+#endif
 }
