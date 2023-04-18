@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Text;
 using Xunit;
 using PhoneNumbers.Extensions;
 
@@ -6,6 +8,17 @@ namespace PhoneNumbers.Extensions.Test
     public class TestExtensions
     {
         private static readonly PhoneNumberUtil Util = PhoneNumberUtil.GetInstance();
+
+        public static IEnumerable<object[]> TryParseValidInvalidTestData
+        {
+            get
+            {
+                yield return new object[]
+                {
+                    new string(' ', 251),
+                };
+            }
+        }
 
         [Fact]
         public void TestUSNational()
@@ -41,7 +54,21 @@ namespace PhoneNumbers.Extensions.Test
         [Fact]
         public void TestInvalidNumberForRegion()
         {
-            Assert.False(PhoneNumber.TryParseValid("1235557704", "US", out var number));
+            Assert.False(PhoneNumber.TryParseValid("1235557704", "US", out _));
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("+3809")]
+        [InlineData("+380123456789012345678")]
+        [MemberData(nameof(TryParseValidInvalidTestData))]
+        public void TryParseValid_WhenInvalidInput_ThenResultIsFalse(string number)
+        {
+            var isValid = PhoneNumber.TryParseValid(number, null, out var phoneNumber);
+
+            Assert.False(isValid);
+            Assert.Null(phoneNumber);
         }
     }
 }

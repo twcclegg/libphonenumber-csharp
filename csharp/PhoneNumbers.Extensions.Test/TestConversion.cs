@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Xunit;
 
@@ -22,7 +23,11 @@ namespace PhoneNumbers.Extensions.Test
         {
             var number = Util.Parse(input, region);
             var json = JsonSerializer.Serialize(new TestPhoneNumber(number));
+#if NET6_0_OR_GREATER
             var str = JsonSerializer.Deserialize<TestString>(json)!.PhoneNumber;
+#else
+            var str = JsonSerializer.Deserialize<TestString>(json).PhoneNumber;
+#endif
             Assert.Equal(expected, str);
         }
 
@@ -33,13 +38,42 @@ namespace PhoneNumbers.Extensions.Test
         [InlineData("+50022215")]
         public void TestDeserialization(string value)
         {
-            var json = $$"""{"PhoneNumber": "{{value}}"}""";
+            var json = $@"{{""PhoneNumber"": ""{value}""}}";
+#if NET6_0_OR_GREATER
             var number = JsonSerializer.Deserialize<TestPhoneNumber>(json)!.PhoneNumber;
+#else
+            var number = JsonSerializer.Deserialize<TestPhoneNumber>(json).PhoneNumber;
+#endif
             Assert.Equal(value, Util.Format(number, PhoneNumberFormat.E164));
         }
     }
 
+#if NET6_0_OR_GREATER
     public record TestPhoneNumber(
-        [property: JsonConverter(typeof(PhoneNumberConverter))] PhoneNumbers.PhoneNumber PhoneNumber);
+        [property: JsonConverter(typeof(PhoneNumberConverter))]
+        PhoneNumbers.PhoneNumber PhoneNumber);
+
     public record TestString(string PhoneNumber);
+#else
+    public class TestPhoneNumber
+    {
+        public TestPhoneNumber(PhoneNumbers.PhoneNumber phoneNumber)
+        {
+            PhoneNumber = phoneNumber;
+        }
+
+        [JsonConverter(typeof(PhoneNumberConverter))]
+        public PhoneNumbers.PhoneNumber PhoneNumber { get; set; }
+    }
+
+    public class TestString
+    {
+        public TestString(string phoneNumber)
+        {
+            PhoneNumber = phoneNumber;
+        }
+
+        public string PhoneNumber { get; set; }
+    }
+#endif
 }
