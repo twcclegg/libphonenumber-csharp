@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 
+#if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+
 namespace PhoneNumbers
 {
     public partial class PhoneNumberUtil
     {
-#if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
         /// <summary>
         /// Normalizes a string of characters representing a phone number. This performs the following
         /// conversions:
@@ -787,6 +788,6 @@ namespace PhoneNumbers
                     return;
             }
         }
-#endif
     }
 }
+#endif
