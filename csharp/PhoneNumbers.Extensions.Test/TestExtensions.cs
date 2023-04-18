@@ -29,17 +29,6 @@ namespace PhoneNumbers.Extensions.Test
         }
 
         [Fact]
-        public void TestUSNational_Old()
-        {
-            Assert.True(PhoneNumber.TryParse("6192987704", "US", out var number));
-            Assert.True(PhoneNumber.TryParseValid("6192987704", "US", out number));
-
-            var sb = new StringBuilder(20);
-            Util.Format(number, PhoneNumberFormat.NATIONAL, sb);
-            Assert.Equal("(619) 298-7704", sb.ToString());
-        }
-
-        [Fact]
         public void TestGBNational()
         {
             Assert.True(PhoneNumber.TryParse("08445717410", "GB", out var number));
@@ -48,33 +37,11 @@ namespace PhoneNumbers.Extensions.Test
         }
 
         [Fact]
-        public void TestGBNational_Old()
-        {
-            Assert.True(PhoneNumber.TryParse("08445717410", "GB", out var number));
-            Assert.True(PhoneNumber.TryParseValid("08445717410", "GB", out number));
-
-            var sb = new StringBuilder(20);
-            Util.Format(number, PhoneNumberFormat.NATIONAL, sb);
-            Assert.Equal("0844 571 7410", sb.ToString());
-        }
-
-        [Fact]
         public void TestE164()
         {
             Assert.True(PhoneNumber.TryParse("+16192987704", null, out var number));
             Assert.True(PhoneNumber.TryParseValid("+16192987704", null, out number));
             Assert.Equal("+16192987704", Util.Format(number, PhoneNumberFormat.E164));
-        }
-
-        [Fact]
-        public void TestE164_Old()
-        {
-            Assert.True(PhoneNumber.TryParse("+16192987704", null, out var number));
-            Assert.True(PhoneNumber.TryParseValid("+16192987704", null, out number));
-
-            var sb = new StringBuilder(20);
-            Util.Format(number, PhoneNumberFormat.E164, sb);
-            Assert.Equal("+16192987704", sb.ToString());
         }
 
         [Fact]
@@ -87,7 +54,7 @@ namespace PhoneNumbers.Extensions.Test
         [Fact]
         public void TestInvalidNumberForRegion()
         {
-            Assert.False(PhoneNumber.TryParseValid("1235557704", "US", out var number));
+            Assert.False(PhoneNumber.TryParseValid("1235557704", "US", out _));
         }
 
         [Theory]
