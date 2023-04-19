@@ -2592,7 +2592,7 @@ namespace PhoneNumbers
         /// </summary>
         public void Parse(string numberToParse, string defaultRegion, PhoneNumber.Builder phoneNumber)
         {
-            ParseHelper(numberToParse, defaultRegion, false, true, phoneNumber);
+            ParseHelper(numberToParse, defaultRegion, false, defaultRegion is not null, phoneNumber);
         }
 
         /// <summary>
@@ -2625,7 +2625,7 @@ namespace PhoneNumbers
         /// <param name="phoneNumber"></param>
         public void ParseAndKeepRawInput(string numberToParse, string defaultRegion, PhoneNumber.Builder phoneNumber)
         {
-            ParseHelper(numberToParse, defaultRegion, true, true, phoneNumber);
+            ParseHelper(numberToParse, defaultRegion, true, defaultRegion is not null, phoneNumber);
         }
 
         /// <summary>
