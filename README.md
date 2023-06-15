@@ -11,6 +11,8 @@ C# port of Google's [libphonenumber library](https://github.com/googlei18n/libph
 
   See [this](https://github.com/twcclegg/libphonenumber-csharp/blob/main/csharp/README.txt "csharp/README.txt") for details about the port.
 
+  Phonenumber metadata is updated in the Google repo approximately every two weeks. This library is manually updated to include the latest metadata, usually within a day or so. There is currently plans to fully automate this https://github.com/twcclegg/libphonenumber-csharp/issues/172
+
 ## Example
 
 ```cs
