@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+using System.Text.RegularExpressions;
+
 namespace PhoneNumbers.Internal
 {
     public sealed class RegexBasedMatcher : IMatcherApi
@@ -23,20 +25,38 @@ namespace PhoneNumbers.Internal
             return new RegexBasedMatcher();
         }
 
+        #if !NET7_0_OR_GREATER
         private static readonly RegexCache RegexCache = new RegexCache(100);
+#endif
 
         private RegexBasedMatcher()
         {
         }
 
+#if NET7_0_OR_GREATER
         public bool MatchNationalNumber(string number, PhoneNumberDesc numberDesc, bool allowPrefixMatch)
         {
             var nationalNumberPattern = numberDesc.NationalNumberPattern;
             // We don't want to consider it a prefix match when matching non-empty input against an empty
             // pattern.
+            var regex = RegexCache.GetOrAddPatternForRegex(nationalNumberPattern,
+                _ => new PhoneRegex(new Regex(nationalNumberPattern), new Regex(nationalNumberPattern), new Regex("")));
+
             return nationalNumberPattern.Length > 0 &&
-                   Match(number, RegexCache.GetPatternForRegex(nationalNumberPattern), allowPrefixMatch);
+                   Match(number, regex, allowPrefixMatch);
         }
+#else
+        public bool MatchNationalNumber(string number, PhoneNumberDesc numberDesc, bool allowPrefixMatch)
+        {
+            var nationalNumberPattern = numberDesc.NationalNumberPattern;
+            // We don't want to consider it a prefix match when matching non-empty input against an empty
+            // pattern.
+
+            RegexCache.GetPatternForRegex(nationalNumberPattern);
+            return nationalNumberPattern.Length > 0 &&
+                   Match(number, regex, allowPrefixMatch);
+        }
+#endif
 
         private static bool Match(string number, PhoneRegex pattern, bool allowPrefixMatch)
             => allowPrefixMatch ? pattern.IsMatchBeginning(number) : pattern.IsMatchAll(number);

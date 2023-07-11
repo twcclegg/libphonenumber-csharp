@@ -28,13 +28,21 @@ namespace PhoneNumbers
             cache = new ConcurrentDictionary<string, PhoneRegex>(Environment.ProcessorCount, size);
         }
 
+#if NET7_0_OR_GREATER
+        public PhoneRegex GetOrAddPatternForRegex(string key, Func<string, PhoneRegex> regexFunc)
+        {
+            return cache.GetOrAdd(key, regexFunc);
+        }
+#else
         public PhoneRegex GetPatternForRegex(string regex)
         {
-            return cache.GetOrAdd(regex, (k) => new PhoneRegex(regex));
+            return cache.GetOrAdd(regex, _ => new PhoneRegex(regex));
         }
+#endif
 
         // This method is used for testing.
-        public bool ContainsRegex(string regex)
+        internal 
+            bool ContainsRegex(string regex)
         {
             return cache.ContainsKey(regex);
         }

@@ -21,35 +21,59 @@ namespace PhoneNumbers
 {
     public sealed class PhoneRegex
     {
-        private readonly string pattern;
-        private readonly RegexOptions options;
-        private Lazy<Regex> regex;
-        private Lazy<Regex> allRegex;
-        private Lazy<Regex> beginRegex;
+#if NET7_0_OR_GREATER
+        private readonly Regex regex;
+        private readonly Regex allRegex;
+        private readonly Regex beginRegex;
+        #else
+        private readonly Lazy<Regex> regex;
+        private readonly Lazy<Regex> allRegex;
+        private readonly Lazy<Regex> beginRegex;
+#endif
 
-        public PhoneRegex(string pattern)
-            : this(pattern, RegexOptions.None)
+#if NET7_0_OR_GREATER
+        public PhoneRegex(Regex regex, Regex allRegex, Regex beginRegex)
         {
+            this.regex = regex;
+            this.allRegex = allRegex;
+            this.beginRegex = beginRegex;
         }
 
-        public PhoneRegex(string pattern, RegexOptions options)
+        [Obsolete("Use source generated regexs in >=NET7")]
+#endif
+        // ReSharper disable once UnusedParameter.Local
+        public PhoneRegex(string pattern, RegexOptions options = RegexOptions.None)
         {
-            this.pattern = pattern;
-            this.options = options | InternalRegexOptions.Default;
-
+            #if !NET7_0_OR_GREATER
             regex = new Lazy<Regex>(() => new Regex(pattern, options), true);
             allRegex = new Lazy<Regex>(() => new Regex($"^(?:{pattern})$", options), true);
             beginRegex = new Lazy<Regex>(() => new Regex($"^(?:{pattern})", options), true);
+#endif
         }
 
-        public bool IsMatch(string value) => regex.Value.IsMatch(value);
-        public Match Match(string value) => regex.Value.Match(value);
-        public string Replace(string value, string replacement) => regex.Value.Replace(value, replacement);
+        public bool IsMatch(string value) => regex.Value().IsMatch(value);
+        public Match Match(string value) => regex.Value().Match(value);
+        public string Replace(string value, string replacement) => regex.Value().Replace(value, replacement);
 
-        public bool IsMatchAll(string value) => allRegex.Value.IsMatch(value);
-        public Match MatchAll(string value) => allRegex.Value.Match(value);
+        public bool IsMatchAll(string value) => allRegex.Value().IsMatch(value);
+        public Match MatchAll(string value) => allRegex.Value().Match(value);
 
-        public bool IsMatchBeginning(string value) => beginRegex.Value.IsMatch(value);
-        public Match MatchBeginning(string value) => beginRegex.Value.Match(value);
+        public bool IsMatchBeginning(string value) => beginRegex.Value().IsMatch(value);
+        public Match MatchBeginning(string value) => beginRegex.Value().Match(value);
+    }
+
+    public static class LazyHelper
+    {
+        #if NET7_0_OR_GREATER
+        internal static Regex Value(this Regex regex)
+        {
+            return regex;
+        }
+        #else
+        internal static T Value<T>(this Lazy<T> lazyRegex)
+        {
+            return lazyRegex.Value;
+        }
+#endif
     }
 }

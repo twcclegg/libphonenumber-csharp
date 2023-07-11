@@ -43,8 +43,10 @@ namespace PhoneNumbers
     /// </summary>
     public partial class PhoneNumberUtil
     {
+#if !NET7_0_OR_GREATER
         // Flags to use when compiling regular expressions for phone numbers.
         internal const RegexOptions REGEX_FLAGS = RegexOptions.IgnoreCase | InternalRegexOptions.Default;
+#endif
         // The minimum and maximum length of the national significant number.
         private const int MIN_LENGTH_FOR_NSN = 2;
         private const string MIN_LENGTH_FOR_NSN_STR = "2";
@@ -52,6 +54,8 @@ namespace PhoneNumbers
         internal const int MAX_LENGTH_FOR_NSN = 17;
         // The maximum length of the country calling code.
         internal const int MAX_LENGTH_COUNTRY_CODE = 3;
+        // The maximum length of country code plus NSN
+        internal const string MAX_LENGTH_FOR_NUMBER_STR = "20";
         // We don't allow input strings for parsing to be longer than 250 chars. This prevents malicious
         // input from overflowing the regular-expression engine.
         private const int MAX_INPUT_STRING_LENGTH = 250;
@@ -211,8 +215,9 @@ namespace PhoneNumbers
         "(" + DIGITS + "|" + RFC3966_VISUAL_SEPARATOR + ")";
         private const string RFC3966_GLOBAL_NUMBER_DIGITS =
         "^\\" + PLUS_SIGN_STR + RFC3966_PHONE_DIGIT + "*" + DIGITS + RFC3966_PHONE_DIGIT + "*$";
-        private static readonly PhoneRegex RFC3966_GLOBAL_NUMBER_DIGITS_PATTERN =
-        new PhoneRegex(RFC3966_GLOBAL_NUMBER_DIGITS);
+
+        private static readonly PhoneRegex Rfc3966GlobalNumberDigitsPattern =
+            new PhoneRegex(RFC3966_GLOBAL_NUMBER_DIGITS);
 
         // Regular expression of valid domainname for the phone-context parameter, following the syntax
         // defined in RFC3966.
@@ -226,7 +231,7 @@ namespace PhoneNumbers
         private static readonly PhoneRegex RFC3966_DOMAINNAME_PATTERN = new PhoneRegex(RFC3966_DOMAINNAME);
 
     ///
-    /// Helper initialiser method to create the regular-expression pattern to match extensions.
+    /// Helper initializer method to create the regular-expression pattern to match extensions.
     /// Note that there are currently six capturing groups for the extension itself. If this number is
     /// changed, MaybeStripExtension needs to be updated.
     ///
@@ -2859,7 +2864,7 @@ namespace PhoneNumbers
             }
 
             // Does phone-context value match pattern of global-number-digits or domain name
-            return RFC3966_GLOBAL_NUMBER_DIGITS_PATTERN.IsMatchAll(phoneContext)
+            return Rfc3966GlobalNumberDigitsPattern.IsMatchAll(phoneContext)
                    || RFC3966_DOMAINNAME_PATTERN.IsMatchAll(phoneContext);
         }
 

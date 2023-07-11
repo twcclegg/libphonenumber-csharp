@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿#if !NET7_0_OR_GREATER
+using System.Text.RegularExpressions;
 
 namespace PhoneNumbers
 {
@@ -13,3 +14,4 @@ namespace PhoneNumbers
             Default = RegexOptions.Compiled | RegexOptions.CultureInvariant;
     }
 }
+#endif

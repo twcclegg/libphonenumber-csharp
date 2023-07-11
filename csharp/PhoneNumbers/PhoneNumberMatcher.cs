@@ -50,22 +50,23 @@ namespace PhoneNumbers
         ///
         /// The string "211-227 (2003)" is not a telephone number.
         /// </summary>
-        private static readonly Regex PubPages = new Regex("\\d{1,5}-+\\d{1,5}\\s{0,4}\\(\\d{1,4}", InternalRegexOptions.Default);
+        private static readonly Regex PubPages = RegexHelper.PubPagesRegex();
 
         /// <summary>
         /// Matches strings that look like dates using "/" as a separator. Examples: 3/10/2011, 31/10/96 or
         /// 08/31/95.
         /// </summary>
-        private static readonly Regex SlashSeparatedDates =
-            new Regex("(?:(?:[0-3]?\\d/[01]?\\d)|(?:[01]?\\d/[0-3]?\\d))/(?:[12]\\d)?\\d{2}", InternalRegexOptions.Default);
+        private static readonly Regex SlashSeparatedDates = RegexHelper.SlashSeparatedDatesRegex();
+//            new Regex("(?:(?:[0-3]?\\d/[01]?\\d)|(?:[01]?\\d/[0-3]?\\d))/(?:[12]\\d)?\\d{2}", InternalRegexOptions.Default);
 
         /// <summary>
         /// Matches timestamps. Examples: "2012-01-02 08:00". Note that the reg-ex does not include the
         /// trailing ":\d\d" -- that is covered by TIME_STAMPS_SUFFIX.
         /// </summary>
-        private static readonly Regex TimeStamps =
-            new Regex("[12]\\d{3}[-/]?[01]\\d[-/]?[0-3]\\d [0-2]\\d$", InternalRegexOptions.Default);
-        private static readonly PhoneRegex TimeStampsSuffix = new PhoneRegex(":[0-5]\\d", InternalRegexOptions.Default);
+        private static readonly Regex TimeStamps = RegexHelper.TimeStampsRegex();
+        //    new Regex("[12]\\d{3}[-/]?[01]\\d[-/]?[0-3]\\d [0-2]\\d$", InternalRegexOptions.Default);
+
+        private static readonly PhoneRegex TimeStampsSuffix = RegexHelper.TimeStampsSuffixPhoneRegex();
 
 
         /// <summary>
@@ -92,54 +93,21 @@ namespace PhoneNumbers
         /// </summary>
         static PhoneNumberMatcher()
         {
-
-            var openingParens = "(\\[\uFF08\uFF3B";
-            var closingParens = ")\\]\uFF09\uFF3D";
-            var nonParens = "[^" + openingParens + closingParens + "]";
-
             /* Limit on the number of pairs of brackets in a phone number. */
-            var bracketPairLimit = Limit(0, 3);
             /*
             * An opening bracket at the beginning may not be closed, but subsequent ones should be.  It's
             * also possible that the leading bracket was dropped, so we shouldn't be surprised if we see a
             * closing bracket first. We limit the sets of brackets in a phone number to four.
             */
-            MatchingBrackets = new PhoneRegex(
-                "(?:[" + openingParens + "])?" + "(?:" + nonParens + "+" + "[" + closingParens + "])?" +
-                nonParens + "+" +
-                "(?:[" + openingParens + "]" + nonParens + "+[" + closingParens + "])" + bracketPairLimit +
-                nonParens + "*", InternalRegexOptions.Default);
-
-            /* Limit on the number of leading (plus) characters. */
-            var leadLimit = Limit(0, 2);
-            /* Limit on the number of consecutive punctuation characters. */
-            var punctuationLimit = Limit(0, 4);
-            /* The maximum number of digits allowed in a digit-separated block. As we allow all digits in a
-            * single block, set high enough to accommodate the entire national number and the international
-            * country code. */
-            var digitBlockLimit =
-                PhoneNumberUtil.MAX_LENGTH_FOR_NSN + PhoneNumberUtil.MAX_LENGTH_COUNTRY_CODE;
-            /* Limit on the number of blocks separated by punctuation. Uses digitBlockLimit since some
-            * formats use spaces to separate each digit. */
-            var blockLimit = Limit(0, digitBlockLimit);
-
-            /* A punctuation sequence allowing white space. */
-            var punctuation = "[" + PhoneNumberUtil.VALID_PUNCTUATION + "]" + punctuationLimit;
-            /* A digits block without punctuation. */
-            var digitSequence = "\\p{Nd}" + Limit(1, digitBlockLimit);
-            var leadClassChars = openingParens + PhoneNumberUtil.PLUS_CHARS;
-            var leadClass = "[" + leadClassChars + "]";
-            LeadClass = new PhoneRegex(leadClass, InternalRegexOptions.Default);
-            GroupSeparator = new Regex("\\p{Z}" + "[^" + leadClassChars + "\\p{Nd}]*", InternalRegexOptions.Default);
+            MatchingBrackets = RegexHelper.MissingBracketsRegex();
+            LeadClass = RegexHelper.LeadRegex();
+            GroupSeparator = RegexHelper.GroupSeparatorRegex();
 
             /* Phone number pattern allowing optional punctuation. */
-            Pattern = new Regex(
-                "(?:" + leadClass + punctuation + ")" + leadLimit +
-                digitSequence + "(?:" + punctuation + digitSequence + ")" + blockLimit +
-                "(?:" + PhoneNumberUtil.ExtnPatternsForMatching + ")?",
-                PhoneNumberUtil.REGEX_FLAGS);
+            Pattern = RegexHelper.PatternRegex();
         }
 
+#if !NET7_0_OR_GREATER
         /** Returns a regular expression quantifier with an upper and lower limit. */
         private static string Limit(int lower, int upper)
         {
@@ -147,6 +115,7 @@ namespace PhoneNumbers
                 throw new ArgumentOutOfRangeException();
             return "{" + lower + "," + upper + "}";
         }
+#endif
 
         /// <summary>The phone number utility.</summary>
         private readonly PhoneNumberUtil phoneUtil;
@@ -165,11 +134,13 @@ namespace PhoneNumbers
         /// <summary>The next index to start searching at.</summary>
         private int searchIndex;
 
+#if !NET7_0_OR_GREATER
         // A cache for frequently used country-specific regular expressions. Set to 32 to cover ~2-3
         // countries being used for the same doc with ~10 patterns for each country. Some pages will have
         // a lot more countries in use, but typically fewer numbers for each so expanding the cache for
         // that use-case won't have a lot of benefit.
         private readonly RegexCache regexCache = new RegexCache(32);
+#endif
 
         /// <summary>
         /// Creates a new instance. See the factory methods in {@link PhoneNumberUtil} on how to obtain a
