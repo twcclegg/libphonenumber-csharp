@@ -1965,286 +1965,49 @@ namespace PhoneNumbers.Test
             Assert.Equal(mxNumber, phoneUtil.Parse("045 33 1234-5678", RegionCode.MX));
         }
 
-        [Fact]
-        public void TestFailedParseOnInvalidNumbers()
+        private void VerifyFailure(string number, string regionCode, ErrorType type)
         {
             try
             {
-                var sentencePhoneNumber = "This is not a phone number";
-                phoneUtil.Parse(sentencePhoneNumber, RegionCode.NZ);
+                phoneUtil.Parse(number, regionCode);
                 Assert.True(false);
             }
             catch (NumberParseException e)
             {
                 // Expected this exception.
-                Assert.Equal(ErrorType.NOT_A_NUMBER, e.ErrorType);
+                Assert.Equal(type, e.ErrorType);
             }
-            try
-            {
-                var sentencePhoneNumber = "1 Still not a number";
-                phoneUtil.Parse(sentencePhoneNumber, RegionCode.NZ);
-                Assert.True(false);
-            }
-            catch (NumberParseException e)
-            {
-                // Expected this exception.
-                Assert.Equal(ErrorType.NOT_A_NUMBER, e.ErrorType);
-            }
-            try
-            {
-                var sentencePhoneNumber = "1 MICROSOFT";
-                phoneUtil.Parse(sentencePhoneNumber, RegionCode.NZ);
-                Assert.True(false);
-            }
-            catch (NumberParseException e)
-            {
-                // Expected this exception.
-                Assert.Equal(ErrorType.NOT_A_NUMBER, e.ErrorType);
-            }
-            try
-            {
-                var sentencePhoneNumber = "12 MICROSOFT";
-                phoneUtil.Parse(sentencePhoneNumber, RegionCode.NZ);
-                Assert.True(false);
-            }
-            catch (NumberParseException e)
-            {
-                // Expected this exception.
-                Assert.Equal(ErrorType.NOT_A_NUMBER, e.ErrorType);
-            }
-            try
-            {
-                var tooLongPhoneNumber = "01495 72553301873 810104";
-                phoneUtil.Parse(tooLongPhoneNumber, RegionCode.GB);
-                Assert.True(false);
-            }
-            catch (NumberParseException e)
-            {
-                // Expected this exception.
-                Assert.Equal(ErrorType.TOO_LONG, e.ErrorType);
-            }
-            try
-            {
-                var plusMinusPhoneNumber = "+---";
-                phoneUtil.Parse(plusMinusPhoneNumber, RegionCode.DE);
-                Assert.True(false);
-            }
-            catch (NumberParseException e)
-            {
-                // Expected this exception.
-                Assert.Equal(ErrorType.NOT_A_NUMBER, e.ErrorType);
-            }
-            try
-            {
-                var plusStar = "+***";
-                phoneUtil.Parse(plusStar, RegionCode.DE);
-                Assert.True(false);
-            }
-            catch (NumberParseException e)
-            {
-                // Expected this exception.
-                Assert.Equal(ErrorType.NOT_A_NUMBER, e.ErrorType);
-            }
-            try
-            {
-                var plusStarPhoneNumber = "+*******91";
-                phoneUtil.Parse(plusStarPhoneNumber, RegionCode.DE);
-                Assert.True(false);
-            }
-            catch (NumberParseException e)
-            {
-                // Expected this exception.
-                Assert.Equal(ErrorType.NOT_A_NUMBER, e.ErrorType);
-            }
-            try
-            {
-                var tooShortPhoneNumber = "+49 0";
-                phoneUtil.Parse(tooShortPhoneNumber, RegionCode.DE);
-                Assert.True(false);
-            }
-            catch (NumberParseException e)
-            {
-                // Expected this exception.
-                Assert.Equal(ErrorType.TOO_SHORT_NSN, e.ErrorType);
-            }
-            try
-            {
-                var invalidCountryCode = "+210 3456 56789";
-                phoneUtil.Parse(invalidCountryCode, RegionCode.NZ);
-                Assert.True(false);
-            }
-            catch (NumberParseException e)
-            {
-                // Expected this exception.
-                Assert.Equal(ErrorType.INVALID_COUNTRY_CODE, e.ErrorType);
-            }
-            try
-            {
-                var plusAndIddAndInvalidCountryCode = "+ 00 210 3 331 6005";
-                phoneUtil.Parse(plusAndIddAndInvalidCountryCode, RegionCode.NZ);
-                Assert.True(false);
-            }
-            catch (NumberParseException e)
-            {
-                // Expected this exception. 00 is a correct IDD, but 210 is not a valid country code.
-                Assert.Equal(ErrorType.INVALID_COUNTRY_CODE, e.ErrorType);
-            }
-            try
-            {
-                var someNumber = "123 456 7890";
-                phoneUtil.Parse(someNumber, RegionCode.ZZ);
-                Assert.True(false);
-            }
-            catch (NumberParseException e)
-            {
-                // Expected this exception.
-                Assert.Equal(ErrorType.INVALID_COUNTRY_CODE, e.ErrorType);
-            }
-            try
-            {
-                var someNumber = "123 456 7890";
-                phoneUtil.Parse(someNumber, RegionCode.CS);
-                Assert.True(false);
-            }
-            catch (NumberParseException e)
-            {
-                // Expected this exception.
-                Assert.Equal(ErrorType.INVALID_COUNTRY_CODE, e.ErrorType);
-            }
-            try
-            {
-                var someNumber = "123 456 7890";
-                phoneUtil.Parse(someNumber, null);
-                Assert.True(false);
-            }
-            catch (NumberParseException e)
-            {
-                // Expected this exception.
-                Assert.Equal(ErrorType.INVALID_COUNTRY_CODE, e.ErrorType);
-            }
-            try
-            {
-                var someNumber = "0044------";
-                phoneUtil.Parse(someNumber, RegionCode.GB);
-                Assert.True(false);
-            }
-            catch (NumberParseException e)
-            {
-                // Expected this exception.
-                Assert.Equal(ErrorType.TOO_SHORT_AFTER_IDD, e.ErrorType);
-            }
-            try
-            {
-                var someNumber = "0044";
-                phoneUtil.Parse(someNumber, RegionCode.GB);
-                Assert.True(false);
-            }
-            catch (NumberParseException e)
-            {
-                // Expected this exception.
-                Assert.Equal(ErrorType.TOO_SHORT_AFTER_IDD, e.ErrorType);
-            }
-            try
-            {
-                var someNumber = "011";
-                phoneUtil.Parse(someNumber, RegionCode.US);
-                Assert.True(false);
-            }
-            catch (NumberParseException e)
-            {
-                // Expected this exception.
-                Assert.Equal(ErrorType.TOO_SHORT_AFTER_IDD, e.ErrorType);
-            }
-            try
-            {
-                var someNumber = "0119";
-                phoneUtil.Parse(someNumber, RegionCode.US);
-                Assert.True(false);
-            }
-            catch (NumberParseException e)
-            {
-                // Expected this exception.
-                Assert.Equal(ErrorType.TOO_SHORT_AFTER_IDD, e.ErrorType);
-            }
-            try
-            {
-                var emptyNumber = "";
-                // Invalid region.
-                phoneUtil.Parse(emptyNumber, RegionCode.ZZ);
-                Assert.True(false);
-            }
-            catch (NumberParseException e)
-            {
-                // Expected this exception.
-                Assert.Equal(ErrorType.NOT_A_NUMBER, e.ErrorType);
-            }
-            try
-            {
-                // Invalid region.
-                phoneUtil.Parse(null, RegionCode.ZZ);
-                Assert.True(false);
-            }
-            catch (NumberParseException e)
-            {
-                // Expected this exception.
-                Assert.Equal(ErrorType.NOT_A_NUMBER, e.ErrorType);
-            }
-            catch (ArgumentNullException)
-            {
-                Assert.True(false);
-            }
-            try
-            {
-                phoneUtil.Parse(null, RegionCode.US);
-                Assert.True(false);
-            }
-            catch (NumberParseException e)
-            {
-                // Expected this exception.
-                Assert.Equal(ErrorType.NOT_A_NUMBER, e.ErrorType);
-            }
-            catch (ArgumentNullException)
-            {
-                Assert.True(false);
-            }
-            try
-            {
-                var domainRfcPhoneContext = "tel:555-1234;phone-context=www.google.com";
-                phoneUtil.Parse(domainRfcPhoneContext, RegionCode.ZZ);
-                Assert.True(false);
-            }
-            catch (NumberParseException e)
-            {
-                // Expected this exception.
-                Assert.Equal(ErrorType.INVALID_COUNTRY_CODE, e.ErrorType);
-            }
-            catch (ArgumentNullException)
-            {
-                Assert.True(false);
-            }
-            try
-            {
-                // This is invalid because no "+" sign is present as part of phone-context. This should not
-                // succeed in being parsed.
-                var invalidRfcPhoneContext = "tel:555-1234;phone-context=1-331";
-                phoneUtil.Parse(invalidRfcPhoneContext, RegionCode.ZZ);
-                Assert.Fail("phone-context is missing '+' sign: should fail.");
-            }
-            catch (NumberParseException e)
-            {
-                // Expected this exception.
-                Assert.Equal(ErrorType.NOT_A_NUMBER, e.ErrorType);
-            }
-
-            try {
-                // Only the phone-context symbol is present, but no data.
-                var invalidRfcPhoneContext = ";phone-context=";
-                phoneUtil.Parse(invalidRfcPhoneContext, RegionCode.ZZ);
-                Assert.Fail("phone-context can't be empty: should fail.");
-            } catch (NumberParseException e) {
-                // Expected this exception.
-                Assert.Equal(ErrorType.NOT_A_NUMBER, e.ErrorType);
-            }
+        }
+        [Fact]
+        public void TestFailedParseOnInvalidNumbers()
+        {
+            VerifyFailure("This is not a phone number", RegionCode.NZ, ErrorType.NOT_A_NUMBER);
+            VerifyFailure("1 Still not a number", RegionCode.NZ, ErrorType.NOT_A_NUMBER);
+            VerifyFailure("1 MICROSOFT", RegionCode.NZ, ErrorType.NOT_A_NUMBER);
+            VerifyFailure("12 MICROSOFT", RegionCode.NZ, ErrorType.NOT_A_NUMBER);
+            VerifyFailure("01495 72553301873 810104", RegionCode.GB, ErrorType.TOO_LONG);
+            VerifyFailure("+---", RegionCode.DE, ErrorType.NOT_A_NUMBER);
+            VerifyFailure("+***", RegionCode.DE, ErrorType.NOT_A_NUMBER);
+            VerifyFailure("+*******91", RegionCode.DE, ErrorType.NOT_A_NUMBER);
+            VerifyFailure("+49 0", RegionCode.DE, ErrorType.TOO_SHORT_NSN);
+            VerifyFailure("+210 3456 56789", RegionCode.NZ, ErrorType.INVALID_COUNTRY_CODE);
+            // Expected this exception. 00 is a correct IDD, but 210 is not a valid country code.
+            VerifyFailure("+ 00 210 3 331 6005", RegionCode.NZ, ErrorType.INVALID_COUNTRY_CODE);
+            VerifyFailure("123 456 7890", RegionCode.ZZ, ErrorType.INVALID_COUNTRY_CODE);
+            VerifyFailure("123 456 7890", RegionCode.CS, ErrorType.INVALID_COUNTRY_CODE);
+            VerifyFailure("123 456 7890", null, ErrorType.INVALID_COUNTRY_CODE);
+            VerifyFailure("0044------", RegionCode.GB, ErrorType.TOO_SHORT_AFTER_IDD);
+            VerifyFailure("0044", RegionCode.GB, ErrorType.TOO_SHORT_AFTER_IDD);
+            VerifyFailure("011", RegionCode.US, ErrorType.TOO_SHORT_AFTER_IDD);
+            VerifyFailure("0119", RegionCode.US, ErrorType.TOO_SHORT_AFTER_IDD);
+            VerifyFailure("", RegionCode.ZZ, ErrorType.NOT_A_NUMBER);
+            VerifyFailure(null, RegionCode.ZZ, ErrorType.NOT_A_NUMBER);
+            VerifyFailure(null, RegionCode.US, ErrorType.NOT_A_NUMBER);
+            VerifyFailure("tel:555-1234;phone-context=www.google.com", RegionCode.ZZ, ErrorType.INVALID_COUNTRY_CODE);
+            // This is invalid because no "+" sign is present as part of phone-context.
+            VerifyFailure("tel:555-1234;phone-context=1-331", RegionCode.ZZ, ErrorType.NOT_A_NUMBER);
+            // Only the phone-context symbol is present, but no data.
+            VerifyFailure(";phone-context=", RegionCode.ZZ, ErrorType.NOT_A_NUMBER);
         }
 
         [Fact]
