@@ -33,7 +33,7 @@ namespace PhoneNumbers
     /// See the unittests for more details on how the formatter is to be used.
     /// <!-- @author Shaopeng Jia -->
     /// </summary>
-    public class AsYouTypeFormatter
+    public partial class AsYouTypeFormatter
     {
         private string currentOutput = "";
         private readonly StringBuilder formattingTemplate = new StringBuilder();
@@ -69,14 +69,18 @@ namespace PhoneNumbers
         // prevents invalid punctuation (such as the star sign in Israeli star numbers) getting into the
         // output of the AYTF. We require that the first group is present in the output pattern to ensure
         // no data is lost while formatting; when we format as you type, this should always be the case.
-        private static readonly PhoneRegex EligibleFormatPattern =
-            new PhoneRegex("[" + PhoneNumberUtil.VALID_PUNCTUATION + "]*" +
-                "\\$1" + "[" + PhoneNumberUtil.VALID_PUNCTUATION + "]*(\\$\\d" +
-                "[" + PhoneNumberUtil.VALID_PUNCTUATION + "]*)*",
-                InternalRegexOptions.Default);
+#if NET7_0_OR_GREATER
+        [GeneratedRegex("^[" + PhoneNumberUtil.VALID_PUNCTUATION + "]*\\$1(?>[" + PhoneNumberUtil.VALID_PUNCTUATION + "]*)(?>(\\$[0-9][" + PhoneNumberUtil.VALID_PUNCTUATION + "]*)*)$", InternalRegexOptions.Default | RegexOptions.ExplicitCapture)]
+        private static partial Regex EligibleFormatPattern();
+#else
+        private static Regex EligibleFormatPattern() => _eligibleFormatPattern;
+        private static readonly Regex _eligibleFormatPattern =
+            new("^[" + PhoneNumberUtil.VALID_PUNCTUATION + "]*\\$1(?>[" + PhoneNumberUtil.VALID_PUNCTUATION + "]*)(?>(\\$[0-9][" + PhoneNumberUtil.VALID_PUNCTUATION + "]*)*)$", InternalRegexOptions.Default | RegexOptions.ExplicitCapture);
+#endif
+
         // A set of characters that, if found in a national prefix formatting rules, are an indicator to
         // us that we should separate the national prefix from the number when formatting.
-        private static readonly Regex NationalPrefixSeparatorsPattern = new Regex("[- ]", InternalRegexOptions.Default);
+        private static readonly char[] NationalPrefixSeparators = { '-', ' ' };
 
         // This is the minimum length of national number accrued that is required to trigger the
         // formatter. The first element of the leadingDigitsPattern of each numberFormat contains a
@@ -102,9 +106,6 @@ namespace PhoneNumbers
         private string extractedNationalPrefix = "";
         private readonly StringBuilder nationalNumber = new StringBuilder();
         private readonly List<NumberFormat> possibleFormats = new List<NumberFormat>();
-
-        // A cache for frequently used country-specific regular expressions.
-        private readonly RegexCache regexCache = new RegexCache(64);
 
         /// <summary>
         /// Constructs an as-you-type formatter. Should be obtained from
@@ -146,8 +147,7 @@ namespace PhoneNumbers
                 if (CreateFormattingTemplate(numberFormat))
                 {
                     currentFormattingPattern = pattern;
-                    shouldAddSpaceAfterNationalPrefix =
-                        NationalPrefixSeparatorsPattern.IsMatch(numberFormat.NationalPrefixFormattingRule);
+                    shouldAddSpaceAfterNationalPrefix = numberFormat.NationalPrefixFormattingRule.IndexOfAny(NationalPrefixSeparators) >= 0;
                     // With a new formatting template, the matched position using the old template needs to be
                     // reset.
                     lastMatchPosition = 0;
@@ -159,6 +159,12 @@ namespace PhoneNumbers
             ableToFormat = false;
             return false;
         }
+
+        /// <summary>
+        /// Helper function to check if the national prefix formatting rule has the first group only, i.e.,
+        /// does not start with the national prefix.
+        /// </summary>
+        private static bool FormattingRuleHasFirstGroupOnly(string rule) => rule is "" or "($1)" or "$1)" or "($1" or "$1";
 
         private void GetAvailableFormats(string leadingDigits)
         {
@@ -173,8 +179,7 @@ namespace PhoneNumbers
                 // Discard a few formats that we know are not relevant based on the presence of the national
                 // prefix.
                 if (extractedNationalPrefix.Length > 0
-                    && PhoneNumberUtil.FormattingRuleHasFirstGroupOnly(
-                        format.NationalPrefixFormattingRule)
+                    && FormattingRuleHasFirstGroupOnly(format.NationalPrefixFormattingRule)
                     && !format.NationalPrefixOptionalWhenFormatting
                     && !format.HasDomesticCarrierCodeFormattingRule)
                 {
@@ -186,15 +191,14 @@ namespace PhoneNumbers
                 }
                 else if (extractedNationalPrefix.Length == 0
                          && !isCompleteNumber
-                         && !PhoneNumberUtil.FormattingRuleHasFirstGroupOnly(
-                             format.NationalPrefixFormattingRule)
+                         && !FormattingRuleHasFirstGroupOnly(format.NationalPrefixFormattingRule)
                          && !format.NationalPrefixOptionalWhenFormatting)
                 {
                     // This number was entered without a national prefix, and this formatting rule requires one,
                     // so we discard it.
                     continue;
                 }
-                if (EligibleFormatPattern.IsMatchAll(format.Format))
+                if (EligibleFormatPattern().IsMatch(format.Format))
                 {
                     possibleFormats.Add(format);
                 }
@@ -213,7 +217,7 @@ namespace PhoneNumbers
                 {
                     var lastLeadingDigitsPattern =
                         Math.Min(indexOfLeadingDigitsPattern, format.LeadingDigitsPatternCount - 1);
-                    var leadingDigitsPattern = regexCache.GetPatternForRegex(
+                    var leadingDigitsPattern = PhoneRegex.Get(
                         format.GetLeadingDigitsPattern(lastLeadingDigitsPattern));
                     if (!leadingDigitsPattern.IsMatchBeginning(leadingDigits))
                     {
@@ -246,7 +250,7 @@ namespace PhoneNumbers
             // Creates a phone number consisting only of the digit 9 that matches the
             // numberPattern by applying the pattern to the longestPhoneNumber string.
             var longestPhoneNumber = "999999999999999";
-            var m = regexCache.GetPatternForRegex(numberPattern).Match(longestPhoneNumber);
+            var m = PhoneRegex.Get(numberPattern).Match(longestPhoneNumber);
             // No formatting template can be created if the number of digits entered so far is longer than
             // the maximum the current formatting rule can accommodate.
             if (m.Length < nationalNumber.Length)
@@ -456,11 +460,10 @@ namespace PhoneNumbers
         {
             foreach (var numFormat in possibleFormats)
             {
-                var m = regexCache.GetPatternForRegex(numFormat.Pattern).MatchAll(nationalNumber.ToString());
+                var m = PhoneRegex.Get(numFormat.Pattern).MatchAll(nationalNumber.ToString());
                 if (m.Success)
                 {
-                    shouldAddSpaceAfterNationalPrefix =
-                        NationalPrefixSeparatorsPattern.IsMatch(numFormat.NationalPrefixFormattingRule);
+                    shouldAddSpaceAfterNationalPrefix = numFormat.NationalPrefixFormattingRule.IndexOfAny(NationalPrefixSeparators) >= 0;
                     var formattedNumber = m.Result(numFormat.Format);
                     // Check that we did not remove nor add any extra digits when we matched
                     // this formatting pattern. This usually happens after we entered the last
@@ -596,7 +599,7 @@ namespace PhoneNumbers
             else if (currentMetadata.HasNationalPrefixForParsing)
             {
                 var nationalPrefixForParsing =
-                    regexCache.GetPatternForRegex(currentMetadata.NationalPrefixForParsing);
+                    PhoneRegex.Get(currentMetadata.NationalPrefixForParsing);
                 var m = nationalPrefixForParsing.MatchBeginning(nationalNumber.ToString());
                 // Since some national prefix patterns are entirely optional, check that a national prefix
                 // could actually be extracted.
@@ -624,7 +627,7 @@ namespace PhoneNumbers
         private bool AttemptToExtractIdd()
         {
             var internationalPrefix =
-                regexCache.GetPatternForRegex("\\" + PhoneNumberUtil.PLUS_SIGN + "|" +
+                PhoneRegex.Get("\\" + PhoneNumberUtil.PLUS_SIGN + "|" +
                     currentMetadata.InternationalPrefix);
             var iddMatcher = internationalPrefix.MatchBeginning(accruedInputWithoutFormatting.ToString());
             if (iddMatcher.Success)

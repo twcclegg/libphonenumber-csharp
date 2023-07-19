@@ -47,7 +47,7 @@ namespace PhoneNumbers
         /// <param name="number"> a string of characters representing a phone number</param>
         /// <returns> the normalized string version of the phone number</returns>
         public static string NormalizeDiallableCharsOnly(string number) =>
-            NormalizeHelper(number, DiallableCharMappings, true /* remove non matches */);
+            NormalizeHelper(number, MapDiallableChar, true /* remove non matches */);
 
         /// <summary>
         /// Converts all alpha characters in a number to their respective digits on a keypad, but retains
@@ -56,7 +56,7 @@ namespace PhoneNumbers
         /// <param name="number"></param>
         /// <returns></returns>
         public static string ConvertAlphaCharactersInNumber(string number) =>
-            NormalizeHelper(number, AlphaPhoneMappings, false);
+            NormalizeHelper(number, MapAlphaPhone, false);
 
         /// <summary>
         /// Formats a phone number in the specified format using default rules. Note that this does not
@@ -278,7 +278,7 @@ namespace PhoneNumbers
                 internationalPrefixForFormatting =
                     metadataForRegionCallingFrom.PreferredInternationalPrefix;
             }
-            else if (UniqueInternationalPrefix.IsMatchAll(internationalPrefix))
+            else if (UniqueInternationalPrefix().IsMatch(internationalPrefix))
             {
                 internationalPrefixForFormatting = internationalPrefix;
             }
@@ -359,7 +359,7 @@ namespace PhoneNumbers
             // the number in raw_input with the parsed number.
             // To do this, first we normalize punctuation. We retain number grouping symbols such as " "
             // only.
-            rawInput = NormalizeHelper(rawInput, AllPlusNumberGroupingSymbols, true);
+            rawInput = NormalizeHelper(rawInput, MapAllPlusNumberGroupingSymbols, true);
             // Now we trim everything before the first three digits in the parsed number. We choose three
             // because all valid alpha numbers have 3 digits at the start - if it does not, then we don't
             // trim anything at all. Similarly, if the national number was less than three digits, we don't
@@ -417,7 +417,7 @@ namespace PhoneNumbers
             {
                 var internationalPrefix = metadataForRegionCallingFrom.InternationalPrefix;
                 internationalPrefixForFormatting =
-                    UniqueInternationalPrefix.IsMatchAll(internationalPrefix)
+                    UniqueInternationalPrefix().IsMatch(internationalPrefix)
                         ? internationalPrefix
                         : metadataForRegionCallingFrom.PreferredInternationalPrefix;
             }

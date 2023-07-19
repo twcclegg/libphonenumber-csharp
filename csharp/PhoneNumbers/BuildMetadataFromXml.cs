@@ -125,8 +125,7 @@ namespace PhoneNumbers
         public static Dictionary<int, List<string>> BuildCountryCodeToRegionCodeMap(
             PhoneMetadataCollection metadataCollection)
         {
-            var countryCodeToRegionCodeMap =
-                new Dictionary<int, List<string>>();
+            var countryCodeToRegionCodeMap = new Dictionary<int, List<string>>(250); // currently 215 items
             foreach (var metadata in metadataCollection.MetadataList)
             {
                 var regionCode = metadata.Id;
@@ -150,11 +149,13 @@ namespace PhoneNumbers
             return countryCodeToRegionCodeMap;
         }
 
-        private static readonly HashSet<string> ValidPatterns = new HashSet<string>();
+        // enabled only for unit tests
+        internal static HashSet<string> ValidPatterns;
 
         public static string ValidateRE(string regex)
         {
-            return ValidateRE(regex, false);
+            if (ValidPatterns != null) ValidateRE(regex, false);
+            return regex;
         }
 
         public static string ValidateRE(string regex, bool removeWhitespace)
@@ -177,15 +178,13 @@ namespace PhoneNumbers
                     }
             }
 
-            lock (ValidPatterns)
-                if (!ValidPatterns.Contains(regex))
-                {
-#pragma warning disable S1848
-                    // ReSharper disable once ObjectCreationAsStatement
-                    new Regex(regex, RegexOptions.CultureInvariant);
-#pragma warning restore S1848
-                    ValidPatterns.Add(regex);
-                }
+            if (ValidPatterns is { } cache)
+                lock (cache)
+                    if (!cache.Contains(regex))
+                    {
+                        _ = new Regex(regex, RegexOptions.CultureInvariant);
+                        cache.Add(regex);
+                    }
             // return regex itself if it is of correct regex syntax
             // i.e. compile did not fail with a PatternSyntaxException.
             return regex;

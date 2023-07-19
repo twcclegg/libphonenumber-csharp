@@ -32,8 +32,7 @@ namespace PhoneNumbers
     /// </summary>
     public class ShortNumberInfo
     {
-        private static readonly ShortNumberInfo Instance =
-        new ShortNumberInfo(RegexBasedMatcher.Create());
+        private static readonly ShortNumberInfo Instance = new();
 
         // In these countries, if extra digits are added to an emergency number, it no longer connects
         // to the emergency service.
@@ -66,11 +65,6 @@ namespace PhoneNumbers
             return Instance;
         }
 
-        /// <summary> IMatcherApi supports the basic matching method for checking if a given national number matches
-        /// a national number pattern defined in the given <see cref="PhoneNumberDesc" />.
-        /// </summary>
-        private readonly IMatcherApi matcherApi;
-
         /// <summary>
         /// A mapping from a country calling code to the region codes which denote the region represented
         /// by that country calling code. In the case of multiple regions sharing a calling code, such as
@@ -78,9 +72,8 @@ namespace PhoneNumbers
         /// </summary>
         private readonly Dictionary<int, List<string>> countryCallingCodeToRegionCodeMap;
 
-        private ShortNumberInfo(IMatcherApi matcherApi)
+        private ShortNumberInfo()
         {
-            this.matcherApi = matcherApi;
             // TODO: Create ShortNumberInfo for a given map
             countryCallingCodeToRegionCodeMap =
                 CountryCodeToRegionCodeMap.GetCountryCodeToRegionCodeMap();
@@ -356,7 +349,7 @@ namespace PhoneNumbers
         /// codes. If the list Contains more than one region, the first region for which the number is
         /// valid is returned.
         /// </summary>
-        private string GetRegionCodeForShortNumberFromRegionList(PhoneNumber number,
+        private static string GetRegionCodeForShortNumberFromRegionList(PhoneNumber number,
             List<string> regionCodes)
         {
             if (!regionCodes.Any())
@@ -470,7 +463,7 @@ namespace PhoneNumbers
             return MatchesEmergencyNumberHelper(number, regionCode, false /* doesn't allow prefix match */);
         }
 
-        private bool MatchesEmergencyNumberHelper(string number, string regionCode,
+        private static bool MatchesEmergencyNumberHelper(string number, string regionCode,
             bool allowPrefixMatch)
         {
             var possibleNumber = PhoneNumberUtil.ExtractPossibleNumber(number);
@@ -491,7 +484,7 @@ namespace PhoneNumbers
             var normalizedNumber = PhoneNumberUtil.NormalizeDigitsOnly(possibleNumber);
             var allowPrefixMatchForRegion =
                 allowPrefixMatch && !RegionsWhereEmergencyNumbersMustBeExact.Contains(regionCode);
-            return matcherApi.MatchNationalNumber(normalizedNumber, metadata.Emergency,
+            return RegexBasedMatcher.MatchNationalNumber(normalizedNumber, metadata.Emergency,
                 allowPrefixMatchForRegion);
         }
 
@@ -597,7 +590,7 @@ namespace PhoneNumbers
 
         // TODO: Once we have benchmarked ShortNumberInfo, consider if it is worth keeping
         // this performance optimization.
-        private bool MatchesPossibleNumberAndNationalNumber(string number,
+        private static bool MatchesPossibleNumberAndNationalNumber(string number,
             PhoneNumberDesc numberDesc)
         {
             if (numberDesc.PossibleLengthCount > 0
@@ -606,7 +599,7 @@ namespace PhoneNumbers
                 return false;
             }
 
-            return matcherApi.MatchNationalNumber(number, numberDesc, false);
+            return RegexBasedMatcher.MatchNationalNumber(number, numberDesc, false);
         }
     }
 }

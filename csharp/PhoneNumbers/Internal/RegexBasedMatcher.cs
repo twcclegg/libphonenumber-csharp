@@ -16,26 +16,15 @@
 
 namespace PhoneNumbers.Internal
 {
-    public sealed class RegexBasedMatcher : IMatcherApi
+    internal static class RegexBasedMatcher
     {
-        public static IMatcherApi Create()
-        {
-            return new RegexBasedMatcher();
-        }
-
-        private static readonly RegexCache RegexCache = new RegexCache(100);
-
-        private RegexBasedMatcher()
-        {
-        }
-
-        public bool MatchNationalNumber(string number, PhoneNumberDesc numberDesc, bool allowPrefixMatch)
+        public static bool MatchNationalNumber(string number, PhoneNumberDesc numberDesc, bool allowPrefixMatch)
         {
             var nationalNumberPattern = numberDesc.NationalNumberPattern;
             // We don't want to consider it a prefix match when matching non-empty input against an empty
             // pattern.
             return nationalNumberPattern.Length > 0 &&
-                   Match(number, RegexCache.GetPatternForRegex(nationalNumberPattern), allowPrefixMatch);
+                   Match(number, PhoneRegex.Get(nationalNumberPattern), allowPrefixMatch);
         }
 
         private static bool Match(string number, PhoneRegex pattern, bool allowPrefixMatch)

@@ -15,6 +15,7 @@
  */
 
 using System;
+using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 
 namespace PhoneNumbers
@@ -22,24 +23,21 @@ namespace PhoneNumbers
     public sealed class PhoneRegex
     {
         private readonly string pattern;
-        private readonly RegexOptions options;
-        private Lazy<Regex> regex;
-        private Lazy<Regex> allRegex;
-        private Lazy<Regex> beginRegex;
+        private readonly Lazy<Regex> regex;
+        private readonly Lazy<Regex> allRegex;
+        private readonly Lazy<Regex> beginRegex;
 
-        public PhoneRegex(string pattern)
-            : this(pattern, RegexOptions.None)
-        {
-        }
+        private static readonly ConcurrentDictionary<string, PhoneRegex> cache = new();
 
-        public PhoneRegex(string pattern, RegexOptions options)
+        public static PhoneRegex Get(string regex) => cache.GetOrAdd(regex, k => new PhoneRegex(k));
+
+        private PhoneRegex(string pattern)
         {
             this.pattern = pattern;
-            this.options = options | InternalRegexOptions.Default;
 
-            regex = new Lazy<Regex>(() => new Regex(pattern, options), true);
-            allRegex = new Lazy<Regex>(() => new Regex($"^(?:{pattern})$", options), true);
-            beginRegex = new Lazy<Regex>(() => new Regex($"^(?:{pattern})", options), true);
+            regex = new Lazy<Regex>(() => new Regex(this.pattern, RegexOptions.CultureInvariant), true);
+            allRegex = new Lazy<Regex>(() => new Regex($"^(?:{this.pattern})$", RegexOptions.CultureInvariant), true);
+            beginRegex = new Lazy<Regex>(() => new Regex($"^(?:{this.pattern})", RegexOptions.CultureInvariant), true);
         }
 
         public bool IsMatch(string value) => regex.Value.IsMatch(value);
