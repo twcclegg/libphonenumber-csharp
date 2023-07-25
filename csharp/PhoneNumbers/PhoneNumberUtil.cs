@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -177,6 +178,9 @@ namespace PhoneNumbers
         private static readonly Regex _separatorPattern = new("[" + VALID_PUNCTUATION + "]+", InternalRegexOptions.Default);
         private static Regex SeparatorPattern() => _separatorPattern;
 #endif
+
+        [Obsolete("This is an internal implementation detail not meant for public use", error: true), EditorBrowsable(EditorBrowsableState.Never)]
+        public static readonly Regex ValidStartCharPattern;
 
         // We use this pattern to check if the phone number has at least three letters in it - if so, then
         // we treat it as a number where some phone-number digits are represented by letters.
