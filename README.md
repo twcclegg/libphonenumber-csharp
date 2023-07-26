@@ -45,12 +45,6 @@ C# port of Google's [libphonenumber library](https://github.com/googlei18n/libph
   * File by file, right click and "Cleanup code"
   * Check the unfolded file
 
-
 Available on NuGet as package [`libphonenumber-csharp`](https://www.nuget.org/packages/libphonenumber-csharp).
 
-<a href="https://www.buymeacoffee.com/tclegg" target="_blank">
-<script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="tclegg" data-color="#2c0088" data-emoji="🍺" data-font="Bree" data-text="Buy me a beer" data-outline-color="#ffffff" data-font-color="#ffffff" data-coffee-color="#FFDD00" >
-</script>
-alt="Buy Me A Beer"></a>
-
-[![Buy me a beer](https://cdn.buymeacoffee.com/buttons/default-orange.png)](https://www.buymeacoffee.com/tclegg)
+[![Buy me a beer](https://raw.githubusercontent.com/twcclegg/libphonenumber-csharp/main/bmacButton.png)](https://www.buymeacoffee.com/tclegg)
