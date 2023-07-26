@@ -45,5 +45,6 @@ C# port of Google's [libphonenumber library](https://github.com/googlei18n/libph
   * File by file, right click and "Cleanup code"
   * Check the unfolded file
 
-
 Available on NuGet as package [`libphonenumber-csharp`](https://www.nuget.org/packages/libphonenumber-csharp).
+
+[![Buy me a beer](https://raw.githubusercontent.com/twcclegg/libphonenumber-csharp/main/bmacButton.png)](https://www.buymeacoffee.com/tclegg)
