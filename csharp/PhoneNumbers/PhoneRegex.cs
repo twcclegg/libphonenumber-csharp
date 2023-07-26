@@ -15,27 +15,37 @@
  */
 
 using System;
+using System.Collections.Concurrent;
+using System.ComponentModel;
 using System.Text.RegularExpressions;
 
 namespace PhoneNumbers
 {
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public sealed class PhoneRegex
     {
         private readonly string pattern;
-        private readonly RegexOptions options;
-        private Lazy<Regex> regex;
-        private Lazy<Regex> allRegex;
-        private Lazy<Regex> beginRegex;
+        private readonly Lazy<Regex> regex;
+        private readonly Lazy<Regex> allRegex;
+        private readonly Lazy<Regex> beginRegex;
+
+        private static readonly ConcurrentDictionary<string, PhoneRegex> cache = new();
+
+        internal static PhoneRegex Get(string regex) => cache.GetOrAdd(regex, k => new PhoneRegex(k));
 
         public PhoneRegex(string pattern)
-            : this(pattern, RegexOptions.None)
         {
+            this.pattern = pattern;
+
+            regex = new Lazy<Regex>(() => new Regex(this.pattern, RegexOptions.CultureInvariant), true);
+            allRegex = new Lazy<Regex>(() => new Regex($"^(?:{this.pattern})$", RegexOptions.CultureInvariant), true);
+            beginRegex = new Lazy<Regex>(() => new Regex($"^(?:{this.pattern})", RegexOptions.CultureInvariant), true);
         }
 
+        [Obsolete("This is an internal implementation detail not meant for public use")]
         public PhoneRegex(string pattern, RegexOptions options)
         {
             this.pattern = pattern;
-            this.options = options | InternalRegexOptions.Default;
 
             regex = new Lazy<Regex>(() => new Regex(pattern, options), true);
             allRegex = new Lazy<Regex>(() => new Regex($"^(?:{pattern})$", options), true);

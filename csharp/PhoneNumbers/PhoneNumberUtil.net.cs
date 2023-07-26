@@ -58,7 +58,7 @@ namespace PhoneNumbers
             Span<char> result = stackalloc char[number.Length];
             var resultLength = 0;
 
-            NormalizeHelper(ref result, ref resultLength, number, DiallableCharMappings, true /* remove non matches */);
+            NormalizeHelper(ref result, ref resultLength, number, MapDiallableChar, true /* remove non matches */);
             return new string(result.Slice(0, resultLength));
         }
 
@@ -73,7 +73,7 @@ namespace PhoneNumbers
             Span<char> result = stackalloc char[number.Length];
             var resultLength = 0;
 
-            NormalizeHelper(ref result, ref resultLength, number, AlphaPhoneMappings, false);
+            NormalizeHelper(ref result, ref resultLength, number, MapAlphaPhone, false);
             return new string(result.Slice(0, resultLength));
         }
 
@@ -320,7 +320,7 @@ namespace PhoneNumbers
                 internationalPrefixForFormatting =
                     metadataForRegionCallingFrom.PreferredInternationalPrefix;
             }
-            else if (UniqueInternationalPrefix.IsMatchAll(internationalPrefix))
+            else if (UniqueInternationalPrefix().IsMatch(internationalPrefix))
             {
                 internationalPrefixForFormatting = internationalPrefix;
             }
@@ -419,7 +419,7 @@ namespace PhoneNumbers
             NormalizeHelper(ref intermediateResult,
                 ref intermediateResultLength,
                 rawInput,
-                AllPlusNumberGroupingSymbols,
+                MapAllPlusNumberGroupingSymbols,
                 true);
             // Now we trim everything before the first three digits in the parsed number. We choose three
             // because all valid alpha numbers have 3 digits at the start - if it does not, then we don't
@@ -490,7 +490,7 @@ namespace PhoneNumbers
             {
                 var internationalPrefix = metadataForRegionCallingFrom.InternationalPrefix;
                 internationalPrefixForFormatting =
-                    UniqueInternationalPrefix.IsMatchAll(internationalPrefix)
+                    UniqueInternationalPrefix().IsMatch(internationalPrefix)
                         ? internationalPrefix
                         : metadataForRegionCallingFrom.PreferredInternationalPrefix;
             }
@@ -563,7 +563,7 @@ namespace PhoneNumbers
         {
             if (IsValidAlphaPhone(number))
             {
-                NormalizeHelper(ref span, ref index, number, AlphaPhoneMappings, true);
+                NormalizeHelper(ref span, ref index, number, MapAlphaPhone, true);
             }
             else
             {
@@ -574,14 +574,14 @@ namespace PhoneNumbers
         private static void NormalizeHelper(ref Span<char> span,
             ref int index,
             string number,
-            IReadOnlyDictionary<char, char> normalizationReplacements,
+            Func<char, char> normalizationReplacements,
             bool removeNonMatches)
         {
             index = 0;
             for (var i = 0; i < number.Length; i++)
             {
                 var character = number[i];
-                if (normalizationReplacements.TryGetValue(char.ToUpperInvariant(character), out var newDigit))
+                if (normalizationReplacements(character) is > '\0' and var newDigit)
                 {
                     span[index++] = newDigit;
                 }

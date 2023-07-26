@@ -39,10 +39,8 @@ namespace PhoneNumbers
     ///   <li>No alpha digits (vanity numbers such as 1-800-SIX-FLAGS) are currently supported. </li>
     /// </ul>
     /// </summary>
-    public class PhoneNumberMatcher : IEnumerator<PhoneNumberMatch>
+    public partial class PhoneNumberMatcher : IEnumerator<PhoneNumberMatch>
     {
-        private static readonly Regex Pattern;
-
         /// <summary>
         /// Matches strings that look like publication pages. Example:
         /// <pre>Computing Complete Answers to Queries in the Presence of Limited Access Patterns.
@@ -50,103 +48,87 @@ namespace PhoneNumbers
         ///
         /// The string "211-227 (2003)" is not a telephone number.
         /// </summary>
-        private static readonly Regex PubPages = new Regex("\\d{1,5}-+\\d{1,5}\\s{0,4}\\(\\d{1,4}", InternalRegexOptions.Default);
+#if NET7_0_OR_GREATER
+        [GeneratedRegex(@"\d{1,5}-+\d{1,5}\s{0,4}\(\d{1,4}", InternalRegexOptions.Default)]
+        private static partial Regex PubPages();
+#else
+        private static Regex PubPages() => _pubPages;
+        private static readonly Regex _pubPages = new(@"\d{1,5}-+\d{1,5}\s{0,4}\(\d{1,4}", InternalRegexOptions.Default);
+#endif
 
         /// <summary>
         /// Matches strings that look like dates using "/" as a separator. Examples: 3/10/2011, 31/10/96 or
         /// 08/31/95.
         /// </summary>
-        private static readonly Regex SlashSeparatedDates =
-            new Regex("(?:(?:[0-3]?\\d/[01]?\\d)|(?:[01]?\\d/[0-3]?\\d))/(?:[12]\\d)?\\d{2}", InternalRegexOptions.Default);
+#if NET7_0_OR_GREATER
+        [GeneratedRegex(@"(?>[0-3]?[0-9]/[01]?[0-9]/|[01]?[0-9]/[0-3]?[0-9]/)([12][0-9])?[0-9]{2}", InternalRegexOptions.Default | RegexOptions.ExplicitCapture)]
+        private static partial Regex SlashSeparatedDates();
+#else
+        private static Regex SlashSeparatedDates() => _slashSeparatedDates;
+        private static readonly Regex _slashSeparatedDates = new(@"(?:(?:[0-3]?\d/[01]?\d)|(?:[01]?\d/[0-3]?\d))/(?:[12]\d)?\d{2}", InternalRegexOptions.Default);
+#endif
 
         /// <summary>
         /// Matches timestamps. Examples: "2012-01-02 08:00". Note that the reg-ex does not include the
         /// trailing ":\d\d" -- that is covered by TIME_STAMPS_SUFFIX.
         /// </summary>
-        private static readonly Regex TimeStamps =
-            new Regex("[12]\\d{3}[-/]?[01]\\d[-/]?[0-3]\\d [0-2]\\d$", InternalRegexOptions.Default);
-        private static readonly PhoneRegex TimeStampsSuffix = new PhoneRegex(":[0-5]\\d", InternalRegexOptions.Default);
+#if NET7_0_OR_GREATER
+        [GeneratedRegex("[12][0-9]{3}[-/]?[01][0-9][-/]?[0-3][0-9] [0-2][0-9]$", InternalRegexOptions.Default)]
+        private static partial Regex TimeStamps();
+#else
+        private static Regex TimeStamps() => _timeStamps;
+        private static readonly Regex _timeStamps = new("[12][0-9]{3}[-/]?[01][0-9][-/]?[0-3][0-9] [0-2][0-9]$", InternalRegexOptions.Default);
+#endif
 
+        const string openingParens = "(\\[\uFF08\uFF3B";
+        const string closingParens = ")\\]\uFF09\uFF3D";
+        const string nonParens = "[^" + openingParens + closingParens + "]";
 
-        /// <summary>
-        /// Pattern to check that brackets match. Opening brackets should be closed within a phone number.
-        /// This also checks that there is something inside the brackets. Having no brackets at all is also fine.
-        /// </summary>
-        private static readonly PhoneRegex MatchingBrackets;
+        /*
+        * An opening bracket at the beginning may not be closed, but subsequent ones should be.  It's
+        * also possible that the leading bracket was dropped, so we shouldn't be surprised if we see a
+        * closing bracket first. We limit the sets of brackets in a phone number to four.
+        */
+#if NET7_0_OR_GREATER
+        [GeneratedRegex("^(?>[" + openingParens + "]?)(?>" + nonParens + "+)(?>([" + closingParens + "]" + nonParens + "*)?)" +
+            "(?>([" + openingParens + "](?>" + nonParens + "+)[" + closingParens + "]){0,3})(?>" + nonParens + "*)$", InternalRegexOptions.Default | RegexOptions.ExplicitCapture)]
+        private static partial Regex MatchingBrackets();
+#else
+        private static Regex MatchingBrackets() => _matchingBrackets;
+        private static readonly Regex _matchingBrackets = new("^(?>[" + openingParens + "]?)(?>" + nonParens + "+)(?>([" + closingParens + "]" + nonParens + "*)?)" +
+            "(?>([" + openingParens + "](?>" + nonParens + "+)[" + closingParens + "]){0,3})(?>" + nonParens + "*)$", InternalRegexOptions.Default | RegexOptions.ExplicitCapture);
+#endif
 
         /// <summary>
         /// Punctuation that may be at the start of a phone number - brackets and plus signs.
         /// </summary>
-        private static readonly PhoneRegex LeadClass;
+        private static bool IsLeadClass(char c) => PhoneNumberUtil.IsPlusChar(c) || c is '(' or '[' or '\uFF08' or '\uFF3B';
 
         /// <summary>
         /// Matches white-space, which may indicate the end of a phone number and the start of something
         /// else (such as a neighbouring zip-code). If white-space is found, continues to match all
         /// characters that are not typically used to start a phone number.
         /// </summary>
-        private static readonly Regex GroupSeparator;
+#if NET7_0_OR_GREATER
+        [GeneratedRegex("\\p{Z}[^" + PhoneNumberUtil.PLUS_CHARS + openingParens + "\\d]*", InternalRegexOptions.Default)]
+        private static partial Regex GroupSeparator();
+#else
+        private static Regex GroupSeparator() => _groupSeparator;
+        private static readonly Regex _groupSeparator = new("\\p{Z}[^" + PhoneNumberUtil.PLUS_CHARS + openingParens + "\\d]*", InternalRegexOptions.Default);
+#endif
 
-        ///<summary>
-        /// Builds the MATCHING_BRACKETS and PATTERN regular expressions. The building blocks below exist
-        /// to make the pattern more easily understood.
-        /// </summary>
-        static PhoneNumberMatcher()
-        {
-
-            var openingParens = "(\\[\uFF08\uFF3B";
-            var closingParens = ")\\]\uFF09\uFF3D";
-            var nonParens = "[^" + openingParens + closingParens + "]";
-
-            /* Limit on the number of pairs of brackets in a phone number. */
-            var bracketPairLimit = Limit(0, 3);
-            /*
-            * An opening bracket at the beginning may not be closed, but subsequent ones should be.  It's
-            * also possible that the leading bracket was dropped, so we shouldn't be surprised if we see a
-            * closing bracket first. We limit the sets of brackets in a phone number to four.
-            */
-            MatchingBrackets = new PhoneRegex(
-                "(?:[" + openingParens + "])?" + "(?:" + nonParens + "+" + "[" + closingParens + "])?" +
-                nonParens + "+" +
-                "(?:[" + openingParens + "]" + nonParens + "+[" + closingParens + "])" + bracketPairLimit +
-                nonParens + "*", InternalRegexOptions.Default);
-
-            /* Limit on the number of leading (plus) characters. */
-            var leadLimit = Limit(0, 2);
-            /* Limit on the number of consecutive punctuation characters. */
-            var punctuationLimit = Limit(0, 4);
-            /* The maximum number of digits allowed in a digit-separated block. As we allow all digits in a
-            * single block, set high enough to accommodate the entire national number and the international
-            * country code. */
-            var digitBlockLimit =
-                PhoneNumberUtil.MAX_LENGTH_FOR_NSN + PhoneNumberUtil.MAX_LENGTH_COUNTRY_CODE;
-            /* Limit on the number of blocks separated by punctuation. Uses digitBlockLimit since some
-            * formats use spaces to separate each digit. */
-            var blockLimit = Limit(0, digitBlockLimit);
-
-            /* A punctuation sequence allowing white space. */
-            var punctuation = "[" + PhoneNumberUtil.VALID_PUNCTUATION + "]" + punctuationLimit;
-            /* A digits block without punctuation. */
-            var digitSequence = "\\p{Nd}" + Limit(1, digitBlockLimit);
-            var leadClassChars = openingParens + PhoneNumberUtil.PLUS_CHARS;
-            var leadClass = "[" + leadClassChars + "]";
-            LeadClass = new PhoneRegex(leadClass, InternalRegexOptions.Default);
-            GroupSeparator = new Regex("\\p{Z}" + "[^" + leadClassChars + "\\p{Nd}]*", InternalRegexOptions.Default);
-
-            /* Phone number pattern allowing optional punctuation. */
-            Pattern = new Regex(
-                "(?:" + leadClass + punctuation + ")" + leadLimit +
-                digitSequence + "(?:" + punctuation + digitSequence + ")" + blockLimit +
-                "(?:" + PhoneNumberUtil.ExtnPatternsForMatching + ")?",
-                PhoneNumberUtil.REGEX_FLAGS);
-        }
-
-        /** Returns a regular expression quantifier with an upper and lower limit. */
-        private static string Limit(int lower, int upper)
-        {
-            if (lower < 0 || upper <= 0 || upper < lower)
-                throw new ArgumentOutOfRangeException();
-            return "{" + lower + "," + upper + "}";
-        }
+        /* Phone number pattern allowing optional punctuation. */
+#if NET7_0_OR_GREATER
+        [GeneratedRegex("(?>([" + PhoneNumberUtil.PLUS_CHARS + openingParens + "](?>[" + PhoneNumberUtil.VALID_PUNCTUATION + "]{0,4})){0,2})" +
+            "(?>\\d{1,20})([" + PhoneNumberUtil.VALID_PUNCTUATION + "]{0,4}(?>\\d{1,20})){0,20}" +
+            "(" + PhoneNumberUtil.ExtnPatternsForMatching + ")?", InternalRegexOptions.Default | RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture)]
+        private static partial Regex Pattern();
+#else
+        private static Regex Pattern() => _pattern;
+        private static readonly Regex _pattern = new("(?>([" + PhoneNumberUtil.PLUS_CHARS + openingParens + "](?>[" + PhoneNumberUtil.VALID_PUNCTUATION + "]{0,4})){0,2})" +
+            "(?>\\d{1,20})([" + PhoneNumberUtil.VALID_PUNCTUATION + "]{0,4}(?>\\d{1,20})){0,20}" +
+            "(" + PhoneNumberUtil.ExtnPatternsForMatching + ")?", InternalRegexOptions.Default | RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture);
+#endif
 
         /// <summary>The phone number utility.</summary>
         private readonly PhoneNumberUtil phoneUtil;
@@ -164,12 +146,6 @@ namespace PhoneNumbers
         private PhoneNumberMatch lastMatch;
         /// <summary>The next index to start searching at.</summary>
         private int searchIndex;
-
-        // A cache for frequently used country-specific regular expressions. Set to 32 to cover ~2-3
-        // countries being used for the same doc with ~10 patterns for each country. Some pages will have
-        // a lot more countries in use, but typically fewer numbers for each so expanding the cache for
-        // that use-case won't have a lot of benefit.
-        private readonly RegexCache regexCache = new RegexCache(32);
 
         /// <summary>
         /// Creates a new instance. See the factory methods in {@link PhoneNumberUtil} on how to obtain a
@@ -209,7 +185,7 @@ namespace PhoneNumbers
         private PhoneNumberMatch Find(int index)
         {
             Match matched;
-            while (maxTries > 0 && (matched = Pattern.Match(text, index)).Success)
+            while (maxTries > 0 && (matched = Pattern().Match(text, index)).Success)
             {
                 var start = matched.Index;
                 var candidate = text.Substring(start, matched.Length);
@@ -217,7 +193,7 @@ namespace PhoneNumbers
                 // Check for extra numbers at the end.
                 // TODO: This is the place to start when trying to support extraction of multiple phone number
                 // from split notations (+41 79 123 45 67 / 68).
-                candidate = TrimAfterFirstMatch(PhoneNumberUtil.SecondNumberStartPattern, candidate);
+                candidate = TrimAfterSecondNumberStart(candidate);
 
                 var match = ExtractMatch(candidate, start);
                 if (match != null)
@@ -228,18 +204,6 @@ namespace PhoneNumbers
             }
 
             return null;
-        }
-
-        /// <summary>
-        /// Trims away any characters after the first match of <c>pattern</c> in <c>candidate</c>,
-        /// returning the trimmed version.
-        /// </summary>
-        private static string TrimAfterFirstMatch(Regex pattern, string candidate)
-        {
-            var trailingCharsMatcher = pattern.Match(candidate);
-            if (trailingCharsMatcher.Success)
-                candidate = candidate.Substring(0, trailingCharsMatcher.Index);
-            return candidate;
         }
 
         /// <summary>
@@ -273,16 +237,7 @@ namespace PhoneNumbers
             for (var i = 0; i != str.Length; ++i)
             {
                 var character = str[i];
-                var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(character);
-                if (character != '#' && (
-                    unicodeCategory != UnicodeCategory.UppercaseLetter &&
-                    unicodeCategory != UnicodeCategory.LowercaseLetter &&
-                    unicodeCategory != UnicodeCategory.TitlecaseLetter &&
-                    unicodeCategory != UnicodeCategory.ModifierLetter &&
-                    unicodeCategory != UnicodeCategory.OtherLetter &&
-                    unicodeCategory != UnicodeCategory.DecimalDigitNumber &&
-                    unicodeCategory != UnicodeCategory.LetterNumber &&
-                    unicodeCategory != UnicodeCategory.OtherNumber))
+                if (character != '#' && !char.IsLetterOrDigit(character))
                 {
                     if (found < 0)
                         found = i;
@@ -295,6 +250,27 @@ namespace PhoneNumbers
             return found >= 0 ? str.Substring(0, found) : str;
         }
 
+        // Regular expression of characters typically used to start a second phone number for the purposes
+        // of parsing. This allows us to strip off parts of the number that are actually the start of
+        // another number, such as for: (530) 583-6985 x302/x2303 -> the second extension here makes this
+        // actually two phone numbers, (530) 583-6985 x302 and (530) 583-6985 x2303. We remove the second
+        // extension so that the first number is parsed correctly.
+        private static readonly char[] SecondNumberStartChars = new[] { '\\', '/' };
+
+        internal static string TrimAfterSecondNumberStart(string number)
+        {
+            var start = 0;
+            while ((start = number.IndexOfAny(SecondNumberStartChars, start)) >= 0)
+            {
+                var i = start;
+                while (++i < number.Length && number[i] == ' ') /*skip spaces*/;
+                if (i < number.Length && number[i] == 'x')
+                    return number.Substring(0, start);
+                start = i;
+            }
+            return number;
+        }
+
         /// <summary>
         /// Attempts to extract a match from a <c>candidate</c> character sequence.
         /// </summary>
@@ -305,13 +281,13 @@ namespace PhoneNumbers
         private PhoneNumberMatch ExtractMatch(string candidate, int offset)
         {
             // Skip a match that is more likely a publication page reference or a date.
-            if (PubPages.IsMatch(candidate) || SlashSeparatedDates.IsMatch(candidate))
+            if (PubPages().IsMatch(candidate) || SlashSeparatedDates().IsMatch(candidate))
                 return null;
             // Skip potential time-stamps.
-            if (TimeStamps.IsMatch(candidate))
+            if (TimeStamps().IsMatch(candidate))
             {
-                var followingText = text.Substring(offset + candidate.Length);
-                if (TimeStampsSuffix.IsMatchBeginning(followingText))
+                var i = offset + candidate.Length;
+                if (text.Length >= i + 3 && text[i] == ':' && text[i + 1] is >= '0' and <= '5' && text[i + 2] is >= '0' and <= '9')
                     return null;
             }
 
@@ -336,7 +312,7 @@ namespace PhoneNumbers
         {
             // Try removing either the first or last "group" in the number and see if this gives a result.
             // We consider white space to be a possible indications of the start or end of the phone number.
-            var groupMatcher = GroupSeparator.Match(candidate);
+            var groupMatcher = GroupSeparator().Match(candidate);
             if (groupMatcher.Success)
             {
                 // Try the first group by itself.
@@ -397,7 +373,7 @@ namespace PhoneNumbers
             {
                 // Check the candidate doesn't contain any formatting which would indicate that it really
                 // isn't a phone number.
-                if (!MatchingBrackets.IsMatchAll(candidate))
+                if (!MatchingBrackets().IsMatch(candidate))
                     return null;
 
                 // If leniency is set to VALID or stricter, we also want to skip numbers that are surrounded
@@ -406,7 +382,7 @@ namespace PhoneNumbers
                 {
                     // If the candidate is not at the start of the text, and does not start with phone-number
                     // punctuation, check the previous character.
-                    if (offset > 0 && !LeadClass.IsMatchBeginning(candidate))
+                    if (offset > 0 && !IsLeadClass(candidate[0]))
                     {
                         var previousChar = text[offset - 1];
                         // We return null if it is a latin letter or an invalid punctuation symbol.
@@ -504,8 +480,7 @@ namespace PhoneNumbers
             StringBuilder normalizedCandidate,
             IList<string> formattedNumberGroups)
         {
-            var candidateGroups =
-                PhoneNumberUtil.NonDigitsPattern.Split(normalizedCandidate.ToString());
+            var candidateGroups = PhoneNumberUtil.NonDigitsPattern().Split(normalizedCandidate.ToString());
             // Set this to the last group, skipping it if the number has an extension.
             var candidateNumberGroupIndex =
                 number.HasExtension ? candidateGroups.Length - 2 : candidateGroups.Length - 1;
@@ -593,7 +568,7 @@ namespace PhoneNumbers
                     if (alternateFormat.LeadingDigitsPatternCount > 0) {
                         // There is only one leading digits pattern for alternate formats.
                         var pattern =
-                            regexCache.GetPatternForRegex(alternateFormat.GetLeadingDigitsPattern(0));
+                            PhoneRegex.Get(alternateFormat.GetLeadingDigitsPattern(0));
                         if (!pattern.IsMatchBeginning(nationalSignificantNumber)) {
                             // Leading digits don't match; try another one.
                             continue;

@@ -15,28 +15,15 @@
  */
 
 using System;
-using System.Collections.Concurrent;
+using System.ComponentModel;
 
 namespace PhoneNumbers
 {
+    [Obsolete("This is an internal implementation detail not meant for public use"), EditorBrowsable(EditorBrowsableState.Never)]
     public class RegexCache
     {
-        private readonly ConcurrentDictionary<string, PhoneRegex> cache;
-
-        public RegexCache(int size)
-        {
-            cache = new ConcurrentDictionary<string, PhoneRegex>(Environment.ProcessorCount, size);
-        }
-
-        public PhoneRegex GetPatternForRegex(string regex)
-        {
-            return cache.GetOrAdd(regex, (k) => new PhoneRegex(regex));
-        }
-
-        // This method is used for testing.
-        public bool ContainsRegex(string regex)
-        {
-            return cache.ContainsKey(regex);
-        }
+        public RegexCache(int size) { }
+        public PhoneRegex GetPatternForRegex(string regex) => PhoneRegex.Get(regex);
+        public bool ContainsRegex(string regex) => false;
     }
 }
