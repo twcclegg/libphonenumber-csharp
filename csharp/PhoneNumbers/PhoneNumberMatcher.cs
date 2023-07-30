@@ -408,11 +408,10 @@ namespace PhoneNumbers
                     // We used parseAndKeepRawInput to create this number, but for now we don't return the extra
                     // values parsed. TODO: stop clearing all values here and switch all users over
                     // to using rawInput() rather than the rawString() of PhoneNumberMatch.
-                    var bnumber = number.ToBuilder();
-                    bnumber.ClearCountryCodeSource();
-                    bnumber.ClearRawInput();
-                    bnumber.ClearPreferredDomesticCarrierCode();
-                    return new PhoneNumberMatch(offset, candidate, bnumber.Build());
+                    number.CountryCodeSource = 0;
+                    number.RawInput = "";
+                    number.PreferredDomesticCarrierCode = null;
+                    return new PhoneNumberMatch(offset, candidate, number);
                 }
             }
             catch (NumberParseException)
@@ -563,7 +562,7 @@ namespace PhoneNumbers
             var nationalSignificantNumber = util.GetNationalSignificantNumber(number);
             if (alternateFormats != null)
             {
-                foreach (var alternateFormat in alternateFormats.NumberFormatList)
+                foreach (var alternateFormat in alternateFormats.numberFormat_)
                 {
                     if (alternateFormat.LeadingDigitsPatternCount > 0) {
                         // There is only one leading digits pattern for alternate formats.
@@ -644,7 +643,7 @@ namespace PhoneNumbers
             // Check if a national prefix should be present when formatting this number.
             var nationalNumber = util.GetNationalSignificantNumber(number);
             var formatRule =
-                util.ChooseFormattingPatternForNumber(metadata.NumberFormatList, nationalNumber);
+                util.ChooseFormattingPatternForNumber(metadata.numberFormat_, nationalNumber);
             // To do this, we check that a national prefix formatting rule was present and that it wasn't
             // just the first-group symbol ($1) with punctuation.
             if (formatRule != null && formatRule.NationalPrefixFormattingRule.Length > 0)

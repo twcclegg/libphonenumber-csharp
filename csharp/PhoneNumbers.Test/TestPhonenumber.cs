@@ -50,7 +50,7 @@ namespace PhoneNumbers.Test
         public void TestNonEqualWithItalianLeadingZeroSetToTrue()
         {
             var numberA = new PhoneNumber.Builder()
-                .SetCountryCode(1).SetNationalNumber(6502530000L).SetItalianLeadingZero(true).Build();
+                .SetCountryCode(1).SetNationalNumber(6502530000L).SetNumberOfLeadingZeros(1).Build();
 
             var numberB = new PhoneNumber.Builder()
                 .SetCountryCode(1).SetNationalNumber(6502530000L).Build();

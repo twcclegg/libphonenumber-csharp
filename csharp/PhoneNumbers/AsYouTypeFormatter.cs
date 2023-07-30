@@ -58,8 +58,7 @@ namespace PhoneNumbers
         // Character used when appropriate to separate a prefix, such as a long NDD or a country calling
         // code, from the national number.
         private const char SeparatorBeforeNationalNumber = ' ';
-        private static readonly PhoneMetadata EmptyMetadata =
-            new PhoneMetadata.Builder().SetInternationalPrefix("NA").BuildPartial();
+        private static readonly PhoneMetadata EmptyMetadata = new() { InternationalPrefix = "NA" };
         private readonly PhoneMetadata defaultMetaData;
         private PhoneMetadata currentMetadata;
 
@@ -172,8 +171,8 @@ namespace PhoneNumbers
             var isInternationalNumber = isCompleteNumber && extractedNationalPrefix.Length == 0;
             var formatList =
                 isInternationalNumber && currentMetadata.IntlNumberFormatCount > 0
-                    ? currentMetadata.IntlNumberFormatList
-                    : currentMetadata.NumberFormatList;
+                    ? currentMetadata.intlNumberFormat_
+                    : currentMetadata.numberFormat_;
             foreach (var format in formatList)
             {
                 // Discard a few formats that we know are not relevant based on the presence of the national
@@ -598,12 +597,10 @@ namespace PhoneNumbers
             }
             else if (currentMetadata.HasNationalPrefixForParsing)
             {
-                var nationalPrefixForParsing =
-                    PhoneRegex.Get(currentMetadata.NationalPrefixForParsing);
-                var m = nationalPrefixForParsing.MatchBeginning(nationalNumber.ToString());
+                var m = currentMetadata.MatchNationalPrefixForParsing(nationalNumber.ToString());
                 // Since some national prefix patterns are entirely optional, check that a national prefix
                 // could actually be extracted.
-                if (m.Length > 0)
+                if (m?.Length > 0)
                 {
                     // When the national prefix is detected, we use international formatting rules instead of
                     // national ones, because national formatting rules could contain local formatting rules

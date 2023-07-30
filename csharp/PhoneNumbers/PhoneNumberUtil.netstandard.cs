@@ -87,21 +87,14 @@ namespace PhoneNumbers
             return sb.ToString();
         }
 
-        /// <summary>
-        /// Gets the national significant number of the a phone number. Note a national significant number
-        /// doesn't contain a national prefix or any formatting.
-        /// </summary>
-        /// <param name="number">The PhoneNumber object for which the national significant number is needed.</param>
-        /// <returns>The national significant number of the PhoneNumber object passed in.</returns>
-        public string GetNationalSignificantNumber(PhoneNumber number)
+        internal static string GetNationalSignificantNumberImpl(PhoneNumber number)
         {
             // If a leading zero(s) has been set, we prefix this now. Note this is not a national prefix.
-            var nationalNumber = new StringBuilder();
-            if (number.ItalianLeadingZero && number.NumberOfLeadingZeros > 0)
-            {
-                nationalNumber.Append('0', number.NumberOfLeadingZeros);
-            }
+            if (!number.HasNumberOfLeadingZeros)
+                return number.NationalNumber.ToString();
 
+            var nationalNumber = new StringBuilder();
+            nationalNumber.Append('0', number.NumberOfLeadingZeros);
             nationalNumber.Append(number.NationalNumber);
             return nationalNumber.ToString();
         }
@@ -133,6 +126,7 @@ namespace PhoneNumbers
 
             var metadata = GetMetadataForRegionOrCallingCode(countryCallingCode, regionCode);
             var formattedNumber = new StringBuilder(20);
+            PrefixNumberWithCountryCallingCode(countryCallingCode, numberFormat, formattedNumber);
             var formattingPattern =
                 ChooseFormattingPatternForNumber(userDefinedFormats, nationalSignificantNumber);
             if (formattingPattern == null)
@@ -142,35 +136,33 @@ namespace PhoneNumbers
             }
             else
             {
-                var numFormatCopy = new NumberFormat.Builder();
                 // Before we do a replacement of the national prefix pattern $NP with the national prefix, we
                 // need to copy the rule so that subsequent replacements for different numbers have the
                 // appropriate national prefix.
-                numFormatCopy.MergeFrom(formattingPattern);
                 var nationalPrefixFormattingRule = formattingPattern.NationalPrefixFormattingRule;
                 if (nationalPrefixFormattingRule.Length > 0)
                 {
+                    formattingPattern = formattingPattern.Clone();
                     var nationalPrefix = metadata.NationalPrefix;
                     if (nationalPrefix.Length > 0)
                     {
                         // Replace $NP with national prefix and $FG with the first group ($1).
                         nationalPrefixFormattingRule = nationalPrefixFormattingRule.Replace(NpPattern, nationalPrefix);
                         nationalPrefixFormattingRule = nationalPrefixFormattingRule.Replace(FgPattern, "$1");
-                        numFormatCopy.SetNationalPrefixFormattingRule(nationalPrefixFormattingRule);
+                        formattingPattern.NationalPrefixFormattingRule = nationalPrefixFormattingRule;
                     }
                     else
                     {
                         // We don't want to have a rule for how to format the national prefix if there isn't one.
-                        numFormatCopy.ClearNationalPrefixFormattingRule();
+                        formattingPattern.NationalPrefixFormattingRule = "";
                     }
                 }
 
                 formattedNumber.Append(
-                    FormatNsnUsingPattern(nationalSignificantNumber, numFormatCopy.Build(), numberFormat));
+                    FormatNsnUsingPattern(nationalSignificantNumber, formattingPattern, numberFormat));
             }
 
             MaybeAppendFormattedExtension(number, metadata, numberFormat, formattedNumber);
-            PrefixNumberWithCountryCallingCode(countryCallingCode, numberFormat, formattedNumber);
             return formattedNumber.ToString();
         }
 
@@ -206,7 +198,6 @@ namespace PhoneNumbers
                 PhoneNumberFormat.NATIONAL,
                 carrierCode));
             MaybeAppendFormattedExtension(number, metadata, PhoneNumberFormat.NATIONAL, formattedNumber);
-            PrefixNumberWithCountryCallingCode(countryCallingCode, PhoneNumberFormat.NATIONAL, formattedNumber);
             return formattedNumber.ToString();
         }
 
@@ -290,25 +281,18 @@ namespace PhoneNumbers
                 FormatNsn(nationalSignificantNumber,
                     metadataForRegion,
                     PhoneNumberFormat.INTERNATIONAL);
-            var formattedNumber = new StringBuilder(formattedNationalNumber);
-            MaybeAppendFormattedExtension(number,
-                metadataForRegion,
-                PhoneNumberFormat.INTERNATIONAL,
-                formattedNumber);
+            var formattedNumber = new StringBuilder();
             if (internationalPrefixForFormatting.Length > 0)
             {
-                formattedNumber.Insert(0, " ")
-                    .Insert(0, countryCallingCode)
-                    .Insert(0, " ")
-                    .Insert(0, internationalPrefixForFormatting);
+                formattedNumber.Append(internationalPrefixForFormatting).Append(' ').Append(countryCallingCode).Append(' ');
             }
             else
             {
-                PrefixNumberWithCountryCallingCode(countryCallingCode,
-                    PhoneNumberFormat.INTERNATIONAL,
-                    formattedNumber);
+                formattedNumber.Append(PLUS_SIGN).Append(countryCallingCode).Append(' ');
             }
 
+            formattedNumber.Append(formattedNationalNumber);
+            MaybeAppendFormattedExtension(number, metadataForRegion, PhoneNumberFormat.INTERNATIONAL, formattedNumber);
             return formattedNumber.ToString();
         }
 
@@ -387,7 +371,7 @@ namespace PhoneNumbers
                      countryCode == GetCountryCodeForValidRegion(regionCallingFrom))
             {
                 var formattingPattern =
-                    ChooseFormattingPatternForNumber(metadataForRegionCallingFrom.NumberFormatList,
+                    ChooseFormattingPatternForNumber(metadataForRegionCallingFrom.numberFormat_,
                         nationalNumber);
                 if (formattingPattern == null)
                     // If no pattern above is matched, we format the original input.
@@ -395,18 +379,17 @@ namespace PhoneNumbers
                     return rawInput;
                 }
 
-                var newFormat = new NumberFormat.Builder();
-                newFormat.MergeFrom(formattingPattern);
+                var newFormat = formattingPattern.Clone();
                 // The first group is the first group of digits that the user wrote together.
-                newFormat.SetPattern("(\\d+)(.*)");
+                newFormat.Pattern = "(\\d+)(.*)";
                 // Here we just concatenate them back together after the national prefix has been fixed.
-                newFormat.SetFormat("$1$2");
+                newFormat.Format = "$1$2";
                 // Now we format using this pattern instead of the default pattern, but with the national
                 // prefix prefixed if necessary.
                 // This will not work in the cases where the pattern (and not the leading digits) decide
                 // whether a national prefix needs to be used, since we have overridden the pattern to match
                 // anything, but that is not the case in the metadata to date.
-                return FormatNsnUsingPattern(rawInput, newFormat.Build(), PhoneNumberFormat.NATIONAL);
+                return FormatNsnUsingPattern(rawInput, newFormat, PhoneNumberFormat.NATIONAL);
             }
 
             var internationalPrefixForFormatting = "";
@@ -422,33 +405,22 @@ namespace PhoneNumbers
                         : metadataForRegionCallingFrom.PreferredInternationalPrefix;
             }
 
-            var formattedNumber = new StringBuilder(rawInput);
-            var regionCode = GetRegionCodeForCountryCode(countryCode);
-            var metadataForRegion = GetMetadataForRegionOrCallingCode(countryCode, regionCode);
-            MaybeAppendFormattedExtension(number,
-                metadataForRegion,
-                PhoneNumberFormat.INTERNATIONAL,
-                formattedNumber);
+            var formattedNumber = new StringBuilder();
             if (internationalPrefixForFormatting.Length > 0)
             {
-                formattedNumber.Insert(0, " ")
-                    .Insert(0, countryCode)
-                    .Insert(0, " ")
-                    .Insert(0, internationalPrefixForFormatting);
+                formattedNumber.Append(internationalPrefixForFormatting).Append(' ').Append(countryCode).Append(' ');
             }
             else
             {
                 // Invalid region entered as country-calling-from (so no metadata was found for it) or the
                 // region chosen has multiple international dialling prefixes.
-                // LOGGER.log(Level.WARNING,
-                // "Trying to format number from invalid region "
-                // + regionCallingFrom
-                // + ". International formatting applied.");
-                PrefixNumberWithCountryCallingCode(countryCode,
-                    PhoneNumberFormat.INTERNATIONAL,
-                    formattedNumber);
+                formattedNumber.Append(PLUS_SIGN).Append(countryCode).Append(' ');
             }
 
+            formattedNumber.Append(rawInput);
+            var regionCode = GetRegionCodeForCountryCode(countryCode);
+            var metadataForRegion = GetMetadataForRegionOrCallingCode(countryCode, regionCode);
+            MaybeAppendFormattedExtension(number, metadataForRegion, PhoneNumberFormat.INTERNATIONAL, formattedNumber);
             return formattedNumber.ToString();
         }
     }

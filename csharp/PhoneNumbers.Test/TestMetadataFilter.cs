@@ -799,7 +799,7 @@ namespace PhoneNumbers.Test
         {
             var metadata = FakeArmeniaPhoneMetadata();
 
-            MetadataFilter.ForLiteBuild().FilterMetadata(metadata);
+            MetadataFilter.ForLiteBuild().FilterMetadata(metadata.MessageBeingBuilt);
 
             // id, country_code, and international_prefix should never be cleared.
             Assert.Equal(ID, metadata.Id);
@@ -831,7 +831,7 @@ namespace PhoneNumbers.Test
         {
             var metadata = FakeArmeniaPhoneMetadata();
 
-            MetadataFilter.ForSpecialBuild().FilterMetadata(metadata);
+            MetadataFilter.ForSpecialBuild().FilterMetadata(metadata.MessageBeingBuilt);
 
             // id, country_code, and international_prefix should never be cleared.
             Assert.Equal(ID, metadata.Id);
@@ -877,7 +877,7 @@ namespace PhoneNumbers.Test
         {
             var metadata = FakeArmeniaPhoneMetadata();
 
-            MetadataFilter.EmptyFilter().FilterMetadata(metadata);
+            MetadataFilter.EmptyFilter().FilterMetadata(metadata.MessageBeingBuilt);
 
             // None of the fields should be cleared.
             Assert.Equal(ID, metadata.Id);

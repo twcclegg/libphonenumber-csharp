@@ -159,25 +159,25 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestLookupNumber_IT()
         {
-            var number = new PhoneNumber.Builder().SetCountryCode(39).SetNationalNumber(212345678L).SetItalianLeadingZero(true)
+            var number = new PhoneNumber.Builder().SetCountryCode(39).SetNationalNumber(212345678L).SetNumberOfLeadingZeros(1)
                 .Build();
             Assert.Equal("Milan", areaCodeMapForIT.Lookup(number));
 
-            number = new PhoneNumber.Builder().SetCountryCode(39).SetNationalNumber(612345678L).SetItalianLeadingZero(true)
+            number = new PhoneNumber.Builder().SetCountryCode(39).SetNationalNumber(612345678L).SetNumberOfLeadingZeros(1)
                 .Build();
             Assert.Equal("Rome", areaCodeMapForIT.Lookup(number));
 
-            number = new PhoneNumber.Builder().SetCountryCode(39).SetNationalNumber(3211234L).SetItalianLeadingZero(true)
+            number = new PhoneNumber.Builder().SetCountryCode(39).SetNationalNumber(3211234L).SetNumberOfLeadingZeros(1)
                 .Build();
             Assert.Equal("Novara", areaCodeMapForIT.Lookup(number));
 
             // A mobile number
-            number = new PhoneNumber.Builder().SetCountryCode(39).SetNationalNumber(321123456L).SetItalianLeadingZero(false)
+            number = new PhoneNumber.Builder().SetCountryCode(39).SetNationalNumber(321123456L).ClearNumberOfLeadingZeros()
                 .Build();
             Assert.Null(areaCodeMapForIT.Lookup(number));
 
             // An invalid number (too short)
-            number = new PhoneNumber.Builder().SetCountryCode(39).SetNationalNumber(321123L).SetItalianLeadingZero(true)
+            number = new PhoneNumber.Builder().SetCountryCode(39).SetNationalNumber(321123L).SetNumberOfLeadingZeros(1)
                 .Build();
             Assert.Equal("Novara", areaCodeMapForIT.Lookup(number));
         }

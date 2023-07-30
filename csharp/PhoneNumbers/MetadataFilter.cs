@@ -123,57 +123,56 @@ namespace PhoneNumbers
          *
          * @param metadata  The {@code PhoneMetadata} object to be filtered
          */
-        internal void FilterMetadata(PhoneMetadata.Builder metadata)
+        internal void FilterMetadata(PhoneMetadata metadata)
         {
             // TODO: Consider clearing if the filtered PhoneNumberDesc is empty.
             if (metadata.HasFixedLine)
-                metadata.SetFixedLine(GetFiltered("fixedLine", metadata.FixedLine));
+                metadata.FixedLine = GetFiltered("fixedLine", metadata.FixedLine);
             if (metadata.HasMobile)
-                metadata.SetMobile(GetFiltered("mobile", metadata.Mobile));
+                metadata.Mobile = GetFiltered("mobile", metadata.Mobile);
             if (metadata.HasTollFree)
-                metadata.SetTollFree(GetFiltered("tollFree", metadata.TollFree));
+                metadata.TollFree = GetFiltered("tollFree", metadata.TollFree);
             if (metadata.HasPremiumRate)
-                metadata.SetPremiumRate(GetFiltered("premiumRate", metadata.PremiumRate));
+                metadata.PremiumRate = GetFiltered("premiumRate", metadata.PremiumRate);
             if (metadata.HasSharedCost)
-                metadata.SetSharedCost(GetFiltered("sharedCost", metadata.SharedCost));
+                metadata.SharedCost = GetFiltered("sharedCost", metadata.SharedCost);
             if (metadata.HasPersonalNumber)
-                metadata.SetPersonalNumber(GetFiltered("personalNumber", metadata.PersonalNumber));
+                metadata.PersonalNumber = GetFiltered("personalNumber", metadata.PersonalNumber);
             if (metadata.HasVoip)
-                metadata.SetVoip(GetFiltered("voip", metadata.Voip));
+                metadata.Voip = GetFiltered("voip", metadata.Voip);
             if (metadata.HasPager)
-                metadata.SetPager(GetFiltered("pager", metadata.Pager));
+                metadata.Pager = GetFiltered("pager", metadata.Pager);
             if (metadata.HasUan)
-                metadata.SetUan(GetFiltered("uan", metadata.Uan));
+                metadata.Uan = GetFiltered("uan", metadata.Uan);
             if (metadata.HasEmergency)
-                metadata.SetEmergency(GetFiltered("emergency", metadata.Emergency));
+                metadata.Emergency = GetFiltered("emergency", metadata.Emergency);
             if (metadata.HasVoicemail)
-                metadata.SetVoicemail(GetFiltered("voicemail", metadata.Voicemail));
+                metadata.Voicemail = GetFiltered("voicemail", metadata.Voicemail);
             if (metadata.HasShortCode)
-                metadata.SetShortCode(GetFiltered("shortCode", metadata.ShortCode));
+                metadata.ShortCode = GetFiltered("shortCode", metadata.ShortCode);
             if (metadata.HasStandardRate)
-                metadata.SetStandardRate(GetFiltered("standardRate", metadata.StandardRate));
+                metadata.StandardRate = GetFiltered("standardRate", metadata.StandardRate);
             if (metadata.HasCarrierSpecific)
-                metadata.SetCarrierSpecific(GetFiltered("carrierSpecific", metadata.CarrierSpecific));
+                metadata.CarrierSpecific = GetFiltered("carrierSpecific", metadata.CarrierSpecific);
             if (metadata.HasSmsServices)
-                metadata.SetSmsServices(GetFiltered("smsServices", metadata.SmsServices));
+                metadata.SmsServices = GetFiltered("smsServices", metadata.SmsServices);
             if (metadata.HasNoInternationalDialling)
-                metadata.SetNoInternationalDialling(GetFiltered("noInternationalDialling",
-                    metadata.NoInternationalDialling));
+                metadata.NoInternationalDialling = GetFiltered("noInternationalDialling", metadata.NoInternationalDialling);
 
             if (ShouldDrop("preferredInternationalPrefix"))
-                metadata.ClearPreferredInternationalPrefix();
+                metadata.PreferredInternationalPrefix = "";
             if (ShouldDrop("nationalPrefix"))
-                metadata.ClearNationalPrefix();
+                metadata.NationalPrefix = "";
             if (ShouldDrop("preferredExtnPrefix"))
-                metadata.ClearPreferredExtnPrefix();
+                metadata.PreferredExtnPrefix = "";
             if (ShouldDrop("nationalPrefixTransformRule"))
-                metadata.ClearNationalPrefixTransformRule();
+                metadata.NationalPrefixTransformRule = "";
             if (ShouldDrop("sameMobileAndFixedLinePattern"))
-                metadata.ClearSameMobileAndFixedLinePattern();
+                metadata.SameMobileAndFixedLinePattern = false;
             if (ShouldDrop("mainCountryForCode"))
-                metadata.ClearMainCountryForCode();
+                metadata.MainCountryForCode = false;
             if (ShouldDrop("mobileNumberPortableRegion"))
-                metadata.ClearMobileNumberPortableRegion();
+                metadata.MobileNumberPortableRegion = false;
         }
 
         /**
@@ -271,7 +270,7 @@ namespace PhoneNumbers
         // ParseFieldMapFromString(String) which does check. If fieldMap Contains illegal tokens or parent
         // fields with no children or other unexpected state, the behavior of this function is undefined.
         internal static Dictionary<string, SortedSet<string>> ComputeComplement(
-            IDictionary<string, SortedSet<string>> fieldMap)
+            Dictionary<string, SortedSet<string>> fieldMap)
         {
             var complement = new Dictionary<string, SortedSet<string>>();
             foreach (var parent in ExcludableParentFields)
@@ -325,16 +324,16 @@ namespace PhoneNumbers
             if (!blacklist.TryGetValue(type, out var children))
                 return desc;
 
-            var builder = new PhoneNumberDesc.Builder().MergeFrom(desc);
-            if (children.Contains("nationalNumberPattern"))
-                builder.ClearNationalNumberPattern();
-            if (children.Contains("possibleLength"))
-                builder.ClearPossibleLength();
-            if (children.Contains("possibleLengthLocalOnly"))
-                builder.ClearPossibleLengthLocalOnly();
-            if (children.Contains("exampleNumber"))
-                builder.ClearExampleNumber();
-            return builder.Build();
+            desc = desc.Clone();
+            if (desc.HasNationalNumberPattern && children.Contains("nationalNumberPattern"))
+                desc.NationalNumberPattern = null;
+            if (desc.PossibleLengthCount > 0 && children.Contains("possibleLength"))
+                desc.possibleLength_.Clear();
+            if (desc.PossibleLengthLocalOnlyCount > 0 && children.Contains("possibleLengthLocalOnly"))
+                desc.possibleLengthLocalOnly_.Clear();
+            if (desc.HasExampleNumber && children.Contains("exampleNumber"))
+                desc.ExampleNumber = "";
+            return desc;
         }
     }
 }

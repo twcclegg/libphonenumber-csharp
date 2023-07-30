@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,53 +6,46 @@ using System.Runtime.CompilerServices;
 
 namespace PhoneNumbers
 {
-    [DebuggerNonUserCode]
-    [CompilerGenerated]
-    [GeneratedCode("ProtoGen", "2.3.0.277")]
-    public class NumberFormat
+    public sealed class NumberFormat
     {
         public const int PatternFieldNumber = 1;
-
         public const int FormatFieldNumber = 2;
-
         public const int LeadingDigitsPatternFieldNumber = 3;
-
         public const int NationalPrefixFormattingRuleFieldNumber = 4;
-
         public const int NationalPrefixOptionalWhenFormattingFieldNumber = 6;
-
         public const int DomesticCarrierCodeFormattingRuleFieldNumber = 5;
-        private readonly List<string> leadingDigitsPattern_ = new List<string>();
 
-        public static NumberFormat DefaultInstance { get; } = new Builder().BuildPartial();
+        internal NumberFormat Clone() => (NumberFormat)MemberwiseClone();
+
+        internal readonly List<string> leadingDigitsPattern_ = new List<string>();
+
+        public static NumberFormat DefaultInstance { get; } = new();
 
         public NumberFormat DefaultInstanceForType => DefaultInstance;
 
-        protected NumberFormat ThisMessage => this;
+        public bool HasPattern => Pattern?.Length > 0;
 
-        public bool HasPattern { get; private set; }
+        public string Pattern { get; internal set; } = "";
 
-        public string Pattern { get; private set; } = "";
+        public bool HasFormat => Format?.Length > 0;
 
-        public bool HasFormat { get; private set; }
-
-        public string Format { get; private set; } = "";
+        public string Format { get; internal set; } = "";
 
         public IList<string> LeadingDigitsPatternList => leadingDigitsPattern_;
 
         public int LeadingDigitsPatternCount => leadingDigitsPattern_.Count;
 
-        public bool HasNationalPrefixFormattingRule { get; private set; }
+        public bool HasNationalPrefixFormattingRule => NationalPrefixFormattingRule?.Length > 0;
 
-        public string NationalPrefixFormattingRule { get; private set; } = "";
+        public string NationalPrefixFormattingRule { get; internal set; } = "";
 
-        public bool HasNationalPrefixOptionalWhenFormatting { get; private set; }
+        public bool HasNationalPrefixOptionalWhenFormatting => NationalPrefixOptionalWhenFormatting;
 
-        public bool NationalPrefixOptionalWhenFormatting { get; private set; }
+        public bool NationalPrefixOptionalWhenFormatting { get; internal set; }
 
-        public bool HasDomesticCarrierCodeFormattingRule { get; private set; }
+        public bool HasDomesticCarrierCodeFormattingRule => DomesticCarrierCodeFormattingRule?.Length > 0;
 
-        public string DomesticCarrierCodeFormattingRule { get; private set; } = "";
+        public string DomesticCarrierCodeFormattingRule { get; internal set; } = "";
 
         public bool IsInitialized => HasPattern && HasFormat;
 
@@ -76,7 +69,7 @@ namespace PhoneNumbers
         {
             protected Builder ThisBuilder => this;
 
-            protected NumberFormat MessageBeingBuilt { get; private set; } = new NumberFormat();
+            internal protected NumberFormat MessageBeingBuilt { get; private set; } = new NumberFormat();
 
             public NumberFormat DefaultInstanceForType => DefaultInstance;
 
@@ -172,14 +165,12 @@ namespace PhoneNumbers
             public Builder SetPattern(string value)
             {
                 if (value == null) throw new ArgumentNullException(nameof(value));
-                MessageBeingBuilt.HasPattern = true;
                 MessageBeingBuilt.Pattern = value;
                 return this;
             }
 
             public Builder ClearPattern()
             {
-                MessageBeingBuilt.HasPattern = false;
                 MessageBeingBuilt.Pattern = "";
                 return this;
             }
@@ -187,14 +178,12 @@ namespace PhoneNumbers
             public Builder SetFormat(string value)
             {
                 if (value == null) throw new ArgumentNullException(nameof(value));
-                MessageBeingBuilt.HasFormat = true;
                 MessageBeingBuilt.Format = value;
                 return this;
             }
 
             public Builder ClearFormat()
             {
-                MessageBeingBuilt.HasFormat = false;
                 MessageBeingBuilt.Format = "";
                 return this;
             }
@@ -233,28 +222,24 @@ namespace PhoneNumbers
             public Builder SetNationalPrefixFormattingRule(string value)
             {
                 if (value == null) throw new ArgumentNullException(nameof(value));
-                MessageBeingBuilt.HasNationalPrefixFormattingRule = true;
                 MessageBeingBuilt.NationalPrefixFormattingRule = value;
                 return this;
             }
 
             public Builder ClearNationalPrefixFormattingRule()
             {
-                MessageBeingBuilt.HasNationalPrefixFormattingRule = false;
                 MessageBeingBuilt.NationalPrefixFormattingRule = "";
                 return this;
             }
 
             public Builder SetNationalPrefixOptionalWhenFormatting(bool value)
             {
-                MessageBeingBuilt.HasNationalPrefixOptionalWhenFormatting = true;
                 MessageBeingBuilt.NationalPrefixOptionalWhenFormatting = value;
                 return this;
             }
 
             public Builder ClearNationalPrefixOptionalWhenFormatting()
             {
-                MessageBeingBuilt.HasNationalPrefixOptionalWhenFormatting = false;
                 MessageBeingBuilt.NationalPrefixOptionalWhenFormatting = false;
                 return this;
             }
@@ -262,14 +247,12 @@ namespace PhoneNumbers
             public Builder SetDomesticCarrierCodeFormattingRule(string value)
             {
                 if (value == null) throw new ArgumentNullException(nameof(value));
-                MessageBeingBuilt.HasDomesticCarrierCodeFormattingRule = true;
                 MessageBeingBuilt.DomesticCarrierCodeFormattingRule = value;
                 return this;
             }
 
             public Builder ClearDomesticCarrierCodeFormattingRule()
             {
-                MessageBeingBuilt.HasDomesticCarrierCodeFormattingRule = false;
                 MessageBeingBuilt.DomesticCarrierCodeFormattingRule = "";
                 return this;
             }
