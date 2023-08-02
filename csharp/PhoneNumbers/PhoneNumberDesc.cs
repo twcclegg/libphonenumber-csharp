@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,30 +7,43 @@ using System.Runtime.CompilerServices;
 
 namespace PhoneNumbers
 {
-    [DebuggerNonUserCode]
-    [CompilerGenerated]
-    [GeneratedCode("ProtoGen", "2.3.0.277")]
-    public class PhoneNumberDesc
+    public sealed class PhoneNumberDesc
     {
         public const int NationalNumberPatternFieldNumber = 2;
-
         public const int PossibleLengthFieldNumber = 9;
-
         public const int PossibleLengthLocalOnlyFieldNumber = 10;
-
         public const int ExampleNumberFieldNumber = 6;
-        private readonly List<int> possibleLength_ = new List<int>();
-        private readonly List<int> possibleLengthLocalOnly_ = new List<int>();
 
-        public static PhoneNumberDesc DefaultInstance { get; } = new Builder().BuildPartial();
+        internal PhoneNumberDesc Clone()
+        {
+            var res = (PhoneNumberDesc)MemberwiseClone();
+            res.possibleLength_ = new(possibleLength_);
+            res.possibleLengthLocalOnly_ = new(possibleLengthLocalOnly_);
+            return res;
+        }
+
+        internal List<int> possibleLength_ = new();
+        internal List<int> possibleLengthLocalOnly_ = new();
+
+        public static PhoneNumberDesc DefaultInstance { get; } = new();
 
         public PhoneNumberDesc DefaultInstanceForType => DefaultInstance;
 
-        protected PhoneNumberDesc ThisMessage => this;
+        public bool HasNationalNumberPattern => _nationalNumberPattern != null;
 
-        public bool HasNationalNumberPattern { get; private set; }
+        private string _nationalNumberPattern;
+        public string NationalNumberPattern
+        {
+            get => _nationalNumberPattern ?? "";
+            internal set
+            {
+                _nationalNumberPattern = value;
+                _nationalNumberPatternRegex = null;
+            }
+        }
 
-        public string NationalNumberPattern { get; private set; } = "";
+        private PhoneRegex _nationalNumberPatternRegex;
+        internal PhoneRegex GetNationalNumberPattern() => _nationalNumberPatternRegex ??= PhoneRegex.Get(_nationalNumberPattern);
 
         public IList<int> PossibleLengthList => possibleLength_;
 
@@ -40,9 +53,9 @@ namespace PhoneNumbers
 
         public int PossibleLengthLocalOnlyCount => possibleLengthLocalOnly_.Count;
 
-        public bool HasExampleNumber { get; private set; }
+        public bool HasExampleNumber => ExampleNumber?.Length > 0;
 
-        public string ExampleNumber { get; private set; } = "";
+        public string ExampleNumber { get; internal set; } = "";
 
         public bool IsInitialized => true;
 
@@ -68,7 +81,10 @@ namespace PhoneNumbers
         {
             protected Builder ThisBuilder => this;
 
-            protected PhoneNumberDesc MessageBeingBuilt { get; private set; } = new PhoneNumberDesc();
+            internal protected PhoneNumberDesc MessageBeingBuilt { get; private set; }
+
+            public Builder() => MessageBeingBuilt = new();
+            internal Builder(PhoneNumberDesc desc) => MessageBeingBuilt = desc;
 
             public PhoneNumberDesc DefaultInstanceForType => DefaultInstance;
 
@@ -139,15 +155,13 @@ namespace PhoneNumbers
             public Builder SetNationalNumberPattern(string value)
             {
                 if (value == null) throw new ArgumentNullException(nameof(value));
-                MessageBeingBuilt.HasNationalNumberPattern = true;
                 MessageBeingBuilt.NationalNumberPattern = value;
                 return this;
             }
 
             public Builder ClearNationalNumberPattern()
             {
-                MessageBeingBuilt.HasNationalNumberPattern = false;
-                MessageBeingBuilt.NationalNumberPattern = "";
+                MessageBeingBuilt.NationalNumberPattern = null;
                 return this;
             }
 
@@ -212,14 +226,12 @@ namespace PhoneNumbers
             public Builder SetExampleNumber(string value)
             {
                 if (value == null) throw new ArgumentNullException(nameof(value));
-                MessageBeingBuilt.HasExampleNumber = true;
                 MessageBeingBuilt.ExampleNumber = value;
                 return this;
             }
 
             public Builder ClearExampleNumber()
             {
-                MessageBeingBuilt.HasExampleNumber = false;
                 MessageBeingBuilt.ExampleNumber = "";
                 return this;
             }

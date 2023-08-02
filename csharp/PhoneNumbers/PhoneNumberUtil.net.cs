@@ -149,33 +149,30 @@ namespace PhoneNumbers
             }
             else
             {
-                var numFormatCopy = new NumberFormat.Builder();
                 // Before we do a replacement of the national prefix pattern $NP with the national prefix, we
                 // need to copy the rule so that subsequent replacements for different numbers have the
                 // appropriate national prefix.
-                numFormatCopy.MergeFrom(formattingPattern);
                 var nationalPrefixFormattingRule = formattingPattern.NationalPrefixFormattingRule;
                 if (nationalPrefixFormattingRule.Length > 0)
                 {
+                    formattingPattern = formattingPattern.Clone();
                     var nationalPrefix = metadata.NationalPrefix;
                     if (nationalPrefix.Length > 0)
                     {
                         // Replace $NP with national prefix and $FG with the first group ($1).
                         nationalPrefixFormattingRule = nationalPrefixFormattingRule.Replace(NpPattern, nationalPrefix);
                         nationalPrefixFormattingRule = nationalPrefixFormattingRule.Replace(FgPattern, "$1");
-                        numFormatCopy.SetNationalPrefixFormattingRule(nationalPrefixFormattingRule);
+                        formattingPattern.NationalPrefixFormattingRule = nationalPrefixFormattingRule;
                     }
                     else
                     {
                         // We don't want to have a rule for how to format the national prefix if there isn't one.
-                        numFormatCopy.ClearNationalPrefixFormattingRule();
+                        formattingPattern.NationalPrefixFormattingRule = "";
                     }
                 }
 
                 // no point to optimize, it works on regexes
-                var formatted = FormatNsnUsingPattern(nationalSignificantNumber,
-                    numFormatCopy.Build(),
-                    numberFormat);
+                var formatted = FormatNsnUsingPattern(nationalSignificantNumber, formattingPattern, numberFormat);
 
                 AppendToSpan(ref result, ref resultLength, formatted);
             }
@@ -184,13 +181,7 @@ namespace PhoneNumbers
             return new string(result.Slice(0, resultLength));
         }
 
-        /// <summary>
-        /// Gets the national significant number of the a phone number. Note a national significant number
-        /// doesn't contain a national prefix or any formatting.
-        /// </summary>
-        /// <param name="number">The PhoneNumber object for which the national significant number is needed.</param>
-        /// <returns>The national significant number of the PhoneNumber object passed in.</returns>
-        public string GetNationalSignificantNumber(PhoneNumber number)
+        internal static string GetNationalSignificantNumberImpl(PhoneNumber number)
         {
             // If a leading zero(s) has been set, we prefix this now. Note this is not a national prefix.
             Span<char> nationalSignificantNumber = stackalloc char[20];
@@ -460,7 +451,7 @@ namespace PhoneNumbers
                 var nationalNumber = new string(nationalNumberSpan.Slice(0, nationalNumberLength));
                 var resultString = new string(intermediateResult.Slice(0, intermediateResultLength));
                 var formattingPattern =
-                    ChooseFormattingPatternForNumber(metadataForRegionCallingFrom.NumberFormatList,
+                    ChooseFormattingPatternForNumber(metadataForRegionCallingFrom.numberFormat_,
                         nationalNumber);
                 if (formattingPattern == null)
                     // If no pattern above is matched, we format the original input.
@@ -468,18 +459,17 @@ namespace PhoneNumbers
                     return resultString;
                 }
 
-                var newFormat = new NumberFormat.Builder();
-                newFormat.MergeFrom(formattingPattern);
+                var newFormat = formattingPattern.Clone();
                 // The first group is the first group of digits that the user wrote together.
-                newFormat.SetPattern("(\\d+)(.*)");
+                newFormat.Pattern = "(\\d+)(.*)";
                 // Here we just concatenate them back together after the national prefix has been fixed.
-                newFormat.SetFormat("$1$2");
+                newFormat.Format = "$1$2";
                 // Now we format using this pattern instead of the default pattern, but with the national
                 // prefix prefixed if necessary.
                 // This will not work in the cases where the pattern (and not the leading digits) decide
                 // whether a national prefix needs to be used, since we have overridden the pattern to match
                 // anything, but that is not the case in the metadata to date.
-                return FormatNsnUsingPattern(resultString, newFormat.Build(), PhoneNumberFormat.NATIONAL);
+                return FormatNsnUsingPattern(resultString, newFormat, PhoneNumberFormat.NATIONAL);
             }
 
             var internationalPrefixForFormatting = "";
@@ -617,7 +607,7 @@ namespace PhoneNumbers
             PhoneMetadata metadata,
             PhoneNumberFormat numberFormat)
         {
-            if (!number.HasExtension || number.Extension.Length <= 0)
+            if (!number.HasExtension)
             {
                 return;
             }
@@ -625,18 +615,15 @@ namespace PhoneNumbers
             if (numberFormat == PhoneNumberFormat.RFC3966)
             {
                 AppendToSpan(ref span, ref index, RFC3966_EXTN_PREFIX);
-                AppendToSpan(ref span, ref index, number.Extension);
-                return;
             }
-
-            if (metadata.HasPreferredExtnPrefix)
+            else if (metadata.HasPreferredExtnPrefix)
             {
                 AppendToSpan(ref span, ref index, metadata.PreferredExtnPrefix);
-                AppendToSpan(ref span, ref index, number.Extension);
-                return;
             }
-
-            AppendToSpan(ref span, ref index, DEFAULT_EXTN_PREFIX);
+            else
+            {
+                AppendToSpan(ref span, ref index, DEFAULT_EXTN_PREFIX);
+            }
             AppendToSpan(ref span, ref index, number.Extension);
         }
 
@@ -645,71 +632,23 @@ namespace PhoneNumbers
             out int nationalSignificantNumberLength)
         {
             nationalSignificantNumberLength = 0;
-            if (number.ItalianLeadingZero)
-            {
-                for (var i = 0; i < number.NumberOfLeadingZeros; i++)
-                {
-                    nationalNumber[nationalSignificantNumberLength++] = '0';
-                }
-            }
+            for (var i = 0; i < number.NumberOfLeadingZeros; i++)
+                nationalNumber[nationalSignificantNumberLength++] = '0';
 
-            AppendNumberToSpan(ref nationalNumber, ref nationalSignificantNumberLength, number.NationalNumber);
-        }
-
-        private static void AppendNumberToSpan(ref Span<char> span, ref int index, ulong numberToAppend)
-        {
-            if (numberToAppend == 0)
-            {
-                span[index++] = '0';
-            }
-
-            var numberLength = numberToAppend switch
-            {
-                < 10    => 1,
-                < 100   => 2,
-                < 1_000 => 3,
-                _       => (int)Math.Floor(Math.Log10(numberToAppend)) + 1,
-            };
-
-            var maxIndex = index + numberLength - 1;
-            var startIndex = index;
-            while (numberToAppend > 0)
-            {
-                span[maxIndex + startIndex - index++] = (char)('0' + numberToAppend % 10);
-                numberToAppend /= 10;
-            }
+            number.NationalNumber.TryFormat(nationalNumber[nationalSignificantNumberLength..], out var charsWritten);
+            nationalSignificantNumberLength += charsWritten;
         }
 
         private static void AppendNumberToSpan(ref Span<char> span, ref int index, int numberToAppend)
         {
-            if (numberToAppend == 0)
-            {
-                span[index++] = '0';
-            }
-
-            var numberLength = numberToAppend switch
-            {
-                < 10    => 1,
-                < 100   => 2,
-                < 1_000 => 3,
-                _       => (int)Math.Floor(Math.Log10(numberToAppend)) + 1,
-            };
-
-            var maxIndex = index + numberLength - 1;
-            var startIndex = index;
-            while (numberToAppend > 0)
-            {
-                span[maxIndex + startIndex - index++] = (char)('0' + numberToAppend % 10);
-                numberToAppend /= 10;
-            }
+            checked((uint)numberToAppend).TryFormat(span[index..], out var charsWritten);
+            index += charsWritten;
         }
 
         private static void AppendToSpan(ref Span<char> destination, ref int index, string valueToAppend)
         {
-            foreach (var c in valueToAppend)
-            {
-                destination[index++] = c;
-            }
+            valueToAppend.AsSpan().CopyTo(destination[index..]);
+            index += valueToAppend.Length;
         }
 
         private void Format(ref Span<char> span, ref int index, PhoneNumber number, PhoneNumberFormat numberFormat)

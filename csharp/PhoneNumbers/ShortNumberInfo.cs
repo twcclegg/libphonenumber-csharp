@@ -16,8 +16,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using PhoneNumbers.Internal;
 
 namespace PhoneNumbers
 {
@@ -123,8 +121,8 @@ namespace PhoneNumbers
                 return false;
             }
 
-            var numberLength = GetNationalSignificantNumber(number).Length;
-            return phoneMetadata.GeneralDesc.PossibleLengthList.Contains(numberLength);
+            var numberLength = PhoneNumberUtil.GetNationalSignificantNumberLength(number);
+            return phoneMetadata.GeneralDesc.possibleLength_.Contains(numberLength);
         }
 
         /// <summary>
@@ -139,7 +137,7 @@ namespace PhoneNumbers
         public bool IsPossibleShortNumber(PhoneNumber number)
         {
             var regionCodes = GetRegionCodesForCountryCode(number.CountryCode);
-            var shortNumberLength = GetNationalSignificantNumber(number).Length;
+            var shortNumberLength = PhoneNumberUtil.GetNationalSignificantNumberLength(number);
             foreach (var region in regionCodes)
             {
                 var phoneMetadata = MetadataManager.GetShortNumberMetadataForRegion(region);
@@ -148,7 +146,7 @@ namespace PhoneNumbers
                     continue;
                 }
 
-                if (phoneMetadata.GeneralDesc.PossibleLengthList.Contains(shortNumberLength))
+                if (phoneMetadata.GeneralDesc.possibleLength_.Contains(shortNumberLength))
                 {
                     return true;
                 }
@@ -178,7 +176,7 @@ namespace PhoneNumbers
                 return false;
             }
 
-            var shortNumber = GetNationalSignificantNumber(number);
+            var shortNumber = PhoneNumberUtil.GetNationalSignificantNumberImpl(number);
             var generalDesc = phoneMetadata.GeneralDesc;
             if (!MatchesPossibleNumberAndNationalNumber(shortNumber, generalDesc))
             {
@@ -250,15 +248,17 @@ namespace PhoneNumbers
                 return ShortNumberCost.UNKNOWN_COST;
             }
 
-            var shortNumber = GetNationalSignificantNumber(number);
+            var shortNumberLength = PhoneNumberUtil.GetNationalSignificantNumberLength(number);
 
             // The possible lengths are not present for a particular sub-type if they match the general
             // description; for this reason, we check the possible lengths against the general description
             // first to allow an early exit if possible.
-            if (!phoneMetadata.GeneralDesc.PossibleLengthList.Contains(shortNumber.Length))
+            if (!phoneMetadata.GeneralDesc.possibleLength_.Contains(shortNumberLength))
             {
                 return ShortNumberCost.UNKNOWN_COST;
             }
+
+            var shortNumber = PhoneNumberUtil.GetNationalSignificantNumberImpl(number);
 
             // The cost categories are tested in order of decreasing expense, since if for some reason the
             // patterns overlap the most expensive matching cost category should be returned.
@@ -361,7 +361,7 @@ namespace PhoneNumbers
                 return regionCodes[0];
             }
 
-            var nationalNumber = GetNationalSignificantNumber(number);
+            var nationalNumber = PhoneNumberUtil.GetNationalSignificantNumberImpl(number);
             foreach (var regionCode in regionCodes)
             {
                 var phoneMetadata = MetadataManager.GetShortNumberMetadataForRegion(regionCode);
@@ -484,8 +484,7 @@ namespace PhoneNumbers
             var normalizedNumber = PhoneNumberUtil.NormalizeDigitsOnly(possibleNumber);
             var allowPrefixMatchForRegion =
                 allowPrefixMatch && !RegionsWhereEmergencyNumbersMustBeExact.Contains(regionCode);
-            return RegexBasedMatcher.MatchNationalNumber(normalizedNumber, metadata.Emergency,
-                allowPrefixMatchForRegion);
+            return MatchNationalNumber(normalizedNumber, metadata.Emergency, allowPrefixMatchForRegion);
         }
 
         /// <summary>
@@ -503,7 +502,7 @@ namespace PhoneNumbers
         {
             var regionCodes = GetRegionCodesForCountryCode(number.CountryCode);
             var regionCode = GetRegionCodeForShortNumberFromRegionList(number, regionCodes);
-            var nationalNumber = GetNationalSignificantNumber(number);
+            var nationalNumber = PhoneNumberUtil.GetNationalSignificantNumberImpl(number);
             var phoneMetadata = MetadataManager.GetShortNumberMetadataForRegion(regionCode);
             return phoneMetadata != null
                    && MatchesPossibleNumberAndNationalNumber(nationalNumber,
@@ -530,7 +529,7 @@ namespace PhoneNumbers
                 return false;
             }
 
-            var nationalNumber = GetNationalSignificantNumber(number);
+            var nationalNumber = PhoneNumberUtil.GetNationalSignificantNumberImpl(number);
             var phoneMetadata =
                 MetadataManager.GetShortNumberMetadataForRegion(regionDialingFrom);
             return phoneMetadata != null
@@ -561,45 +560,32 @@ namespace PhoneNumbers
             var phoneMetadata =
                 MetadataManager.GetShortNumberMetadataForRegion(regionDialingFrom);
             return phoneMetadata != null
-                   && MatchesPossibleNumberAndNationalNumber(GetNationalSignificantNumber(number),
+                   && MatchesPossibleNumberAndNationalNumber(PhoneNumberUtil.GetNationalSignificantNumberImpl(number),
                        phoneMetadata.SmsServices);
-        }
-
-        /// <summary>
-        /// Gets the national significant number of the a phone number. Note a national significant number
-        /// doesn't contain a national prefix or any formatting.
-        /// <p />
-        /// This is a temporary duplicate of the <see cref="GetNationalSignificantNumber" /> method from
-        /// <see cref="PhoneNumberUtil" />. Ultimately a canonical static version should exist in a separate
-        /// </summary>
-        ///
-        /// <param name="number"> the phone number for which the national significant number is needed</param>
-        /// utility class (to prevent <see cref="ShortNumberInfo" /> needing to depend on PhoneNumberUtil).
-        /// <returns> the national significant number of the PhoneNumber object passed in </returns>
-        private static string GetNationalSignificantNumber(PhoneNumber number)
-        {
-            // If leading zero(s) have been set, we prefix this now. Note this is not a national prefix.
-            var nationalNumber = new StringBuilder();
-            if (number.ItalianLeadingZero)
-                for (var i = 0; i < number.NumberOfLeadingZeros; ++i)
-                    nationalNumber.Append('0');
-
-            nationalNumber.Append(number.NationalNumber);
-            return nationalNumber.ToString();
         }
 
         // TODO: Once we have benchmarked ShortNumberInfo, consider if it is worth keeping
         // this performance optimization.
-        private static bool MatchesPossibleNumberAndNationalNumber(string number,
-            PhoneNumberDesc numberDesc)
+        private static bool MatchesPossibleNumberAndNationalNumber(string number, PhoneNumberDesc numberDesc)
         {
             if (numberDesc.PossibleLengthCount > 0
-                && !numberDesc.PossibleLengthList.Contains(number.Length))
+                && !numberDesc.possibleLength_.Contains(number.Length))
             {
                 return false;
             }
 
-            return RegexBasedMatcher.MatchNationalNumber(number, numberDesc, false);
+            return MatchNationalNumber(number, numberDesc, false);
+        }
+
+        private static bool MatchNationalNumber(string number, PhoneNumberDesc numberDesc, bool allowPrefixMatch)
+        {
+            // We don't want to consider it a prefix match when matching non-empty input against an empty
+            // pattern.
+            if (!numberDesc.HasNationalNumberPattern)
+                return false;
+
+            var pattern = numberDesc.GetNationalNumberPattern();
+            return allowPrefixMatch ? pattern.IsMatchBeginning(number) : pattern.IsMatchAll(number);
         }
     }
 }

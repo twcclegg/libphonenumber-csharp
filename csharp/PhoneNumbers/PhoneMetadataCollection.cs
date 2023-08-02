@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,16 +10,18 @@ namespace PhoneNumbers
     [DebuggerNonUserCode]
     [CompilerGenerated]
     [GeneratedCode("ProtoGen", "2.3.0.277")]
-    public class PhoneMetadataCollection
+    public sealed class PhoneMetadataCollection
     {
         public const int MetadataFieldNumber = 1;
-        private readonly List<PhoneMetadata> metadata = new List<PhoneMetadata>();
+        internal readonly List<PhoneMetadata> metadata;
 
-        public static PhoneMetadataCollection DefaultInstance { get; } = new Builder().BuildPartial();
+        public PhoneMetadataCollection() => metadata = new();
+
+        internal PhoneMetadataCollection(List<PhoneMetadata> metadata) => this.metadata = metadata;
+
+        public static PhoneMetadataCollection DefaultInstance { get; } = new();
 
         public PhoneMetadataCollection DefaultInstanceForType => DefaultInstance;
-
-        protected PhoneMetadataCollection ThisMessage => this;
 
         public IList<PhoneMetadata> MetadataList => metadata;
 
