@@ -848,6 +848,14 @@ namespace PhoneNumbers.Test
                 newNumberFormats));
             Assert.Equal("tel:+1-650-253-0000", phoneUtil.FormatByPattern(USNumber,
                 PhoneNumberFormat.RFC3966, newNumberFormats));
+            var usNumber2 = new PhoneNumber
+            {
+                CountryCode = 1,
+                NationalNumber = 6507129823L
+            };
+            Assert.Equal(
+                "tel:+1-650-712-9823",
+                phoneUtil.FormatByPattern(usNumber2, PhoneNumberFormat.RFC3966, newNumberFormats));
 
 
             // $NP is set to '1' for the US. Here we check that for other NANPA countries the US rules are
