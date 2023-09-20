@@ -91,14 +91,14 @@ while
     sleep 15
     echo -n "."
     RESULT=$(getAppVeyorStatus twcclegg/libphonenumber-csharp)
-    [ $RESULT = "running" ]
+    [ $RESULT = "running" ] || [ $RESULT = "starting" ]
 do true
 done
 echo
 
 if [ $RESULT != "success" ]
 then
-    echo "\nbuild failed: $RESULT"
+    echo "build failed: $RESULT"
     exit
 fi
 
