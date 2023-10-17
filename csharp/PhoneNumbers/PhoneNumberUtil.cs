@@ -2616,13 +2616,11 @@ namespace PhoneNumbers
             }
             catch (NumberParseException e) when (e.ErrorType == ErrorType.INVALID_COUNTRY_CODE)
             {
-                int m = 0;
-                while (m < nationalNumberString.Length && IsPlusChar(nationalNumberString[m])) m++;
-                if (m > 0)
+                if (IsPlusChar(nationalNumberString[0]))
                 {
                     // Strip the plus-char, and try again.
                     countryCode = MaybeExtractCountryCode(
-                        nationalNumberString.Substring(m),
+                        nationalNumberString.Substring(1),
                         regionMetadata, normalizedNationalNumber,
                         keepRawInput, phoneNumber);
                     if (countryCode == 0)
