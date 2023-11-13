@@ -3,13 +3,13 @@
 if [ $# -ne 1 ]
 then
     echo "GitHub token required"
-    exit
+    exit 123
 fi
 
 if [ ! command -v jq &> /dev/null ]
 then
     echo "jq required"
-    exit
+    exit 123
 fi
 
 getLatestGitHubRelease() {
@@ -29,73 +29,80 @@ createRelease() {
 }
 
 GITHUB_TOKEN=$1
-UPSTREAM=$(getLatestGitHubRelease google/libphonenumber)
-DEPLOYED=$(getLatestNugetRelease libphonenumber-csharp)
+UPSTREAM_GITHUB_RELEASE_TAG=$(getLatestGitHubRelease google/libphonenumber)
+DEPLOYED_NUGET_TAG=$(getLatestNugetRelease libphonenumber-csharp)
+GITHUB_REPOSITORY_OWNER=wmundev
+#GITHUB_REPOSITORY_OWNER=twcclegg
+#GITHUB_REPOSITORY_NAME=libphonenumber-csharp
+GITHUB_REPOSITORY_NAME=test-test-libphonenumber-csharp
+GITHUB_ACTION_WORKING_DIRECTORY=$(pwd)
 
-if [ "$DEPLOYED" = "${UPSTREAM:1}" ]
+ls
+pwd
+echo "google/libphonenumber latest release is ${UPSTREAM_GITHUB_RELEASE_TAG}"
+echo "libphonenumber-csharp latest release is ${DEPLOYED_NUGET_TAG}"
+
+if [ "$DEPLOYED_NUGET_TAG" = "${UPSTREAM_GITHUB_RELEASE_TAG:1}" ]
 then
-    echo "versions match"
-    exit
+    echo "versions match, new release not required"
+    exit 0
 fi
 
-cd ~/GitHub/libphonenumber-csharp/
+mkdir ~/GitHub
+
+cd ~/GitHub
+git clone "https://github.com/${GITHUB_REPOSITORY_OWNER}/${GITHUB_REPOSITORY_NAME}.git"
+cd ${GITHUB_REPOSITORY_NAME}
+git checkout main
+
+cd ~/GitHub/$GITHUB_REPOSITORY_NAME
 if [ $(git branch --show-current) != "main" ]
 then
     echo "must be on main branch"
-    exit
+    exit 123
 fi
 
 if [ -n "$(git status --porcelain)" ]
 then
     echo "working directory is not clean"
-    exit
+    exit 123
 fi
 
-cd ~/GitHub/libphonenumber/
+cd ~/GitHub
+git clone "https://github.com/google/libphonenumber.git"
+git checkout master
+
+cd ~/GitHub/libphonenumber
 PREVIOUS=$(git describe --abbrev=0)
 
-FILES=$(getReleaseDelta google/libphonenumber $PREVIOUS $UPSTREAM)
+FILES=$(getReleaseDelta google/libphonenumber "v${DEPLOYED_NUGET_TAG}" $UPSTREAM_GITHUB_RELEASE_TAG)
 
 if echo $FILES | grep '\.java'
 then
-   echo "has java"
-   exit
+   echo "has java files, automatic update not possible"
+   exit 123
 fi
 
 if echo $FILES | grep 'proto'
 then
-   echo "has proto"
-   exit
+   echo "has proto files, automatic update not possible"
+   exit 123
 fi
 
+git config --global user.email '<>'
+git config --global user.name 'libphonenumber-csharp-bot'
+
 git fetch origin
-git reset --hard $UPSTREAM
-rm -rf ../libphonenumber-csharp/resources/*
-cp -r resources/* ../libphonenumber-csharp/resources
-cd ../libphonenumber-csharp
+git reset --hard $UPSTREAM_GITHUB_RELEASE_TAG
+rm -rf ${GITHUB_ACTION_WORKING_DIRECTORY}/resources/*
+cp -r resources/* ${GITHUB_ACTION_WORKING_DIRECTORY}/resources
+cd ${GITHUB_ACTION_WORKING_DIRECTORY}
 cd lib
 javac DumpLocale.java && java DumpLocale > ../csharp/PhoneNumbers/LocaleData.cs
 rm DumpLocale.class
+
 git add -A
-git commit -m "$UPSTREAM"
+git commit -m "feat: automatic upgrade to ${UPSTREAM_GITHUB_RELEASE_TAG}"
 git push
-sleep 15
-echo -n "build pending"
-sleep 60
 
-while
-    sleep 15
-    echo -n "."
-    RESULT=$(getAppVeyorStatus twcclegg/libphonenumber-csharp)
-    [ $RESULT = "running" ] || [ $RESULT = "starting" ]
-do true
-done
-echo
-
-if [ $RESULT != "success" ]
-then
-    echo "build failed: $RESULT"
-    exit
-fi
-
-createRelease twcclegg/libphonenumber-csharp $UPSTREAM
+createRelease ${GITHUB_REPOSITORY_OWNER}/${GITHUB_REPOSITORY_NAME} $UPSTREAM_GITHUB_RELEASE_TAG
