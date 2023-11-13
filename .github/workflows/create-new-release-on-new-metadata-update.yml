@@ -6,6 +6,9 @@ on:
   schedule:
     - cron: '0 8 * * 6'
   workflow_dispatch:
+#    todo remove
+  pull_request:
+    branches: [ master ]
 
 jobs:
   build:
