@@ -1,4 +1,6 @@
 #! /bin/bash
+# Exit bash script on any command that returns a non zero error code
+set -e
 
 if [ $# -ne 1 ]
 then
@@ -31,14 +33,10 @@ createRelease() {
 GITHUB_TOKEN=$1
 UPSTREAM_GITHUB_RELEASE_TAG=$(getLatestGitHubRelease google/libphonenumber)
 DEPLOYED_NUGET_TAG=$(getLatestNugetRelease libphonenumber-csharp)
-GITHUB_REPOSITORY_OWNER=wmundev
-#GITHUB_REPOSITORY_OWNER=twcclegg
-#GITHUB_REPOSITORY_NAME=libphonenumber-csharp
-GITHUB_REPOSITORY_NAME=test-test-libphonenumber-csharp
+GITHUB_REPOSITORY_OWNER=twcclegg
+GITHUB_REPOSITORY_NAME=libphonenumber-csharp
 GITHUB_ACTION_WORKING_DIRECTORY=$(pwd)
 
-ls
-pwd
 echo "google/libphonenumber latest release is ${UPSTREAM_GITHUB_RELEASE_TAG}"
 echo "libphonenumber-csharp latest release is ${DEPLOYED_NUGET_TAG}"
 
@@ -51,7 +49,7 @@ fi
 mkdir ~/GitHub
 
 cd ~/GitHub
-git clone "https://github.com/${GITHUB_REPOSITORY_OWNER}/${GITHUB_REPOSITORY_NAME}.git"
+git clone https://github.com/${GITHUB_REPOSITORY_OWNER}/${GITHUB_REPOSITORY_NAME}.git
 cd ${GITHUB_REPOSITORY_NAME}
 git checkout main
 
@@ -69,7 +67,8 @@ then
 fi
 
 cd ~/GitHub
-git clone "https://github.com/google/libphonenumber.git"
+git clone https://github.com/google/libphonenumber.git
+cd libphonenumber
 git checkout master
 
 cd ~/GitHub/libphonenumber
@@ -100,6 +99,18 @@ cd ${GITHUB_ACTION_WORKING_DIRECTORY}
 cd lib
 javac DumpLocale.java && java DumpLocale > ../csharp/PhoneNumbers/LocaleData.cs
 rm DumpLocale.class
+
+# Ensure project builds and passes tests before committing
+cd ${GITHUB_ACTION_WORKING_DIRECTORY}
+zip -r ./resources/geocoding.zip ./resources/geocoding/*
+zip -r ./resources/test/testgeocoding.zip ./resources/test/geocoding/*
+cd csharp
+dotnet restore
+dotnet build --no-restore
+dotnet test --no-build --verbosity normal
+# Cleanup test dependencies
+rm -rf ${GITHUB_ACTION_WORKING_DIRECTORY}/resources/geocoding.zip
+rm -rf ${GITHUB_ACTION_WORKING_DIRECTORY}/resources/test/testgeocoding.zip
 
 git add -A
 git commit -m "feat: automatic upgrade to ${UPSTREAM_GITHUB_RELEASE_TAG}"
