@@ -7,7 +7,7 @@
         <PackageId>libphonenumber-csharp.extensions</PackageId>
         <VersionPrefix>$(APPVEYOR_BUILD_VERSION)</VersionPrefix>
         <Authors>Thomas Clegg</Authors>
-        <TargetFrameworks>netstandard2.0;net6.0;net7.0;net8.0</TargetFrameworks>
+        <TargetFrameworks>netstandard2.0;net6.0;net7.0</TargetFrameworks>
         <LangVersion>preview</LangVersion>
         <PackageTags>phonenumber phone libphonenumber e164 e.164 international extensions</PackageTags>
         <PackageProjectUrl>https://github.com/twcclegg/libphonenumber-csharp</PackageProjectUrl>
