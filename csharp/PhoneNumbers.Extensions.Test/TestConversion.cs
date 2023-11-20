@@ -19,7 +19,7 @@ namespace PhoneNumbers.Extensions.Test
         [InlineData("+380445004973", "0445004973", "UA")]
         [InlineData("+50022215", "+50022215", null)]
         [InlineData("+50022215", "22215", "FK")]
-        public void TestSerialization(string expected, string input, string region)
+        public void TestSerialization(string expected, string input, string? region)
         {
             var number = Util.Parse(input, region);
             var json = JsonSerializer.Serialize(new TestPhoneNumber(number));
