@@ -5,7 +5,6 @@
     <AssemblyName>PhoneNumbers.Test</AssemblyName>
     <PackageId>PhoneNumbers.Test</PackageId>
     <DebugType>full</DebugType>
-    <LangVersion>latest</LangVersion>
     <NoWarn>$(NoWarn);CA1014;CA1707</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>

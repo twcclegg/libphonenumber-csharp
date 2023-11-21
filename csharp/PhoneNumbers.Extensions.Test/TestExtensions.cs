@@ -63,7 +63,12 @@ namespace PhoneNumbers.Extensions.Test
         [InlineData("+3809")]
         [InlineData("+380123456789012345678")]
         [MemberData(nameof(TryParseValidInvalidTestData))]
+
+#if NET6_0_OR_GREATER
         public void TryParseValid_WhenInvalidInput_ThenResultIsFalse(string? number)
+#else
+        public void TryParseValid_WhenInvalidInput_ThenResultIsFalse(string number)
+#endif
         {
             var isValid = PhoneNumber.TryParseValid(number, null, out var phoneNumber);
 
