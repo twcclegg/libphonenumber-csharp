@@ -143,7 +143,7 @@ namespace PhoneNumbers
                     continue;
                 }
 
-                var name = entry.FullName.Split('.')[0].Split(Path.AltDirectorySeparatorChar);
+                var name = entry.FullName.Split('.')[0].Split('\\');
                 int country;
                 try
                 {
