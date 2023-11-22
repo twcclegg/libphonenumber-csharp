@@ -864,8 +864,8 @@ namespace PhoneNumbers.Test
             })
             {
                 Assert.False(desc.HasNationalNumberPattern);
-                Assert.Equal(0, desc.PossibleLengthList.Count);
-                Assert.Equal(0, desc.PossibleLengthLocalOnlyList.Count);
+                Assert.Empty(desc.PossibleLengthList);
+                Assert.Empty(desc.PossibleLengthLocalOnlyList);
                 Assert.False(desc.HasExampleNumber);
             }
         }
