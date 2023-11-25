@@ -144,7 +144,15 @@ namespace PhoneNumbers
                 }
 
                 var name = ParseNameFromArchive(entry);
-                var country = int.Parse(name[1], CultureInfo.InvariantCulture);
+                int country;
+                try
+                {
+                    country = int.Parse(name[1], CultureInfo.InvariantCulture);
+                }
+                catch (FormatException)
+                {
+                    throw new Exception("Failed to parse zipped geocoding file name: " + entry.FullName);
+                }
                 var language = name[0];
                 if (!files.TryGetValue(country, out var languages))
                     files[country] = languages = new HashSet<string>();
@@ -157,20 +165,11 @@ namespace PhoneNumbers
         private static string[] ParseNameFromArchive(ZipArchiveEntry entry)
         {
             const int expectedLength = 2;
-            string[] name;
-            try
+            var name = entry.FullName.Split('.')[0].Split(Path.DirectorySeparatorChar);
+            if (name.Length < expectedLength)
             {
-                name = entry.FullName.Split('.')[0].Split(Path.DirectorySeparatorChar);
-                if (name.Length < expectedLength)
-                {
-                    name = entry.FullName.Split('.')[0].Split(Path.AltDirectorySeparatorChar);
-                }
+                name = entry.FullName.Split('.')[0].Split(Path.AltDirectorySeparatorChar);
             }
-            catch (FormatException)
-            {
-                throw new Exception("Failed to parse zipped geocoding file name: " + entry.FullName);
-            }
-
             return name;
         }
 
