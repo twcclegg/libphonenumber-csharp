@@ -143,7 +143,7 @@ namespace PhoneNumbers
                     continue;
                 }
 
-                var name = entry.FullName.Split('.')[0].Split('\\');
+                var name = ParseNameFromArchive(entry);
                 int country;
                 try
                 {
@@ -160,6 +160,11 @@ namespace PhoneNumbers
             }
 
             return files;
+        }
+
+        private static string[] ParseNameFromArchive(ZipArchiveEntry entry)
+        {
+            return entry.FullName.Split('.')[0].Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
         }
 
         private static SortedDictionary<int, HashSet<string>> LoadFileNamesFromManifestResources(Assembly asm, string prefix)
