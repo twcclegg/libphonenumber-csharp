@@ -98,6 +98,26 @@ namespace PhoneNumbers.Test
                 new AreaCodeMap().GetSmallerMapStorage(CreateFlyweightStorageMapCandidate());
             Assert.True(mapStorage.GetType() == typeof(FlyweightMapStorage));
         }
+        
+        [Fact]
+        public void TestGetSmallerMapStorageChoosesDefaultImpl_ShouldImplementToStringWithTheRightFormat()
+        {
+            var mapStorage = new AreaCodeMap().GetSmallerMapStorage(CreateDefaultStorageMapCandidate());
+            
+            var result = mapStorage.ToString();
+            
+            Assert.Equal("121212345|New York\n148034434|Arizona\n", result);
+        }
+        
+        [Fact]
+        public void TestGetSmallerMapStorageChoosesFlyweightImpl_ShouldImplementToStringWithTheRightFormat()
+        {
+            var mapStorage = new AreaCodeMap().GetSmallerMapStorage(CreateFlyweightStorageMapCandidate());
+            
+            var result = mapStorage.ToString();
+            
+            Assert.Equal("1212|New York\n1213|New York\n1214|New York\n1480|Arizona\n", result);
+        }
 
         [Fact]
         public void TestLookupInvalidNumber_US()
