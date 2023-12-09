@@ -25,6 +25,11 @@ namespace PhoneNumbers
         /// <returns>The normalized string version of the phone number.</returns>
         public static string Normalize(string number)
         {
+            if (number == null)
+            {
+                return string.Empty;
+            }
+
             Span<char> result = stackalloc char[number.Length];
             var resultLength = 0;
 
@@ -40,6 +45,11 @@ namespace PhoneNumbers
         /// <returns>The normalized string version of the phone number.</returns>
         public static string NormalizeDigitsOnly(string number)
         {
+            if (number == null)
+            {
+                return string.Empty;
+            }
+
             Span<char> result = stackalloc char[number.Length];
             var resultLength = 0;
 
@@ -55,6 +65,11 @@ namespace PhoneNumbers
         /// <returns> the normalized string version of the phone number</returns>
         public static string NormalizeDiallableCharsOnly(string number)
         {
+            if (number == null)
+            {
+                return string.Empty;
+            }
+
             Span<char> result = stackalloc char[number.Length];
             var resultLength = 0;
 
@@ -70,6 +85,11 @@ namespace PhoneNumbers
         /// <returns></returns>
         public static string ConvertAlphaCharactersInNumber(string number)
         {
+            if (number == null)
+            {
+                return string.Empty;
+            }
+
             Span<char> result = stackalloc char[number.Length];
             var resultLength = 0;
 
