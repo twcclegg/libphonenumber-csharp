@@ -369,6 +369,14 @@ namespace PhoneNumbers.Test
             Assert.Equal(expectedOutput, PhoneNumberUtil.ConvertAlphaCharactersInNumber(input));
         }
 
+        [Fact]
+        public void TestNormaliseNull()
+        {
+            const string inputNumber = null;
+            var expectedOutput = string.Empty;
+            Assert.Equal(expectedOutput,
+                PhoneNumberUtil.Normalize(inputNumber));
+        }
 
         [Fact]
         public void TestNormaliseRemovePunctuation()
