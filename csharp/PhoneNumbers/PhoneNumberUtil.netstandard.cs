@@ -73,10 +73,13 @@ namespace PhoneNumbers
         /// <returns>The formatted phone number.</returns>
         public string Format(PhoneNumber number, PhoneNumberFormat numberFormat)
         {
-            if (number.NationalNumber == 0 && number.HasRawInput)
+            // Unparseable numbers that kept their raw input just use that.
+            // This is the only case where a number can be formatted as E164 without a
+            // leading '+' symbol (but the original number wasn't parseable anyway).
+            if (number.NationalNumber == 0)
             {
                 var rawInput = number.RawInput;
-                if (rawInput.Length > 0)
+                if (rawInput.Length > 0 || !number.HasCountryCode)
                 {
                     return rawInput;
                 }
