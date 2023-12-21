@@ -52,7 +52,7 @@ fi
 if [ -n "$(git status --porcelain)" ]
 then
     echo "working directory is not clean"
-    #exit
+    exit
 fi
 
 cd ~/GitHub/libphonenumber/
@@ -63,7 +63,7 @@ FILES=$(getReleaseDelta google/libphonenumber $PREVIOUS $UPSTREAM)
 if echo $FILES | grep '\.java'
 then
    echo "has java"
-   #exit
+   exit
 fi
 
 if echo $FILES | grep 'proto'
