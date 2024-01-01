@@ -60,5 +60,17 @@ namespace PhoneNumbers.Test
             Assert.Equal("zh_Hant.86.txt", mappingProvider.GetFileName(86, "zh", "", "HK"));
             Assert.Equal("zh_Hant.86.txt", mappingProvider.GetFileName(86, "zh", "Hant", "TW"));
         }
+
+        [Fact]
+        public void GetFileName_WhenLanguageIsNotAvailable_ShouldReturnEmptyString()
+        {
+            Assert.Equal("", mappingProvider.GetFileName(1, "de", "", ""));
+        }
+
+        [Fact]
+        public void ToString_ShouldReturnTheCorrectFormattedString()
+        {
+            Assert.Equal("1|en,\n41|de,fr,it,rm,\n65|en,ms,ta,zh_Hans,\n86|en,zh,zh_Hant,\n", mappingProvider.ToString());
+        }
     }
 }

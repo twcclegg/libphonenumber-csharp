@@ -18,6 +18,28 @@ using Xunit;
 
 namespace PhoneNumbers.Test
 {
+    [Collection("TestLocaleTestCase")]
+    public class TestLocale
+    {
+        [Fact]
+        public void GetDisplayCountry_WhenPassedWithAnValidLanguageCode_ShouldReturnTheCorrectDisplayCountry()
+        {
+            Assert.Equal("United States", new Locale("en", "US").GetDisplayCountry("US"));
+        }
+
+        [Fact]
+        public void GetDisplayCountry_WhenPassedWithAnEmptyCountryCode_ShouldReturnAnEmptyDisplayCountry()
+        {
+            Assert.Equal(string.Empty, new Locale("en", string.Empty).GetDisplayCountry("abc"));
+        }
+
+        [Fact]
+        public void GetDisplayCountry_WhenUnknownLanguage_ShouldReturnADefaultDisplayCountry()
+        {
+            Assert.Equal("United States", new Locale("unknown-language", "US").GetDisplayCountry("unknown-language"));
+        }
+    }
+
     /**
     * Base Unit tests using geocoder with unzipped geocoding data
     */
@@ -63,7 +85,7 @@ namespace PhoneNumbers.Test
         private static readonly PhoneNumber KONumber3 =
             new PhoneNumber.Builder().SetCountryCode(82).SetNationalNumber(6421234567L).Build();
         private static readonly PhoneNumber KOInvalidNumber =
-           new PhoneNumber.Builder().SetCountryCode(82).SetNationalNumber(1234L).Build();
+            new PhoneNumber.Builder().SetCountryCode(82).SetNationalNumber(1234L).Build();
         private static readonly PhoneNumber USNumber1 =
             new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(6502530000L).Build();
         private static readonly PhoneNumber USNumber2 =
@@ -95,9 +117,9 @@ namespace PhoneNumbers.Test
             Assert.Equal("Australia",
                 geocoder.GetDescriptionForNumber(AUNumber, new Locale("en", "US")));
             Assert.Equal("", geocoder.GetDescriptionForNumber(NumberWithInvalidCountryCode,
-                                                              new Locale("en", "US")));
+                new Locale("en", "US")));
             Assert.Equal("", geocoder.GetDescriptionForNumber(InternationalTollFree,
-                                                            new Locale("en", "US")));
+                new Locale("en", "US")));
         }
 
         [Fact]
@@ -174,7 +196,7 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
-        public void TestGetDescritionForInvaildNumber()
+        public void TestGetDescriptionForInvalidNumber()
         {
             Assert.Equal("", geocoder.GetDescriptionForNumber(KOInvalidNumber, Locale.English));
             Assert.Equal("", geocoder.GetDescriptionForNumber(USInvalidNumber, Locale.English));
