@@ -100,6 +100,16 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
+        public void TestGetSmallerMapStorageChoosesDefaultImpl_ShouldImplementToStringWithTheRightFormat()
+        {
+            var mapStorage = new AreaCodeMap().GetSmallerMapStorage(CreateDefaultStorageMapCandidate());
+
+            var result = mapStorage.ToString();
+
+            Assert.Equal("121212345|New York\n148034434|Arizona\n", result);
+        }
+
+        [Fact]
         public void TestLookupInvalidNumber_US()
         {
             // central office code cannot start with 1.
