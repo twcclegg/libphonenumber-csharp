@@ -34,7 +34,7 @@ updates:
   - package-ecosystem: "nuget"
     directory: "/csharp/PhoneNumbers.Extensions.Test"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     open-pull-requests-limit: 5
     groups:
       PhoneNumbers_Extensions_Test_minor_patch_updates:
@@ -47,7 +47,7 @@ updates:
   - package-ecosystem: "nuget"
     directory: "/csharp/PhoneNumbers.Test"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     open-pull-requests-limit: 5
     groups:
       PhoneNumbers_Test_minor_patch_updates:
