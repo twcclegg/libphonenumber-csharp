@@ -64,7 +64,7 @@ namespace PhoneNumbers.Test
         [Fact]
         public void GetFileName_WhenLanguageIsNotAvailable_ShouldReturnEmptyString()
         {
-            Assert.Equal("", mappingProvider.GetFileName(1, "de", "", ""));
+            Assert.Equal(string.Empty, mappingProvider.GetFileName(1, "de", "", ""));
         }
 
         [Fact]
