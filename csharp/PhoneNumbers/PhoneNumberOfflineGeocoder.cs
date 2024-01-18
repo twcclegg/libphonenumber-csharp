@@ -144,6 +144,11 @@ namespace PhoneNumbers
                 }
 
                 var name = entry.FullName.Split('.')[0].Split('\\');
+                // fallback to directory separator char if we are unable to use the original implementation of splitting the path
+                if (name.Length < 2)
+                {
+                    name = entry.FullName.Split('.')[0].Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                }
                 int country;
                 try
                 {
