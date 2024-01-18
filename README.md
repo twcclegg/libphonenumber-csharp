@@ -2,16 +2,15 @@
 [![codecov](https://codecov.io/gh/twcclegg/libphonenumber-csharp/branch/main/graph/badge.svg)](https://codecov.io/gh/twcclegg/libphonenumber-csharp)
 [![NuGet](https://img.shields.io/nuget/dt/libphonenumber-csharp.svg)](https://www.nuget.org/packages/libphonenumber-csharp/)
 
+C# port of Google's [libphonenumber library](https://github.com/google/libphonenumber).
 
-C# port of Google's [libphonenumber library](https://github.com/googlei18n/libphonenumber).
+The code was rewritten from the Java source mostly unchanged, please refer to the original documentation for sample code and API documentation.
 
-  The code was rewritten from the Java source mostly unchanged, please refer to the original documentation for sample code and API documentation.
+The original Apache License 2.0 was preserved.
 
-  The original Apache License 2.0 was preserved.
+See [this](https://github.com/twcclegg/libphonenumber-csharp/blob/main/csharp/README.txt "csharp/README.txt") for details about the port.
 
-  See [this](https://github.com/twcclegg/libphonenumber-csharp/blob/main/csharp/README.txt "csharp/README.txt") for details about the port.
-
-  Phone number metadata is updated in the Google repo approximately every two weeks. This library is automatically updated by a [scheduled github action](https://github.com/twcclegg/libphonenumber-csharp/actions/workflows/create_new_release_on_new_metadata_update.yml) to include the latest metadata, usually within a day.
+Phone number metadata is updated in the Google repo approximately every two weeks. This library is automatically updated by a [scheduled github action](https://github.com/twcclegg/libphonenumber-csharp/actions/workflows/create_new_release_on_new_metadata_update.yml) to include the latest metadata, usually within a day.
 
 ## Example
 
@@ -33,7 +32,7 @@ C# port of Google's [libphonenumber library](https://github.com/googlei18n/libph
   * GetExampleNumber/GetExampleNumberByType - provides valid example numbers for 218 countries/regions, with the option of specifying which type of example phone number is needed.
   * IsPossibleNumber - quickly guessing whether a number is a possible phonenumber by using only the length information, much faster than a full validation.
   * AsYouTypeFormatter - formats phone numbers on-the-fly when users enter each digit.
-  * FindNumbers - finds numbers in text input 
+  * FindNumbers - finds numbers in text input
 
 ## ToDo
 
