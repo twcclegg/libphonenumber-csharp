@@ -107,10 +107,9 @@ cd ${GITHUB_ACTION_WORKING_DIRECTORY}
 cd csharp
 dotnet restore
 dotnet build --no-restore
-# Run tests that are not in the PhoneNumbers.Extensions.Test project
-# TODO renable tests once they pass successfully in github actions
-#cd PhoneNumbers.Test
-#dotnet test --no-build --verbosity normal
+# Run tests
+# TODO reenable tests once they pass successfully in github actions
+#dotnet test --no-build --verbosity normal -p:TargetFrameworks=net7.0
 # End of TODO
 # Cleanup test dependencies
 rm -rf ${GITHUB_ACTION_WORKING_DIRECTORY}/resources/geocoding.zip
