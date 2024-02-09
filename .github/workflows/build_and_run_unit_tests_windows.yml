@@ -1,0 +1,32 @@
+name: build_and_run_unit_tests_windows
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build_and_run_unit_tests_windows:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.x
+      - name: Add zip files required for running tests
+        run: |
+          Compress-Archive -Path "resources\geocoding\*" -DestinationPath "resources\geocoding.zip"
+          Compress-Archive -Path "resources\test\geocoding\*" -DestinationPath "resources\test\testgeocoding.zip"
+      - name: Restore dependencies
+        run: dotnet restore
+        working-directory: ./csharp
+      - name: Build solution
+        run: dotnet build --no-restore
+        working-directory: ./csharp
+      - name: Test solution
+        run: dotnet test --no-build --verbosity normal
+        working-directory: ./csharp

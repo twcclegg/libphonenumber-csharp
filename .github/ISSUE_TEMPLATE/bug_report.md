@@ -21,7 +21,7 @@ Please check the following:
 
    If yes:
 
-*   Please file an issue with [Google](https://github.com/googlei18n/libphonenumber)
+*   Please file an issue with [Google](https://github.com/google/libphonenumber)
 
 If not:
 
