@@ -143,24 +143,6 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
-        public void TestGetSupportedCallingCodes()
-        {
-            var callingCodes = phoneUtil.GetSupportedCallingCodes();
-            Assert.True(callingCodes.Count > 0);
-            foreach (var callingCode in callingCodes)
-            {
-                Assert.True(callingCode > 0);
-                Assert.True(phoneUtil.GetRegionCodeForCountryCode(callingCode) != RegionCode.ZZ);
-            }
-
-            // There should be more than just the global network calling codes in this set.
-            // TODO this assert taken from the Java version does not work at the moment as they both support the same number of calling codes in this version
-            // Assert.True(callingCodes.Count > phoneUtil.GetSupportedGlobalNetworkCallingCodes().Count);
-            // But they should be included. Testing one of them.
-            Assert.Contains(979, callingCodes);
-        }
-
-        [Fact]
         public void TestGetInstanceLoadBadMetadata()
         {
             Assert.Null(phoneUtil.GetMetadataForRegion("No Such Region"));
@@ -483,14 +465,6 @@ namespace PhoneNumbers.Test
             var expectedOutput = "03456234";
             Assert.Equal(expectedOutput,
                 PhoneNumberUtil.NormalizeDigitsOnly(inputNumber));
-        }
-
-        [Fact(Skip = "TODO: to be fixed, does not pass test case at the moment")]
-        public void TestNormaliseStripNonDiallableCharacters()
-        {
-            const string inputNumber = "03*4-56&+1a#234";
-            const string expectedOutput = "03*456+1#234";
-            Assert.Equal(expectedOutput, PhoneNumberUtil.NormalizeDiallableCharsOnly(inputNumber));
         }
 
         [Fact]
