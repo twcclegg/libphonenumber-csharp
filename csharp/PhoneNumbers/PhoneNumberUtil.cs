@@ -97,7 +97,7 @@ namespace PhoneNumbers
         // A map that contains characters that are essential when dialing. That means any of the
         // characters in this map must not be removed from a number when dialling, otherwise the call will
         // not reach the intended destination.
-        private static char MapDiallableChar(char c) => c is >= '0' and <= '9' or '+' or '*' ? c : '\0';
+        private static char MapDiallableChar(char c) => c is >= '0' and <= '9' or '+' or '*' or '#' ? c : '\0';
 
         // For performance reasons, amalgamate both into one map.
         private static char MapAlphaPhone(char c)
