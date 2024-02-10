@@ -420,6 +420,14 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
+        public void TestNormaliseStripNonDiallableCharacters()
+        {
+            const string inputNumber = "03*4-56&+1a#234";
+            const string expectedOutput = "03*456+1#234";
+            Assert.Equal(expectedOutput, PhoneNumberUtil.NormalizeDiallableCharsOnly(inputNumber));
+        }
+
+        [Fact]
         public void TestFormatUSNumber()
         {
             Assert.Equal("650 253 0000", phoneUtil.Format(USNumber, PhoneNumberFormat.NATIONAL));
