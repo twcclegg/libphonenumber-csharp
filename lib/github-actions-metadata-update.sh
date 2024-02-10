@@ -113,10 +113,7 @@ cd ${GITHUB_ACTION_WORKING_DIRECTORY}
 cd csharp
 dotnet restore
 dotnet build --no-restore
-# Run tests
-# TODO reenable tests once they pass successfully in github actions
-#dotnet test --no-build --verbosity normal -p:TargetFrameworks=net7.0
-# End of TODO
+dotnet test --no-build --verbosity normal -p:TargetFrameworks=net7.0
 # Cleanup test dependencies
 rm -rf ${GITHUB_ACTION_WORKING_DIRECTORY}/resources/geocoding.zip
 rm -rf ${GITHUB_ACTION_WORKING_DIRECTORY}/resources/test/testgeocoding.zip
