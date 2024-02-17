@@ -143,6 +143,42 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
+        public void TestGetInstanceLoadBadMetadata()
+        {
+            Assert.Null(phoneUtil.GetMetadataForRegion("No Such Region"));
+            Assert.Null(phoneUtil.GetMetadataForNonGeographicalRegion(-1));
+        }
+
+        [Fact]
+        public void TestGetSupportedTypesForRegion()
+        {
+            Assert.Contains(PhoneNumberType.FIXED_LINE, phoneUtil.GetSupportedTypesForRegion(RegionCode.BR));
+            // Our test data has no mobile numbers for Brazil.
+            Assert.DoesNotContain(PhoneNumberType.MOBILE, phoneUtil.GetSupportedTypesForRegion(RegionCode.BR));
+            // UNKNOWN should never be returned.
+            Assert.DoesNotContain(PhoneNumberType.UNKNOWN, phoneUtil.GetSupportedTypesForRegion(RegionCode.BR));
+            // In the US, many numbers are classified as FIXED_LINE_OR_MOBILE; but we don't want to expose
+            // this as a supported type, instead we say FIXED_LINE and MOBILE are both present.
+            Assert.Contains(PhoneNumberType.FIXED_LINE, phoneUtil.GetSupportedTypesForRegion(RegionCode.US));
+            Assert.Contains(PhoneNumberType.MOBILE, phoneUtil.GetSupportedTypesForRegion(RegionCode.US));
+            Assert.DoesNotContain(PhoneNumberType.FIXED_LINE_OR_MOBILE, phoneUtil.GetSupportedTypesForRegion(RegionCode.US));
+            // Test the invalid region code.
+            Assert.Empty(phoneUtil.GetSupportedTypesForRegion(RegionCode.ZZ));
+        }
+
+        [Fact]
+        public void TestGetSupportedTypesForNonGeoEntity()
+        {
+            // No data exists for 999 at all, no types should be returned.
+            Assert.Empty(phoneUtil.GetSupportedTypesForNonGeoEntity(999));
+
+            var typesFor979 = phoneUtil.GetSupportedTypesForNonGeoEntity(979);
+            Assert.Contains(PhoneNumberType.PREMIUM_RATE, typesFor979);
+            Assert.DoesNotContain(PhoneNumberType.MOBILE, typesFor979);
+            Assert.DoesNotContain(PhoneNumberType.UNKNOWN, typesFor979);
+        }
+
+        [Fact]
         public void TestGetInstanceLoadUSMetadata()
         {
             var metadata = phoneUtil.GetMetadataForRegion(RegionCode.US);
@@ -222,6 +258,18 @@ namespace PhoneNumbers.Test
             Assert.Equal("$1 $2", metadata.NumberFormatList[0].Format);
             Assert.Equal("(\\d{4})(\\d{4})", metadata.NumberFormatList[0].Pattern);
             Assert.Equal("12345678", metadata.TollFree.ExampleNumber);
+        }
+
+        [Fact]
+        public void TestIsNumberGeographical()
+        {
+            Assert.False(phoneUtil.IsNumberGeographical(BSMobile)); // Bahamas, mobile phone number.
+            Assert.True(phoneUtil.IsNumberGeographical(AUNumber)); // Australian fixed line number.
+            Assert.False(phoneUtil.IsNumberGeographical(InternationalTollFree)); // International toll free number.
+            // We test that mobile phone numbers in relevant regions are indeed considered geographical.
+            Assert.True(phoneUtil.IsNumberGeographical(ARMobile)); // Argentina, mobile phone number.
+            Assert.True(phoneUtil.IsNumberGeographical(MXMobile1)); // Mexico, mobile phone number.
+            Assert.True(phoneUtil.IsNumberGeographical(MXMobile2)); // Mexico, another mobile phone number.
         }
 
         [Fact]
