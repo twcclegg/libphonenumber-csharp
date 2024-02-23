@@ -822,7 +822,7 @@ namespace PhoneNumbers.Test
             // Does not start with a "+", we won't match it.
             var iterable = phoneUtil.FindNumbers("1 456 764 156", RegionCode.ZZ);
             var iterator = iterable.GetEnumerator();
-            
+
             Assert.False(iterator.MoveNext());
             Assert.False(iterator.MoveNext());
             iterator.Dispose();
@@ -885,7 +885,11 @@ namespace PhoneNumbers.Test
         *
         * @param number the number to test and the corresponding region code to use
         */
+#if NET6_0_OR_GREATER
+        private void DoTestFindInContext(string number, string? defaultCountry)
+#else
         private void DoTestFindInContext(string number, string defaultCountry)
+#endif
         {
             FindPossibleInContext(number, defaultCountry);
 
@@ -894,7 +898,11 @@ namespace PhoneNumbers.Test
                 FindValidInContext(number, defaultCountry);
         }
 
+#if NET6_0_OR_GREATER
+        private void FindPossibleInContext(string number, string? defaultCountry)
+#else
         private void FindPossibleInContext(string number, string defaultCountry)
+#endif
         {
             var contextPairs = new List<NumberContext>
             {
@@ -933,7 +941,11 @@ namespace PhoneNumbers.Test
         /**
         * Tests valid numbers in contexts that fail for {@link Leniency#POSSIBLE}.
         */
+#if NET6_0_OR_GREATER
+        private void FindValidInContext(string number, string? defaultCountry)
+#else
         private void FindValidInContext(string number, string defaultCountry)
+#endif
         {
             var contextPairs = new List<NumberContext> {
             // With other small numbers.
@@ -947,8 +959,11 @@ namespace PhoneNumbers.Test
             DoTestInContext(number, defaultCountry, contextPairs, PhoneNumberUtil.Leniency.VALID);
         }
 
-        private void DoTestInContext(string number, string defaultCountry,
-            List<NumberContext> contextPairs, PhoneNumberUtil.Leniency leniency)
+#if NET6_0_OR_GREATER
+        private void DoTestInContext(string number, string? defaultCountry, List<NumberContext> contextPairs, PhoneNumberUtil.Leniency leniency)
+#else
+        private void DoTestInContext(string number, string defaultCountry, List<NumberContext> contextPairs, PhoneNumberUtil.Leniency leniency)
+#endif
         {
             foreach (var context in contextPairs)
             {
@@ -976,7 +991,11 @@ namespace PhoneNumbers.Test
         * Exhaustively searches for phone numbers from each index within {@code text} to test that
         * finding matches always terminates.
         */
+#if NET6_0_OR_GREATER
+        private void EnsureTermination(string text, string? defaultCountry, PhoneNumberUtil.Leniency leniency)
+#else
         private void EnsureTermination(string text, string defaultCountry, PhoneNumberUtil.Leniency leniency)
+#endif
         {
             for (var index = 0; index <= text.Length; index++)
             {
