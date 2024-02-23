@@ -28,7 +28,7 @@ namespace PhoneNumbers.Test
         {
             using (var reader = new StringReader(xmlString))
             {
-                return XDocument.Load(reader).Root;
+                return XDocument.Load(reader).Root ?? throw new Exception("Failed to ParseXmlString");
             }
         }
 
