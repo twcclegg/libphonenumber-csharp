@@ -82,8 +82,8 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestTooLongNumberMatchingMultipleLeadingDigits()
         {
-            // See http://code.google.com/p/libphonenumber/issues/detail?id=36
-            // This occurred last time for countries which have two formatting rules with exactly the
+            // See https://github.com/google/libphonenumber/issues/36
+            // The bug occurred last time for countries which have two formatting rules with exactly the
             // same leading digits pattern but differ in length.
             var formatter = phoneUtil.GetAsYouTypeFormatter("ZZ");
             Assert.Equal("+", formatter.InputDigit('+'));
@@ -103,7 +103,6 @@ namespace PhoneNumbers.Test
             Assert.Equal("+81901234567890", formatter.InputDigit('0'));
             Assert.Equal("+819012345678901", formatter.InputDigit('1'));
         }
-
 
         [Fact]
         public void TestAYTFUS()
