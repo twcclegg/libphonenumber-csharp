@@ -36,7 +36,11 @@ namespace PhoneNumbers
             Number = number;
         }
 
+#if NET6_0_OR_GREATER
+        public override bool Equals(object? obj)
+#else
         public override bool Equals(object obj)
+#endif
         {
             if (this == obj)
                 return true;

@@ -101,10 +101,21 @@ namespace PhoneNumbers
         // Empty blacklist, meaning we filter nothing.
         internal static MetadataFilter EmptyFilter() => new MetadataFilter(new Dictionary<string, SortedSet<string>>());
 
+#if NET6_0_OR_GREATER
+        public override bool Equals(object? obj)
+#else
         public override bool Equals(object obj)
-            => blacklist.Count == ((MetadataFilter) obj)?.blacklist?.Count &&
-               blacklist.All(kvp =>
-                   ((MetadataFilter) obj).blacklist.TryGetValue(kvp.Key, out var value2) && kvp.Value.SetEquals(value2));
+#endif
+        {
+            if (obj is null)
+            {
+                return false;
+            }
+
+            return blacklist.Count == ((MetadataFilter)obj)?.blacklist?.Count &&
+                   blacklist.All(kvp =>
+                       ((MetadataFilter)obj).blacklist.TryGetValue(kvp.Key, out var value2) && kvp.Value.SetEquals(value2));
+        }
 
         public override int GetHashCode()
         {
