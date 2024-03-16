@@ -194,7 +194,12 @@ namespace PhoneNumbers
          * the sets of excludable fields. We also throw Exception for empty strings since such
          * strings should be treated as a special case by the flag checking code and not passed here.
          */
+
+#if NET6_0_OR_GREATER
+        internal static Dictionary<string, SortedSet<string>> ParseFieldMapFromString(string? str)
+#else
         internal static Dictionary<string, SortedSet<string>> ParseFieldMapFromString(string str)
+#endif
         {
             if (str == null)
                 throw new Exception("Null string should not be passed to ParseFieldMapFromString");
