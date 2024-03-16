@@ -1431,6 +1431,7 @@
 1725|America/Los_Angeles
 1726|America/Chicago
 1727|America/New_York
+1728|America/New_York
 1730|America/Chicago
 1731|America/Chicago
 1732|America/New_York
@@ -3239,7 +3240,7 @@
 79|Europe/Moscow
 81|Asia/Tokyo
 82|Asia/Seoul
-84|Asia/Bangkok
+84|Asia/Ho_Chi_Minh
 850|Asia/Seoul
 852|Asia/Hong_Kong
 853|Asia/Shanghai

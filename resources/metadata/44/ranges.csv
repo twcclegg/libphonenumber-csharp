@@ -5,7 +5,7 @@ Prefix            ; Length ; Type            ; Tariff        ; Area Code Length 
 114[0-5]          ; 10     ; FIXED_LINE      ; STANDARD_RATE ; 3                ;                            ; "fixed_3/3/4"  ; "Europe/London"                                    ; "GB"          ; "Sheffield"
 11469[7-9]        ; 10     ; FIXED_LINE      ; STANDARD_RATE ; 3                ;                            ; "fixed_3/3/4"  ; "Europe/London"                                    ; "GB"          ; "Sheffield"
 11470[059]        ; 10     ; FIXED_LINE      ; STANDARD_RATE ; 3                ;                            ; "fixed_3/3/4"  ; "Europe/London"                                    ; "GB"          ; "Sheffield"
-11470[1-47]       ; 10     ; FIXED_LINE      ; STANDARD_RATE ; 3                ;                            ; "fixed_3/3/4"  ; "Europe/London"                                    ; "GB"          ; "Sheffield"                                 ; GOVERNMENT
+11470[1-478]      ; 10     ; FIXED_LINE      ; STANDARD_RATE ; 3                ;                            ; "fixed_3/3/4"  ; "Europe/London"                                    ; "GB"          ; "Sheffield"                                 ; GOVERNMENT
 114706            ; 10     ; FIXED_LINE      ; STANDARD_RATE ; 3                ;                            ; "fixed_3/3/4"  ; "Europe/London"                                    ; "GB"          ;                                             ; GOVERNMENT
 115[0-26-9]       ; 10     ; FIXED_LINE      ; STANDARD_RATE ; 3                ;                            ; "fixed_3/3/4"  ; "Europe/London"                                    ; "GB"          ; "Nottingham"
 116[0-4]          ; 10     ; FIXED_LINE      ; STANDARD_RATE ; 3                ;                            ; "fixed_3/3/4"  ; "Europe/London"                                    ; "GB"          ; "Leicester"
@@ -1083,6 +1083,7 @@ Prefix            ; Length ; Type            ; Tariff        ; Area Code Length 
 779[0-24]         ; 10     ; MOBILE          ; STANDARD_RATE ;                  ; "orange"                   ; "mobile_4/6"   ; "Europe/Guernsey&Europe/Isle_of_Man&Europe/London" ; "GB"
 7793              ; 10     ; MOBILE          ; STANDARD_RATE ;                  ; "o2"                       ; "mobile_4/6"   ; "Europe/Guernsey&Europe/Isle_of_Man&Europe/London" ; "GB"
 779[5689]         ; 10     ; MOBILE          ; STANDARD_RATE ;                  ; "vodafone"                 ; "mobile_4/6"   ; "Europe/Guernsey&Europe/Isle_of_Man&Europe/London" ; "GB"
+7797[0-6]         ; 10     ; MOBILE          ; STANDARD_RATE ;                  ; "jt"                       ; "mobile_4/6"   ; "Europe/Guernsey&Europe/Isle_of_Man&Europe/London" ; "JE"          ;                                             ; IR21
 7797[7-9]         ; 10     ; MOBILE          ; STANDARD_RATE ;                  ; "jt"                       ; "mobile_4/6"   ; "Europe/Guernsey&Europe/Isle_of_Man&Europe/London" ; "JE"
 780[057]          ; 10     ; MOBILE          ; STANDARD_RATE ;                  ; "orange"                   ; "mobile_4/6"   ; "Europe/Guernsey&Europe/Isle_of_Man&Europe/London" ; "GB"
 780[1-389]        ; 10     ; MOBILE          ; STANDARD_RATE ;                  ; "o2"                       ; "mobile_4/6"   ; "Europe/Guernsey&Europe/Isle_of_Man&Europe/London" ; "GB"

@@ -420,10 +420,13 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestNormaliseNull()
         {
+#if NET6_0_OR_GREATER
+            const string? inputNumber = null;
+#else
             const string inputNumber = null;
+#endif
             var expectedOutput = string.Empty;
-            Assert.Equal(expectedOutput,
-                PhoneNumberUtil.Normalize(inputNumber));
+            Assert.Equal(expectedOutput, PhoneNumberUtil.Normalize(inputNumber));
         }
 
         [Fact]
@@ -2032,7 +2035,11 @@ namespace PhoneNumbers.Test
             Assert.Equal(mxNumber, phoneUtil.Parse("045 33 1234-5678", RegionCode.MX));
         }
 
+#if NET6_0_OR_GREATER
+        private void VerifyFailure(string? number, string? regionCode, ErrorType type)
+#else
         private void VerifyFailure(string number, string regionCode, ErrorType type)
+#endif
         {
             try
             {
