@@ -107,7 +107,7 @@ namespace PhoneNumbers
         public override bool Equals(object obj)
 #endif
         {
-            if (obj is null)
+            if (obj == null)
             {
                 return false;
             }
