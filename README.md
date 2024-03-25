@@ -127,6 +127,9 @@ Compress-Archive -Path "resources\geocoding\*" -DestinationPath "resources\geoco
 Compress-Archive -Path "resources\test\geocoding\*" -DestinationPath "resources\test\testgeocoding.zip"
 ```
 
+## Contributing
+See [CONTRIBUTING.md](CONTRIBUTING.md)
+
 ## Donations
 
 [![Buy me a beer](https://raw.githubusercontent.com/twcclegg/libphonenumber-csharp/main/bmacButton.png)](https://www.buymeacoffee.com/tclegg)
