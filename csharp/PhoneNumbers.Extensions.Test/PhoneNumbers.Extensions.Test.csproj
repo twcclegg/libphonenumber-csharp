@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>netframework4.8;net6.0;net7.0</TargetFrameworks>
+        <TargetFrameworks>netframework4.8;net6.0;net8.0</TargetFrameworks>
         <NoWarn>$(NoWarn);1591;CA1014;CA1062;CA1707</NoWarn>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <EnableNETAnalyzers>true</EnableNETAnalyzers>
@@ -14,7 +14,7 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(TargetFramework)' == 'net7.0'">
+    <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
