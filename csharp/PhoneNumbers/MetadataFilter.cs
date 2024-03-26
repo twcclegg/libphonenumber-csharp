@@ -101,10 +101,21 @@ namespace PhoneNumbers
         // Empty blacklist, meaning we filter nothing.
         internal static MetadataFilter EmptyFilter() => new MetadataFilter(new Dictionary<string, SortedSet<string>>());
 
+#if NET6_0_OR_GREATER
+        public override bool Equals(object? obj)
+#else
         public override bool Equals(object obj)
-            => blacklist.Count == ((MetadataFilter) obj)?.blacklist?.Count &&
-               blacklist.All(kvp =>
-                   ((MetadataFilter) obj).blacklist.TryGetValue(kvp.Key, out var value2) && kvp.Value.SetEquals(value2));
+#endif
+        {
+            if (obj == null)
+            {
+                return false;
+            }
+
+            return blacklist.Count == ((MetadataFilter)obj)?.blacklist?.Count &&
+                   blacklist.All(kvp =>
+                       ((MetadataFilter)obj).blacklist.TryGetValue(kvp.Key, out var value2) && kvp.Value.SetEquals(value2));
+        }
 
         public override int GetHashCode()
         {
@@ -183,7 +194,12 @@ namespace PhoneNumbers
          * the sets of excludable fields. We also throw Exception for empty strings since such
          * strings should be treated as a special case by the flag checking code and not passed here.
          */
+
+#if NET6_0_OR_GREATER
+        internal static Dictionary<string, SortedSet<string>> ParseFieldMapFromString(string? str)
+#else
         internal static Dictionary<string, SortedSet<string>> ParseFieldMapFromString(string str)
+#endif
         {
             if (str == null)
                 throw new Exception("Null string should not be passed to ParseFieldMapFromString");

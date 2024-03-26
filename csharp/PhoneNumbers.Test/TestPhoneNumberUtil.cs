@@ -418,15 +418,15 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
+        public void TestConvertAlphaCharactersInNumberHandlesNull()
+        {
+            Assert.Equal(string.Empty, PhoneNumberUtil.ConvertAlphaCharactersInNumber(null));
+        }
+
+        [Fact]
         public void TestNormaliseNull()
         {
-#if NET6_0_OR_GREATER
-            const string? inputNumber = null;
-#else
-            const string inputNumber = null;
-#endif
-            var expectedOutput = string.Empty;
-            Assert.Equal(expectedOutput, PhoneNumberUtil.Normalize(inputNumber));
+            Assert.Equal(string.Empty, PhoneNumberUtil.Normalize(null));
         }
 
         [Fact]
@@ -471,11 +471,23 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
+        public void TestNormalizeDigitsOnlyHandlesNull()
+        {
+            Assert.Equal(string.Empty, PhoneNumberUtil.NormalizeDigitsOnly(null));
+        }
+
+        [Fact]
         public void TestNormaliseStripNonDiallableCharacters()
         {
             const string inputNumber = "03*4-56&+1a#234";
             const string expectedOutput = "03*456+1#234";
             Assert.Equal(expectedOutput, PhoneNumberUtil.NormalizeDiallableCharsOnly(inputNumber));
+        }
+
+        [Fact]
+        public void TestNormalizeDiallableCharsOnlyHandlesNull()
+        {
+            Assert.Equal(string.Empty, PhoneNumberUtil.NormalizeDiallableCharsOnly(null));
         }
 
         [Fact]

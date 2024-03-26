@@ -25,6 +25,10 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0' Or '$(TargetFramework)' == 'net7.0'">
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
   <ItemGroup>
     <EmbeddedResource Include="..\..\resources\*.xml" Exclude="..\..\resources\PhoneNumberMetadataForTesting.xml" />
     <EmbeddedResource Include="..\..\resources\timezones\map_data.txt" LinkBase="timezones" />
