@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netframework4.8;net6.0;net7.0</TargetFrameworks>
+    <TargetFrameworks>netframework4.8;net6.0;net7.0;net8.0</TargetFrameworks>
     <AssemblyName>PhoneNumbers.Test</AssemblyName>
     <PackageId>PhoneNumbers.Test</PackageId>
     <DebugType>full</DebugType>
@@ -9,7 +9,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0' Or '$(TargetFramework)' == 'net7.0'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0' Or '$(TargetFramework)' == 'net7.0' Or '$(TargetFramework)' == 'net8.0'">
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
