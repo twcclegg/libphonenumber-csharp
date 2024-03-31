@@ -1,14 +1,13 @@
-name: build_and_run_unit_tests_windows
+name: run_performance_tests_windows
 
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-  workflow_dispatch:
 
 jobs:
-  build_and_run_unit_tests_windows:
+  run_performance_tests_windows:
     runs-on: windows-latest
     timeout-minutes: 20
     steps:
