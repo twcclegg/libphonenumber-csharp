@@ -41,12 +41,20 @@ namespace PhoneNumbers
                 BuildMetadataFromXml.BuildPhoneMetadata("ShortNumberMetadata.xml", isShortNumberMetadata: true).ToDictionary(m => m.Id);
         }
 
+#if NET6_0_OR_GREATER
+        public static PhoneMetadata? GetAlternateFormatsForCountry(int countryCallingCode)
+#else
         public static PhoneMetadata GetAlternateFormatsForCountry(int countryCallingCode)
+#endif
         {
             return AlternateFormats.Map.TryGetValue(countryCallingCode, out var metadata) ? metadata : null;
         }
 
+#if NET6_0_OR_GREATER
+        internal static PhoneMetadata? GetShortNumberMetadataForRegion(string regionCode)
+#else
         internal static PhoneMetadata GetShortNumberMetadataForRegion(string regionCode)
+#endif
         {
             if (!ShortNumbersRegionCodeSet.RegionCodeSet.Contains(regionCode))
                 return null;

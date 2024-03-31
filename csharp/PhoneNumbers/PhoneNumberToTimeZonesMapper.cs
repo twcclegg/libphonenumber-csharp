@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable disable
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -43,7 +44,7 @@ namespace PhoneNumbers
         ///     unknown time zone if no other time zone was found or if the number was invalid
         /// </summary>
         /// <param name="number">a valid phone number for which we want to get the time zones to which it belongs</param>
-        /// 
+        ///
         /// <returns>
         /// a list of the corresponding time zones or a single element list with the default
         /// unknown time zone if no other time zone was found or if the number was invalid

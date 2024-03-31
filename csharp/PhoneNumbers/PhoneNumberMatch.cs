@@ -25,7 +25,11 @@ namespace PhoneNumbers
         public string RawString { get; }
         public PhoneNumber Number { get; }
 
+#if NET6_0_OR_GREATER
+        public PhoneNumberMatch(int start, string? rawString, PhoneNumber? number)
+#else
         public PhoneNumberMatch(int start, string rawString, PhoneNumber number)
+#endif
         {
             if (start < 0)
                 throw new ArgumentException("Start index must be >= 0.");
@@ -36,7 +40,11 @@ namespace PhoneNumbers
             Number = number;
         }
 
+#if NET6_0_OR_GREATER
+        public override bool Equals(object? obj)
+#else
         public override bool Equals(object obj)
+#endif
         {
             if (this == obj)
                 return true;

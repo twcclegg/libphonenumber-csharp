@@ -1,4 +1,5 @@
-﻿/*
+﻿#nullable disable
+/*
  * Copyright (C) 2009 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -179,7 +180,7 @@ namespace PhoneNumbers
         /// Attempts to find the next subsequence in the searched sequence on or after <c>searchIndex</c>
         /// that represents a phone number. Returns the next match, null if none was found.
         /// </summary>
-        /// 
+        ///
         /// <param name="index"> the search index to start searching at</param>
         /// <returns> the phone number match found, null if none can be found</returns>
         private PhoneNumberMatch Find(int index)
@@ -304,7 +305,7 @@ namespace PhoneNumbers
         /// Attempts to extract a match from {@code candidate} if the whole candidate does not qualify as a
         /// match.
         /// </summary>
-        /// 
+        ///
         /// <param name="candidate">the candidate text that might contain a phone number</param>
         /// <param name="offset">the current offset of <c>candidate</c> within <see cref="text" /></param>
         /// <returns>the match found, null if none can be found</returns>

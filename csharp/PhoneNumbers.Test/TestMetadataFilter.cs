@@ -926,6 +926,13 @@ namespace PhoneNumbers.Test
             }
         }
 
+        [Fact]
+        public void TestEquals_WhenNull_ReturnsFalse()
+        {
+            var result = new MetadataFilter(new Dictionary<string, SortedSet<string>>()).Equals(null);
+            Assert.False(result);
+        }
+
         private static PhoneMetadata.Builder FakeArmeniaPhoneMetadata()
         {
             var metadata = new PhoneMetadata.Builder();

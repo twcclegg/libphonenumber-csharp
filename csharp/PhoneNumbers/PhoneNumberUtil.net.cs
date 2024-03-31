@@ -23,7 +23,7 @@ namespace PhoneNumbers
         /// </summary>
         /// <param name="number">A string of characters representing a phone number.</param>
         /// <returns>The normalized string version of the phone number.</returns>
-        public static string Normalize(string number)
+        public static string Normalize(string? number)
         {
             if (number == null)
             {
@@ -43,7 +43,7 @@ namespace PhoneNumbers
         /// </summary>
         /// <param name="number">A string of characters representing a phone number.</param>
         /// <returns>The normalized string version of the phone number.</returns>
-        public static string NormalizeDigitsOnly(string number)
+        public static string NormalizeDigitsOnly(string? number)
         {
             if (number == null)
             {
@@ -63,7 +63,7 @@ namespace PhoneNumbers
         /// </summary>
         /// <param name="number"> a string of characters representing a phone number</param>
         /// <returns> the normalized string version of the phone number</returns>
-        public static string NormalizeDiallableCharsOnly(string number)
+        public static string NormalizeDiallableCharsOnly(string? number)
         {
             if (number == null)
             {
@@ -83,7 +83,7 @@ namespace PhoneNumbers
         /// </summary>
         /// <param name="number"></param>
         /// <returns></returns>
-        public static string ConvertAlphaCharactersInNumber(string number)
+        public static string ConvertAlphaCharactersInNumber(string? number)
         {
             if (number == null)
             {
