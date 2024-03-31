@@ -1,0 +1,22 @@
+name: build_and_run_unit_tests_windows
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build_and_run_unit_tests_windows:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.x
+      - name: Run performance tests
+        run: dotnet run -c Release --framework net8.0
+        working-directory: ./csharp/PhoneNumbers.PerformanceTest
