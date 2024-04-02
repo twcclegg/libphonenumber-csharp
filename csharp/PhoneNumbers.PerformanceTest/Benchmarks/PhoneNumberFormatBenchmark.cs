@@ -10,22 +10,28 @@ namespace PhoneNumbers.PerformanceTest.Benchmarks
     [SimpleJob(RuntimeMoniker.Net80)]
     public class PhoneNumberFormatBenchmark
     {
-        private PhoneNumberUtil phoneNumberUtil;
-        private PhoneNumber phoneNumber;
+#if NETFRAMEWORK
+        private PhoneNumberUtil _phoneNumberUtil = null;
+#else
+        private PhoneNumberUtil _phoneNumberUtil = null!;
+#endif
 
+#if NETFRAMEWORK
+        private PhoneNumber _phoneNumber;
+#else
+        private PhoneNumber _phoneNumber = null!;
+#endif
         [GlobalSetup]
         public void Setup()
         {
-            phoneNumberUtil = PhoneNumberUtil.GetInstance();
-            phoneNumber = phoneNumberUtil.Parse("+14156667777", "US");
+            _phoneNumberUtil = PhoneNumberUtil.GetInstance();
+            _phoneNumber = _phoneNumberUtil.Parse("+14156667777", "US");
         }
 
         [Benchmark]
         public void FormatPhoneNumber()
         {
-            phoneNumberUtil.Format(phoneNumber, PhoneNumberFormat.INTERNATIONAL);
+            _phoneNumberUtil.Format(_phoneNumber, PhoneNumberFormat.INTERNATIONAL);
         }
     }
 }
-
-

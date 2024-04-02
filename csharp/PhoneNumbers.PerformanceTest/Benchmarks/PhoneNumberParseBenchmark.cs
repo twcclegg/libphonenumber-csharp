@@ -10,18 +10,22 @@ namespace PhoneNumbers.PerformanceTest.Benchmarks
     [SimpleJob(RuntimeMoniker.Net80)]
     public class PhoneNumberParseBenchmark
     {
-        private PhoneNumberUtil phoneNumberUtil;
+#if NETFRAMEWORK
+        private PhoneNumberUtil _phoneNumberUtil = null;
+#else
+        private PhoneNumberUtil _phoneNumberUtil = null!;
+#endif
 
         [GlobalSetup]
         public void Setup()
         {
-            phoneNumberUtil = PhoneNumberUtil.GetInstance();
+            _phoneNumberUtil = PhoneNumberUtil.GetInstance();
         }
 
         [Benchmark]
         public void ParsePhoneNumber()
         {
-            phoneNumberUtil.Parse("+14156667777", "US");
+            _phoneNumberUtil.Parse("+14156667777", "US");
         }
     }
 }
