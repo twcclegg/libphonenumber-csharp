@@ -1,8 +1,6 @@
 name: build_and_run_unit_tests_linux
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
