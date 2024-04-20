@@ -205,3 +205,6 @@ testgeocoding.zip
 
 # Performance tests artifacts
 csharp/PhoneNumbers.PerformanceTest/BenchmarkDotNet.Artifacts/
+
+# Coverage reports
+coverage/
