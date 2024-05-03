@@ -3,6 +3,8 @@ name: "run_all_tests_and_upload_code_coverage"
 on:
   push:
     branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   run_all_tests_and_upload_code_coverage:
