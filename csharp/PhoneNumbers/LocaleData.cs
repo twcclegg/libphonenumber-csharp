@@ -3,11 +3,11 @@
 // Each dict maps from an ISO 639-1 language code (e.g. ja) to the country's name in that language.
 //
 // Generated from java.util.Locale, generation info:
-// java.version=11.0.22
+// java.version=11.0.23
 // java.vendor=Eclipse Adoptium
 // os.name=Linux
 // os.arch=amd64
-// os.version=6.5.0-1018-azure
+// os.version=6.5.0-1021-azure
 //
 // Auto-generated file, do not edit by hand.
 //
