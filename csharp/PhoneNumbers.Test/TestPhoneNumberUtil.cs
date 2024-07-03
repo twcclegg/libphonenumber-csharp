@@ -296,6 +296,9 @@ namespace PhoneNumbers.Test
             // Italian numbers - there is no national prefix, but it still has an area code.
             Assert.Equal(2, phoneUtil.GetLengthOfGeographicalAreaCode(ITNumber));
 
+            // Mexico numbers - there is no national prefix, but it still has an area code.
+            Assert.Equal(2, phoneUtil.GetLengthOfGeographicalAreaCode(MXNumber1));
+
             // Google Singapore. Singapore has no area code and no national prefix.
             Assert.Equal(0, phoneUtil.GetLengthOfGeographicalAreaCode(SGNumber));
 
