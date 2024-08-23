@@ -113,7 +113,7 @@ cd ${GITHUB_ACTION_WORKING_DIRECTORY}
 cd csharp
 dotnet restore
 dotnet build --no-restore
-dotnet test --no-build --verbosity normal -p:TargetFrameworks=net7.0
+dotnet test --no-build --verbosity normal -p:TargetFrameworks=net8.0
 # Cleanup test dependencies
 rm -rf ${GITHUB_ACTION_WORKING_DIRECTORY}/resources/geocoding.zip
 rm -rf ${GITHUB_ACTION_WORKING_DIRECTORY}/resources/test/testgeocoding.zip
