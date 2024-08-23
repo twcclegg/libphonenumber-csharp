@@ -25,6 +25,6 @@ jobs:
       - name: Build solution
         run: dotnet build --no-restore
         working-directory: ./csharp
-      - name: Test solution targeting dotnet7.0 only
-        run: dotnet test --no-build --verbosity normal -p:TargetFrameworks=net7.0
+      - name: Test solution targeting dotnet8.0 only
+        run: dotnet test --no-build --verbosity normal -p:TargetFrameworks=net8.0
         working-directory: ./csharp
