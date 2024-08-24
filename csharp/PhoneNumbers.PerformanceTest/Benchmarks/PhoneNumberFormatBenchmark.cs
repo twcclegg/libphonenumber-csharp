@@ -6,7 +6,6 @@ namespace PhoneNumbers.PerformanceTest.Benchmarks
     [MemoryDiagnoser]
     [SimpleJob(RuntimeMoniker.Net48)]
     [SimpleJob(RuntimeMoniker.Net60)]
-    [SimpleJob(RuntimeMoniker.Net70)]
     [SimpleJob(RuntimeMoniker.Net80)]
     public class PhoneNumberFormatBenchmark
     {
