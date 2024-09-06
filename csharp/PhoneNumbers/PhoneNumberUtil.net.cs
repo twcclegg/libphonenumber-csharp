@@ -687,11 +687,8 @@ namespace PhoneNumbers
                 // Early exit for E164 case since no formatting of the national number needs to be applied.
                 // Extensions are not formatted.
                 PrefixNumberWithCountryCallingCode(ref span, ref index, countryCallingCode, PhoneNumberFormat.E164);
-                for (var i = 0; i < nationalSignificantNumberLength; i++)
-                {
-                    span[index++] = nationalSignificantNumber[i];
-                }
-
+                nationalSignificantNumber.Slice(0, nationalSignificantNumberLength).CopyTo(span.Slice(index));
+                index += nationalSignificantNumberLength;
                 return;
             }
 
@@ -701,11 +698,8 @@ namespace PhoneNumbers
             var regionCode = GetRegionCodeForCountryCode(countryCallingCode);
             if (!HasValidCountryCallingCode(countryCallingCode))
             {
-                for (var i = 0; i < nationalSignificantNumberLength; i++)
-                {
-                    span[index++] = nationalSignificantNumber[i];
-                }
-
+                nationalSignificantNumber.Slice(0, nationalSignificantNumberLength).CopyTo(span.Slice(index));
+                index += nationalSignificantNumberLength;
                 return;
             }
 

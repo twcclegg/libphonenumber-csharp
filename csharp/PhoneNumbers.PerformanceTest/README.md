@@ -10,3 +10,7 @@ Below you can see a sample of what the results might look like
 | FormatPhoneNumber | .NET 8.0           | .NET 8.0           | 1.141 us | 0.0080 us | 0.0071 us | 0.0076 |     152 B |
 | FormatPhoneNumber | .NET Framework 4.8 | .NET Framework 4.8 | 2.746 us | 0.0114 us | 0.0101 us | 0.1335 |     851 B |
 
+## Running performance tests
+```bash
+dotnet run -c Release --framework net8.0
+```
