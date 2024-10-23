@@ -82,12 +82,6 @@ PREVIOUS=$(git describe --abbrev=0)
 
 FILES=$(getReleaseDelta google/libphonenumber "v${DEPLOYED_NUGET_TAG}" $UPSTREAM_GITHUB_RELEASE_TAG)
 
-if echo $FILES | grep '\.java'
-then
-   echo "has java files, automatic update not possible"
-   exit 123
-fi
-
 if echo $FILES | grep 'proto'
 then
    echo "has proto files, automatic update not possible"
