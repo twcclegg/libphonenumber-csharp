@@ -7,7 +7,7 @@
     <PackageId>libphonenumber-csharp</PackageId>
     <VersionPrefix>$(APPVEYOR_BUILD_VERSION)</VersionPrefix>
     <Authors>Patrick Mézard;Thomas Clegg;Jarrod Alexander;Google;libphonenumber contributors</Authors>
-    <TargetFrameworks>netstandard2.0;net6.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net8.0;net9.0</TargetFrameworks>
     <LangVersion>preview</LangVersion>
     <PackageTags>phonenumber phone libphonenumber e164 e.164 international</PackageTags>
     <PackageProjectUrl>https://github.com/twcclegg/libphonenumber-csharp</PackageProjectUrl>
@@ -25,7 +25,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0' Or '$(TargetFramework)' == 'net8.0'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0' Or '$(TargetFramework)' == 'net9.0'">
     <Nullable>enable</Nullable>
   </PropertyGroup>
 

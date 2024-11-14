@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>netframework4.8;net6.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>netframework4.8;net8.0;net9.0</TargetFrameworks>
     <ImplicitUsings>disable</ImplicitUsings>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0' Or '$(TargetFramework)' == 'net8.0'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0' Or '$(TargetFramework)' == 'net9.0'">
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
