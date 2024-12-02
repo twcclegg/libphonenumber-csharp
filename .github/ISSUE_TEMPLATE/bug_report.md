@@ -24,7 +24,10 @@ Please read the following checklist before filing an issue.
     - If yes, please file an issue with [Google](https://github.com/google/libphonenumber)
       - We use all metadata information directly from Google's libphonenumber repository, see an example [here](https://github.com/twcclegg/libphonenumber-csharp/commit/eacacd3783a14880461adad9c38f614469fcca3c)
       - See github action [here](https://github.com/twcclegg/libphonenumber-csharp/actions/workflows/create_new_release_on_new_metadata_update.yml) that will automatically update the metadata and publish a new nuget package.
-    - See an example of an issue that should be filed with Google [here](https://github.com/twcclegg/libphonenumber-csharp/issues/259) and [here](https://github.com/twcclegg/libphonenumber-csharp/issues/214)
+    - See examples of an issue that should be filed with [Google](https://github.com/google/libphonenumber) and not in this repository
+      - [here](https://github.com/twcclegg/libphonenumber-csharp/issues/259)
+      - [here](https://github.com/twcclegg/libphonenumber-csharp/issues/214)
+      - [here](https://github.com/twcclegg/libphonenumber-csharp/issues/272)
     - If not, proceed to the next steps.
 - [ ] Have you upgraded to the latest version of the library?
     - If not, please upgrade to the latest version and check if the issue still exists.
