@@ -104,6 +104,7 @@ This means that if you don't keep the package up to date, methods like `IsValidN
 
 Therefore, we recommend you keep this nuget package as up to date as possible using automated means (such as dependabot) as metadata changes published by the google repository is frequent, usually a few times a month.
 
+For more information on metadata usage, please refer to the [main repository faq](https://github.com/google/libphonenumber/blob/master/FAQ.md#metadata)
 
 ## ToDo
 
