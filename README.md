@@ -97,6 +97,15 @@ Console.WriteLine(regionCode); // US
 
 See [PhoneNumberUtil.cs](csharp/PhoneNumbers/PhoneNumberUtil.cs) for the various methods and properties available.
 
+## Why keep libphonenumber-csharp up to date?
+A lot of the functionality depends on updated metadata that is published by the google repository, see example [here](https://github.com/google/libphonenumber/releases/tag/v8.13.55).
+
+This means that if you don't keep the package up to date, methods like `IsValidNumber` will return false for newer numbers that rely on the updated metadata
+
+Therefore, we recommend you keep this nuget package as up to date as possible using automated means (such as dependabot) as metadata changes published by the google repository is frequent, usually a few times a month.
+
+For more information on metadata usage, please refer to the [main repository faq](https://github.com/google/libphonenumber/blob/master/FAQ.md#metadata)
+
 ## ToDo
 
 * port read / write source xml data to binary for better performance and smaller .nupkg size (WIP)
