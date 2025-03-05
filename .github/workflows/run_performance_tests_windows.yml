@@ -12,6 +12,9 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+      - name: Add key.snk for strong name signing
+        run: |
+          echo "${{ secrets.KEY_SNK_B64 }}" | base64 --decode > key.snk
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
