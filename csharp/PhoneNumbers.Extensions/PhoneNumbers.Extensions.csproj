@@ -27,7 +27,7 @@
         <AnalysisLevel>5</AnalysisLevel>
     </PropertyGroup>
 
-    <PropertyGroup>
+    <PropertyGroup Condition="'$(APPVEYOR_PULL_REQUEST_NUMBER)' == ''">
         <SignAssembly>true</SignAssembly>
         <AssemblyOriginatorKeyFile>../../key.snk</AssemblyOriginatorKeyFile>
         <PublicSign>true</PublicSign>
