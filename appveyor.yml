@@ -26,7 +26,7 @@ branches:
     - main
 before_build:
   - ps: $env:KEY_SNK_B64 | Set-Content -Path "key.snk.b64"
-  - certutil -decode key.snk.b64 key.snk
+  - certutil -decode -f key.snk.b64 key.snk
   - dotnet restore csharp -s https://api.nuget.org/v3/index.json
   - ps: Compress-Archive -Path "resources\geocoding\*" -DestinationPath "resources\geocoding.zip"
   - ps: Compress-Archive -Path "resources\test\geocoding\*" -DestinationPath "resources\test\testgeocoding.zip"
