@@ -19,6 +19,7 @@ jobs:
       - name: Get new metadata information and create new GitHub release
         timeout-minutes: 30
         run: |
+          echo "${{ secrets.KEY_SNK_B64 }}" | base64 --decode > key.snk
           bash lib/github-actions-metadata-update.sh ${GITHUB_TOKEN}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
