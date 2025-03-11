@@ -43,7 +43,7 @@ echo "libphonenumber-csharp latest release is ${DEPLOYED_NUGET_TAG}"
 if [ "${UPSTREAM_GITHUB_RELEASE_TAG:1:1}" != "8" ]
 then
     echo "major version update"
-    exit 123
+    #exit 123
 fi
 
 if [ "$DEPLOYED_NUGET_TAG" = "${UPSTREAM_GITHUB_RELEASE_TAG:1}" ]
