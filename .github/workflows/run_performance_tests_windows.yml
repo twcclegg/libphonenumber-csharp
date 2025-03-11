@@ -15,7 +15,7 @@ jobs:
       - name: Add key.snk for strong name signing
         run: |
           echo "${{ secrets.KEY_SNK_B64 }}" | Out-File key.snk.b64
-          certutil -decode key.snk.b64 key.snk
+          certutil -decode -f key.snk.b64 key.snk
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
