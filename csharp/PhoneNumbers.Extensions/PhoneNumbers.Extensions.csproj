@@ -27,6 +27,12 @@
         <AnalysisLevel>5</AnalysisLevel>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(APPVEYOR_PULL_REQUEST_NUMBER)' == ''">
+        <SignAssembly>true</SignAssembly>
+        <AssemblyOriginatorKeyFile>../../key.snk</AssemblyOriginatorKeyFile>
+        <PublicSign>true</PublicSign>
+    </PropertyGroup>
+
     <ItemGroup>
         <None Include="..\..\icon.png" Pack="true" PackagePath="" />
     </ItemGroup>
