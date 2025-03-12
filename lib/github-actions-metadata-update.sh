@@ -40,7 +40,7 @@ GITHUB_ACTION_WORKING_DIRECTORY=$(pwd)
 echo "google/libphonenumber latest release is ${UPSTREAM_GITHUB_RELEASE_TAG}"
 echo "libphonenumber-csharp latest release is ${DEPLOYED_NUGET_TAG}"
 
-if [ "${UPSTREAM_GITHUB_RELEASE_TAG:1:1}" != "8" ]
+if [ "${UPSTREAM_GITHUB_RELEASE_TAG:1:1}" != "9" ]
 then
     echo "major version update"
     exit 123
