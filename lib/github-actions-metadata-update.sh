@@ -117,9 +117,10 @@ dotnet test --no-build --verbosity normal -p:TargetFrameworks=net9.0
 # Cleanup test dependencies
 rm -rf ${GITHUB_ACTION_WORKING_DIRECTORY}/resources/geocoding.zip
 rm -rf ${GITHUB_ACTION_WORKING_DIRECTORY}/resources/test/testgeocoding.zip
+rm -f ${GITHUB_ACTION_WORKING_DIRECTORY}/key.snk
 
 cd ${GITHUB_ACTION_WORKING_DIRECTORY}
-git add -A
+git add resources/
 git commit -m "feat: automatic upgrade to ${UPSTREAM_GITHUB_RELEASE_TAG}"
 git push
 
