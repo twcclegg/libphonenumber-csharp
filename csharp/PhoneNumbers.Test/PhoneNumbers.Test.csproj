@@ -12,6 +12,9 @@
   <PropertyGroup Condition="'$(APPVEYOR_PULL_REQUEST_NUMBER)' == ''">
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>../../key.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'($(TargetFramework)' == 'net8.0' Or '$(TargetFramework)' == 'net9.0) And $(APPVEYOR_PULL_REQUEST_NUMBER)'">
     <PublicSign>true</PublicSign>
   </PropertyGroup>
 
