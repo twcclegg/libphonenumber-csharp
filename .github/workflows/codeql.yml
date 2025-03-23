@@ -61,7 +61,6 @@ jobs:
       # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
       - if: matrix.build-mode == 'manual'
         run: |
-          echo "${{ secrets.KEY_SNK_B64 }}" | base64 --decode > key.snk
           (cd resources/geocoding; zip -r ../../resources/geocoding.zip *)
           (cd resources/test/geocoding; zip -r ../../../resources/test/testgeocoding.zip *)
           cd csharp
