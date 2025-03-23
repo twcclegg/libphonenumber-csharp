@@ -16,10 +16,6 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.x
-      - name: Add key.snk for strong name signing
-        run: |
-          echo "${{ secrets.KEY_SNK_B64 }}" | Out-File key.snk.b64
-          certutil -decode -f key.snk.b64 key.snk
       - name: Add zip files required for running tests
         run: |
           Compress-Archive -Path "resources\geocoding\*" -DestinationPath "resources\geocoding.zip"

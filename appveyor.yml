@@ -17,16 +17,12 @@ configuration: Release
 environment:
   COVERALLS_REPO_TOKEN:
     secure: vncyomjYijKQKcbLpvs7DFLyNWPjW7tk9KNF/bTV5J/RxOnFydZfsJSsp7SMlvUg
-  KEY_SNK_B64:
-    secure: 4AsBl6Xj6lf78x5EnMNljK0LBxgMuL9CWWDEULg35cv3tJw+xBhOMvyrEsX/ic6gpAZFDk0Oths++CV0wNzwFGGRZqsYcyX5UgQgSYgN2+V/jKwYNWZsafyKyeL9RcSRAkJNv572Dm/nR3AVxg9TSHm4EjTMdLAEZ+BDS8iCnzAcunOgpl2vavrCaQqtP9qAfFUkVLyjvzHzwktEQDyEmJr4sdNLPPg09U+T8C22p2jmQd9sQPGbwZe/ljUbvVYiWY/JfxS7fQQQFgBHSC2Po7IZ3cM4rDmgnmOsRixe1omlV2wwG06Jn3EBsFTgGkQ1AfwxwFgxNZomELRR6N8hHWtnte/SvYR7OD+ZfmdHwRJw3XfmaFgrJ/fhkcjNBRICatVO9kAs9s68A5Jxk0mBH3fCUkl5yvL+ulIXQGzHoBNjILMWDjBwiXJ06qrZzyn5kX/aNIbQt8cP0WEkMYxTvA/+SLL64G6L8Aflx4Sw3LpPq+sADQM1k4xA6ZcziwHCodhJ0d2tqDuKYFmXWf1jNml+jWfFOlGAcDJK592M6Ul3AvbZXRz/CxrKOnQ0WkffxT/79RYWsl3gcpFBmt8eX/Ovsc3ts7AREO3vknXv6fxrwtvQZdRfdV28fGk0rnTu41x/btgBQD9IuqWvnAM2fvyrJ6FMTxVo43u5xwgeakRegovaJkysllslslkhKP/BolPq/nt0OyRwH7QFPUUYZoanT8+kRtxP4BnwZBu/Jr4A4h9W+ryecIVILxt0wZiSQBAS0CYmIdX9f2LZw8A79BydhcrL6EnmNg8JwinTdTLk0q37n4XYehrExm9+x1OqPfErAblSbThHf+ehKaypmPxHdsAP+5HCR7gWdv4E2KuCCkZae3LwjUQhT0r0iMwAfS0nW7MCVo6nUYZtVYxxJB/cvKr/uDzeyezkhOxwOkNP4Nw+NSnZkB1giu0VyoWwKPOHe2Kn+K3ZMWUFNNe5xveY6+SGB6NGU+wYWwqA9eyBmv9YEQl7NNWMVHJtBzp2Q9S/BlShEcv+nB3TqWbPuZE0j6K7qhyVdOw4+HMYZOI=
 pull_requests:
   do_not_increment_build_number: true
 branches:
   only:
     - main
 before_build:
-  - ps: $env:KEY_SNK_B64 | Set-Content -Path "key.snk.b64"
-  - certutil -decode -f key.snk.b64 key.snk
   - dotnet restore csharp -s https://api.nuget.org/v3/index.json
   - ps: Compress-Archive -Path "resources\geocoding\*" -DestinationPath "resources\geocoding.zip"
   - ps: Compress-Archive -Path "resources\test\geocoding\*" -DestinationPath "resources\test\testgeocoding.zip"
