@@ -22,6 +22,8 @@ updates:
         - "minor"
         - "patch"
     ignore:
+      - dependency-name: "System.Collections.Immutable"
+      - dependency-name: "System.IO.Compression"
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
   - package-ecosystem: "nuget"
@@ -35,6 +37,7 @@ updates:
         - "minor"
         - "patch"
     ignore:
+      - dependency-name: "System.Text.Json"
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
   - package-ecosystem: "nuget"
