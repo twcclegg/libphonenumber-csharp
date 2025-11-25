@@ -11,7 +11,7 @@ jobs:
   create_new_release_on_new_metadata_update:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
