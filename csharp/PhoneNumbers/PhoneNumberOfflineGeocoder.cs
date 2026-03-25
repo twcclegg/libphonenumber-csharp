@@ -22,7 +22,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace PhoneNumbers
 {
@@ -213,9 +212,21 @@ namespace PhoneNumbers
 
             lock (availablePhonePrefixMaps)
             {
-                if (!availablePhonePrefixMaps.TryGetValue(fileName, out var map))
-                    map = LoadAreaCodeMapFromFile(fileName);
-                return map;
+                if (availablePhonePrefixMaps.TryGetValue(fileName, out var map))
+                    return map;
+            }
+
+            // Load outside the lock to avoid blocking other threads during I/O.
+            var areaCodeMap = LoadAreaCodeMapFromFile(fileName);
+
+            lock (availablePhonePrefixMaps)
+            {
+                // Another thread may have loaded the same file; prefer the existing entry.
+                if (!availablePhonePrefixMaps.TryGetValue(fileName, out var existing))
+                    availablePhonePrefixMaps[fileName] = areaCodeMap;
+                else
+                    areaCodeMap = existing;
+                return areaCodeMap;
             }
         }
 
@@ -227,8 +238,7 @@ namespace PhoneNumbers
 
             using (fp)
             {
-                var areaCodeMap = AreaCodeParser.ParseAreaCodeMap(fp);
-                return availablePhonePrefixMaps[fileName] = areaCodeMap;
+                return AreaCodeParser.ParseAreaCodeMap(fp);
             }
         }
 
@@ -249,7 +259,7 @@ namespace PhoneNumbers
 
                 using (var archive = new ZipArchive(zipStream, ZipArchiveMode.Read))
                 {
-                    var entry = archive.Entries.First(p => Regex.Replace(p.FullName, "[\\\\/]", ".") == fileName);
+                    var entry = archive.Entries.First(p => p.FullName.Replace('\\', '.').Replace('/', '.') == fileName);
 
                     using (var entryStream = entry.Open())
                     {
