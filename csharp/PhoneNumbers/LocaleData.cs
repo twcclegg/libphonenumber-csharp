@@ -7,7 +7,7 @@
 // java.vendor=Eclipse Adoptium
 // os.name=Linux
 // os.arch=amd64
-// os.version=6.14.0-1017-azure
+// os.version=6.17.0-1008-azure
 //
 // Auto-generated file, do not edit by hand.
 //
