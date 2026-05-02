@@ -85,6 +85,20 @@ var regionCode = phoneNumberUtil.GetRegionCodeForNumber(phoneNumber);
 Console.WriteLine(regionCode); // US
 ```
 
+### Get the carrier name for a phone number
+```csharp
+using PhoneNumbers;
+
+var phoneNumberUtil = PhoneNumberUtil.GetInstance();
+var carrierMapper = PhoneNumberToCarrierMapper.GetInstance();
+var phoneNumber = phoneNumberUtil.Parse("+917503397672", null);
+var carrierName = carrierMapper.GetNameForNumber(phoneNumber, Locale.English);
+
+Console.WriteLine(carrierName); // Vodafone
+```
+
+> **Note:** Carrier data reflects the original network allocation. If the country supports mobile number portability, the number may have since moved to a different carrier. Use `GetSafeDisplayName` to return an empty string in those regions.
+
 ## Features
 
 * Parsing/formatting/validating phone numbers for all countries/regions of the world.
@@ -94,6 +108,7 @@ Console.WriteLine(regionCode); // US
 * IsPossibleNumber - quickly guessing whether a number is a possible phone number by using only the length information, much faster than a full validation.
 * AsYouTypeFormatter - formats phone numbers on-the-fly when users enter each digit.
 * FindNumbers - finds numbers in text input
+* PhoneNumberToCarrierMapper - looks up the carrier name originally assigned to a mobile or pager number, with locale-aware output and a safe-display mode for regions with mobile number portability.
 
 See [PhoneNumberUtil.cs](csharp/PhoneNumbers/PhoneNumberUtil.cs) for the various methods and properties available.
 
@@ -119,21 +134,31 @@ For more information on metadata usage, please refer to the [main repository faq
 
 ## Running tests locally
 
-To run tests locally, you will need a zip version of the `geocoding.zip` file stored in the `resources` folder
-and `testgeocoding.zip` file stored in the `resources/test` folder.
+To run tests locally, you will need zip versions of the geocoding and carrier data files.
 
-On linux, you can run the following commands to generate the zip accordingly
+| Zip file | Source directory |
+|---|---|
+| `resources/geocoding.zip` | `resources/geocoding/` |
+| `resources/carrier.zip` | `resources/carrier/` |
+| `resources/test/testgeocoding.zip` | `resources/test/geocoding/` |
+| `resources/test/testcarrier.zip` | `resources/test/carrier/` |
+
+On linux, you can run the following commands to generate the zips accordingly
 
 ```bash
 (cd resources/geocoding; zip -r ../../resources/geocoding.zip *)
+(cd resources/carrier; zip -r ../../resources/carrier.zip *)
 (cd resources/test/geocoding; zip -r ../../../resources/test/testgeocoding.zip *)
+(cd resources/test/carrier; zip -r ../../../resources/test/testcarrier.zip *)
 ```
 
 For windows, you can use the following powershell script
 
 ```powershell
 Compress-Archive -Path "resources\geocoding\*" -DestinationPath "resources\geocoding.zip"
+Compress-Archive -Path "resources\carrier\*" -DestinationPath "resources\carrier.zip"
 Compress-Archive -Path "resources\test\geocoding\*" -DestinationPath "resources\test\testgeocoding.zip"
+Compress-Archive -Path "resources\test\carrier\*" -DestinationPath "resources\test\testcarrier.zip"
 ```
 
 ## Contributing

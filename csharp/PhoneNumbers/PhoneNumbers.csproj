@@ -44,6 +44,14 @@
     <EmbeddedResource Include="..\..\resources\geocoding.zip" />
   </ItemGroup>
 
+  <ItemGroup Condition="!Exists('..\..\resources\carrier.zip')">
+    <EmbeddedResource Include="..\..\resources\carrier\**" LinkBase="carrier" />
+  </ItemGroup>
+
+  <ItemGroup Condition="Exists('..\..\resources\carrier.zip')">
+    <EmbeddedResource Include="..\..\resources\carrier.zip" />
+  </ItemGroup>
+
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' ">
     <PackageReference Include="System.Collections.Immutable" Version="8.0.0" />
     <PackageReference Include="System.IO.Compression" Version="4.3.0" />

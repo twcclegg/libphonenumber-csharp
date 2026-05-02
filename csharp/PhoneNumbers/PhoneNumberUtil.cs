@@ -1,4 +1,4 @@
-﻿#nullable disable
+#nullable disable
 /*
  * Copyright (C) 2009 Google Inc.
  *
@@ -2996,6 +2996,21 @@ namespace PhoneNumbers
             var metadata = GetMetadataForRegion(regionCode);
             var nationalSignificantNumber = GetNationalSignificantNumber(number);
             return !IsNumberMatchingDesc(nationalSignificantNumber, metadata.NoInternationalDialling);
+        }
+
+        /// <summary>
+        /// Returns true if the supplied region supports mobile number portability. Returns false for
+        /// invalid, unknown or regions that don't support mobile number portability.
+        /// </summary>
+        /// <param name="regionCode">The region for which we want to know whether it supports mobile
+        /// number portability or not.</param>
+        /// <returns>True if the region supports mobile number portability, false otherwise.</returns>
+        public bool IsMobileNumberPortableRegion(string regionCode)
+        {
+            var metadata = GetMetadataForRegion(regionCode);
+            if (metadata == null)
+                return false;
+            return metadata.MobileNumberPortableRegion;
         }
     }
 }

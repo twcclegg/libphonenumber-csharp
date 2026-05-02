@@ -20,6 +20,7 @@ jobs:
         run: |
           Compress-Archive -Path "resources\geocoding\*" -DestinationPath "resources\geocoding.zip"
           Compress-Archive -Path "resources\test\geocoding\*" -DestinationPath "resources\test\testgeocoding.zip"
+          Compress-Archive -Path "resources\test\carrier\*" -DestinationPath "resources\test\testcarrier.zip"
       - name: Run tests
         run: dotnet test csharp/PhoneNumbers.sln --configuration Release --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
       - name: Upload coverage reports to Codecov
