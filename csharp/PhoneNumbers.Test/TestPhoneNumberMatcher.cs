@@ -880,7 +880,7 @@ namespace PhoneNumbers.Test
         }
 
         /// <summary>
-        /// Tests numbers found by <c>PhoneNumberUtilFindNumbers(CharSequence, String)</c> in various
+        /// Tests numbers found by <see cref="PhoneNumberUtil.FindNumbers(string, string)"/> in various
         /// textual contexts.
         /// </summary>
         /// <param name="number">the number to test and the corresponding region code to use</param>

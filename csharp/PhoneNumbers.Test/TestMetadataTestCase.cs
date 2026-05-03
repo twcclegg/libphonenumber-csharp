@@ -21,6 +21,7 @@ namespace PhoneNumbers.Test
     /// <para>
     /// Note since tests that extend this class do not use the normal metadata file, they should not be
     /// used for regression test purposes.
+    /// </para>
     /// </summary>
     /// <remarks>Author: Shaopeng Jia</remarks>
     /// <remarks>Author: Lara Rennie</remarks>

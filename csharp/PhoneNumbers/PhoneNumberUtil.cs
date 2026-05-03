@@ -2534,7 +2534,7 @@ namespace PhoneNumbers
         /// Returns an iterable over all <see cref="PhoneNumberMatch"/> PhoneNumberMatches in text.
         /// </summary>
         /// <param name="text">The text to search for phone numbers, null for no text.</param>
-        /// <param name="defaultRegion">Tegion that we are expecting the number to be from. This is only used
+        /// <param name="defaultRegion">Region that we are expecting the number to be from. This is only used
         /// if the number being parsed is not written in international format. The
         /// country_code for the number in this case would be stored as that of
         /// the default region supplied. May be null if only international
@@ -2542,7 +2542,7 @@ namespace PhoneNumbers
         /// <param name="leniency">The leniency to use when evaluating candidate phone numbers.</param>
         /// <param name="maxTries">The maximum number of invalid numbers to try before giving up on the
         /// text. This is to cover degenerate cases where the text has a lot of
-        /// false positives in it. Must be <c>>= 0</c>.</param>
+        /// false positives in it. Must be <c>&gt;= 0</c>.</param>
         /// <returns></returns>
         public IEnumerable<PhoneNumberMatch> FindNumbers(string text, string defaultRegion,
             Leniency leniency, long maxTries)
