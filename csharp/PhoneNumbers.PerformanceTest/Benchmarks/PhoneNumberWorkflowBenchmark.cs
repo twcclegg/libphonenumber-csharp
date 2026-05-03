@@ -5,8 +5,8 @@ namespace PhoneNumbers.PerformanceTest.Benchmarks
 {
     [MemoryDiagnoser]
     [SimpleJob(RuntimeMoniker.Net48)]
-    [SimpleJob(RuntimeMoniker.Net60)]
     [SimpleJob(RuntimeMoniker.Net80)]
+    [SimpleJob(RuntimeMoniker.Net100)]
     public class PhoneNumberWorkflowBenchmark
     {
 #if NETFRAMEWORK
