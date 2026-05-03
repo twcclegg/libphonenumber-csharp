@@ -85,6 +85,22 @@ var regionCode = phoneNumberUtil.GetRegionCodeForNumber(phoneNumber);
 Console.WriteLine(regionCode); // US
 ```
 
+### Get the time zones for a phone number
+```csharp
+using PhoneNumbers;
+
+var phoneNumberUtil = PhoneNumberUtil.GetInstance();
+var timeZonesMapper = PhoneNumberToTimeZonesMapper.GetInstance();
+var phoneNumber = phoneNumberUtil.Parse("+12128120000", null);
+var timeZones = timeZonesMapper.GetTimeZonesForNumber(phoneNumber);
+
+Console.WriteLine(string.Join(", ", timeZones)); // America/New_York
+```
+
+Returns a `List<string>` of [IANA time zone identifiers](https://www.iana.org/time-zones). For numbers that span multiple time zones (e.g. a country-level lookup), the list will contain more than one entry. Returns `["Etc/Unknown"]` for invalid or unrecognised numbers.
+
+Use `GetTimeZonesForGeographicalNumber` instead if you have already validated the number and want to skip the internal type check.
+
 ## Features
 
 * Parsing/formatting/validating phone numbers for all countries/regions of the world.
