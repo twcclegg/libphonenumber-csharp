@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -305,9 +305,9 @@ namespace PhoneNumbers
         /// this version of the number is stored in raw_input, this representation of the number will be
         /// used rather than the digit representation. Grouping information, as specified by characters
         /// such as "-" and " ", will be retained.
-        /// <p>
+        /// <para>
         /// <b>Caveats:</b>
-        /// </p>
+        /// </para>
         /// <ul>
         /// <li>
         /// This will not produce good results if the country calling code is both present in the raw

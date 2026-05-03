@@ -22,8 +22,8 @@ namespace PhoneNumbers
     /// <summary>
     /// A utility that maps phone number prefixes to a string describing the geographical area the prefix
     /// covers.
-    /// <!-- @author Shaopeng Jia -->
     /// </summary>
+    /// <remarks>Author: Shaopeng Jia</remarks>
     public class AreaCodeMap
     {
         private readonly PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
@@ -34,12 +34,6 @@ namespace PhoneNumbers
         {
             return areaCodeMapStorage;
         }
-
-        /**
-         * Creates an empty {@link AreaCodeMap}. The default constructor is necessary for implementing
-         * {@link Externalizable}. The empty map could later be populated by
-         * {@link #readAreaCodeMap(java.util.SortedMap)} or {@link #readExternal(java.io.ObjectInput)}.
-         */
 
         /// <summary>
         /// Gets the size of the provided area code map storage. The map storage passed-in will be filled

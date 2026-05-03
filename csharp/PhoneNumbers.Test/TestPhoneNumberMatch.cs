@@ -37,9 +37,9 @@ namespace PhoneNumbers.Test
             Assert.Equal("1 800 234 45 67", match1.RawString);
         }
 
-        /**
-        * Tests the value type semantics for matches with a null number.
-        */
+        /// <summary>
+        /// Tests the value type semantics for matches with a null number.
+        /// </summary>
         [Fact]
         public void TestIllegalArguments()
         {

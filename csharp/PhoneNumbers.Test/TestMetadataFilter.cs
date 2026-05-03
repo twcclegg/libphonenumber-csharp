@@ -23,9 +23,9 @@ namespace PhoneNumbers.Test
 {
 
 
-/**
- * Unit tests for {@link MetadataFilter}.
- */
+/// <summary>
+/// Unit tests for <see cref="MetadataFilter"/>.
+/// </summary>
     public class MetadataFilterTest
     {
         private const string ID = "AM";

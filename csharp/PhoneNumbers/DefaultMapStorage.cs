@@ -21,13 +21,12 @@ using System.Linq;
 
 namespace PhoneNumbers
 {
-    /**
-    * Default area code map storage strategy that is used for data not containing description
-    * duplications. It is mainly intended to avoid the overhead of the string table management when it
-    * is actually unnecessary (i.e no string duplication).
-    *
-    * @author Shaopeng Jia
-    */
+    /// <summary>
+    /// Default area code map storage strategy that is used for data not containing description
+    /// duplications. It is mainly intended to avoid the overhead of the string table management when it
+    /// is actually unnecessary (i.e no string duplication).
+    /// </summary>
+    /// <remarks>Author: Shaopeng Jia</remarks>
     public class DefaultMapStorage : AreaCodeMapStorageStrategy
     {
         private int[] phoneNumberPrefixes;

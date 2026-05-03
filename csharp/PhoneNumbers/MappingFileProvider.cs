@@ -22,13 +22,12 @@ using System.Text;
 
 namespace PhoneNumbers
 {
-    /**
-    * A utility which knows the data files that are available for the geocoder to use. The data files
-    * contain mappings from phone number prefixes to text descriptions, and are organized by country
-    * calling code and language that the text descriptions are in.
-    *
-    * @author Shaopeng Jia
-    */
+    /// <summary>
+    /// A utility which knows the data files that are available for the geocoder to use. The data files
+    /// contain mappings from phone number prefixes to text descriptions, and are organized by country
+    /// calling code and language that the text descriptions are in.
+    /// </summary>
+    /// <remarks>Author: Shaopeng Jia</remarks>
     public class MappingFileProvider
     {
         private static readonly Dictionary<string, string> LocaleNormalizationMap;
@@ -47,19 +46,10 @@ namespace PhoneNumbers
             LocaleNormalizationMap = normalizationMap;
         }
 
-        /**
-        * Creates an empty {@link MappingFileProvider}. The default constructor is necessary for
-        * implementing {@link Externalizable}. The empty provider could later be populated by
-        * {@link #readFileConfigs(java.util.SortedMap)} or {@link #readExternal(java.io.ObjectInput)}.
-        */
-
-        /**
-         * Initializes an {@link MappingFileProvider} with {@code availableDataFiles}.
-         *
-         * @param availableDataFiles  a map from country calling codes to sets of languages in which data
-         *     files are available for the specific country calling code. The map is sorted in ascending
-         *     order of the country calling codes as integers.
-         */
+        /// <summary>
+        /// Initializes an <see cref="MappingFileProvider"/> with <c>availableDataFiles</c>.
+        /// </summary>
+        /// <param name="availableDataFiles">a map from country calling codes to sets of languages in which data files are available for the specific country calling code. The map is sorted in ascending order of the country calling codes as integers.</param>
         public void ReadFileConfigs(SortedDictionary<int, HashSet<string>> availableDataFiles)
         {
             numOfEntries = availableDataFiles.Count;
@@ -73,11 +63,11 @@ namespace PhoneNumbers
             }
         }
 
-        /**
-         * Returns a string representing the data in this class. The string contains one line for each
-         * country calling code. The country calling code is followed by a '|' and then a list of
-         * comma-separated languages sorted in ascending order.
-         */
+        /// <summary>
+        /// Returns a string representing the data in this class. The string contains one line for each
+        /// country calling code. The country calling code is followed by a '|' and then a list of
+        /// comma-separated languages sorted in ascending order.
+        /// </summary>
         public override string ToString()
         {
             var output = new StringBuilder();
@@ -95,18 +85,15 @@ namespace PhoneNumbers
             return output.ToString();
         }
 
-        /**
-         * Gets the name of the file that contains the mapping data for the {@code countryCallingCode} in
-         * the language specified.
-         *
-         * @param countryCallingCode  the country calling code of phone numbers which the data file
-         *     contains
-         * @param language  two-letter lowercase ISO language codes as defined by ISO 639-1
-         * @param script  four-letter titlecase (the first letter is uppercase and the rest of the letters
-         *     are lowercase) ISO script codes as defined in ISO 15924
-         * @param region  two-letter uppercase ISO country codes as defined by ISO 3166-1
-         * @return  the name of the file, or empty string if no such file can be found
-         */
+        /// <summary>
+        /// Gets the name of the file that contains the mapping data for the <c>countryCallingCode</c> in
+        /// the language specified.
+        /// </summary>
+        /// <param name="countryCallingCode">the country calling code of phone numbers which the data file contains</param>
+        /// <param name="language">two-letter lowercase ISO language codes as defined by ISO 639-1</param>
+        /// <param name="script">four-letter titlecase (the first letter is uppercase and the rest of the letters are lowercase) ISO script codes as defined in ISO 15924</param>
+        /// <param name="region">two-letter uppercase ISO country codes as defined by ISO 3166-1</param>
+        /// <returns>the name of the file, or empty string if no such file can be found</returns>
         public string GetFileName(int countryCallingCode, string language, string script, string region)
         {
             if (language.Length == 0)

@@ -19,11 +19,10 @@ using Xunit;
 
 namespace PhoneNumbers.Test
 {
-    /**
-    * Unittests for MappingFileProvider.java
-    *
-    * @author Shaopeng Jia
-    */
+    /// <summary>
+    /// Unittests for MappingFileProvider.java
+    /// </summary>
+    /// <remarks>Author: Shaopeng Jia</remarks>
     [Collection("TestMetadataTestCase")]
     public class TestMappingFileProvider
     {

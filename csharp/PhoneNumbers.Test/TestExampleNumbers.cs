@@ -26,11 +26,10 @@ namespace PhoneNumbers.Test
         private readonly List<PhoneNumber> invalidCases = new List<PhoneNumber>();
         private readonly List<PhoneNumber> wrongTypeCases = new List<PhoneNumber>();
 
-        /**
-        * @param exampleNumberRequestedType  type we are requesting an example number for
-        * @param possibleExpectedTypes       acceptable types that this number should match, such as
-        *     FIXED_LINE and FIXED_LINE_OR_MOBILE for a fixed line example number.
-        */
+        /// <summary>
+        /// </summary>
+        /// <param name="exampleNumberRequestedType">type we are requesting an example number for</param>
+        /// <param name="possibleExpectedTypes">acceptable types that this number should match, such as FIXED_LINE and FIXED_LINE_OR_MOBILE for a fixed line example number.</param>
         private void CheckNumbersValidAndCorrectType(PhoneNumberType exampleNumberRequestedType,
             HashSet<PhoneNumberType> possibleExpectedTypes)
         {

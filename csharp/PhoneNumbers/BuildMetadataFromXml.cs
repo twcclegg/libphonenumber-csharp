@@ -193,9 +193,9 @@ namespace PhoneNumbers
             return regex;
         }
 
-        /**
-        * Returns the national prefix of the provided country element.
-        */
+        /// <summary>
+        /// Returns the national prefix of the provided country element.
+        /// </summary>
         public static string GetNationalPrefix(XElement element)
         {
             return element.Attribute(NATIONAL_PREFIX)?.Value ?? "";
@@ -234,13 +234,12 @@ namespace PhoneNumbers
             return metadata;
         }
 
-        /**
-        * Extracts the pattern for international format. If there is no intlFormat, default to using the
-        * national format. If the intlFormat is set to "NA" the intlFormat should be ignored.
-        *
-        * @throws  RuntimeException if multiple intlFormats have been encountered.
-        * @return  whether an international number format is defined.
-        */
+        /// <summary>
+        /// Extracts the pattern for international format. If there is no intlFormat, default to using the
+        /// national format. If the intlFormat is set to "NA" the intlFormat should be ignored.
+        /// </summary>
+        /// <returns>whether an international number format is defined.</returns>
+        /// <exception cref="Exception">if multiple intlFormats have been encountered.</exception>
         public static bool LoadInternationalFormat(PhoneMetadata.Builder metadata, XElement numberFormatElement, string nationalFormat)
             => LoadInternationalFormat(metadata.MessageBeingBuilt, numberFormatElement, nationalFormat);
 
@@ -271,12 +270,11 @@ namespace PhoneNumbers
             return hasExplicitIntlFormatDefined;
         }
 
-        /**
-         * Extracts the pattern for the national format.
-         *
-         * @throws  RuntimeException if multiple or no formats have been encountered.
-         * @return  the national format string.
-         */
+        /// <summary>
+        /// Extracts the pattern for the national format.
+        /// </summary>
+        /// <returns>the national format string.</returns>
+        /// <exception cref="Exception">if multiple or no formats have been encountered.</exception>
         public static string LoadNationalFormat(PhoneMetadata.Builder metadata, XElement numberFormatElement, NumberFormat.Builder format)
             => LoadNationalFormat(metadata.MessageBeingBuilt, numberFormatElement, format.MessageBeingBuilt);
 
@@ -291,12 +289,12 @@ namespace PhoneNumbers
             return format.Format = formatPattern[0].Value;
         }
 
-        /**
-        *  Extracts the available formats from the provided DOM element. If it does not contain any
-        *  nationalPrefixFormattingRule, the one passed-in is retained. The nationalPrefix,
-        *  nationalPrefixFormattingRule and nationalPrefixOptionalWhenFormatting values are provided from
-        *  the parent (territory) element.
-        */
+        /// <summary>
+        ///  Extracts the available formats from the provided DOM element. If it does not contain any
+        ///  nationalPrefixFormattingRule, the one passed-in is retained. The nationalPrefix,
+        ///  nationalPrefixFormattingRule and nationalPrefixOptionalWhenFormatting values are provided from
+        ///  the parent (territory) element.
+        /// </summary>
         public static void LoadAvailableFormats(PhoneMetadata.Builder metadata, XElement element, string nationalPrefix, string nationalPrefixFormattingRule, bool nationalPrefixOptionalWhenFormatting)
             => LoadAvailableFormats(metadata.MessageBeingBuilt, element, nationalPrefix, nationalPrefixFormattingRule, nationalPrefixOptionalWhenFormatting);
 
@@ -374,11 +372,11 @@ namespace PhoneNumbers
             return rule;
         }
 
-        /**
-        * Checks if the possible lengths provided as a sorted set are equal to the possible lengths
-        * stored already in the description pattern. Note that possibleLengths may be empty but must not
-        * be null, and the PhoneNumberDesc passed in should also not be null.
-        */
+        /// <summary>
+        /// Checks if the possible lengths provided as a sorted set are equal to the possible lengths
+        /// stored already in the description pattern. Note that possibleLengths may be empty but must not
+        /// be null, and the PhoneNumberDesc passed in should also not be null.
+        /// </summary>
         private static bool ArePossibleLengthsEqual(SortedSet<int> possibleLengths,
             PhoneNumberDesc desc)
         {
@@ -395,24 +393,21 @@ namespace PhoneNumbers
             return true;
         }
 
-        /**
-        * Processes a phone number description element from the XML file and returns it as a
-        * PhoneNumberDesc. If the description element is a fixed line or mobile number, the parent
-        * description will be used to fill in the whole element if necessary, or any components that are
-        * missing. For all other types, the parent description will only be used to fill in missing
-        * components if the type has a partial definition. For example, if no "tollFree" element exists,
-        * we assume there are no toll free numbers for that locale, and return a phone number description
-        * with no national number data and [-1] for the possible lengths. Note that the parent
-        * description must therefore already be processed before this method is called on any child
-        * elements.
-        *
-        * @param generalDesc  a generic phone number description that will be used to fill in missing
-        *                     parts of the description
-        * @param countryElement  the XML element representing all the country information
-        * @param numberType  the name of the number type, corresponding to the appropriate tag in the XML
-        *                    file with information about that type
-        * @return  complete description of that phone number type
-        */
+        /// <summary>
+        /// Processes a phone number description element from the XML file and returns it as a
+        /// PhoneNumberDesc. If the description element is a fixed line or mobile number, the parent
+        /// description will be used to fill in the whole element if necessary, or any components that are
+        /// missing. For all other types, the parent description will only be used to fill in missing
+        /// components if the type has a partial definition. For example, if no "tollFree" element exists,
+        /// we assume there are no toll free numbers for that locale, and return a phone number description
+        /// with no national number data and [-1] for the possible lengths. Note that the parent
+        /// description must therefore already be processed before this method is called on any child
+        /// elements.
+        /// </summary>
+        /// <param name="parentDesc">a generic phone number description that will be used to fill in missing parts of the description</param>
+        /// <param name="countryElement">the XML element representing all the country information</param>
+        /// <param name="numberType">the name of the number type, corresponding to the appropriate tag in the XML file with information about that type</param>
+        /// <returns>complete description of that phone number type</returns>
         public static PhoneNumberDesc.Builder ProcessPhoneNumberDescElement(PhoneNumberDesc parentDesc, XElement countryElement, string numberType)
             => new(ProcessPhoneNumberDesc(parentDesc, countryElement, numberType));
 
@@ -528,15 +523,13 @@ namespace PhoneNumbers
             return lengthSet;
         }
 
-        /**
-         * Reads the possible lengths present in the metadata and splits them into two sets: one for
-         * full-length numbers, one for local numbers.
-         *
-         * @param data  one or more phone number descriptions, represented as XML nodes
-         * @param lengths  a set to which to add possible lengths of full phone numbers
-         * @param localOnlyLengths  a set to which to add possible lengths of phone numbers only diallable
-         *     locally (e.g. within a province)
-         */
+        /// <summary>
+        /// Reads the possible lengths present in the metadata and splits them into two sets: one for
+        /// full-length numbers, one for local numbers.
+        /// </summary>
+        /// <param name="possibleLengths">one or more phone number descriptions, represented as XML nodes</param>
+        /// <param name="lengths">a set to which to add possible lengths of full phone numbers</param>
+        /// <param name="localOnlyLengths">a set to which to add possible lengths of phone numbers only diallable locally (e.g. within a province)</param>
         private static void PopulatePossibleLengthSets(IEnumerable<XElement> possibleLengths, SortedSet<int> lengths,
             SortedSet<int> localOnlyLengths)
         {
@@ -567,9 +560,9 @@ namespace PhoneNumbers
             }
         }
 
-        /**
-         * Sets possible lengths in the general description, derived from certain child elements.
-         */
+        /// <summary>
+        /// Sets possible lengths in the general description, derived from certain child elements.
+        /// </summary>
         private static void SetPossibleLengthsGeneralDesc(PhoneNumberDesc generalDesc, string metadataId,
             XElement data, bool isShortNumberMetadata)
         {
@@ -609,14 +602,15 @@ namespace PhoneNumbers
             SetPossibleLengths(lengths, localOnlyLengths, null, generalDesc);
         }
 
-        /**
-        * Sets the possible length fields in the metadata from the sets of data passed in. Checks that
-        * the length is covered by the "parent" phone number description element if one is present, and
-        * if the lengths are exactly the same as this, they are not filled in for efficiency reasons.
-        *
-        * @param parentDesc  the "general description" element or null if desc is the generalDesc itself
-        * @param desc  the PhoneNumberDesc object that we are going to set lengths for
-        */
+        /// <summary>
+        /// Sets the possible length fields in the metadata from the sets of data passed in. Checks that
+        /// the length is covered by the "parent" phone number description element if one is present, and
+        /// if the lengths are exactly the same as this, they are not filled in for efficiency reasons.
+        /// </summary>
+        /// <param name="lengths">Lengths</param>
+        /// <param name="localOnlyLengths">Local only lengths</param>
+        /// <param name="parentDesc">the "general description" element or null if desc is the generalDesc itself</param>
+        /// <param name="desc">the PhoneNumberDesc object that we are going to set lengths for</param>
         private static void SetPossibleLengths(SortedSet<int> lengths,
             SortedSet<int> localOnlyLengths, PhoneNumberDesc parentDesc, PhoneNumberDesc desc)
         {
@@ -702,13 +696,12 @@ namespace PhoneNumbers
             return BuildCountryCodeToRegionCodeMap(collection);
         }
 
-        /**
-         * Processes the custom build flags and gets a {@code MetadataFilter} which may be used to
-        * filter {@code PhoneMetadata} objects. Incompatible flag combinations throw RuntimeException.
-        *
-        * @param liteBuild  The liteBuild flag value as given by the command-line
-        * @param specialBuild  The specialBuild flag value as given by the command-line
-        */
+        /// <summary>
+        /// Processes the custom build flags and gets a <c>MetadataFilter</c> which may be used to
+        /// filter <c>PhoneMetadata</c> objects. Incompatible flag combinations throw RuntimeException.
+        /// </summary>
+        /// <param name="liteBuild">The liteBuild flag value as given by the command-line</param>
+        /// <param name="specialBuild">The specialBuild flag value as given by the command-line</param>
         // @VisibleForTesting
         internal static MetadataFilter GetMetadataFilter(bool liteBuild, bool specialBuild)
         {

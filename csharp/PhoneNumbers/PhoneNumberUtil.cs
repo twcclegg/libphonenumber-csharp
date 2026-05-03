@@ -1,4 +1,4 @@
-﻿#nullable disable
+#nullable disable
 /*
  * Copyright (C) 2009 Google Inc.
  *
@@ -823,9 +823,9 @@ namespace PhoneNumbers
         }
 
         /// <summary>
-        /// Gets a {@link PhoneNumberUtil} instance to carry out international phone number formatting,
+        /// Gets a <see cref="PhoneNumberUtil"/> instance to carry out international phone number formatting,
         /// parsing, or validation. The instance is loaded with all phone number metadata.
-        /// The <see cref="PhoneNumberUtil" /> is implemented as a singleton.Therefore, calling getInstance
+        /// The <see cref="PhoneNumberUtil"/> is implemented as a singleton. Therefore, calling getInstance
         /// multiple times will only result in one instance being created.
         /// </summary>
         /// <returns> a PhoneNumberUtil instance</returns>
@@ -837,12 +837,12 @@ namespace PhoneNumbers
         }
 
         /// <summary>
-        /// Create a new {@link PhoneNumberUtil} instance to carry out international phone number formatting, parsing,
+        /// Create a new <see cref="PhoneNumberUtil"/> instance to carry out international phone number formatting, parsing,
         /// or validation. The instance is loaded with all metadata by using the metadataLoader specified.
-        /// <p>This method should only be used in the rare case in which you want to manage your own metadata loading.
+        /// <para>This method should only be used in the rare case in which you want to manage your own metadata loading.
         /// Calling this method multiple times is very expensive, as each time a new instance is created from scratch.
-        /// When in doubt, use {@link #getInstance}.
-        /// </p>
+        /// When in doubt, use <see cref="GetInstance()"/>.
+        /// </para>
         /// </summary>
         /// <param name="metadataStream">Stream of new metadata</param>
         /// <returns>a PhoneNumberUtil instance</returns>
@@ -1216,7 +1216,7 @@ namespace PhoneNumbers
 
         /// <summary>
         /// Formats a phone number using the original phone number format (e.g. INTERNATIONAL or NATIONAL)
-        /// that the number is parsed from, provided that the number has been parsed with {@link parseAndKeepRawInput}.
+        /// that the number is parsed from, provided that the number has been parsed with <see cref="ParseAndKeepRawInput(string, string)"/>.
         /// Otherwise the number will be formatted in NATIONAL format.The original format is embedded in the
         /// country_code_source field of the PhoneNumber object passed in, which is only set when parsing keeps the
         /// raw input. When we don't have a formatting pattern for the number, the method falls back to returning
@@ -1376,9 +1376,9 @@ namespace PhoneNumbers
             return len;
         }
 
-        /**
-        * A helper function that is used by format and formatByPattern.
-        */
+        /// <summary>
+        /// A helper function that is used by format and formatByPattern.
+        /// </summary>
         private void PrefixNumberWithCountryCallingCode(int countryCallingCode,
             PhoneNumberFormat numberFormat, StringBuilder formattedNumber)
         {
@@ -1558,10 +1558,10 @@ namespace PhoneNumbers
             return null;
         }
 
-        /**
-        * Appends the formatted extension of a phone number to formattedNumber, if the phone number had
-        * an extension specified.
-        */
+        /// <summary>
+        /// Appends the formatted extension of a phone number to formattedNumber, if the phone number had
+        /// an extension specified.
+        /// </summary>
         private static void MaybeAppendFormattedExtension(PhoneNumber number, PhoneMetadata metadata,
             PhoneNumberFormat numberFormat, StringBuilder formattedNumber)
         {
@@ -1901,7 +1901,7 @@ namespace PhoneNumbers
             return result == ValidationResult.IS_POSSIBLE || result == ValidationResult.IS_POSSIBLE_LOCAL_ONLY;
         }
 
-        /// <summary>Convenience wrapper around {@link #isPossibleNumberForTypeWithReason}. Instead of returning the
+        /// <summary>Convenience wrapper around <see cref="IsPossibleNumberForTypeWithReason(PhoneNumber, PhoneNumberType)"/>. Instead of returning the
         /// reason for failure, this method returns true if the number is either a possible fully-qualified
         /// number (containing the area code and country code), or if the number could be a possible local
         /// number (with a country code, but missing an area code). Local numbers are considered possible
@@ -2022,11 +2022,11 @@ namespace PhoneNumbers
         /// <summary>
         /// Check whether a phone number is a possible number of a particular type. For types that don't
         /// exist in a particular region, this will return a result that isn't so useful; it is recommended
-        /// that you use {@link #getSupportedTypesForRegion} or {@link #getSupportedTypesForNonGeoEntity}
+        /// that you use <see cref="GetSupportedTypesForRegion(string)"/> or <see cref="GetSupportedTypesForNonGeoEntity(int)"/>
         /// respectively before calling this method to determine whether you should call it for this number
         /// at all.
         ///
-        /// This provides a more lenient check than {@link #isValidNumber} in the following sense:
+        /// This provides a more lenient check than <see cref="IsValidNumber(PhoneNumber)"/> in the following sense:
         ///
         /// <ol>
         ///   <li> It only checks the length of phone numbers. In particular, it doesn't check starting
@@ -2481,7 +2481,7 @@ namespace PhoneNumbers
         }
 
         /// <summary>
-        /// Parses a string and returns it in proto buffer format. This method differs from {@link #parse}
+        /// Parses a string and returns it in proto buffer format. This method differs from <see cref="Parse(string, string)"/>
         /// in that it always populates the raw_input field of the protocol buffer with numberToParse as
         /// well as the country_code_source field.
         /// </summary>
@@ -2515,8 +2515,8 @@ namespace PhoneNumbers
 
         /// <summary>
         /// Returns an iterable over all <see cref="PhoneNumberMatch"/> PhoneNumberMatches in text. This
-        /// is a shortcut for <see cref="FindNumbers(string, string, Leniency, long)"/>
-        /// getMatcher(text, defaultRegion, Leniency.VALID, Long.MAX_VALUE)}.
+        /// is a shortcut for <see cref="FindNumbers(string, string, Leniency, long)"/> with
+        /// Leniency.VALID and long.MaxValue.
         /// </summary>
         /// <param name="text">The text to search for phone numbers, null for no text.</param>
         /// <param name="defaultRegion">Region that we are expecting the number to be from. This is only used
@@ -2542,7 +2542,7 @@ namespace PhoneNumbers
         /// <param name="leniency">The leniency to use when evaluating candidate phone numbers.</param>
         /// <param name="maxTries">The maximum number of invalid numbers to try before giving up on the
         /// text. This is to cover degenerate cases where the text has a lot of
-        /// false positives in it. Must be {@code >= 0}.</param>
+        /// false positives in it. Must be <c>>= 0</c>.</param>
         /// <returns></returns>
         public IEnumerable<PhoneNumberMatch> FindNumbers(string text, string defaultRegion,
             Leniency leniency, long maxTries)

@@ -19,11 +19,10 @@ using Xunit;
 
 namespace PhoneNumbers.Test
 {
-    /**
-    * Unittests for AreaCodeMap.java
-    *
-    * @author Shaopeng Jia
-    */
+    /// <summary>
+    /// Unittests for AreaCodeMap.java
+    /// </summary>
+    /// <remarks>Author: Shaopeng Jia</remarks>
     [Collection("TestMetadataTestCase")]
     public class TestAreaCodeMap
     {

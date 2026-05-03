@@ -20,15 +20,15 @@ using System.Collections.Generic;
 
 namespace PhoneNumbers
 {
-    /**
-     * Class to encapsulate the metadata filtering logic and restrict visibility into raw data
-     * structures.
-     *
-     * <p />
-     * WARNING: This is an internal API which is under development and subject to backwards-incompatible
-     * changes without notice. Any changes are not guaranteed to be reflected in the versioning scheme
-     * of the public API, nor in release notes.
-     */
+    /// <summary>
+    /// Class to encapsulate the metadata filtering logic and restrict visibility into raw data
+    /// structures.
+    /// 
+    /// <para />
+    /// WARNING: This is an internal API which is under development and subject to backwards-incompatible
+    /// changes without notice. Any changes are not guaranteed to be reflected in the versioning scheme
+    /// of the public API, nor in release notes.
+    /// </summary>
     public class MetadataFilter
     {
         // The following 3 sets comprise all the PhoneMetadata fields as defined at phonemetadata.proto
@@ -127,13 +127,12 @@ namespace PhoneNumbers
             }
         }
 
-        /**
-         * Clears certain fields in {@code metadata} as defined by the {@code MetadataFilter} instance.
-         * Note that this changes the mutable {@code metadata} object, and is not thread-safe. If this
-         * method does not return successfully, do not assume {@code metadata} has not changed.
-         *
-         * @param metadata  The {@code PhoneMetadata} object to be filtered
-         */
+        /// <summary>
+        /// Clears certain fields in <c>metadata</c> as defined by the <c>MetadataFilter</c> instance.
+        /// Note that this changes the mutable <c>metadata</c> object, and is not thread-safe. If this
+        /// method does not return successfully, do not assume <c>metadata</c> has not changed.
+        /// </summary>
+        /// <param name="metadata">The <c>PhoneMetadata</c> object to be filtered</param>
         internal void FilterMetadata(PhoneMetadata metadata)
         {
             // TODO: Consider clearing if the filtered PhoneNumberDesc is empty.
@@ -186,14 +185,14 @@ namespace PhoneNumbers
                 metadata.MobileNumberPortableRegion = false;
         }
 
-        /**
-         * The input blacklist or whitelist string is expected to be of the form "a(b,c):d(e):f", where
-         * b and c are children of a, e is a child of d, and f is either a parent field, a child field, or
-         * a childless field. Order and whitespace don't matter. We throw Exception for any
-         * duplicates, malformed strings, or strings where field tokens do not correspond to strings in
-         * the sets of excludable fields. We also throw Exception for empty strings since such
-         * strings should be treated as a special case by the flag checking code and not passed here.
-         */
+        /// <summary>
+        /// The input blacklist or whitelist string is expected to be of the form "a(b,c):d(e):f", where
+        /// b and c are children of a, e is a child of d, and f is either a parent field, a child field, or
+        /// a childless field. Order and whitespace don't matter. We throw Exception for any
+        /// duplicates, malformed strings, or strings where field tokens do not correspond to strings in
+        /// the sets of excludable fields. We also throw Exception for empty strings since such
+        /// strings should be treated as a special case by the flag checking code and not passed here.
+        /// </summary>
 
 #if NET6_0_OR_GREATER
         internal static Dictionary<string, SortedSet<string>> ParseFieldMapFromString(string? str)

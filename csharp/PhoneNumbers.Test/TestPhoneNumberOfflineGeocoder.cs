@@ -40,9 +40,9 @@ namespace PhoneNumbers.Test
         }
     }
 
-    /**
-    * Base Unit tests using geocoder with unzipped geocoding data
-    */
+    /// <summary>
+    /// Base Unit tests using geocoder with unzipped geocoding data
+    /// </summary>
     [Collection("TestMetadataTestCase")]
     public class TestPhoneNumberOfflineGeocoder : TestPhoneNumberOfflineGeocoderBase
     {
@@ -57,9 +57,9 @@ namespace PhoneNumbers.Test
         }
     }
 
-    /**
-    * Base Unit tests using geocoder with zipped geocoding data
-    */
+    /// <summary>
+    /// Base Unit tests using geocoder with zipped geocoding data
+    /// </summary>
     [Collection("TestZippedMetadataTestCase")]
     public class TestZippedPhoneNumberOfflineGeocoder : TestPhoneNumberOfflineGeocoderBase
     {
@@ -68,11 +68,10 @@ namespace PhoneNumbers.Test
         protected override PhoneNumberOfflineGeocoder geocoder => geocoderInstance;
     }
 
-    /**
-    * Base Unit tests for PhoneNumberOfflineGeocoder.java
-    *
-    * @author Shaopeng Jia
-    */
+    /// <summary>
+    /// Base Unit tests for PhoneNumberOfflineGeocoder.java
+    /// </summary>
+    /// <remarks>Author: Shaopeng Jia</remarks>
     public abstract class TestPhoneNumberOfflineGeocoderBase
     {
         protected abstract PhoneNumberOfflineGeocoder geocoder { get; }
