@@ -63,3 +63,16 @@ updates:
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
+  - package-ecosystem: "nuget"
+    directory: "/csharp/PhoneNumbers.PerformanceTest"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 5
+    groups:
+      PhoneNumbers_PerformanceTest_minor_patch_updates:
+        update-types:
+        - "minor"
+        - "patch"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
