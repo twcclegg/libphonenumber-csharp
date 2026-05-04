@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -305,9 +305,9 @@ namespace PhoneNumbers
         /// this version of the number is stored in raw_input, this representation of the number will be
         /// used rather than the digit representation. Grouping information, as specified by characters
         /// such as "-" and " ", will be retained.
-        /// <p>
+        /// <para>
         /// <b>Caveats:</b>
-        /// </p>
+        /// </para>
         /// <ul>
         /// <li>
         /// This will not produce good results if the country calling code is both present in the raw
@@ -408,22 +408,22 @@ namespace PhoneNumbers
                         : metadataForRegionCallingFrom.PreferredInternationalPrefix;
             }
 
-            var formattedNumber = new StringBuilder();
+            var formattedNumber = new StringBuilder(rawInput);
+            var regionCode = GetRegionCodeForCountryCode(countryCode);
+            var metadataForRegion = GetMetadataForRegionOrCallingCode(countryCode, regionCode);
+            // Strip any extension already present in the raw input before appending the formatted one.
+            MaybeStripExtension(formattedNumber, rawInput);
+            MaybeAppendFormattedExtension(number, metadataForRegion, PhoneNumberFormat.INTERNATIONAL, formattedNumber);
             if (internationalPrefixForFormatting.Length > 0)
             {
-                formattedNumber.Append(internationalPrefixForFormatting).Append(' ').Append(countryCode).Append(' ');
+                formattedNumber.Insert(0, ' ').Insert(0, countryCode).Insert(0, ' ').Insert(0, internationalPrefixForFormatting);
             }
             else
             {
                 // Invalid region entered as country-calling-from (so no metadata was found for it) or the
                 // region chosen has multiple international dialling prefixes.
-                formattedNumber.Append(PLUS_SIGN).Append(countryCode).Append(' ');
+                formattedNumber.Insert(0, ' ').Insert(0, countryCode).Insert(0, PLUS_SIGN);
             }
-
-            formattedNumber.Append(rawInput);
-            var regionCode = GetRegionCodeForCountryCode(countryCode);
-            var metadataForRegion = GetMetadataForRegionOrCallingCode(countryCode, regionCode);
-            MaybeAppendFormattedExtension(number, metadataForRegion, PhoneNumberFormat.INTERNATIONAL, formattedNumber);
             return formattedNumber.ToString();
         }
     }

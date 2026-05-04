@@ -18,11 +18,10 @@ using Xunit;
 
 namespace PhoneNumbers.Test
 {
-    /**
-    * Some basic tests to check that the phone number metadata can be correctly loaded.
-    *
-    * @author Lara Rennie
-    */
+    /// <summary>
+    /// Some basic tests to check that the phone number metadata can be correctly loaded.
+    /// </summary>
+    /// <remarks>Author: Lara Rennie</remarks>
     public class TestMedataManager
     {
         [Fact]

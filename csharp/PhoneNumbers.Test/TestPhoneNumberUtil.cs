@@ -21,15 +21,14 @@ using Xunit;
 
 namespace PhoneNumbers.Test
 {
-    /**
-    * Unit tests for PhoneNumberUtil.java
-    *
-    * Note that these tests use the test metadata, not the normal metadata file, so should not be used
-    * for regression test purposes - these tests are illustrative only and test functionality.
-    *
-    * @author Shaopeng Jia
-    * @author Lara Rennie
-    */
+    /// <summary>
+    /// Unit tests for PhoneNumberUtil.java
+    /// 
+    /// Note that these tests use the test metadata, not the normal metadata file, so should not be used
+    /// for regression test purposes - these tests are illustrative only and test functionality.
+    /// </summary>
+    /// <remarks>Author: Shaopeng Jia</remarks>
+    /// <remarks>Author: Lara Rennie</remarks>
     [Collection("TestMetadataTestCase")]
     public class TestPhoneNumberUtil
     {

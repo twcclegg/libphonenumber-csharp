@@ -192,9 +192,9 @@ namespace PhoneNumbers.Test
             DoTestFindInContext("0 3   3 3 1   6 0 0 5", "NZ");
         }
 
-        /**
-        * Test matching behavior when starting in the middle of a phone number.
-        */
+        /// <summary>
+        /// Test matching behavior when starting in the middle of a phone number.
+        /// </summary>
         [Fact]
         public void TestIntermediateParsePositions()
         {
@@ -403,9 +403,9 @@ namespace PhoneNumbers.Test
             Assert.True(HasNoMatches(phoneUtil.FindNumbers(text, region)));
         }
 
-        /**
-         * Strings with number-like things that shouldn't be found under any level.
-         */
+        /// <summary>
+        /// Strings with number-like things that shouldn't be found under any level.
+        /// </summary>
         private static readonly NumberTest[] ImpossibleCases =
         {
             new NumberTest("12345", "US"),
@@ -423,9 +423,9 @@ namespace PhoneNumbers.Test
             new NumberTest("20120102 08:00", RegionCode.US)
         };
 
-        /**
-         * Strings with number-like things that should only be found under "possible".
-         */
+        /// <summary>
+        /// Strings with number-like things that should only be found under "possible".
+        /// </summary>
         private static readonly NumberTest[] PossibleOnlyCases =
         {
             // US numbers cannot start with 7 in the test metadata to be valid.
@@ -437,10 +437,10 @@ namespace PhoneNumbers.Test
             new NumberTest("(20) 3346 1234", RegionCode.GB) // Non-optional NP omitted
         };
 
-        /**
-         * Strings with number-like things that should only be found up to and including the "valid"
-         * leniency level.
-         */
+        /// <summary>
+        /// Strings with number-like things that should only be found up to and including the "valid"
+        /// leniency level.
+        /// </summary>
         private static readonly NumberTest[] ValidCases =
         {
             new NumberTest("65 02 53 00 00", "US"),
@@ -464,10 +464,10 @@ namespace PhoneNumbers.Test
             new NumberTest("0 3 0 -3 2 23 12 34", RegionCode.DE)
         };
 
-        /**
-         * Strings with number-like things that should only be found up to and including the
-         * "strict_grouping" leniency level.
-         */
+        /// <summary>
+        /// Strings with number-like things that should only be found up to and including the
+        /// "strict_grouping" leniency level.
+        /// </summary>
         private static readonly NumberTest[] StrictGroupingCases =
         {
             new NumberTest("(415) 6667777", "US"),
@@ -482,9 +482,9 @@ namespace PhoneNumbers.Test
             new NumberTest("0 900-1 123123", RegionCode.DE)
         };
 
-        /**
-         * Strings with number-like things that should be found at all levels.
-         */
+        /// <summary>
+        /// Strings with number-like things that should be found at all levels.
+        /// </summary>
         private static readonly NumberTest[] ExactGroupingCases = {
             new NumberTest("\uFF14\uFF11\uFF15\uFF16\uFF16\uFF16\uFF17\uFF17\uFF17\uFF17", "US"),
             new NumberTest("\uFF14\uFF11\uFF15-\uFF16\uFF16\uFF16-\uFF17\uFF17\uFF17\uFF17", "US"),
@@ -634,13 +634,13 @@ namespace PhoneNumbers.Test
             Assert.Equal(0, matchFoundCount);
         }
 
-        /**
-         * Helper method which tests the contexts provided and ensures that:
-         * -- if isValid is true, they all find a test number inserted in the middle when leniency of
-         *  matching is set to VALID; else no test number should be extracted at that leniency level
-         * -- if isPossible is true, they all find a test number inserted in the middle when leniency of
-         *  matching is set to POSSIBLE; else no test number should be extracted at that leniency level
-         */
+        /// <summary>
+        /// Helper method which tests the contexts provided and ensures that:
+        /// -- if isValid is true, they all find a test number inserted in the middle when leniency of
+        ///  matching is set to VALID; else no test number should be extracted at that leniency level
+        /// -- if isPossible is true, they all find a test number inserted in the middle when leniency of
+        ///  matching is set to POSSIBLE; else no test number should be extracted at that leniency level
+        /// </summary>
         private void FindMatchesInContexts(List<NumberContext> contexts, bool isValid,
                                            bool isPossible, string region, string number)
         {
@@ -673,9 +673,9 @@ namespace PhoneNumbers.Test
             }
         }
 
-        /**
-         * Variant of FindMatchesInContexts that uses a default number and region.
-         */
+        /// <summary>
+        /// Variant of FindMatchesInContexts that uses a default number and region.
+        /// </summary>
         private void FindMatchesInContexts(List<NumberContext> contexts, bool isValid, bool isPossible)
         {
             const string region = "US";
@@ -861,10 +861,10 @@ namespace PhoneNumbers.Test
             iterator.Dispose();
         }
 
-        /**
-        * Asserts that another number can be found in {@code text} starting at {@code index}, and that
-        * its corresponding range is {@code [start, end)}.
-        */
+        /// <summary>
+        /// Asserts that another number can be found in <c>text</c> starting at <c>index</c>, and that
+        /// its corresponding range is <c>[start, end)</c>.
+        /// </summary>
         [SuppressMessage("ReSharper", "UnusedParameter.Local")]
         private void AssertEqualRange(string text, int index, int start, int end)
         {
@@ -879,12 +879,11 @@ namespace PhoneNumbers.Test
             matches.Dispose();
         }
 
-        /**
-        * Tests numbers found by {@link PhoneNumberUtil#FindNumbers(CharSequence, String)} in various
-        * textual contexts.
-        *
-        * @param number the number to test and the corresponding region code to use
-        */
+        /// <summary>
+        /// Tests numbers found by <see cref="PhoneNumberUtil.FindNumbers(string, string)"/> in various
+        /// textual contexts.
+        /// </summary>
+        /// <param name="number">the number to test and the corresponding region code to use</param>
 #if NET6_0_OR_GREATER
         private void DoTestFindInContext(string number, string? defaultCountry)
 #else
@@ -938,9 +937,9 @@ namespace PhoneNumbers.Test
             DoTestInContext(number, defaultCountry, contextPairs, PhoneNumberUtil.Leniency.POSSIBLE);
         }
 
-        /**
-        * Tests valid numbers in contexts that fail for {@link Leniency#POSSIBLE}.
-        */
+        /// <summary>
+        /// Tests valid numbers in contexts that fail for <see cref="PhoneNumberUtil.Leniency.POSSIBLE"/>.
+        /// </summary>
 #if NET6_0_OR_GREATER
         private void FindValidInContext(string number, string? defaultCountry)
 #else
@@ -987,10 +986,10 @@ namespace PhoneNumbers.Test
             }
         }
 
-        /**
-        * Exhaustively searches for phone numbers from each index within {@code text} to test that
-        * finding matches always terminates.
-        */
+        /// <summary>
+        /// Exhaustively searches for phone numbers from each index within <c>text</c> to test that
+        /// finding matches always terminates.
+        /// </summary>
 #if NET6_0_OR_GREATER
         private void EnsureTermination(string text, string? defaultCountry, PhoneNumberUtil.Leniency leniency)
 #else
@@ -1013,18 +1012,18 @@ namespace PhoneNumbers.Test
             return phoneUtil.FindNumbers(text, defaultCountry, leniency, long.MaxValue);
         }
 
-        /**
-        * Returns true if there were no matches found.
-        */
+        /// <summary>
+        /// Returns true if there were no matches found.
+        /// </summary>
         private bool HasNoMatches(IEnumerable<PhoneNumberMatch> iterable)
         {
             return !iterable.GetEnumerator().MoveNext();
         }
 
-        /**
-        * Small class that holds the context of the number we are testing against. The test will
-        * insert the phone number to be found between leadingText and trailingText.
-        */
+        /// <summary>
+        /// Small class that holds the context of the number we are testing against. The test will
+        /// insert the phone number to be found between leadingText and trailingText.
+        /// </summary>
         private class NumberContext
         {
             public readonly string LeadingText;
@@ -1037,9 +1036,9 @@ namespace PhoneNumbers.Test
             }
         }
 
-        /**
-           * Small class that holds the number we want to test and the region for which it should be valid.
-           */
+        /// <summary>
+        /// Small class that holds the number we want to test and the region for which it should be valid.
+        /// </summary>
         private class NumberTest
         {
             public readonly string RawString;

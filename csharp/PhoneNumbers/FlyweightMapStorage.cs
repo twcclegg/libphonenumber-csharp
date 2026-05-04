@@ -22,13 +22,12 @@ using System.Linq;
 
 namespace PhoneNumbers
 {
-    /**
-    * Flyweight area code map storage strategy that uses a table to store unique strings and shorts to
-    * store the prefix and description indexes when possible. It is particularly space-efficient when
-    * the provided area code map contains a lot of description redundant descriptions.
-    *
-    * @author Philippe Liard
-    */
+    /// <summary>
+    /// Flyweight area code map storage strategy that uses a table to store unique strings and shorts to
+    /// store the prefix and description indexes when possible. It is particularly space-efficient when
+    /// the provided area code map contains a lot of description redundant descriptions.
+    /// </summary>
+    /// <remarks>Author: Philippe Liard</remarks>
     public class FlyweightMapStorage : AreaCodeMapStorageStrategy
     {
         // Size of short and integer types in bytes.
@@ -61,10 +60,10 @@ namespace PhoneNumbers
                    + descriptionPool.Sum(d => d.Length);
         }
 
-        /**
-        * This implementation returns the same string (same identity) when called for multiple indexes
-        * corresponding to prefixes that have the same description.
-        */
+        /// <summary>
+        /// This implementation returns the same string (same identity) when called for multiple indexes
+        /// corresponding to prefixes that have the same description.
+        /// </summary>
         public override string GetDescription(int index)
         {
             var indexInDescriptionPool =
@@ -98,9 +97,9 @@ namespace PhoneNumbers
             CreateDescriptionPool(descriptionsSet, areaCodeMap);
         }
 
-        /**
-        * Creates the description pool from the provided set of string descriptions and area code map.
-        */
+        /// <summary>
+        /// Creates the description pool from the provided set of string descriptions and area code map.
+        /// </summary>
         private void CreateDescriptionPool(HashSet<string> descriptionsSet, SortedDictionary<int, string> areaCodeMap)
         {
             // Create the description pool.
@@ -122,25 +121,22 @@ namespace PhoneNumbers
             }
         }
 
-        /**
-         * Gets the minimum number of bytes that can be used to store the provided {@code value}.
-         */
+        /// <summary>
+        /// Gets the minimum number of bytes that can be used to store the provided <c>value</c>.
+        /// </summary>
         private static int GetOptimalNumberOfBytesForValue(int value)
         {
             return value <= short.MaxValue ? ShortNumBytes : IntNumBytes;
         }
 
-        /**
-         * Stores the provided {@code value} to the provided byte {@code buffer} at the specified {@code
-         * index} using the provided {@code wordSize} in bytes. Note that only integer and short sizes are
-         * supported.
-         *
-         * @param buffer  the byte buffer to which the value is stored
-         * @param wordSize  the number of bytes used to store the provided value
-         * @param index  the index to which the value is stored
-         * @param value  the value that is stored assuming it does not require more than the specified
-         *    number of bytes.
-         */
+        /// <summary>
+        /// Stores the provided <c>value</c> to the provided byte <c>buffer</c> at the specified <c>index</c> using the provided <c>wordSize</c> in bytes. Note that only integer and short sizes are
+        /// supported.
+        /// </summary>
+        /// <param name="buffer">the byte buffer to which the value is stored</param>
+        /// <param name="wordSize">the number of bytes used to store the provided value</param>
+        /// <param name="index">the index to which the value is stored</param>
+        /// <param name="value">the value that is stored assuming it does not require more than the specified number of bytes.</param>
         private static void StoreWordInBuffer(ByteBuffer buffer, int wordSize, int index, int value)
         {
             index *= wordSize;
@@ -150,16 +146,14 @@ namespace PhoneNumbers
                 buffer.PutInt(index, value);
         }
 
-        /**
-         * Reads the {@code value} at the specified {@code index} from the provided byte {@code buffer}.
-         * Note that only integer and short sizes are supported.
-         *
-         * @param buffer  the byte buffer from which the value is read
-         * @param wordSize  the number of bytes used to store the value
-         * @param index  the index where the value is read from
-         *
-         * @return  the value read from the buffer
-         */
+        /// <summary>
+        /// Reads the <c>value</c> at the specified <c>index</c> from the provided byte <c>buffer</c>.
+        /// Note that only integer and short sizes are supported.
+        /// </summary>
+        /// <param name="buffer">the byte buffer from which the value is read</param>
+        /// <param name="wordSize">the number of bytes used to store the value</param>
+        /// <param name="index">the index where the value is read from</param>
+        /// <returns>the value read from the buffer</returns>
         private static int ReadWordFromBuffer(ByteBuffer buffer, int wordSize, int index)
         {
             index *= wordSize;

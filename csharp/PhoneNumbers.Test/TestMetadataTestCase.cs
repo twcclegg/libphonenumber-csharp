@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (C) 2012 The Libphonenumber Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +16,15 @@
 
 namespace PhoneNumbers.Test
 {
-    /**
-    * Root class for PhoneNumberUtil tests that depend on the test metadata file.
-    * <p>
-    * Note since tests that extend this class do not use the normal metadata file, they should not be
-    * used for regression test purposes.
-    *
-    * @author Shaopeng Jia
-    * @author Lara Rennie
-    */
+    /// <summary>
+    /// Root class for PhoneNumberUtil tests that depend on the test metadata file.
+    /// <para>
+    /// Note since tests that extend this class do not use the normal metadata file, they should not be
+    /// used for regression test purposes.
+    /// </para>
+    /// </summary>
+    /// <remarks>Author: Shaopeng Jia</remarks>
+    /// <remarks>Author: Lara Rennie</remarks>
     public class TestMetadataTestCase
     {
         public static readonly PhoneNumberUtil PhoneUtil = new PhoneNumberUtil("PhoneNumberMetadataForTesting.xml", typeof(TestMetadataTestCase).Assembly);

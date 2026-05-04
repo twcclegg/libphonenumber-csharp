@@ -1,4 +1,4 @@
-﻿#nullable disable
+#nullable disable
 /*
  * Copyright (C) 2011 Google Inc.
  *
@@ -81,11 +81,10 @@ namespace PhoneNumbers
         }
     }
 
-    /**
-     * An offline geocoder which provides geographical information related to a phone number.
-     *
-     * @author Shaopeng Jia
-     */
+    /// <summary>
+    /// An offline geocoder which provides geographical information related to a phone number.
+    /// </summary>
+    /// <remarks>Author: Shaopeng Jia</remarks>
     public class PhoneNumberOfflineGeocoder
     {
         private static PhoneNumberOfflineGeocoder instance;
@@ -265,15 +264,13 @@ namespace PhoneNumbers
             }
         }
 
-        /**
-         * Gets a {@link PhoneNumberOfflineGeocoder} instance to carry out international phone number
-         * geocoding.
-         *
-         * <p /> The {@link PhoneNumberOfflineGeocoder} is implemented as a singleton. Therefore, calling
-         * this method multiple times will only result in one instance being created.
-         *
-         * @return  a {@link PhoneNumberOfflineGeocoder} instance
-         */
+        /// <summary>
+        /// Gets a <see cref="PhoneNumberOfflineGeocoder"/> instance to carry out international phone number
+        /// geocoding.
+        /// <para>The <see cref="PhoneNumberOfflineGeocoder"/> is implemented as a singleton. Therefore, calling
+        /// this method multiple times will only result in one instance being created.</para>
+        /// </summary>
+        /// <returns>a <see cref="PhoneNumberOfflineGeocoder"/> instance</returns>
         public static PhoneNumberOfflineGeocoder GetInstance()
         {
             lock (ThisLock)
@@ -282,33 +279,31 @@ namespace PhoneNumbers
             }
         }
 
-        /**
-         * Preload the data file for the given language and country calling code, so that a future lookup
-         * for this language and country calling code will not incur any file loading.
-         *
-         * @param locale  specifies the language of the data file to load
-         * @param countryCallingCode   specifies the country calling code of phone numbers that are
-         *     contained by the file to be loaded
-         */
+        /// <summary>
+        /// Preload the data file for the given language and country calling code, so that a future lookup
+        /// for this language and country calling code will not incur any file loading.
+        /// </summary>
+        /// <param name="locale">specifies the language of the data file to load</param>
+        /// <param name="countryCallingCode">specifies the country calling code of phone numbers that are contained by the file to be loaded</param>
         public void LoadDataFile(Locale locale, int countryCallingCode)
         {
             instance.GetPhonePrefixDescriptions(countryCallingCode, locale.Language, "",
                 locale.Country);
         }
 
-        /**
-         * Returns the customary display name in the given language for the given territory the phone
-         * number is from.
-         */
+        /// <summary>
+        /// Returns the customary display name in the given language for the given territory the phone
+        /// number is from.
+        /// </summary>
         private string GetCountryNameForNumber(PhoneNumber number, Locale language)
         {
             var regionCode = phoneUtil.GetRegionCodeForNumber(number);
             return GetRegionDisplayName(regionCode, language);
         }
 
-        /**
-        * Returns the customary display name in the given language for the given region.
-        */
+        /// <summary>
+        /// Returns the customary display name in the given language for the given region.
+        /// </summary>
         private static string GetRegionDisplayName(string regionCode, Locale language)
         {
             return regionCode == null || regionCode.Equals("ZZ") ||
@@ -317,18 +312,16 @@ namespace PhoneNumbers
                 : new Locale("", regionCode).GetDisplayCountry(language.Language);
         }
 
-        /**
-        * Returns a text description for the given phone number, in the language provided. The
-        * description might consist of the name of the country where the phone number is from, or the
-        * name of the geographical area the phone number is from if more detailed information is
-        * available.
-        *
-        * <p />This method assumes the validity of the number passed in has already been checked.
-        *
-        * @param number  a valid phone number for which we want to get a text description
-        * @param languageCode  the language code for which the description should be written
-        * @return  a text description for the given language code for the given phone number
-        */
+        /// <summary>
+        /// Returns a text description for the given phone number, in the language provided. The
+        /// description might consist of the name of the country where the phone number is from, or the
+        /// name of the geographical area the phone number is from if more detailed information is
+        /// available.
+        /// <para>This method assumes the validity of the number passed in has already been checked.</para>
+        /// </summary>
+        /// <param name="number">a valid phone number for which we want to get a text description</param>
+        /// <param name="languageCode">the language code for which the description should be written</param>
+        /// <returns>a text description for the given language code for the given phone number</returns>
         public string GetDescriptionForValidNumber(PhoneNumber number, Locale languageCode)
         {
             var langStr = languageCode.Language;
@@ -342,27 +335,23 @@ namespace PhoneNumbers
                 : GetCountryNameForNumber(number, languageCode);
         }
 
-        /**
-        * As per {@link #getDescriptionForValidNumber(PhoneNumber, Locale)} but also considers the
-        * region of the user. If the phone number is from the same region as the user, only a lower-level
-        * description will be returned, if one exists. Otherwise, the phone number's region will be
-        * returned, with optionally some more detailed information.
-        *
-        * <p>For example, for a user from the region "US" (United States), we would show "Mountain View,
-        * CA" for a particular number, omitting the United States from the description. For a user from
-        * the United Kingdom (region "GB"), for the same number we may show "Mountain View, CA, United
-        * States" or even just "United States".</p>
-        *
-        * This method assumes the validity of the number passed in has already been checked.
-        *
-        * @param number  the phone number for which we want to get a text description
-        * @param languageCode  the language code for which the description should be written
-        * @param userRegion  the region code for a given user. This region will be omitted from the
-        *     description if the phone number comes from this region. It is a two-letter uppercase ISO
-        *     country code as defined by ISO 3166-1.
-        * @return  a text description for the given language code for the given phone number, or empty
-        *     string if the number passed in is invalid
-        */
+        /// <summary>
+        /// As per <see cref="GetDescriptionForValidNumber(PhoneNumber, Locale)"/> but also considers the
+        /// region of the user. If the phone number is from the same region as the user, only a lower-level
+        /// description will be returned, if one exists. Otherwise, the phone number's region will be
+        /// returned, with optionally some more detailed information.
+        /// 
+        /// <para>For example, for a user from the region "US" (United States), we would show "Mountain View,
+        /// CA" for a particular number, omitting the United States from the description. For a user from
+        /// the United Kingdom (region "GB"), for the same number we may show "Mountain View, CA, United
+        /// States" or even just "United States".</para>
+        /// 
+        /// This method assumes the validity of the number passed in has already been checked.
+        /// </summary>
+        /// <param name="number">the phone number for which we want to get a text description</param>
+        /// <param name="languageCode">the language code for which the description should be written</param>
+        /// <param name="userRegion">the region code for a given user. This region will be omitted from the description if the phone number comes from this region. It is a two-letter uppercase ISO country code as defined by ISO 3166-1.</param>
+        /// <returns>a text description for the given language code for the given phone number, or empty string if the number passed in is invalid</returns>
         public string GetDescriptionForValidNumber(PhoneNumber number, Locale languageCode,
             string userRegion)
         {
@@ -381,32 +370,26 @@ namespace PhoneNumbers
             // way for each language.
         }
 
-        /**
-        * As per {@link #getDescriptionForValidNumber(PhoneNumber, Locale)} but explicitly checks
-        * the validity of the number passed in.
-        *
-        * @param number  the phone number for which we want to get a text description
-        * @param languageCode  the language code for which the description should be written
-        * @return  a text description for the given language code for the given phone number, or empty
-        *     string if the number passed in is invalid
-        */
+        /// <summary>
+        /// As per <see cref="GetDescriptionForValidNumber(PhoneNumber, Locale)"/> but explicitly checks
+        /// the validity of the number passed in.
+        /// </summary>
+        /// <param name="number">the phone number for which we want to get a text description</param>
+        /// <param name="languageCode">the language code for which the description should be written</param>
+        /// <returns>a text description for the given language code for the given phone number, or empty string if the number passed in is invalid</returns>
         public string GetDescriptionForNumber(PhoneNumber number, Locale languageCode)
         {
             return !phoneUtil.IsValidNumber(number) ? "" : GetDescriptionForValidNumber(number, languageCode);
         }
 
-        /**
-        * As per {@link #getDescriptionForValidNumber(PhoneNumber, Locale, String)} but
-        * explicitly checks the validity of the number passed in.
-        *
-        * @param number  the phone number for which we want to get a text description
-        * @param languageCode  the language code for which the description should be written
-        * @param userRegion  the region code for a given user. This region will be omitted from the
-        *     description if the phone number comes from this region. It is a two-letter uppercase ISO
-        *     country code as defined by ISO 3166-1.
-        * @return  a text description for the given language code for the given phone number, or empty
-        *     string if the number passed in is invalid
-        */
+        /// <summary>
+        /// As per <see cref="GetDescriptionForValidNumber(PhoneNumber, Locale, string)"/> but
+        /// explicitly checks the validity of the number passed in.
+        /// </summary>
+        /// <param name="number">the phone number for which we want to get a text description</param>
+        /// <param name="languageCode">the language code for which the description should be written</param>
+        /// <param name="userRegion">the region code for a given user. This region will be omitted from the description if the phone number comes from this region. It is a two-letter uppercase ISO country code as defined by ISO 3166-1.</param>
+        /// <returns>a text description for the given language code for the given phone number, or empty string if the number passed in is invalid</returns>
         public string GetDescriptionForNumber(PhoneNumber number, Locale languageCode,
             string userRegion)
         {

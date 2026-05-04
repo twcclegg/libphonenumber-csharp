@@ -21,11 +21,10 @@ namespace PhoneNumbers.Test
 {
 
 
-/**
- * Unit tests for ShortNumberInfo.java
- *
- * @author Shaopeng Jia
- */
+/// <summary>
+/// Unit tests for ShortNumberInfo.java
+/// </summary>
+/// <remarks>Author: Shaopeng Jia</remarks>
     public class ShortNumberInfoTest : TestMetadataTestCase
     {
         private static readonly ShortNumberInfo ShortInfo = ShortNumberInfo.GetInstance();

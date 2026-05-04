@@ -19,13 +19,12 @@ using System.Linq;
 
 namespace PhoneNumbers
 {
-    /**
-    * Class encapsulating loading of PhoneNumber Metadata information. Currently this is used only for
-    * additional data files such as PhoneNumberAlternateFormats, but in the future it is envisaged it
-    * would handle the main metadata file (PhoneNumberMetadata.xml) as well.
-    *
-    * @author Lara Rennie
-    */
+    /// <summary>
+    /// Class encapsulating loading of PhoneNumber Metadata information. Currently this is used only for
+    /// additional data files such as PhoneNumberAlternateFormats, but in the future it is envisaged it
+    /// would handle the main metadata file (PhoneNumberMetadata.xml) as well.
+    /// </summary>
+    /// <remarks>Author: Lara Rennie</remarks>
     public static class MetadataManager
     {
         private static class AlternateFormats

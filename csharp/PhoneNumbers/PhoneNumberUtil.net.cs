@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Text;
 
 #if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
 
@@ -385,9 +386,9 @@ namespace PhoneNumbers
         /// this version of the number is stored in raw_input, this representation of the number will be
         /// used rather than the digit representation. Grouping information, as specified by characters
         /// such as "-" and " ", will be retained.
-        /// <p>
+        /// <para>
         /// <b>Caveats:</b>
-        /// </p>
+        /// </para>
         /// <ul>
         /// <li>
         /// This will not produce good results if the country calling code is both present in the raw
@@ -534,14 +535,13 @@ namespace PhoneNumbers
 
             var regionCode = GetRegionCodeForCountryCode(countryCode);
             var metadataForRegion = GetMetadataForRegionOrCallingCode(countryCode, regionCode);
-            MaybeAppendFormattedExtension(ref intermediateResult,
-                ref intermediateResultLength,
-                number,
-                metadataForRegion,
-                PhoneNumberFormat.INTERNATIONAL);
+            // Strip any extension already present in the raw input before appending the formatted one.
+            var body = new string(intermediateResult.Slice(0, intermediateResultLength));
+            var bodyBuilder = new StringBuilder(body);
+            MaybeStripExtension(bodyBuilder, body);
+            MaybeAppendFormattedExtension(number, metadataForRegion, PhoneNumberFormat.INTERNATIONAL, bodyBuilder);
 
-            return string.Concat(result1.Slice(0, result1Length),
-                intermediateResult.Slice(0, intermediateResultLength));
+            return string.Concat(result1.Slice(0, result1Length).ToString(), bodyBuilder.ToString());
         }
 
         internal static void NormalizeDigits(ref Span<char> span,
@@ -620,10 +620,10 @@ namespace PhoneNumbers
             return false;
         }
 
-        /**
-         * Appends the formatted extension of a phone number to formattedNumber, if the phone number had
-         * an extension specified.
-         */
+        /// <summary>
+        /// Appends the formatted extension of a phone number to formattedNumber, if the phone number had
+        /// an extension specified.
+        /// </summary>
         private static void MaybeAppendFormattedExtension(ref Span<char> span,
             ref int index,
             PhoneNumber number,
@@ -719,9 +719,9 @@ namespace PhoneNumbers
             MaybeAppendFormattedExtension(ref span, ref index, number, metadata, numberFormat);
         }
 
-        /**
-        * A helper function that is used by format and formatByPattern.
-        */
+        /// <summary>
+        /// A helper function that is used by format and formatByPattern.
+        /// </summary>
         private void PrefixNumberWithCountryCallingCode(ref Span<char> span,
             ref int currentIndex,
             int countryCallingCode,

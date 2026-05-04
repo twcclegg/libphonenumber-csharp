@@ -53,6 +53,33 @@ namespace PhoneNumbers.Test
 
         private static readonly List<PhoneNumber> testNumbers = new List<PhoneNumber>();
 
+        // Test phone numbers matching test suite from libphonenumber
+        private static readonly PhoneNumber AuNumber =
+            new PhoneNumber.Builder().SetCountryCode(61).SetNationalNumber(236618300UL).Build();
+        private static readonly PhoneNumber CaNumber =
+            new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(6048406565UL).Build();
+        private static readonly PhoneNumber KoNumber =
+            new PhoneNumber.Builder().SetCountryCode(82).SetNationalNumber(22123456UL).Build();
+        private static readonly PhoneNumber KoInvalidNumber =
+            new PhoneNumber.Builder().SetCountryCode(82).SetNationalNumber(1234UL).Build();
+        private static readonly PhoneNumber UsNumber1 =
+            new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(6509600000UL).Build();
+        private static readonly PhoneNumber UsNumber2 =
+            new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(2128120000UL).Build();
+        private static readonly PhoneNumber UsNumber3 =
+            new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(6174240000UL).Build();
+        private static readonly PhoneNumber UsInvalidNumber =
+            new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(123456789UL).Build();
+        private static readonly PhoneNumber NumberWithInvalidCountryCode =
+            new PhoneNumber.Builder().SetCountryCode(999).SetNationalNumber(2423651234UL).Build();
+        private static readonly PhoneNumber InternationalTollFree =
+            new PhoneNumber.Builder().SetCountryCode(800).SetNationalNumber(12345678UL).Build();
+
+        private static readonly List<string> UnknownTimeZoneList = new List<string> { "Etc/Unknown" };
+
+        private static List<string> GetNanpaTimeZonesList() =>
+            new List<string> { "America/New_York", "America/Chicago", "America/Winnipeg", "America/Los_Angeles" };
+
         public TestPhoneNumberToTimeZonesMapper()
         {
             foreach (var n in numbers)
@@ -162,6 +189,72 @@ namespace PhoneNumbers.Test
                     Assert.NotNull(list);
                     Assert.NotEmpty(list);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Port of libphonenumber's testGetTimeZonesForNumber. Uses test timezone data so results are
+        /// independent of the production map_data.txt.
+        /// </summary>
+        [Fact]
+        public void TestGetTimeZonesForNumber()
+        {
+            var mapper = CreateTestMapper();
+            // Invalid numbers return UNKNOWN even when country code prefix exists in the mapper.
+            Assert.Equal(UnknownTimeZoneList, mapper.GetTimeZonesForNumber(UsInvalidNumber));
+            Assert.Equal(UnknownTimeZoneList, mapper.GetTimeZonesForNumber(KoInvalidNumber));
+            // Valid prefixes.
+            Assert.Equal(new List<string> { "Australia/Sydney" }, mapper.GetTimeZonesForNumber(AuNumber));
+            Assert.Equal(new List<string> { "Asia/Seoul" }, mapper.GetTimeZonesForNumber(KoNumber));
+            Assert.Equal(new List<string> { "America/Winnipeg" }, mapper.GetTimeZonesForNumber(CaNumber));
+            Assert.Equal(new List<string> { "America/Los_Angeles" }, mapper.GetTimeZonesForNumber(UsNumber1));
+            Assert.Equal(new List<string> { "America/New_York" }, mapper.GetTimeZonesForNumber(UsNumber2));
+            // Invalid country code.
+            Assert.Equal(UnknownTimeZoneList, mapper.GetTimeZonesForNumber(NumberWithInvalidCountryCode));
+            // Non-geographical number.
+            Assert.Equal(UnknownTimeZoneList, mapper.GetTimeZonesForNumber(InternationalTollFree));
+        }
+
+        /// <summary>
+        /// Port of libphonenumber's testGetTimeZonesForValidNumber. Tests GetTimeZonesForGeographicalNumber
+        /// which skips the number-type validity check and falls back to country-level lookup.
+        /// </summary>
+        [Fact]
+        public void TestGetTimeZonesForGeographicalNumber()
+        {
+            var mapper = CreateTestMapper();
+            // Invalid numbers — no type check, prefix lookup falls back to country code level.
+            Assert.Equal(GetNanpaTimeZonesList(), mapper.GetTimeZonesForGeographicalNumber(UsInvalidNumber));
+            Assert.Equal(new List<string> { "Asia/Seoul" }, mapper.GetTimeZonesForGeographicalNumber(KoInvalidNumber));
+            // Valid prefixes.
+            Assert.Equal(new List<string> { "Australia/Sydney" }, mapper.GetTimeZonesForGeographicalNumber(AuNumber));
+            Assert.Equal(new List<string> { "Asia/Seoul" }, mapper.GetTimeZonesForGeographicalNumber(KoNumber));
+            Assert.Equal(new List<string> { "America/Winnipeg" }, mapper.GetTimeZonesForGeographicalNumber(CaNumber));
+            Assert.Equal(new List<string> { "America/Los_Angeles" }, mapper.GetTimeZonesForGeographicalNumber(UsNumber1));
+            Assert.Equal(new List<string> { "America/New_York" }, mapper.GetTimeZonesForGeographicalNumber(UsNumber2));
+            // Invalid country code and non-geographical return UNKNOWN.
+            Assert.Equal(UnknownTimeZoneList, mapper.GetTimeZonesForGeographicalNumber(NumberWithInvalidCountryCode));
+            Assert.Equal(UnknownTimeZoneList, mapper.GetTimeZonesForGeographicalNumber(InternationalTollFree));
+        }
+
+        /// <summary>
+        /// Port of libphonenumber's testGetTimeZonesForValidNumberSearchingAtCountryCodeLevel.
+        /// A valid but uncovered number falls back to the country-level (NANPA) timezone list.
+        /// </summary>
+        [Fact]
+        public void TestGetTimeZonesForValidNumberSearchingAtCountryCodeLevel()
+        {
+            var mapper = CreateTestMapper();
+            Assert.Equal(GetNanpaTimeZonesList(), mapper.GetTimeZonesForNumber(UsNumber3));
+        }
+
+        private static PhoneNumberToTimeZonesMapper CreateTestMapper()
+        {
+            var bytes = System.Text.Encoding.UTF8.GetBytes(MapTestData);
+            using (var ms = new System.IO.MemoryStream(bytes))
+            {
+                var map = TimezoneMapDataReader.GetPrefixMap(ms, new char[] { '&' });
+                return new PhoneNumberToTimeZonesMapper(map);
             }
         }
 

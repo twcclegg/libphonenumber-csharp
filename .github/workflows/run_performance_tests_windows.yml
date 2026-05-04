@@ -17,5 +17,5 @@ jobs:
         with:
           dotnet-version: 9.x
       - name: Run performance tests
-        run: dotnet run -c Release --framework net9.0
+        run: dotnet run -c Release --framework net9.0 -- --filter "*"
         working-directory: ./csharp/PhoneNumbers.PerformanceTest

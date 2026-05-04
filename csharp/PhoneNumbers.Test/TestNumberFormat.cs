@@ -2,9 +2,9 @@ using Xunit;
 
 namespace PhoneNumbers.Test
 {
-    /**
-     * Tests derived from https://github.com/google/libphonenumber/blob/master/java/libphonenumber/test/com/google/i18n/phonenumbers/PhonenumberTest.java
-     */
+    /// <summary>
+    /// Tests derived from https://github.com/google/libphonenumber/blob/master/java/libphonenumber/test/com/google/i18n/phonenumbers/PhonenumberTest.java
+    /// </summary>
     public class TestNumberFormat
     {
         [Fact]
