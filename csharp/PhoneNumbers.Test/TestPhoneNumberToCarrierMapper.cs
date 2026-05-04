@@ -157,11 +157,10 @@ namespace PhoneNumbers.Test
         private static readonly PhoneNumber AO_INVALID_TEST =
             new PhoneNumber.Builder().SetCountryCode(244).SetNationalNumber(101234L).Build();
 
-        // en/1650.txt: 1650212 -> "US carrier", 1650213 -> "US carrier2"
-        // NANPA data is split by area code prefix (e.g. 1650), so we need a file per prefix.
+        // en/1.txt: 1650212 -> "US carrier", 1650213 -> "US carrier2"
         private static readonly PhoneNumber US_FIXED_OR_MOBILE_TEST =
             new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(6502123456L).Build();
-        // Area code 212 (New York) — no split file exists in the test data, so lookup returns "".
+        // Area code 212 (New York) — no entry in the test data, so lookup returns "".
         private static readonly PhoneNumber s_usNanpaNoDataTest =
             new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(2128120000L).Build();
 
@@ -330,18 +329,18 @@ namespace PhoneNumbers.Test
                 testCarrierMapper.GetNameForNumber(UK_MOBILE1_TEST, new Locale("sv", "SE")));
         }
 
-        // ── NANPA data-split tests ──────────────────────────────────────────────────────────────
-        // As the NANPA carrier data is split into per-area-code files (e.g. en/1650.txt),
-        // GetDescriptionForNumber must use phonePrefix = 1000 + (nationalNumber / 10_000_000)
-        // for country code 1 instead of the country code itself.
+        // ── NANPA lookup tests ──────────────────────────────────────────────────────────────────
+        // NANPA carrier data lives in a single en/1.txt file. AreaCodeMap.Lookup does
+        // longest-prefix matching against the full E.164 number, so en/1.txt entries like
+        // "1650212" correctly resolve numbers in the 650-212x range.
 
         [Fact]
-        public void TestGetNameForNanpaNumberWithSplitData()
+        public void TestGetNameForNanpaNumber()
         {
-            // 6502123456 → prefix 1650 → en/1650.txt → "US carrier"
+            // 6502123456 → longest-prefix match on 1650212 in en/1.txt → "US carrier"
             Assert.Equal("US carrier",
                 testCarrierMapper.GetNameForNumber(US_FIXED_OR_MOBILE_TEST, Locale.English));
-            // 6502133456 → prefix 1650 → en/1650.txt → "US carrier2"
+            // 6502133456 → longest-prefix match on 1650213 in en/1.txt → "US carrier2"
             Assert.Equal("US carrier2",
                 testCarrierMapper.GetNameForValidNumber(
                     new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(6502133456L).Build(),
@@ -349,10 +348,20 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
-        public void TestGetNameForNanpaNumberWithNoSplitFile()
+        public void TestGetNameForNanpaNumberWithMissingPrefix()
         {
-            // Area code 212 has no en/1212.txt split file — returns "".
+            // Area code 212 has no entry in the test en/1.txt — returns "".
             Assert.Equal("", testCarrierMapper.GetNameForValidNumber(s_usNanpaNoDataTest, Locale.English));
+        }
+
+        // Bahamas +1 242 357 xxxx — entry "1242357|BaTelCo" is present in the shipped en/1.txt.
+        private static readonly PhoneNumber BAHAMAS_NUMBER =
+            new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(2423571234L).Build();
+
+        [Fact]
+        public void TestGetNameForNanpaNumberFromProductionData()
+        {
+            Assert.Equal("BaTelCo", carrierMapper.GetNameForValidNumber(BAHAMAS_NUMBER, Locale.English));
         }
     }
 }

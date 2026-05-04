@@ -149,11 +149,10 @@ namespace PhoneNumbers
         internal string GetDescriptionForNumber(PhoneNumber number, string lang, string script, string region)
         {
             var countryCallingCode = number.CountryCode;
-            // As the NANPA data is split into multiple files covering 3-digit areas, use a phone number
-            // prefix of 4 digits for NANPA instead, e.g. 1650.
-            var phonePrefix = countryCallingCode != 1
-                ? countryCallingCode
-                : (int)(1000 + number.NationalNumber / 10000000);
+            // The C# port ships carrier data as a single file per country code (e.g. en/1.txt holding
+            // all NANPA entries). AreaCodeMap.Lookup does longest-prefix matching against the full
+            // E.164 number, so no area-code split is needed. Mirrors PhoneNumberOfflineGeocoder.
+            var phonePrefix = countryCallingCode;
             var phonePrefixDescriptions = GetPhonePrefixDescriptions(phonePrefix, lang, script, region);
             var description = phonePrefixDescriptions?.Lookup(number);
             if (string.IsNullOrEmpty(description) && MayFallBackToEnglish(lang))
