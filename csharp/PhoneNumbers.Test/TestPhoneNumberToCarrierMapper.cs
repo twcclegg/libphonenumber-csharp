@@ -19,69 +19,6 @@ using Xunit;
 
 namespace PhoneNumbers.Test
 {
-    /// <summary>
-    /// Mirrors TestPhoneNumberToCarrierMapper's synthetic-data tests using testcarrier.zip
-    /// to exercise the zip code path (LoadFileNamesFromZip + GetManifestZipFileStream).
-    /// </summary>
-    [Collection("TestZippedCarrierTestCase")]
-    public class TestZippedPhoneNumberToCarrierMapper
-    {
-        private static readonly PhoneNumberToCarrierMapper s_zippedMapper =
-            new PhoneNumberToCarrierMapper("testcarrier.", Assembly.GetExecutingAssembly());
-
-        // Same numbers as the testCarrierMapper tests in TestPhoneNumberToCarrierMapper.
-        private static readonly PhoneNumber s_ukMobile1Test =
-            new PhoneNumber.Builder().SetCountryCode(44).SetNationalNumber(7387654321L).Build();
-        private static readonly PhoneNumber s_ukFixed1Test =
-            new PhoneNumber.Builder().SetCountryCode(44).SetNationalNumber(1123456789L).Build();
-        private static readonly PhoneNumber s_ukPager =
-            new PhoneNumber.Builder().SetCountryCode(44).SetNationalNumber(7601234567L).Build();
-        private static readonly PhoneNumber s_ukInvalidTest =
-            new PhoneNumber.Builder().SetCountryCode(44).SetNationalNumber(7301234L).Build();
-        private static readonly PhoneNumber s_aoMobile1Test =
-            new PhoneNumber.Builder().SetCountryCode(244).SetNationalNumber(917654321L).Build();
-
-        [Fact]
-        public void TestGetNameForMobilePortableRegion()
-        {
-            Assert.Equal("British carrier", s_zippedMapper.GetNameForNumber(s_ukMobile1Test, Locale.English));
-            Assert.Equal("British carrier", s_zippedMapper.GetNameForNumber(s_ukMobile1Test, Locale.French));
-            Assert.Equal("", s_zippedMapper.GetSafeDisplayName(s_ukMobile1Test, Locale.English));
-        }
-
-        [Fact]
-        public void TestGetNameForNonMobilePortableRegion()
-        {
-            Assert.Equal("Angolan carrier", s_zippedMapper.GetNameForNumber(s_aoMobile1Test, Locale.English));
-            Assert.Equal("Angolan carrier", s_zippedMapper.GetSafeDisplayName(s_aoMobile1Test, Locale.English));
-        }
-
-        [Fact]
-        public void TestGetNameForPagerNumber()
-        {
-            Assert.Equal("British pager", s_zippedMapper.GetNameForNumber(s_ukPager, Locale.English));
-        }
-
-        [Fact]
-        public void TestGetNameForFixedLineNumber()
-        {
-            Assert.Equal("", s_zippedMapper.GetNameForNumber(s_ukFixed1Test, Locale.English));
-            Assert.Equal("British fixed line carrier", s_zippedMapper.GetNameForValidNumber(s_ukFixed1Test, Locale.English));
-        }
-
-        [Fact]
-        public void TestGetNameForInvalidNumber()
-        {
-            Assert.Equal("", s_zippedMapper.GetNameForNumber(s_ukInvalidTest, Locale.English));
-        }
-
-        [Fact]
-        public void TestGetNameWithSwedishLocale()
-        {
-            Assert.Equal("Brittisk operatör", s_zippedMapper.GetNameForNumber(s_ukMobile1Test, new Locale("sv", "SE")));
-        }
-    }
-
     [Collection("TestMetadataTestCase")]
     public class TestPhoneNumberToCarrierMapper
     {

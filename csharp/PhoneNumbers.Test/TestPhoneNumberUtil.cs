@@ -2554,5 +2554,18 @@ namespace PhoneNumbers.Test
             Assert.False(phoneUtil.IsAlphaNumber("1800 123-1234 extension: 1234"));
             Assert.False(phoneUtil.IsAlphaNumber("+800 1234-1234"));
         }
+
+        [Fact]
+        public void TestIsMobileNumberPortableRegion()
+        {
+            Assert.True(phoneUtil.IsMobileNumberPortableRegion(RegionCode.US));
+            Assert.True(phoneUtil.IsMobileNumberPortableRegion(RegionCode.GB));
+            Assert.False(phoneUtil.IsMobileNumberPortableRegion(RegionCode.AE));
+            Assert.False(phoneUtil.IsMobileNumberPortableRegion(RegionCode.BS));
+            // Unknown region returns false.
+            Assert.False(phoneUtil.IsMobileNumberPortableRegion(RegionCode.ZZ));
+            // Non-geographical entity (001) returns false.
+            Assert.False(phoneUtil.IsMobileNumberPortableRegion(RegionCode.UN001));
+        }
     }
 }

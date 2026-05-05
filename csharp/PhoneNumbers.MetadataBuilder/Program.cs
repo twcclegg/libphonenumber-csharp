@@ -88,7 +88,7 @@ internal static class Program
             Console.Error.WriteLine(
                 "  kind: phone | short | alternate | test         (XML metadata file -> per-region bins)");
             Console.Error.WriteLine(
-                "        geocoding                                (geocoding/ tree -> per-(lang,cc) bins)");
+                "        geocoding | carrier                      (<type>/ tree -> per-(lang,cc) bins)");
             Console.Error.WriteLine(
                 "        timezones                                (timezones/map_data.txt -> single bin)");
             return 2;
@@ -109,6 +109,7 @@ internal static class Program
             "test" => BuildPerRegion(input, output, TestMetadataPrefix,
                 isShortNumberMetadata: false, isAlternateFormatsMetadata: false),
             "geocoding" => BuildGeocoding(input, output),
+            "carrier" => BuildGeocoding(input, output),
             "timezones" => BuildTimezones(input, output),
             _ => UnknownKind(kind),
         };

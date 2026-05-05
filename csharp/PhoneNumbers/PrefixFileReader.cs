@@ -19,7 +19,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 
@@ -30,8 +29,6 @@ namespace PhoneNumbers
     /// </summary>
     internal class PrefixFileReader
     {
-        private static readonly char[] s_pathSeparators = { '/', '\\' };
-
         private readonly MappingFileProvider mappingFileProvider;
         private readonly ConcurrentDictionary<string, Lazy<AreaCodeMap>> availablePhonePrefixMaps =
             new ConcurrentDictionary<string, Lazy<AreaCodeMap>>();
@@ -42,34 +39,13 @@ namespace PhoneNumbers
         private readonly Func<(int, string, string, string), string> _fileNameFactory;
         private readonly Func<string, Lazy<AreaCodeMap>> _areaCodeMapFactory;
         private readonly string phonePrefixDataDirectory;
-        private readonly string phoneDataZipFile;
         private readonly Assembly assembly;
-        // Normalized entry name -> original FullName, built during construction for O(1) zip lookup.
-        private readonly Dictionary<string, string> _zipEntryIndex;
 
         internal PrefixFileReader(string phonePrefixDataDirectory, Assembly asm = null)
         {
-            SortedDictionary<int, HashSet<string>> files;
             asm ??= typeof(PrefixFileReader).Assembly;
             var prefix = asm.GetName().Name + "." + phonePrefixDataDirectory;
-
-            var zipFile = prefix + "zip";
-            var zipStream = asm.GetManifestResourceStream(zipFile);
-
-            if (zipStream != null)
-            {
-                using (zipStream)
-                {
-                    files = LoadFileNamesFromZip(zipStream, out var entryIndex);
-                    _zipEntryIndex = entryIndex;
-                }
-                phoneDataZipFile = zipFile;
-            }
-            else
-            {
-                files = LoadFileNamesFromManifestResources(asm, prefix);
-            }
-
+            var files = LoadFileNamesFromManifestResources(asm, prefix);
             mappingFileProvider = new MappingFileProvider();
             mappingFileProvider.ReadFileConfigs(files);
             assembly = asm;
@@ -78,37 +54,8 @@ namespace PhoneNumbers
             _areaCodeMapFactory = key => new Lazy<AreaCodeMap>(() => LoadAreaCodeMapFromFile(key));
         }
 
-        // For zipped data: entries follow the pattern "lang/cc.txt".
-        private static SortedDictionary<int, HashSet<string>> LoadFileNamesFromZip(
-            Stream zipStream, out Dictionary<string, string> entryIndex)
-        {
-            var files = new SortedDictionary<int, HashSet<string>>();
-            entryIndex = new Dictionary<string, string>(StringComparer.Ordinal);
-            using var archive = new ZipArchive(zipStream, ZipArchiveMode.Read);
-            foreach (var entry in archive.Entries)
-            {
-                if (string.IsNullOrWhiteSpace(entry.Name))
-                    continue;
-
-                entryIndex[entry.FullName.Replace("/", ".").Replace("\\", ".")] = entry.FullName;
-
-                var pathParts = entry.FullName.Split(s_pathSeparators, StringSplitOptions.RemoveEmptyEntries);
-                if (pathParts.Length < 2)
-                    continue;
-
-                var language = pathParts[0];
-                var ccPart = pathParts[pathParts.Length - 1].Split('.')[0];
-                if (!int.TryParse(ccPart, out var country))
-                    continue;
-
-                if (!files.TryGetValue(country, out var languages))
-                    files[country] = languages = new HashSet<string>();
-                languages.Add(language);
-            }
-            return files;
-        }
-
-        // For unzipped data: resources are "{AssemblyName}.{prefix}{lang}.{cc}.txt".
+        // Resources follow the pattern "{AssemblyName}.{prefix}{lang}.{cc}"
+        // e.g. "PhoneNumbers.carrier.en.1" or "PhoneNumbers.Test.carrier.zh_Hant.852".
         private static SortedDictionary<int, HashSet<string>> LoadFileNamesFromManifestResources(
             Assembly asm, string prefix)
         {
@@ -117,20 +64,19 @@ namespace PhoneNumbers
                 .Where(n => n.StartsWith(prefix, StringComparison.Ordinal));
             foreach (var n in names)
             {
-                // filePart e.g. "en.44.txt" or "zh_Hant.852.txt"
+                // filePart e.g. "en.44" or "zh_Hant.852"
                 var filePart = n.Substring(prefix.Length);
                 var parts = filePart.Split('.');
-                // Minimum: [lang, cc, "txt"] => length 3
-                if (parts.Length < 3)
+                // Minimum: [lang, cc] => length 2
+                if (parts.Length < 2)
                     continue;
 
-                // Last segment is "txt", second-to-last is the country calling code.
-                // Everything before is the language (joined with '_' to reconstruct "zh_Hant" etc.)
-                var ccIdx = parts.Length - 2;
+                // Last segment is the country calling code; everything before is the language.
+                var ccIdx = parts.Length - 1;
                 if (!int.TryParse(parts[ccIdx], out var country))
                     continue;
 
-                var lang = string.Join("_", parts.Take(ccIdx));
+                var lang = string.Join(".", parts, 0, ccIdx);
                 if (lang.Length == 0)
                     continue;
 
@@ -149,15 +95,11 @@ namespace PhoneNumbers
         internal string GetDescriptionForNumber(PhoneNumber number, string lang, string script, string region)
         {
             var countryCallingCode = number.CountryCode;
-            // The C# port ships carrier data as a single file per country code (e.g. en/1.txt holding
-            // all NANPA entries). AreaCodeMap.Lookup does longest-prefix matching against the full
-            // E.164 number, so no area-code split is needed. Mirrors PhoneNumberOfflineGeocoder.
-            var phonePrefix = countryCallingCode;
-            var phonePrefixDescriptions = GetPhonePrefixDescriptions(phonePrefix, lang, script, region);
+            var phonePrefixDescriptions = GetPhonePrefixDescriptions(countryCallingCode, lang, script, region);
             var description = phonePrefixDescriptions?.Lookup(number);
             if (string.IsNullOrEmpty(description) && MayFallBackToEnglish(lang))
             {
-                var defaultMap = GetPhonePrefixDescriptions(phonePrefix, "en", "", "");
+                var defaultMap = GetPhonePrefixDescriptions(countryCallingCode, "en", "", "");
                 if (defaultMap == null)
                     return "";
                 description = defaultMap.Lookup(number);
@@ -179,39 +121,15 @@ namespace PhoneNumbers
 
         private AreaCodeMap LoadAreaCodeMapFromFile(string fileName)
         {
-            var fp = phoneDataZipFile != null
-                ? GetManifestZipFileStream(assembly, phoneDataZipFile, fileName, _zipEntryIndex)
-                : GetManifestFileStream(assembly, phonePrefixDataDirectory, fileName);
+            var resName = phonePrefixDataDirectory + fileName;
+            using var fp = assembly.GetManifestResourceStream(resName)
+                ?? throw new MissingMetadataException(
+                    $"Carrier resource '{resName}' not found on assembly '{assembly.GetName().Name}'.");
 
-            using (fp)
-            {
-                return AreaCodeParser.ParseAreaCodeMap(fp);
-            }
-        }
-
-        private static Stream GetManifestFileStream(Assembly asm, string phonePrefixDataDirectory, string fileName)
-        {
-            return asm.GetManifestResourceStream(phonePrefixDataDirectory + fileName);
-        }
-
-        private static Stream GetManifestZipFileStream(Assembly asm, string phoneDataZipFile, string fileName,
-            Dictionary<string, string> entryIndex)
-        {
-            using var zipStream = asm.GetManifestResourceStream(phoneDataZipFile);
-            if (zipStream == null)
-                throw new InvalidOperationException("Manifest zip file stream was null.");
-
-            using var archive = new ZipArchive(zipStream, ZipArchiveMode.Read);
-            var entry = entryIndex.TryGetValue(fileName, out var originalName)
-                ? archive.GetEntry(originalName)
-                : archive.Entries.First(p => p.FullName.Replace("/", ".").Replace("\\", ".") == fileName);
-            if (entry == null)
-                throw new InvalidOperationException($"Entry '{fileName}' not found in zip.");
-            using var entryStream = entry.Open();
-            var fileStream = new MemoryStream();
-            entryStream.CopyTo(fileStream);
-            fileStream.Position = 0;
-            return fileStream;
+            var sortedMap = BuildPrefixMapFromBin.ReadAreaCodeMap(fp);
+            var areaCodeMap = new AreaCodeMap();
+            areaCodeMap.ReadAreaCodeMap(sortedMap);
+            return areaCodeMap;
         }
     }
 }

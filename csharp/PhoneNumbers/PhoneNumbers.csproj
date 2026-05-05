@@ -67,6 +67,7 @@
     <BinaryMetadataDir>$(BaseIntermediateOutputPath)metadata</BinaryMetadataDir>
     <BinaryGeocodingDir>$(BaseIntermediateOutputPath)geocoding</BinaryGeocodingDir>
     <BinaryTimezonesDir>$(BaseIntermediateOutputPath)timezones</BinaryTimezonesDir>
+    <BinaryCarrierDir>$(BaseIntermediateOutputPath)carrier</BinaryCarrierDir>
     <ResourcesDir>$(MSBuildThisFileDirectory)..\..\resources/</ResourcesDir>
     <MetadataBuilderProject>$(MSBuildThisFileDirectory)..\PhoneNumbers.MetadataBuilder\PhoneNumbers.MetadataBuilder.csproj</MetadataBuilderProject>
     <MetadataBuilderDll>$(MSBuildThisFileDirectory)..\PhoneNumbers.MetadataBuilder\bin\$(Configuration)\net9.0\PhoneNumbers.MetadataBuilder.dll</MetadataBuilderDll>
@@ -120,6 +121,10 @@
     <_GeocodingTextFile Include="$(ResourcesDir)geocoding/**/*.txt" />
   </ItemGroup>
 
+  <ItemGroup>
+    <_CarrierTextFile Include="$(ResourcesDir)carrier/**/*.txt" />
+  </ItemGroup>
+
   <Target Name="GenerateGeocodingBins"
           BeforeTargets="AssignTargetPaths"
           Inputs="@(_GeocodingTextFile)"
@@ -132,6 +137,14 @@
     -->
     <MakeDir Directories="$(BinaryGeocodingDir)" />
     <Exec Command="dotnet &quot;$(MetadataBuilderDll)&quot; geocoding &quot;$(ResourcesDir)geocoding&quot; &quot;$(BinaryGeocodingDir)&quot;" />
+  </Target>
+
+  <Target Name="GenerateCarrierBins"
+          BeforeTargets="AssignTargetPaths"
+          Inputs="@(_CarrierTextFile)"
+          Outputs="$(BinaryCarrierDir)/en.1">
+    <MakeDir Directories="$(BinaryCarrierDir)" />
+    <Exec Command="dotnet &quot;$(MetadataBuilderDll)&quot; carrier &quot;$(ResourcesDir)carrier&quot; &quot;$(BinaryCarrierDir)&quot;" />
   </Target>
 
   <Target Name="GenerateTimezoneBin"
@@ -152,7 +165,7 @@
   -->
   <Target Name="EmbedBinaryMetadata"
           BeforeTargets="AssignTargetPaths"
-          DependsOnTargets="GenerateBinaryMetadata;GenerateGeocodingBins;GenerateTimezoneBin">
+          DependsOnTargets="GenerateBinaryMetadata;GenerateGeocodingBins;GenerateTimezoneBin;GenerateCarrierBins">
     <!--
       Two-step add to avoid an MSBuild item-batching surprise:
       a single `<EmbeddedResource Include="path/*" LogicalName="...%(Filename)..." />` inside a
@@ -165,6 +178,7 @@
     <ItemGroup>
       <_BinMetadataFile Include="$(BinaryMetadataDir)/*" />
       <_BinGeocodingFile Include="$(BinaryGeocodingDir)/*" />
+      <_BinCarrierFile Include="$(BinaryCarrierDir)/*" />
     </ItemGroup>
     <ItemGroup>
       <EmbeddedResource Include="@(_BinMetadataFile)"
@@ -173,6 +187,8 @@
                         LogicalName="PhoneNumbers.geocoding.%(_BinGeocodingFile.Filename)%(_BinGeocodingFile.Extension)" />
       <EmbeddedResource Include="$(BinaryTimezonesDir)/map_data.bin"
                         LogicalName="PhoneNumbers.timezones.map_data.bin" />
+      <EmbeddedResource Include="@(_BinCarrierFile)"
+                        LogicalName="PhoneNumbers.carrier.%(_BinCarrierFile.Filename)%(_BinCarrierFile.Extension)" />
     </ItemGroup>
   </Target>
 
@@ -181,15 +197,8 @@
     <RemoveDir Directories="$(BinaryMetadataDir)" Condition="Exists('$(BinaryMetadataDir)')" />
     <RemoveDir Directories="$(BinaryGeocodingDir)" Condition="Exists('$(BinaryGeocodingDir)')" />
     <RemoveDir Directories="$(BinaryTimezonesDir)" Condition="Exists('$(BinaryTimezonesDir)')" />
+    <RemoveDir Directories="$(BinaryCarrierDir)" Condition="Exists('$(BinaryCarrierDir)')" />
   </Target>
-
-  <ItemGroup Condition="!Exists('..\..\resources\carrier.zip')">
-    <EmbeddedResource Include="..\..\resources\carrier\**" LinkBase="carrier" />
-  </ItemGroup>
-
-  <ItemGroup Condition="Exists('..\..\resources\carrier.zip')">
-    <EmbeddedResource Include="..\..\resources\carrier.zip" />
-  </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' ">
     <PackageReference Include="System.Collections.Immutable" Version="8.0.0" />

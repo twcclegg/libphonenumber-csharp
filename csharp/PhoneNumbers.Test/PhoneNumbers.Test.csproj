@@ -55,8 +55,6 @@
     <EmbeddedResource Include="..\..\resources\ShortNumberMetadata.xml" />
     <EmbeddedResource Include="..\..\resources\PhoneNumberAlternateFormats.xml" />
     <EmbeddedResource Include="..\..\resources\PhoneNumberMetadataForTesting.xml" />
-    <EmbeddedResource Include="..\..\resources\test\carrier\**" LinkBase="carrier" />
-    <EmbeddedResource Include="..\..\resources\test\testcarrier.zip" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -65,7 +63,9 @@
       the matching note in PhoneNumbers.csproj). Trailing `/` is added explicitly on the glob.
     -->
     <BinaryTestGeocodingDir>$(BaseIntermediateOutputPath)test-geocoding</BinaryTestGeocodingDir>
+    <BinaryTestCarrierDir>$(BaseIntermediateOutputPath)test-carrier</BinaryTestCarrierDir>
     <TestResourcesGeocodingDir>$(MSBuildThisFileDirectory)..\..\resources/test/geocoding</TestResourcesGeocodingDir>
+    <TestResourcesCarrierDir>$(MSBuildThisFileDirectory)..\..\resources/test/carrier</TestResourcesCarrierDir>
     <MetadataBuilderProject>$(MSBuildThisFileDirectory)..\PhoneNumbers.MetadataBuilder\PhoneNumbers.MetadataBuilder.csproj</MetadataBuilderProject>
     <MetadataBuilderDll>$(MSBuildThisFileDirectory)..\PhoneNumbers.MetadataBuilder\bin\$(Configuration)\net9.0\PhoneNumbers.MetadataBuilder.dll</MetadataBuilderDll>
   </PropertyGroup>
@@ -84,6 +84,10 @@
   -->
   <ItemGroup>
     <_TestGeocodingTextFile Include="$(TestResourcesGeocodingDir)/**/*.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_TestCarrierTextFile Include="$(TestResourcesCarrierDir)/**/*.txt" />
   </ItemGroup>
 
   <!--
@@ -114,8 +118,29 @@
     </ItemGroup>
   </Target>
 
+  <Target Name="GenerateTestCarrierBins"
+          BeforeTargets="AssignTargetPaths"
+          Inputs="@(_TestCarrierTextFile)"
+          Outputs="$(BinaryTestCarrierDir)/en.1">
+    <MakeDir Directories="$(BinaryTestCarrierDir)" />
+    <Exec Command="dotnet &quot;$(MetadataBuilderDll)&quot; carrier &quot;$(TestResourcesCarrierDir)&quot; &quot;$(BinaryTestCarrierDir)&quot;" />
+  </Target>
+
+  <Target Name="EmbedTestCarrier"
+          BeforeTargets="AssignTargetPaths"
+          DependsOnTargets="GenerateTestCarrierBins">
+    <ItemGroup>
+      <_TestCarrierFile Include="$(BinaryTestCarrierDir)/*" />
+    </ItemGroup>
+    <ItemGroup>
+      <EmbeddedResource Include="@(_TestCarrierFile)"
+                        LogicalName="PhoneNumbers.Test.carrier.%(_TestCarrierFile.Filename)%(_TestCarrierFile.Extension)" />
+    </ItemGroup>
+  </Target>
+
   <Target Name="CleanTestGeocoding" AfterTargets="Clean">
     <RemoveDir Directories="$(BinaryTestGeocodingDir)" Condition="Exists('$(BinaryTestGeocodingDir)')" />
+    <RemoveDir Directories="$(BinaryTestCarrierDir)" Condition="Exists('$(BinaryTestCarrierDir)')" />
   </Target>
 
   <ItemGroup>
