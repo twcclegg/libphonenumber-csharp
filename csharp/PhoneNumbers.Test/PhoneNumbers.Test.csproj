@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFrameworks>netframework4.8;net8.0;net9.0</TargetFrameworks>
+    <!--
+      Pin the C# language version so all TFMs (including netframework4.8, which the SDK
+      otherwise defaults to C# 7.3) accept post-7.3 syntax used by tests: `using var`
+      declarations, `?` nullable annotations under `#nullable enable`, etc.
+    -->
+    <LangVersion>preview</LangVersion>
     <AssemblyName>PhoneNumbers.Test</AssemblyName>
     <PackageId>PhoneNumbers.Test</PackageId>
     <DebugType>full</DebugType>
@@ -14,6 +20,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!--
+      Single ProjectReference to PhoneNumbers (which itself references MetadataBuilder). Don't
+      add a direct ProjectReference to MetadataBuilder here: at sln level it would cause MSBuild
+      to spawn two parallel builds of MetadataBuilder (one per parent), racing on apphost
+      generation under obj/Debug/net9.0/. The transitive dep through PhoneNumbers gives us the
+      ordering we need without the parallelism.
+    -->
     <ProjectReference Include="..\PhoneNumbers\PhoneNumbers.csproj" />
   </ItemGroup>
 
@@ -32,12 +45,78 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!--
+      The test project embeds the XML metadata files used by tests that exercise
+      BuildMetadataFromXml directly (e.g. TestBuildMetadataFromBin, TestBuildMetadataFromXml).
+      The production library no longer ships XML; tests pass typeof(TestX).Assembly so the
+      resource resolver picks them up here instead.
+    -->
+    <EmbeddedResource Include="..\..\resources\PhoneNumberMetadata.xml" />
+    <EmbeddedResource Include="..\..\resources\ShortNumberMetadata.xml" />
+    <EmbeddedResource Include="..\..\resources\PhoneNumberAlternateFormats.xml" />
     <EmbeddedResource Include="..\..\resources\PhoneNumberMetadataForTesting.xml" />
     <EmbeddedResource Include="..\..\resources\test\carrier\**" LinkBase="carrier" />
-    <EmbeddedResource Include="..\..\resources\test\geocoding\**" LinkBase="geocoding" />
-    <EmbeddedResource Include="..\..\resources\test\testgeocoding.zip" />
     <EmbeddedResource Include="..\..\resources\test\testcarrier.zip" />
   </ItemGroup>
+
+  <PropertyGroup>
+    <!--
+      No trailing separator (Windows shell would corrupt the path inside the Exec command — see
+      the matching note in PhoneNumbers.csproj). Trailing `/` is added explicitly on the glob.
+    -->
+    <BinaryTestGeocodingDir>$(BaseIntermediateOutputPath)test-geocoding</BinaryTestGeocodingDir>
+    <TestResourcesGeocodingDir>$(MSBuildThisFileDirectory)..\..\resources/test/geocoding</TestResourcesGeocodingDir>
+    <MetadataBuilderProject>$(MSBuildThisFileDirectory)..\PhoneNumbers.MetadataBuilder\PhoneNumbers.MetadataBuilder.csproj</MetadataBuilderProject>
+    <MetadataBuilderDll>$(MSBuildThisFileDirectory)..\PhoneNumbers.MetadataBuilder\bin\$(Configuration)\net9.0\PhoneNumbers.MetadataBuilder.dll</MetadataBuilderDll>
+  </PropertyGroup>
+
+  <!--
+    See the matching note in PhoneNumbers.csproj: <MSBuild> task instead of `dotnet run` so
+    concurrent solution-level builds of PhoneNumbers + PhoneNumbers.Test don't race on
+    MetadataBuilder's own obj\.
+  -->
+  <!-- MetadataBuilder is built transitively via PhoneNumbers' ProjectReference. -->
+
+
+  <!--
+    Top-level ItemGroup so the wildcard is resolved at MSBuild parse time — see matching note in
+    PhoneNumbers.csproj for why we don't collect this inside the target body.
+  -->
+  <ItemGroup>
+    <_TestGeocodingTextFile Include="$(TestResourcesGeocodingDir)/**/*.txt" />
+  </ItemGroup>
+
+  <!--
+    Same generate-once / embed-per-TFM split as PhoneNumbers.csproj: outer cross-targeting build
+    runs the Exec, inner per-TFM builds skip via Inputs/Outputs gating, then EmbedTestGeocoding
+    adds the resulting items each TFM. Avoids the parallel-write race when three concurrent
+    inner builds try to populate the same obj/test-geocoding directory.
+  -->
+  <Target Name="GenerateTestGeocodingBins"
+          BeforeTargets="AssignTargetPaths"
+          Inputs="@(_TestGeocodingTextFile)"
+          Outputs="$(BinaryTestGeocodingDir)/en.1">
+    <MakeDir Directories="$(BinaryTestGeocodingDir)" />
+    <Exec Command="dotnet &quot;$(MetadataBuilderDll)&quot; geocoding &quot;$(TestResourcesGeocodingDir)&quot; &quot;$(BinaryTestGeocodingDir)&quot;" />
+  </Target>
+
+  <Target Name="EmbedTestGeocoding"
+          BeforeTargets="AssignTargetPaths"
+          DependsOnTargets="GenerateTestGeocodingBins">
+    <!-- See PhoneNumbers.csproj: glob into a private item first, then Include="@(...)" with
+         qualified metadata to avoid a cross-product batching surprise. -->
+    <ItemGroup>
+      <_TestGeocodingFile Include="$(BinaryTestGeocodingDir)/*" />
+    </ItemGroup>
+    <ItemGroup>
+      <EmbeddedResource Include="@(_TestGeocodingFile)"
+                        LogicalName="PhoneNumbers.Test.geocoding.%(_TestGeocodingFile.Filename)%(_TestGeocodingFile.Extension)" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="CleanTestGeocoding" AfterTargets="Clean">
+    <RemoveDir Directories="$(BinaryTestGeocodingDir)" Condition="Exists('$(BinaryTestGeocodingDir)')" />
+  </Target>
 
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />

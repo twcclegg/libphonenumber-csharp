@@ -30,19 +30,158 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="..\..\resources\*.xml" Exclude="..\..\resources\PhoneNumberMetadataForTesting.xml" />
-    <EmbeddedResource Include="..\..\resources\timezones\map_data.txt" LinkBase="timezones" />
+    <!--
+      XML metadata, geocoding text trees, and the timezones map_data.txt are all no longer
+      embedded directly: the build pipeline generates equivalent binary files (see the
+      BuildBinaryMetadata, BuildGeocodingBins, and BuildTimezoneBin targets below) and embeds
+      those under the "PhoneNumbers.metadata.*", "PhoneNumbers.geocoding.*", and
+      "PhoneNumbers.timezones.*" namespaces respectively. The text/xml originals still live in
+      resources/ on disk so the build tool and the test project can use them as input.
+    -->
     <None Include="..\..\icon.png" Pack="true" PackagePath="" />
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
-  <ItemGroup Condition="!Exists('..\..\resources\geocoding.zip')">
-    <EmbeddedResource Include="..\..\resources\geocoding\**" LinkBase="geocoding" />
+  <!--
+    Build-only ProjectReference: forces MetadataBuilder to be built before this project (so the
+    Target below can invoke it), but does not pull MetadataBuilder.dll into PhoneNumbers' compile
+    references or output. MetadataBuilder source-links the few files it needs from this project,
+    so there's no circular dependency.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\PhoneNumbers.MetadataBuilder\PhoneNumbers.MetadataBuilder.csproj"
+                      ReferenceOutputAssembly="false"
+                      OutputItemType=""
+                      SkipGetTargetFrameworkProperties="true"
+                      UndefineProperties="TargetFramework" />
   </ItemGroup>
 
-  <ItemGroup Condition="Exists('..\..\resources\geocoding.zip')">
-    <EmbeddedResource Include="..\..\resources\geocoding.zip" />
+  <PropertyGroup>
+    <!--
+      Bin output is platform/TFM-agnostic; share across all TFMs (BaseIntermediateOutputPath
+      = obj\, not obj\<TFM>\). Paths intentionally do NOT end with a separator — Windows
+      shell-quoting collapses `\"` (a backslash immediately before a closing double-quote) into
+      an embedded literal `"`, which corrupts the path inside the Exec command. Trailing `/` is
+      added explicitly only on the embedding glob.
+    -->
+    <BinaryMetadataDir>$(BaseIntermediateOutputPath)metadata</BinaryMetadataDir>
+    <BinaryGeocodingDir>$(BaseIntermediateOutputPath)geocoding</BinaryGeocodingDir>
+    <BinaryTimezonesDir>$(BaseIntermediateOutputPath)timezones</BinaryTimezonesDir>
+    <ResourcesDir>$(MSBuildThisFileDirectory)..\..\resources/</ResourcesDir>
+    <MetadataBuilderProject>$(MSBuildThisFileDirectory)..\PhoneNumbers.MetadataBuilder\PhoneNumbers.MetadataBuilder.csproj</MetadataBuilderProject>
+    <MetadataBuilderDll>$(MSBuildThisFileDirectory)..\PhoneNumbers.MetadataBuilder\bin\$(Configuration)\net9.0\PhoneNumbers.MetadataBuilder.dll</MetadataBuilderDll>
+  </PropertyGroup>
+
+  <!--
+    BuildMetadataBuilder runs the MetadataBuilder project's Build target via the in-process
+    <MSBuild> task. Two reasons we do NOT shell out to `dotnet run` instead:
+      1. `dotnet run` builds-then-runs in a separate process, and MSBuild cannot coordinate two
+         concurrent invocations. When `dotnet build PhoneNumbers.sln` builds PhoneNumbers and
+         PhoneNumbers.Test in parallel, both projects' outer cross-targeting builds would each
+         spawn that command targeting MetadataBuilder, racing on MetadataBuilder's own obj
+         folder (CS2012 on refint/PhoneNumbers.MetadataBuilder.dll).
+      2. The MSBuild task is serialized by MSBuild's BuildManager — a second caller hits the
+         cache and gets the existing build result instead of rebuilding from scratch.
+    The dll is then run directly via `dotnet path/to/dll`, which never touches obj.
+  -->
+  <!--
+    MetadataBuilder is built via the ProjectReference above. We deliberately do NOT also call
+    `<MSBuild>` on it here: doing both creates two parallel build invocations of the same project
+    in the cross-targeting outer flow, which races on apphost generation. The ProjectReference
+    schedules MetadataBuilder before the inner per-TFM builds resolve their refs, which is when
+    our Generate* targets fire (BeforeTargets="AssignTargetPaths").
+  -->
+
+  <!--
+    Generation runs ONCE on the outer cross-targeting build (BeforeTargets="DispatchToInnerBuilds")
+    and once on a direct single-TFM build (BeforeTargets="AssignTargetPaths"). Inputs/Outputs
+    gating means the per-TFM inner builds spawned by DispatchToInnerBuilds re-evaluate the target
+    after the outer has already produced the bins, see the outputs are newer, and skip — avoiding
+    the parallel-write race that broke CI when three concurrent dotnet-run invocations all wrote
+    to obj\geocoding\en.86 at once.
+  -->
+  <Target Name="GenerateBinaryMetadata"
+          BeforeTargets="AssignTargetPaths"
+          Inputs="$(ResourcesDir)PhoneNumberMetadata.xml;$(ResourcesDir)ShortNumberMetadata.xml;$(ResourcesDir)PhoneNumberAlternateFormats.xml"
+          Outputs="$(BinaryMetadataDir)/PhoneNumberMetadata_US;$(BinaryMetadataDir)/ShortNumberMetadata_US;$(BinaryMetadataDir)/PhoneNumberAlternateFormats_49">
+    <MakeDir Directories="$(BinaryMetadataDir)" />
+    <Exec Command="dotnet &quot;$(MetadataBuilderDll)&quot; phone &quot;$(ResourcesDir)PhoneNumberMetadata.xml&quot; &quot;$(BinaryMetadataDir)&quot;" />
+    <Exec Command="dotnet &quot;$(MetadataBuilderDll)&quot; short &quot;$(ResourcesDir)ShortNumberMetadata.xml&quot; &quot;$(BinaryMetadataDir)&quot;" />
+    <Exec Command="dotnet &quot;$(MetadataBuilderDll)&quot; alternate &quot;$(ResourcesDir)PhoneNumberAlternateFormats.xml&quot; &quot;$(BinaryMetadataDir)&quot;" />
+  </Target>
+
+  <!--
+    Top-level ItemGroup so the wildcard is resolved at MSBuild parse time and the Inputs
+    attribute on the target below sees the full file list. (If we collected the items inside the
+    target body, the gate-check happens before the body runs, sees an empty list, and the target
+    always reports up-to-date.)
+  -->
+  <ItemGroup>
+    <_GeocodingTextFile Include="$(ResourcesDir)geocoding/**/*.txt" />
   </ItemGroup>
+
+  <Target Name="GenerateGeocodingBins"
+          BeforeTargets="AssignTargetPaths"
+          Inputs="@(_GeocodingTextFile)"
+          Outputs="$(BinaryGeocodingDir)/en.1">
+    <!--
+      A change to ANY .txt under resources/geocoding/ should retrigger generation; the previous
+      single-file sentinel only watched en/1.txt, so editing e.g. de/49.txt during incremental
+      local builds wouldn't re-run the tool. Output sentinel is still a single file —
+      MetadataBuilder is all-or-nothing, so once en.1 is up-to-date all bins are.
+    -->
+    <MakeDir Directories="$(BinaryGeocodingDir)" />
+    <Exec Command="dotnet &quot;$(MetadataBuilderDll)&quot; geocoding &quot;$(ResourcesDir)geocoding&quot; &quot;$(BinaryGeocodingDir)&quot;" />
+  </Target>
+
+  <Target Name="GenerateTimezoneBin"
+          BeforeTargets="AssignTargetPaths"
+          Inputs="$(ResourcesDir)timezones/map_data.txt"
+          Outputs="$(BinaryTimezonesDir)/map_data.bin">
+    <MakeDir Directories="$(BinaryTimezonesDir)" />
+    <Exec Command="dotnet &quot;$(MetadataBuilderDll)&quot; timezones &quot;$(ResourcesDir)timezones/map_data.txt&quot; &quot;$(BinaryTimezonesDir)/map_data.bin&quot;" />
+  </Target>
+
+  <!--
+    Embedding runs on every inner per-TFM build (AssignTargetPaths only — there's no resource
+    embedding on the cross-targeting outer). Items are added inside a Target rather than at
+    top-level because top-level wildcard globs are evaluated at MSBuild parse time, before the
+    Generate* targets have a chance to write the files. The Generate targets are listed as
+    DependsOn so MSBuild guarantees the bins exist (or were already up-to-date) by the time the
+    glob fires.
+  -->
+  <Target Name="EmbedBinaryMetadata"
+          BeforeTargets="AssignTargetPaths"
+          DependsOnTargets="GenerateBinaryMetadata;GenerateGeocodingBins;GenerateTimezoneBin">
+    <!--
+      Two-step add to avoid an MSBuild item-batching surprise:
+      a single `<EmbeddedResource Include="path/*" LogicalName="...%(Filename)..." />` inside a
+      Target's ItemGroup makes MSBuild batch the metadata expansion across every existing
+      EmbeddedResource item as well as the new ones from the glob, which produces a cross-product
+      (n_metadata × n_geocoding bogus items, each with the LogicalName of an unrelated item).
+      Globbing into a private item first, then `Include="@(_X)"` with metadata, evaluates
+      %(Filename) per-item against the named collection only — no batch against EmbeddedResource.
+    -->
+    <ItemGroup>
+      <_BinMetadataFile Include="$(BinaryMetadataDir)/*" />
+      <_BinGeocodingFile Include="$(BinaryGeocodingDir)/*" />
+    </ItemGroup>
+    <ItemGroup>
+      <EmbeddedResource Include="@(_BinMetadataFile)"
+                        LogicalName="PhoneNumbers.metadata.%(_BinMetadataFile.Filename)%(_BinMetadataFile.Extension)" />
+      <EmbeddedResource Include="@(_BinGeocodingFile)"
+                        LogicalName="PhoneNumbers.geocoding.%(_BinGeocodingFile.Filename)%(_BinGeocodingFile.Extension)" />
+      <EmbeddedResource Include="$(BinaryTimezonesDir)/map_data.bin"
+                        LogicalName="PhoneNumbers.timezones.map_data.bin" />
+    </ItemGroup>
+  </Target>
+
+  <!-- Make the generated files visible to clean. -->
+  <Target Name="CleanBinaryMetadata" AfterTargets="Clean">
+    <RemoveDir Directories="$(BinaryMetadataDir)" Condition="Exists('$(BinaryMetadataDir)')" />
+    <RemoveDir Directories="$(BinaryGeocodingDir)" Condition="Exists('$(BinaryGeocodingDir)')" />
+    <RemoveDir Directories="$(BinaryTimezonesDir)" Condition="Exists('$(BinaryTimezonesDir)')" />
+  </Target>
 
   <ItemGroup Condition="!Exists('..\..\resources\carrier.zip')">
     <EmbeddedResource Include="..\..\resources\carrier\**" LinkBase="carrier" />

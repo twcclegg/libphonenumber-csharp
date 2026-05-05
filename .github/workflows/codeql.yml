@@ -60,9 +60,9 @@ jobs:
       # ℹ️ Command-line programs to run using the OS shell.
       # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
       - if: matrix.build-mode == 'manual'
+        # Geocoding/timezones are now packed into binary files at build time by
+        # PhoneNumbers.MetadataBuilder; the legacy zip-creation steps are gone.
         run: |
-          (cd resources/geocoding; zip -r ../../resources/geocoding.zip *)
-          (cd resources/test/geocoding; zip -r ../../../resources/test/testgeocoding.zip *)
           cd csharp
           dotnet build
 

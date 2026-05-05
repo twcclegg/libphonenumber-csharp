@@ -41,8 +41,14 @@ namespace PhoneNumbers.Test
     }
 
     /// <summary>
-    /// Base Unit tests using geocoder with unzipped geocoding data
+    /// Unit tests for the geocoder, using the binary test geocoding data generated at build time
+    /// from <c>resources/test/geocoding/</c> and embedded under <c>PhoneNumbers.Test.geocoding.*</c>.
     /// </summary>
+    /// <remarks>
+    /// The previously-separate "zipped" variant (TestZippedPhoneNumberOfflineGeocoder) was deleted
+    /// when zip-based loading was removed in favor of per-(lang, country-code) binary files —
+    /// there's only one geocoding load path now, so one test class is enough.
+    /// </remarks>
     [Collection("TestMetadataTestCase")]
     public class TestPhoneNumberOfflineGeocoder : TestPhoneNumberOfflineGeocoderBase
     {
@@ -55,17 +61,6 @@ namespace PhoneNumbers.Test
         {
             Assert.NotNull(PhoneNumberOfflineGeocoder.GetInstance());
         }
-    }
-
-    /// <summary>
-    /// Base Unit tests using geocoder with zipped geocoding data
-    /// </summary>
-    [Collection("TestZippedMetadataTestCase")]
-    public class TestZippedPhoneNumberOfflineGeocoder : TestPhoneNumberOfflineGeocoderBase
-    {
-        private static readonly PhoneNumberOfflineGeocoder geocoderInstance = new PhoneNumberOfflineGeocoder("testgeocoding.", typeof(TestPhoneNumberOfflineGeocoder).Assembly);
-
-        protected override PhoneNumberOfflineGeocoder geocoder => geocoderInstance;
     }
 
     /// <summary>

@@ -19,10 +19,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace PhoneNumbers
 {
@@ -84,7 +82,13 @@ namespace PhoneNumbers
     /// <summary>
     /// An offline geocoder which provides geographical information related to a phone number.
     /// </summary>
-    /// <remarks>Author: Shaopeng Jia</remarks>
+    /// <remarks>
+    /// Author: Shaopeng Jia. <para/>
+    /// Loads phone-prefix → location-string mappings from per-(language, country-code) binary
+    /// files generated at build time by <c>PhoneNumbers.MetadataBuilder</c>. The previous
+    /// implementation supported either a single bundled <c>geocoding.zip</c> resource or loose
+    /// text files; both paths have been removed in favor of a single binary loader.
+    /// </remarks>
     public class PhoneNumberOfflineGeocoder
     {
         private static PhoneNumberOfflineGeocoder instance;
@@ -93,7 +97,6 @@ namespace PhoneNumbers
 
         private readonly PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
         private readonly string phonePrefixDataDirectory;
-        private readonly string phoneDataZipFile;
         private readonly Assembly assembly;
 
         // The mappingFileProvider knows for which combination of countryCallingCode and language a phone
@@ -107,69 +110,15 @@ namespace PhoneNumbers
 
         internal PhoneNumberOfflineGeocoder(string phonePrefixDataDirectory, Assembly asm = null)
         {
-            SortedDictionary<int, HashSet<string>> files;
             asm ??= typeof(PhoneNumberOfflineGeocoder).Assembly;
             var prefix = asm.GetName().Name + "." + phonePrefixDataDirectory;
 
-            var zipFile = prefix + "zip";
-
-            var zipStream = asm.GetManifestResourceStream(zipFile);
-
-            if (zipStream != null)
-            {
-                using (zipStream)
-                {
-                    files = LoadFileNamesFromZip(zipStream);
-                }
-
-                phoneDataZipFile = zipFile;
-            }
-            else
-            {
-                files = LoadFileNamesFromManifestResources(asm, prefix);
-            }
+            var files = LoadFileNamesFromManifestResources(asm, prefix);
 
             mappingFileProvider = new MappingFileProvider();
             mappingFileProvider.ReadFileConfigs(files);
             assembly = asm;
             this.phonePrefixDataDirectory = prefix;
-        }
-
-        private static SortedDictionary<int, HashSet<string>> LoadFileNamesFromZip(Stream zipStream)
-        {
-            var files = new SortedDictionary<int, HashSet<string>>();
-
-            using var archive = new ZipArchive(zipStream, ZipArchiveMode.Read);
-            foreach (var entry in archive.Entries)
-            {
-                if (string.IsNullOrWhiteSpace(entry.Name))
-                {
-                    continue;
-                }
-
-                var name = entry.FullName.Split('.')[0].Split('\\');
-                // fallback to directory separator char if we are unable to use the original implementation of splitting the path
-                if (name.Length < 2)
-                {
-                    name = entry.FullName.Split('.')[0].Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-                }
-                int country;
-                try
-                {
-                    country = int.Parse(name[1], CultureInfo.InvariantCulture);
-                }
-                catch (FormatException)
-                {
-                    throw new Exception("Failed to parse zipped geocoding file name: " + entry.FullName);
-                }
-
-                var language = name[0];
-                if (!files.TryGetValue(country, out var languages))
-                    files[country] = languages = new HashSet<string>();
-                languages.Add(language);
-            }
-
-            return files;
         }
 
         private static SortedDictionary<int, HashSet<string>> LoadFileNamesFromManifestResources(Assembly asm,
@@ -181,7 +130,12 @@ namespace PhoneNumbers
             var names = allNames.Where(n => n.StartsWith(prefix, StringComparison.Ordinal));
             foreach (var n in names)
             {
+                // Resource names are <prefix><lang>.<countryCode>. Strip the assembly+directory
+                // prefix, then split on '.' — name[0] = lang, name[1] = country code. The build
+                // tool emits no extension on the binary files, but legacy text resources had
+                // ".txt" — skip any extension we don't recognize so the manifest scanner is robust.
                 var name = n.Substring(prefix.Length).Split('.');
+                if (name.Length < 2) continue;
                 int country;
                 try
                 {
@@ -189,7 +143,7 @@ namespace PhoneNumbers
                 }
                 catch (FormatException)
                 {
-                    throw new Exception("Failed to parse geocoding file name: " + name);
+                    throw new Exception("Failed to parse geocoding file name: " + n);
                 }
 
                 var language = name[0];
@@ -220,48 +174,18 @@ namespace PhoneNumbers
 
         private AreaCodeMap LoadAreaCodeMapFromFile(string fileName)
         {
-            var fp = phoneDataZipFile != null
-                ? GetManifestZipFileStream(assembly, phoneDataZipFile, fileName)
-                : GetManifestFileStream(assembly, phonePrefixDataDirectory, fileName);
-
-            using (fp)
-            {
-                var areaCodeMap = AreaCodeParser.ParseAreaCodeMap(fp);
-                return availablePhonePrefixMaps[fileName] = areaCodeMap;
-            }
-        }
-
-        private static Stream GetManifestFileStream(Assembly asm, string phonePrefixDataDirectory, string fileName)
-        {
+            // We only get here after MappingFileProvider has confirmed (lang, countryCode) is
+            // available, so a missing manifest resource is a packaging bug, not a user error —
+            // hence MissingMetadataException rather than a vanilla I/O exception.
             var resName = phonePrefixDataDirectory + fileName;
-            return asm.GetManifestResourceStream(resName);
-        }
+            using var fp = assembly.GetManifestResourceStream(resName)
+                ?? throw new MissingMetadataException(
+                    $"Geocoding resource '{resName}' not found on assembly '{assembly.GetName().Name}'.");
 
-        private static Stream GetManifestZipFileStream(Assembly asm, string phoneDataZipFile, string fileName)
-        {
-            using (var zipStream = asm.GetManifestResourceStream(phoneDataZipFile))
-            {
-                if (zipStream == null)
-                {
-                    throw new InvalidOperationException("Manifest zip file stream was null.");
-                }
-
-                using (var archive = new ZipArchive(zipStream, ZipArchiveMode.Read))
-                {
-                    var entry = archive.Entries.First(p => Regex.Replace(p.FullName, "[\\\\/]", ".") == fileName);
-
-                    using (var entryStream = entry.Open())
-                    {
-                        var fileStream = new MemoryStream();
-
-                        entryStream.CopyTo(fileStream);
-
-                        fileStream.Position = 0;
-
-                        return fileStream;
-                    }
-                }
-            }
+            var sortedMap = BuildPrefixMapFromBin.ReadAreaCodeMap(fp);
+            var areaCodeMap = new AreaCodeMap();
+            areaCodeMap.ReadAreaCodeMap(sortedMap);
+            return availablePhonePrefixMaps[fileName] = areaCodeMap;
         }
 
         /// <summary>
@@ -340,12 +264,12 @@ namespace PhoneNumbers
         /// region of the user. If the phone number is from the same region as the user, only a lower-level
         /// description will be returned, if one exists. Otherwise, the phone number's region will be
         /// returned, with optionally some more detailed information.
-        /// 
+        ///
         /// <para>For example, for a user from the region "US" (United States), we would show "Mountain View,
         /// CA" for a particular number, omitting the United States from the description. For a user from
         /// the United Kingdom (region "GB"), for the same number we may show "Mountain View, CA, United
         /// States" or even just "United States".</para>
-        /// 
+        ///
         /// This method assumes the validity of the number passed in has already been checked.
         /// </summary>
         /// <param name="number">the phone number for which we want to get a text description</param>

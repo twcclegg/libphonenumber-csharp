@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhoneNumbers.Extensions", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhoneNumbers.Extensions.Test", "PhoneNumbers.Extensions.Test\PhoneNumbers.Extensions.Test.csproj", "{79B85614-CA87-4F79-BF7D-D83C4ACB3AE2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhoneNumbers.MetadataBuilder", "PhoneNumbers.MetadataBuilder\PhoneNumbers.MetadataBuilder.csproj", "{08652CE0-B78F-4F1F-B1D5-44A0A1865284}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{79B85614-CA87-4F79-BF7D-D83C4ACB3AE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{79B85614-CA87-4F79-BF7D-D83C4ACB3AE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{79B85614-CA87-4F79-BF7D-D83C4ACB3AE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08652CE0-B78F-4F1F-B1D5-44A0A1865284}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08652CE0-B78F-4F1F-B1D5-44A0A1865284}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08652CE0-B78F-4F1F-B1D5-44A0A1865284}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08652CE0-B78F-4F1F-B1D5-44A0A1865284}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

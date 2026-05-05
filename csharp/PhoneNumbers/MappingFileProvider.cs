@@ -107,8 +107,13 @@ namespace PhoneNumbers
                 var languageCode = FindBestMatchingLanguageCode(setOfLangs, language, script, region);
                 if (languageCode.Length > 0)
                 {
+                    // Returns "<lang>.<countryCode>" with no extension; the geocoder embeds the
+                    // build-time-generated binary files under that exact name (see
+                    // BuildGeocodingBins target in PhoneNumbers.csproj). The legacy ".txt" suffix
+                    // was dropped when the runtime switched from text/zip parsing to direct
+                    // binary reads.
                     var fileName = new StringBuilder();
-                    fileName.Append(languageCode).Append('.').Append(countryCallingCode).Append(".txt");
+                    fileName.Append(languageCode).Append('.').Append(countryCallingCode);
                     return fileName.ToString();
                 }
             }

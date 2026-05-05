@@ -90,7 +90,7 @@ namespace PhoneNumbers
 
         internal static Stream GetStream(string name, Assembly asm = null, bool nameSuffix = true)
         {
-            asm ??= typeof(PhoneNumberUtil).Assembly;
+            asm ??= typeof(BuildMetadataFromXml).Assembly;
             if (nameSuffix)
                 name = asm.GetManifestResourceNames().FirstOrDefault(n => n.EndsWith(name, StringComparison.Ordinal)) ??
                        throw new ArgumentException(name + " resource not found");

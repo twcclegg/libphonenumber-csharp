@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>preview</LangVersion>
+    <RootNamespace>PhoneNumbers.MetadataBuilder</RootNamespace>
+    <AssemblyName>PhoneNumbers.MetadataBuilder</AssemblyName>
+    <!-- Build-time tool; never published. -->
+    <IsPackable>false</IsPackable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- The CLAUDE.md note about TreatWarningsAsErrors=true on the main library still applies, -->
+    <!-- but suppress Phonemetadata/PhoneNumberDesc protobuf-style obsolete attributes complaints -->
+    <!-- if any surface here. -->
+    <!-- CS0649: ValidPatterns is assigned only via reflection from tests. -->
+    <NoWarn>$(NoWarn);CS1591;CS0649;CA1062;CA1707</NoWarn>
+  </PropertyGroup>
+
+  <!--
+    NOTE: this tool deliberately does NOT have a ProjectReference on PhoneNumbers — that would
+    create a circular build dependency once PhoneNumbers.csproj invokes this tool as part of its
+    own build. Instead we source-link the small set of files needed to parse XML and serialize the
+    resulting PhoneMetadata graph. This is fine because the tool is a separate process, run only
+    at build time; runtime users never load both copies of these types in the same AppDomain.
+  -->
+  <ItemGroup>
+    <Compile Include="..\PhoneNumbers\Phonemetadata.cs" Link="Linked\Phonemetadata.cs" />
+    <Compile Include="..\PhoneNumbers\PhoneNumberDesc.cs" Link="Linked\PhoneNumberDesc.cs" />
+    <Compile Include="..\PhoneNumbers\NumberFormat.cs" Link="Linked\NumberFormat.cs" />
+    <Compile Include="..\PhoneNumbers\PhoneMetadataCollection.cs" Link="Linked\PhoneMetadataCollection.cs" />
+    <Compile Include="..\PhoneNumbers\BuildMetadataFromXml.cs" Link="Linked\BuildMetadataFromXml.cs" />
+    <Compile Include="..\PhoneNumbers\BuildMetadataFromBin.cs" Link="Linked\BuildMetadataFromBin.cs" />
+    <Compile Include="..\PhoneNumbers\BuildPrefixMapFromBin.cs" Link="Linked\BuildPrefixMapFromBin.cs" />
+    <Compile Include="..\PhoneNumbers\MetadataFilter.cs" Link="Linked\MetadataFilter.cs" />
+    <Compile Include="..\PhoneNumbers\PhoneRegex.cs" Link="Linked\PhoneRegex.cs" />
+  </ItemGroup>
+
+</Project>

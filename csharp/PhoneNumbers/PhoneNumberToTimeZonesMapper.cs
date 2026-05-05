@@ -93,20 +93,23 @@ namespace PhoneNumbers
         }
 
         private const string TZMAP_DATA_DIRECTORY = "timezones.";
-        private const string TZMAP_Filename = "map_data.txt";
+        // Build-time-generated binary file (see PhoneNumbers.MetadataBuilder timezones subcommand).
+        // Replaces the legacy "map_data.txt" text file: same data, no runtime line/split parsing.
+        private const string TZMAP_BIN_FILENAME = "map_data.bin";
         private static PhoneNumberToTimeZonesMapper Create(string timezoneDataDirectory)
         {
-            char[] splitters = { '&' }; // separates multiple entries in a string in input file
             var asm = typeof(PhoneNumberToTimeZonesMapper).Assembly;
             var allNames = asm.GetManifestResourceNames();
             var prefix = asm.GetName().Name + "." + timezoneDataDirectory;
             var names = allNames.Where(n => n.StartsWith(prefix, StringComparison.Ordinal)).ToList();
-            // read map file
-            var mapFile = names.Where(s => s.EndsWith(TZMAP_Filename, StringComparison.Ordinal)).First();
+            var mapFile = names.FirstOrDefault(s => s.EndsWith(TZMAP_BIN_FILENAME, StringComparison.Ordinal))
+                ?? throw new MissingMetadataException(
+                    $"Timezone data resource '{prefix}{TZMAP_BIN_FILENAME}' not found on assembly '{asm.GetName().Name}'.");
             using var fp = asm.GetManifestResourceStream(mapFile);
-            var prefixMap = TimezoneMapDataReader.GetPrefixMap(fp, splitters);
-
-            return new PhoneNumberToTimeZonesMapper(prefixMap);
+            var prefixMap = BuildPrefixMapFromBin.ReadTimezoneMap(fp);
+            // Rehydrate as IDictionary<long, string[]> to match the existing constructor contract.
+            IDictionary<long, string[]> dict = prefixMap;
+            return new PhoneNumberToTimeZonesMapper(dict);
         }
 
         private static readonly object lockObj = new object();
