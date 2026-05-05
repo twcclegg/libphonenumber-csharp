@@ -139,7 +139,6 @@ For more information on metadata usage, please refer to the [main repository faq
 
 ## ToDo
 
-* port read / write source xml data to binary for better performance and smaller .nupkg size (WIP)
 * update / add / port new unit tests and logging from java source
 
 ## How to unfold automatic generated files
@@ -150,31 +149,8 @@ For more information on metadata usage, please refer to the [main repository faq
 
 ## Running tests locally
 
-To run tests locally, you will need zip versions of the geocoding and carrier data files.
-
-| Zip file | Source directory |
-|---|---|
-| `resources/geocoding.zip` | `resources/geocoding/` |
-| `resources/carrier.zip` | `resources/carrier/` |
-| `resources/test/testgeocoding.zip` | `resources/test/geocoding/` |
-| `resources/test/testcarrier.zip` | `resources/test/carrier/` |
-
-On linux, you can run the following commands to generate the zips accordingly
-
 ```bash
-(cd resources/geocoding; zip -r ../../resources/geocoding.zip *)
-(cd resources/carrier; zip -r ../../resources/carrier.zip *)
-(cd resources/test/geocoding; zip -r ../../../resources/test/testgeocoding.zip *)
-(cd resources/test/carrier; zip -r ../../../resources/test/testcarrier.zip *)
-```
-
-For windows, you can use the following powershell script
-
-```powershell
-Compress-Archive -Path "resources\geocoding\*" -DestinationPath "resources\geocoding.zip"
-Compress-Archive -Path "resources\carrier\*" -DestinationPath "resources\carrier.zip"
-Compress-Archive -Path "resources\test\geocoding\*" -DestinationPath "resources\test\testgeocoding.zip"
-Compress-Archive -Path "resources\test\carrier\*" -DestinationPath "resources\test\testcarrier.zip"
+dotnet test csharp/PhoneNumbers.sln
 ```
 
 ## Contributing
