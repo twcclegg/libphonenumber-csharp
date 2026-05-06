@@ -67,6 +67,8 @@ namespace PhoneNumbers
         /// <returns>A carrier name for the given phone number, or empty string if not found.</returns>
         public string GetNameForValidNumber(PhoneNumber number, Locale languageCode)
         {
+            // No script is specified — Java's Locale.getScript() has no equivalent on this
+            // port's Locale type. Matches the same omission in PhoneNumberOfflineGeocoder.
             return prefixFileReader.GetDescriptionForNumber(
                 number, languageCode.Language, "", languageCode.Country);
         }
