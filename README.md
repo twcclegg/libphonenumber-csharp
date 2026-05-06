@@ -110,7 +110,7 @@ var carrierMapper = PhoneNumberToCarrierMapper.GetInstance();
 var phoneNumber = phoneNumberUtil.Parse("+917503397672", null);
 var carrierName = carrierMapper.GetNameForNumber(phoneNumber, Locale.English);
 
-Console.WriteLine(carrierName); // Vodafone
+Console.WriteLine(carrierName); // Aircel
 ```
 
 > **Note:** Carrier data reflects the original network allocation. If the country supports mobile number portability, the number may have since moved to a different carrier. Use `GetSafeDisplayName` to return an empty string in those regions.
