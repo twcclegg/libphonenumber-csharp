@@ -7,6 +7,10 @@ on:
     - cron: '0 8 * * *'
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   create_new_release_on_new_metadata_update:
     runs-on: ubuntu-latest

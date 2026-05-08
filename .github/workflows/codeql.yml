@@ -6,6 +6,10 @@ on:
   schedule:
     - cron: '35 21 * * 0'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
