@@ -9,13 +9,188 @@ on:
 jobs:
   run_performance_tests_windows:
     runs-on: windows-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
+    permissions:
+      pull-requests: write
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout PR / push branch
+        uses: actions/checkout@v6
+        with:
+          path: branch-code
+
+      - name: Checkout main branch (for comparison)
+        if: github.event_name == 'pull_request'
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          path: main-code
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 9.x
-      - name: Run performance tests
-        run: dotnet run -c Release --framework net9.0 -- --filter "*"
-        working-directory: ./csharp/PhoneNumbers.PerformanceTest
+
+      - name: Run benchmarks (PR branch)
+        run: dotnet run -c Release --framework net9.0 -- --filter "*" --exporters json
+        working-directory: ./branch-code/csharp/PhoneNumbers.PerformanceTest
+
+      - name: Run benchmarks (main branch)
+        if: github.event_name == 'pull_request'
+        run: dotnet run -c Release --framework net9.0 -- --filter "*" --exporters json
+        working-directory: ./main-code/csharp/PhoneNumbers.PerformanceTest
+
+      - name: Post benchmark comparison to PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            function loadResults(dir) {
+              if (!fs.existsSync(dir)) return [];
+              return fs.readdirSync(dir)
+                .filter(f => f.endsWith('-report-full.json'))
+                .flatMap(f => {
+                  try {
+                    return JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')).Benchmarks || [];
+                  } catch { return []; }
+                });
+            }
+
+            function extractRuntime(displayInfo) {
+              // DisplayInfo format: "TypeName.Method(Params)[Runtime]"
+              const m = displayInfo?.match(/\[([^\]]+)\]\s*$/);
+              return m ? m[1] : '';
+            }
+
+            function benchmarkKey(bm) {
+              return `${bm.MethodTitle || bm.Method}||${bm.Parameters || ''}||${extractRuntime(bm.DisplayInfo)}`;
+            }
+
+            function fmtTime(ns) {
+              if (ns == null) return '—';
+              if (ns >= 1e9)  return `${(ns / 1e9).toFixed(3)} s`;
+              if (ns >= 1e6)  return `${(ns / 1e6).toFixed(2)} ms`;
+              if (ns >= 1e3)  return `${(ns / 1e3).toFixed(2)} μs`;
+              return `${ns.toFixed(2)} ns`;
+            }
+
+            function fmtBytes(b) {
+              if (b == null) return '—';
+              if (b >= 1_048_576) return `${(b / 1_048_576).toFixed(2)} MB`;
+              if (b >= 1_024)     return `${(b / 1_024).toFixed(2)} KB`;
+              return `${b} B`;
+            }
+
+            function delta(base, head) {
+              if (base == null || head == null || base === 0) return '—';
+              const pct = ((head - base) / base) * 100;
+              const sign = pct >= 0 ? '+' : '';
+              // For time/memory: lower is better → green when negative
+              const icon = pct > 5 ? '🔴' : pct < -5 ? '🟢' : '🟡';
+              return `${icon} \`${sign}${pct.toFixed(1)}%\``;
+            }
+
+            const ws = process.env.GITHUB_WORKSPACE;
+            const prDir   = `${ws}/branch-code/csharp/PhoneNumbers.PerformanceTest/BenchmarkDotNet.Artifacts/results`;
+            const mainDir = `${ws}/main-code/csharp/PhoneNumbers.PerformanceTest/BenchmarkDotNet.Artifacts/results`;
+
+            const prBenchmarks   = loadResults(prDir);
+            const mainBenchmarks = loadResults(mainDir);
+
+            if (prBenchmarks.length === 0) {
+              core.warning('No PR benchmark results found — skipping comment');
+              return;
+            }
+
+            const mainByKey = Object.fromEntries(mainBenchmarks.map(bm => [benchmarkKey(bm), bm]));
+
+            // Group rows by method for sectioned output
+            const rows = prBenchmarks.map(bm => {
+              const key  = benchmarkKey(bm);
+              const main = mainByKey[key];
+              const prMean   = bm.Statistics?.Mean;
+              const mainMean = main?.Statistics?.Mean;
+              const prMem    = bm.Memory?.BytesAllocatedPerOperation;
+              const mainMem  = main?.Memory?.BytesAllocatedPerOperation;
+              return {
+                method:    bm.MethodTitle || bm.Method,
+                params:    bm.Parameters  || '—',
+                runtime:   extractRuntime(bm.DisplayInfo) || '—',
+                mainTime:  fmtTime(mainMean),
+                prTime:    fmtTime(prMean),
+                timeDelta: delta(mainMean, prMean),
+                mainMem:   fmtBytes(mainMem),
+                prMem:     fmtBytes(prMem),
+                memDelta:  delta(mainMem, prMem),
+              };
+            }).sort((a, b) =>
+              a.method.localeCompare(b.method) ||
+              a.params.localeCompare(b.params)  ||
+              a.runtime.localeCompare(b.runtime)
+            );
+
+            const tableHeader = [
+              '| Benchmark | Parameters | Runtime | `main` mean | PR mean | Time Δ | `main` alloc | PR alloc | Alloc Δ |',
+              '|:----------|:-----------|:--------|------------:|--------:|:------:|-------------:|---------:|:-------:|',
+            ].join('\n');
+
+            const tableBody = rows.map(r =>
+              `| \`${r.method}\` | ${r.params} | ${r.runtime} | ${r.mainTime} | ${r.prTime} | ${r.timeDelta} | ${r.mainMem} | ${r.prMem} | ${r.memDelta} |`
+            ).join('\n');
+
+            const hasRegressions = rows.some(r => r.timeDelta.includes('🔴') || r.memDelta.includes('🔴'));
+            const hasImprovements = rows.some(r => r.timeDelta.includes('🟢') || r.memDelta.includes('🟢'));
+            const summaryIcon = hasRegressions ? '⚠️' : hasImprovements ? '✅' : '✔️';
+            const summaryText = hasRegressions
+              ? 'One or more benchmarks regressed vs. `main`'
+              : hasImprovements
+                ? 'Performance improved vs. `main`'
+                : 'No significant performance change vs. `main`';
+
+            const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
+            const sha    = process.env.GITHUB_SHA?.slice(0, 7) ?? '';
+
+            const body = [
+              '<!-- benchmark-results-marker -->',
+              `## ${summaryIcon} Benchmark Results`,
+              '',
+              `> **${summaryText}**`,
+              `> Commit: \`${sha}\` · [Full run](${runUrl}) · Windows \`windows-latest\` / .NET 9.0`,
+              `> 🟢 improved >5% · 🟡 neutral ±5% · 🔴 regressed >5% · lower is better for both time and allocation`,
+              '',
+              '<details open>',
+              '<summary><b>Performance vs. <code>main</code></b></summary>',
+              '',
+              tableHeader,
+              tableBody,
+              '',
+              '</details>',
+            ].join('\n');
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo:  context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existing = comments.find(c => c.body?.includes('<!-- benchmark-results-marker -->'));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner:      context.repo.owner,
+                repo:       context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+              core.info(`Updated benchmark comment #${existing.id}`);
+            } else {
+              await github.rest.issues.createComment({
+                owner:        context.repo.owner,
+                repo:         context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+              core.info('Created benchmark comment');
+            }
