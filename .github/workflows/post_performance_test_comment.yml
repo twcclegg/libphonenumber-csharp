@@ -65,13 +65,20 @@ jobs:
             }
 
             function extractRuntime(displayInfo) {
-              const m = displayInfo?.match(/\[([^\]]+)\]\s*$/);
-              return m ? m[1] : '';
+              // DisplayInfo format: "ClassName.MethodName: <JobInfo> [<ParamInfo>]"
+              // Extract <JobInfo> (e.g. ".NET 9.0(Runtime=.NET 9.0)") and prefer the
+              // Runtime= characteristic when present so each SimpleJob gets a distinct key.
+              if (!displayInfo) return '';
+              const stripped = displayInfo.replace(/\s*\[[^\]]+\]\s*$/, '');
+              const colonIdx = stripped.lastIndexOf(': ');
+              if (colonIdx < 0) return '';
+              const job = stripped.slice(colonIdx + 2).trim();
+              const m = job.match(/Runtime=([^,)]+)/);
+              return (m ? m[1].trim() : job) || '';
             }
 
             function extractJob(bm) {
-              // Use the environment's Id (e.g. ".NET 8.0") or fall back to runtime
-              return bm.Environment?.Id || extractRuntime(bm.DisplayInfo) || '—';
+              return extractRuntime(bm.DisplayInfo) || '—';
             }
 
             function benchmarkKey(bm) {
