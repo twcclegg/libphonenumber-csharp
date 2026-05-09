@@ -124,7 +124,7 @@ namespace PhoneNumbers
             var resName = phonePrefixDataDirectory + fileName;
             using var fp = assembly.GetManifestResourceStream(resName)
                 ?? throw new MissingMetadataException(
-                    $"Carrier resource '{resName}' not found on assembly '{assembly.GetName().Name}'.");
+                    $"Prefix map resource '{resName}' not found on assembly '{assembly.GetName().Name}'.");
 
             var sortedMap = BuildPrefixMapFromBin.ReadAreaCodeMap(fp);
             var areaCodeMap = new AreaCodeMap();
