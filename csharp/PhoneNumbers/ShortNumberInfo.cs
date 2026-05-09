@@ -341,6 +341,9 @@ namespace PhoneNumbers
                     case ShortNumberCost.TOLL_FREE:
                         // Do nothing.
                         break;
+                    default:
+                        PhoneNumberLogger.Severe("Unrecognised cost for region: " + costForRegion);
+                        break;
                 }
             }
             return cost;

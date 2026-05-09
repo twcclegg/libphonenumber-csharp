@@ -281,6 +281,10 @@ namespace PhoneNumbers
         {
             if (!IsValidRegionCode(regionCallingFrom))
             {
+                PhoneNumberLogger.Warning(
+                    "Trying to format number from invalid region "
+                    + regionCallingFrom
+                    + ". International formatting applied.");
                 return Format(number, PhoneNumberFormat.INTERNATIONAL);
             }
 
@@ -523,10 +527,13 @@ namespace PhoneNumbers
             {
                 // Invalid region entered as country-calling-from (so no metadata was found for it) or the
                 // region chosen has multiple international dialling prefixes.
-                // LOGGER.log(Level.WARNING,
-                // "Trying to format number from invalid region "
-                // + regionCallingFrom
-                // + ". International formatting applied.");
+                if (!IsValidRegionCode(regionCallingFrom))
+                {
+                    PhoneNumberLogger.Warning(
+                        "Trying to format number from invalid region "
+                        + regionCallingFrom
+                        + ". International formatting applied.");
+                }
                 PrefixNumberWithCountryCallingCode(ref result1,
                     ref result1Length,
                     countryCode,

@@ -226,10 +226,10 @@ namespace PhoneNumbers
         {
             if (!IsValidRegionCode(regionCallingFrom))
             {
-                // LOGGER.log(Level.WARNING,
-                //      "Trying to format number from invalid region "
-                //      + regionCallingFrom
-                //      + ". International formatting applied.");
+                PhoneNumberLogger.Warning(
+                    "Trying to format number from invalid region "
+                    + regionCallingFrom
+                    + ". International formatting applied.");
                 return Format(number, PhoneNumberFormat.INTERNATIONAL);
             }
 
@@ -422,6 +422,13 @@ namespace PhoneNumbers
             {
                 // Invalid region entered as country-calling-from (so no metadata was found for it) or the
                 // region chosen has multiple international dialling prefixes.
+                if (!IsValidRegionCode(regionCallingFrom))
+                {
+                    PhoneNumberLogger.Warning(
+                        "Trying to format number from invalid region "
+                        + regionCallingFrom
+                        + ". International formatting applied.");
+                }
                 formattedNumber.Insert(0, ' ').Insert(0, countryCode).Insert(0, PLUS_SIGN);
             }
             return formattedNumber.ToString();

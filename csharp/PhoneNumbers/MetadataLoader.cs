@@ -11,6 +11,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 
@@ -108,6 +109,13 @@ namespace PhoneNumbers
         }
 
         public Stream? LoadMetadata(string fileName)
-            => assembly.GetManifestResourceStream(resourcePrefix + fileName);
+        {
+            var stream = assembly.GetManifestResourceStream(resourcePrefix + fileName);
+            if (stream == null)
+            {
+                PhoneNumberLogger.Warning(string.Format(CultureInfo.InvariantCulture, "File {0} not found", fileName));
+            }
+            return stream;
+        }
     }
 }

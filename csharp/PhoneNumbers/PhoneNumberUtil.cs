@@ -583,7 +583,10 @@ namespace PhoneNumbers
                     if (m != null) outNonGeoMap[entry.Key] = m;
                 }
             }
-            outSupportedRegions.Remove(REGION_CODE_FOR_NON_GEO_ENTITY);
+            if (outSupportedRegions.Remove(REGION_CODE_FOR_NON_GEO_ENTITY))
+            {
+                PhoneNumberLogger.Warning("invalid metadata (country calling code was mapped to the non-geo entity as well as specific region(s))");
+            }
 
             outNanpaRegions = ccToRegions.TryGetValue(NANPA_COUNTRY_CODE, out var regions)
                 ? new HashSet<string>(regions) : new HashSet<string>();
@@ -1023,6 +1026,7 @@ namespace PhoneNumbers
         {
             if (!IsValidRegionCode(regionCode))
             {
+                PhoneNumberLogger.Warning("Invalid or unknown region code provided: " + regionCode);
                 return [];
             }
             var metadata = GetMetadataForRegion(regionCode);
@@ -1043,7 +1047,12 @@ namespace PhoneNumbers
         public HashSet<PhoneNumberType> GetSupportedTypesForNonGeoEntity(int countryCallingCode)
         {
             var metadata = GetMetadataForNonGeographicalRegion(countryCallingCode);
-            return metadata == null ? new HashSet<PhoneNumberType>() : GetSupportedTypesForMetadata(metadata);
+            if (metadata == null)
+            {
+                PhoneNumberLogger.Warning("Unknown country calling code for a non-geographical entity provided: " + countryCallingCode);
+                return [];
+            }
+            return GetSupportedTypesForMetadata(metadata);
         }
 
         /// <summary>
@@ -1579,15 +1588,19 @@ namespace PhoneNumbers
         {
             // Check the region code is valid.
             if (!IsValidRegionCode(regionCode))
+            {
+                PhoneNumberLogger.Warning("Invalid or unknown region code provided: " + regionCode);
                 return null;
+            }
             var desc = GetNumberDescByType(GetMetadataForRegion(regionCode), type);
             try
             {
                 if (desc.HasExampleNumber)
                     return Parse(desc.ExampleNumber, regionCode);
             }
-            catch (NumberParseException)
+            catch (NumberParseException e)
             {
+                PhoneNumberLogger.Severe(e.ToString());
             }
             return null;
         }
@@ -1624,11 +1637,15 @@ namespace PhoneNumbers
                             return Parse("+" + countryCallingCode + desc.ExampleNumber, UNKNOWN_REGION);
                         }
                     }
-                    catch (NumberParseException)
+                    catch (NumberParseException e)
                     {
-                        //LOGGER.log(Level.SEVERE, e.toString());
+                        PhoneNumberLogger.Severe(e.ToString());
                     }
                 }
+            }
+            else
+            {
+                PhoneNumberLogger.Warning("Invalid or unknown country calling code provided: " + countryCallingCode);
             }
             return null;
         }
@@ -1837,6 +1854,7 @@ namespace PhoneNumbers
             countryCallingCodeToRegionCodeMap.TryGetValue(number.CountryCode, out List<string> regions);
             if (regions == null)
             {
+                PhoneNumberLogger.Info("Missing/invalid country_code (" + number.CountryCode + ")");
                 return null;
             }
             return regions.Count == 1 ? regions[0] : GetRegionCodeForNumberFromRegionList(number, regions);
@@ -1886,7 +1904,12 @@ namespace PhoneNumbers
         /// <returns>The country calling code for the region denoted by regionCode.</returns>
         public int GetCountryCodeForRegion(string regionCode)
         {
-            return !IsValidRegionCode(regionCode) ? 0 : GetCountryCodeForValidRegion(regionCode);
+            if (!IsValidRegionCode(regionCode))
+            {
+                PhoneNumberLogger.Warning("Invalid or missing region code (" + (regionCode == null ? "null" : regionCode) + ") provided.");
+                return 0;
+            }
+            return GetCountryCodeForValidRegion(regionCode);
         }
 
         /// <summary>
@@ -1918,10 +1941,7 @@ namespace PhoneNumbers
         {
             if (!IsValidRegionCode(regionCode))
             {
-                //LOGGER.log(Level.WARNING,
-                //    "Invalid or missing region code ("
-                //    + ((regionCode == null) ? "null" : regionCode)
-                //    + ") provided.");
+                PhoneNumberLogger.Warning("Invalid or missing region code (" + (regionCode == null ? "null" : regionCode) + ") provided.");
                 return null;
             }
             var metadata = GetMetadataForRegion(regionCode);
@@ -3109,7 +3129,10 @@ namespace PhoneNumbers
         {
             var metadata = GetMetadataForRegion(regionCode);
             if (metadata == null)
+            {
+                PhoneNumberLogger.Warning("Invalid or unknown region code provided: " + regionCode);
                 return false;
+            }
             return metadata.MobileNumberPortableRegion;
         }
     }
