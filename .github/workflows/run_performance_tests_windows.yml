@@ -33,12 +33,12 @@ jobs:
           dotnet-version: 9.x
 
       - name: Run benchmarks (PR branch)
-        run: dotnet run -c Release --framework net9.0 -- --filter "*" --exporters json
+        run: dotnet run -c Release --framework net9.0 -- --filter "*"
         working-directory: ./branch-code/csharp/PhoneNumbers.PerformanceTest
 
       - name: Run benchmarks (main branch)
         if: github.event_name == 'pull_request'
-        run: dotnet run -c Release --framework net9.0 -- --filter "*" --exporters json
+        run: dotnet run -c Release --framework net9.0 -- --filter "*"
         working-directory: ./main-code/csharp/PhoneNumbers.PerformanceTest
 
       - name: Stage benchmark artifact
@@ -52,8 +52,8 @@ jobs:
           $prDir   = "branch-code/csharp/PhoneNumbers.PerformanceTest/BenchmarkDotNet.Artifacts/results"
           $mainDir = "main-code/csharp/PhoneNumbers.PerformanceTest/BenchmarkDotNet.Artifacts/results"
 
-          if (Test-Path $prDir)   { Copy-Item "$prDir/*-report-full-compressed.json"   "$stage/branch-results/" -ErrorAction SilentlyContinue }
-          if (Test-Path $mainDir) { Copy-Item "$mainDir/*-report-full-compressed.json" "$stage/main-results/"   -ErrorAction SilentlyContinue }
+          if (Test-Path $prDir)   { Copy-Item "$prDir/*-report-github.md" "$stage/branch-results/" -ErrorAction SilentlyContinue }
+          if (Test-Path $mainDir) { Copy-Item "$mainDir/*-report-github.md" "$stage/main-results/"   -ErrorAction SilentlyContinue }
 
           # PR metadata for the follow-up workflow (use head SHA, not the merge SHA in GITHUB_SHA)
           @{

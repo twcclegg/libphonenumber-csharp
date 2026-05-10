@@ -2,7 +2,7 @@ name: post_performance_test_comment
 
 # Runs in the base-repo context (NOT the PR's fork context), so GITHUB_TOKEN
 # has write access even for fork PRs. We never check out or execute PR code
-# here — we only read the benchmark JSON the PR workflow uploaded.
+# here — we only read the benchmark markdown the PR workflow uploaded.
 
 on:
   workflow_run:
@@ -29,7 +29,7 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Post benchmark comparison to PR
+      - name: Post benchmark results to PR
         uses: actions/github-script@v9
         with:
           script: |
@@ -46,232 +46,54 @@ jobs:
               return;
             }
 
-            // ── helpers ──────────────────────────────────────────────────
-
-            function loadResults(dir) {
+            function readMarkdownReports(dir) {
               if (!fs.existsSync(dir)) {
                 core.info(`Results directory not found: ${dir}`);
-                return [];
+                return '';
               }
-              const allFiles = fs.readdirSync(dir);
-              core.info(`Files in ${dir}: ${allFiles.join(', ')}`);
-              return allFiles
-                .filter(f => f.includes('-report') && f.endsWith('.json'))
-                .flatMap(f => {
-                  try {
-                    return JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')).Benchmarks || [];
-                  } catch { return []; }
-                });
+              const files = fs.readdirSync(dir)
+                .filter(f => f.endsWith('-report-github.md'))
+                .sort();
+              if (files.length === 0) {
+                core.info(`No *-report-github.md files in ${dir}`);
+                return '';
+              }
+              return files
+                .map(f => fs.readFileSync(path.join(dir, f), 'utf8').trim())
+                .join('\n\n');
             }
 
-            function extractRuntime(displayInfo) {
-              // DisplayInfo format: "ClassName.MethodName: <JobInfo> [<ParamInfo>]"
-              // Extract <JobInfo> (e.g. ".NET 9.0(Runtime=.NET 9.0)") and prefer the
-              // Runtime= characteristic when present so each SimpleJob gets a distinct key.
-              if (!displayInfo) return '';
-              const stripped = displayInfo.replace(/\s*\[[^\]]+\]\s*$/, '');
-              const colonIdx = stripped.lastIndexOf(': ');
-              if (colonIdx < 0) return '';
-              const job = stripped.slice(colonIdx + 2).trim();
-              const m = job.match(/Runtime=([^,)]+)/);
-              return (m ? m[1].trim() : job) || '';
-            }
+            const prMarkdown   = readMarkdownReports(`${artifactRoot}/branch-results`);
+            const mainMarkdown = readMarkdownReports(`${artifactRoot}/main-results`);
 
-            function extractJob(bm) {
-              return extractRuntime(bm.DisplayInfo) || '—';
-            }
-
-            function benchmarkKey(bm) {
-              return `${bm.MethodTitle || bm.Method}||${bm.Parameters || ''}||${extractRuntime(bm.DisplayInfo)}`;
-            }
-
-            function fmtNs(ns) {
-              if (ns == null) return '—';
-              if (ns >= 1e9)  return `${(ns / 1e9).toFixed(3)} s`;
-              if (ns >= 1e6)  return `${(ns / 1e6).toFixed(3)} ms`;
-              if (ns >= 1e3)  return `${(ns / 1e3).toFixed(3)} μs`;
-              return `${ns.toFixed(2)} ns`;
-            }
-
-            function fmtBytes(b) {
-              if (b == null) return '—';
-              if (b >= 1_048_576) return `${(b / 1_048_576).toFixed(2)} MB`;
-              if (b >= 1_024)     return `${(b / 1_024).toFixed(2)} KB`;
-              return `${b} B`;
-            }
-
-            function fmtGen(count) {
-              if (count == null || count === 0) return '-';
-              return count.toFixed(4);
-            }
-
-            function extractParam(params, name) {
-              if (!params) return '—';
-              const m = params.match(new RegExp(`${name}=(\\S+)`));
-              return m ? m[1] : params;
-            }
-
-            function delta(base, head) {
-              if (base == null || head == null || base === 0) return '—';
-              const pct = ((head - base) / base) * 100;
-              const sign = pct >= 0 ? '+' : '';
-              const icon = pct > 5 ? '🔴' : pct < -5 ? '🟢' : '🟡';
-              return `${icon} ${sign}${pct.toFixed(1)}%`;
-            }
-
-            function statusLabel(timeDelta, memDelta) {
-              const hasRegression  = timeDelta.includes('🔴') || memDelta.includes('🔴');
-              const hasImprovement = timeDelta.includes('🟢') || memDelta.includes('🟢');
-              if (hasRegression && hasImprovement) return '⚠️ Mixed';
-              if (hasRegression)  return '🔴 Regressed';
-              if (hasImprovement) return '🟢 Improved';
-              return '🟡 Neutral';
-            }
-
-            // ── load data ────────────────────────────────────────────────
-
-            const prBenchmarks   = loadResults(`${artifactRoot}/branch-results`);
-            const mainBenchmarks = loadResults(`${artifactRoot}/main-results`);
-
-            if (prBenchmarks.length === 0) {
-              core.warning('No PR benchmark results found — skipping comment');
+            if (!prMarkdown) {
+              core.warning('No PR benchmark markdown found — skipping comment');
               return;
             }
-
-            // ── sort helper ──────────────────────────────────────────────
-
-            function sortBenchmarks(benchmarks) {
-              return [...benchmarks].sort((a, b) => {
-                const ma = a.MethodTitle || a.Method || '';
-                const mb = b.MethodTitle || b.Method || '';
-                const ra = extractRuntime(a.DisplayInfo) || '';
-                const rb = extractRuntime(b.DisplayInfo) || '';
-                const pa = a.Parameters || '';
-                const pb = b.Parameters || '';
-                return ma.localeCompare(mb) || ra.localeCompare(rb) || pa.localeCompare(pb);
-              });
-            }
-
-            // ── build full results table ─────────────────────────────────
-
-            function buildFullTable(benchmarks) {
-              const header = [
-                '| Method | Job | Runtime | PhoneNumberCount | Mean | Error | StdDev | Gen0 | Gen1 | Allocated |',
-                '|:-------|:----|:--------|:-----------------|-----:|------:|-------:|-----:|-----:|----------:|',
-              ].join('\n');
-
-              const rows = sortBenchmarks(benchmarks).map(bm => {
-                const method   = bm.MethodTitle || bm.Method || '—';
-                const job      = extractJob(bm);
-                const runtime  = extractRuntime(bm.DisplayInfo) || '—';
-                const paramVal = extractParam(bm.Parameters, 'PhoneNumberCount');
-                const mean     = fmtNs(bm.Statistics?.Mean);
-                const error    = fmtNs(bm.Statistics?.StandardError);
-                const stddev   = fmtNs(bm.Statistics?.StandardDeviation);
-                const gen0     = fmtGen(bm.Memory?.Gen0Collections);
-                const gen1     = fmtGen(bm.Memory?.Gen1Collections);
-                const alloc    = fmtBytes(bm.Memory?.BytesAllocatedPerOperation);
-                return `| ${method} | ${job} | ${runtime} | ${paramVal} | ${mean} | ${error} | ${stddev} | ${gen0} | ${gen1} | ${alloc} |`;
-              }).join('\n');
-
-              return `${header}\n${rows}`;
-            }
-
-            // ── build comparison table ───────────────────────────────────
-
-            const mainByKey = Object.fromEntries(mainBenchmarks.map(bm => [benchmarkKey(bm), bm]));
-
-            const compRows = sortBenchmarks(prBenchmarks).map(bm => {
-              const key  = benchmarkKey(bm);
-              const main = mainByKey[key];
-
-              const method   = bm.MethodTitle || bm.Method;
-              const runtime  = extractRuntime(bm.DisplayInfo) || '—';
-              const paramVal = extractParam(bm.Parameters, 'PhoneNumberCount');
-
-              const prMean   = bm.Statistics?.Mean;
-              const mainMean = main?.Statistics?.Mean;
-              const prMem    = bm.Memory?.BytesAllocatedPerOperation;
-              const mainMem  = main?.Memory?.BytesAllocatedPerOperation;
-
-              const tDelta = delta(mainMean, prMean);
-              const mDelta = delta(mainMem, prMem);
-
-              return {
-                method, runtime, paramVal,
-                mainTime: fmtNs(mainMean),
-                prTime:   fmtNs(prMean),
-                timeDelta: tDelta,
-                mainMem:  fmtBytes(mainMem),
-                prMem:    fmtBytes(prMem),
-                memDelta: mDelta,
-                status:   statusLabel(tDelta, mDelta),
-              };
-            });
-
-            const compHeader = [
-              '| Method | Runtime | PhoneNumberCount | `main` Mean | PR Mean | Time Δ | `main` Alloc | PR Alloc | Alloc Δ | Status |',
-              '|:-------|:--------|:-----------------|------------:|--------:|:------:|-------------:|---------:|:-------:|:------:|',
-            ].join('\n');
-
-            const compBody = compRows.map(r =>
-              `| ${r.method} | ${r.runtime} | ${r.paramVal} | ${r.mainTime} | ${r.prTime} | ${r.timeDelta} | ${r.mainMem} | ${r.prMem} | ${r.memDelta} | ${r.status} |`
-            ).join('\n');
-
-            // ── summary ──────────────────────────────────────────────────
-
-            const hasRegressions  = compRows.some(r => r.status.includes('🔴'));
-            const hasImprovements = compRows.some(r => r.status.includes('🟢'));
-            const summaryIcon = hasRegressions ? '⚠️' : hasImprovements ? '✅' : '✔️';
-            const summaryText = hasRegressions
-              ? 'One or more benchmarks regressed vs. `main`'
-              : hasImprovements
-                ? 'Performance improved vs. `main`'
-                : 'No significant performance change vs. `main`';
 
             const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${context.payload.workflow_run.id}`;
             const sha    = (headSha || '').slice(0, 7);
 
-            // ── assemble comment body ────────────────────────────────────
-
-            const mainFullTable = mainBenchmarks.length > 0
-              ? buildFullTable(mainBenchmarks)
-              : '_No main branch results available._';
-
-            const prFullTable = buildFullTable(prBenchmarks);
-
             const body = [
               '<!-- benchmark-results-marker -->',
-              `## ${summaryIcon} Benchmark Results`,
+              '## 📊 Benchmark Results',
               '',
-              `> **${summaryText}**`,
               `> Commit: \`${sha}\` · [Full run](${runUrl}) · Windows \`windows-latest\``,
-              `> 🟢 improved >5% · 🟡 neutral ±5% · 🔴 regressed >5% · lower is better for both time and allocation`,
               '',
               '<details open>',
-              '<summary><b>📊 Comparison vs. <code>main</code></b></summary>',
+              '<summary><b>PR branch</b></summary>',
               '',
-              compHeader,
-              compBody,
-              '',
-              '</details>',
-              '',
-              '<details>',
-              '<summary><b>📋 Full Results — PR branch</b></summary>',
-              '',
-              prFullTable,
+              prMarkdown,
               '',
               '</details>',
               '',
               '<details>',
-              '<summary><b>📋 Full Results — <code>main</code> branch</b></summary>',
+              '<summary><b><code>main</code> branch</b></summary>',
               '',
-              mainFullTable,
+              mainMarkdown || '_No main branch results available._',
               '',
               '</details>',
             ].join('\n');
-
-            // ── post / update comment ────────────────────────────────────
 
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
