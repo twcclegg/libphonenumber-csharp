@@ -759,6 +759,14 @@ namespace PhoneNumbers
                     return;
             }
         }
+
+#if NET7_0_OR_GREATER
+        internal static bool IsViablePhoneNumberSpan(ReadOnlySpan<char> number)
+        {
+            if (number.Length < MIN_LENGTH_FOR_NSN) return false;
+            return ValidPhoneNumber().IsMatch(number);
+        }
+#endif
     }
 }
 #endif

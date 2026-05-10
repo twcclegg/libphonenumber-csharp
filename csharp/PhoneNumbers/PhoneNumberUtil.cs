@@ -987,27 +987,26 @@ namespace PhoneNumbers
                    || desc.HasNationalNumberPattern;
         }
 
+        // Pre-filtered: excludes FIXED_LINE_OR_MOBILE (convenience aggregate) and UNKNOWN (non-type).
+        private static readonly PhoneNumberType[] s_checkablePhoneNumberTypes =
+        [
+            PhoneNumberType.FIXED_LINE, PhoneNumberType.MOBILE, PhoneNumberType.TOLL_FREE,
+            PhoneNumberType.PREMIUM_RATE, PhoneNumberType.SHARED_COST, PhoneNumberType.VOIP,
+            PhoneNumberType.PERSONAL_NUMBER, PhoneNumberType.PAGER, PhoneNumberType.UAN,
+            PhoneNumberType.VOICEMAIL,
+        ];
+
         /// <summary>
         /// Returns the types we have metadata for based on the PhoneMetadata object passed in, which must
         /// be non-null.
         /// </summary>
-        /// <param name="metadata"></param>
-        /// <returns></returns>
         private HashSet<PhoneNumberType> GetSupportedTypesForMetadata(PhoneMetadata metadata)
         {
             var types = new HashSet<PhoneNumberType>();
-            foreach (PhoneNumberType type in Enum.GetValues(typeof(PhoneNumberType)))
+            foreach (var type in s_checkablePhoneNumberTypes)
             {
-                if (type == PhoneNumberType.FIXED_LINE_OR_MOBILE || type == PhoneNumberType.UNKNOWN)
-                {
-                    // Never return FIXED_LINE_OR_MOBILE (it is a convenience type, and represents that a
-                    // particular number type can't be determined) or UNKNOWN (the non-type).
-                    continue;
-                }
                 if (DescHasData(GetNumberDescByType(metadata, type)))
-                {
                     types.Add(type);
-                }
             }
             return types;
         }
@@ -2307,6 +2306,14 @@ namespace PhoneNumbers
                 nationalNumber, keepRawInput, phoneNumber);
         }
 
+        private static bool StringBuilderStartsWith(StringBuilder sb, string value)
+        {
+            if (sb.Length < value.Length) return false;
+            for (var i = 0; i < value.Length; i++)
+                if (sb[i] != value[i]) return false;
+            return true;
+        }
+
         // Same as the string overload above, but takes a StringBuilder workspace directly so callers
         // that already hold a StringBuilder can avoid an extra string<->StringBuilder round-trip.
         // The fullNumber buffer is always mutated (Normalize is unconditional, and any leading '+' or
@@ -2357,9 +2364,10 @@ namespace PhoneNumbers
                 // before and after.
                 var defaultCountryCode = defaultRegionMetadata.CountryCode;
                 var defaultCountryCodeString = defaultCountryCode.ToString();
-                var normalizedNumber = fullNumber.ToString();
-                if (normalizedNumber.StartsWith(defaultCountryCodeString, StringComparison.Ordinal))
+                // Avoid the ToString() allocation unless the prefix actually matches (common case: it won't).
+                if (StringBuilderStartsWith(fullNumber, defaultCountryCodeString))
                 {
+                    var normalizedNumber = fullNumber.ToString();
                     var potentialNationalNumberString = normalizedNumber.Substring(defaultCountryCodeString.Length);
                     // Use a separate buffer for the strip-CC trial so callers that share fullNumber as
                     // their workspace are not corrupted when this branch decides not to commit.
@@ -2373,7 +2381,7 @@ namespace PhoneNumbers
                     var validNumberPattern = generalDesc.GetNationalNumberPattern();
                     if ((!validNumberPattern.IsMatchAll(normalizedNumber) &&
                          validNumberPattern.IsMatchAll(potentialNationalNumberString)) ||
-                        TestNumberLength(normalizedNumber.Length, defaultRegionMetadata) == ValidationResult.TOO_LONG)
+                        TestNumberLength(fullNumber.Length, defaultRegionMetadata) == ValidationResult.TOO_LONG)
                     {
                         nationalNumber.Append(potentialNationalNumberString);
                         if (keepRawInput)
@@ -2531,7 +2539,11 @@ namespace PhoneNumbers
             var m = ExtnPattern().Match(numberString);
             // If we find a potential extension, and the number preceding this is a viable number, we assume
             // it is an extension.
+#if NET7_0_OR_GREATER
+            if (m.Success && IsViablePhoneNumberSpan(numberString.AsSpan(0, m.Index)))
+#else
             if (m.Success && IsViablePhoneNumber(numberString.Substring(0, m.Index)))
+#endif
             {
                 // The numbers are captured into groups in the regular expression.
                 for (int i = 1, length = m.Groups.Count; i < length; i++)
