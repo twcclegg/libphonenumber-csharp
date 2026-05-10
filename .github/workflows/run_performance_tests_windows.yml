@@ -8,10 +8,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
-permissions:
-  pull-requests: write
-  issues: write
-
 jobs:
   run_performance_tests_windows:
     runs-on: windows-latest
@@ -73,90 +69,3 @@ jobs:
           path: benchmark-artifact/
           retention-days: 7
           if-no-files-found: error
-
-      - name: Post benchmark results to PR (temporary inline step)
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v9
-        with:
-          script: |
-            const fs = require('fs');
-            const path = require('path');
-
-            const artifactRoot = `${process.env.GITHUB_WORKSPACE}/benchmark-artifact`;
-            const prNumber = ${{ github.event.pull_request.number }};
-            const headSha  = '${{ github.event.pull_request.head.sha }}';
-
-            function readMarkdownReports(dir) {
-              if (!fs.existsSync(dir)) {
-                core.info(`Results directory not found: ${dir}`);
-                return '';
-              }
-              const files = fs.readdirSync(dir)
-                .filter(f => f.endsWith('-report-github.md'))
-                .sort();
-              if (files.length === 0) {
-                core.info(`No *-report-github.md files in ${dir}`);
-                return '';
-              }
-              return files
-                .map(f => fs.readFileSync(path.join(dir, f), 'utf8').trim())
-                .join('\n\n');
-            }
-
-            const prMarkdown   = readMarkdownReports(`${artifactRoot}/branch-results`);
-            const mainMarkdown = readMarkdownReports(`${artifactRoot}/main-results`);
-
-            if (!prMarkdown) {
-              core.warning('No PR benchmark markdown found — skipping comment');
-              return;
-            }
-
-            const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${context.runId}`;
-            const sha    = headSha.slice(0, 7);
-
-            const body = [
-              '<!-- benchmark-results-marker -->',
-              '## 📊 Benchmark Results',
-              '',
-              `> Commit: \`${sha}\` · [Full run](${runUrl}) · Windows \`windows-latest\``,
-              '',
-              '<details open>',
-              '<summary><b>PR branch</b></summary>',
-              '',
-              prMarkdown,
-              '',
-              '</details>',
-              '',
-              '<details>',
-              '<summary><b><code>main</code> branch</b></summary>',
-              '',
-              mainMarkdown || '_No main branch results available._',
-              '',
-              '</details>',
-            ].join('\n');
-
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo:  context.repo.repo,
-              issue_number: prNumber,
-            });
-
-            const existing = comments.find(c => c.body?.includes('<!-- benchmark-results-marker -->'));
-
-            if (existing) {
-              await github.rest.issues.updateComment({
-                owner:      context.repo.owner,
-                repo:       context.repo.repo,
-                comment_id: existing.id,
-                body,
-              });
-              core.info(`Updated benchmark comment #${existing.id}`);
-            } else {
-              await github.rest.issues.createComment({
-                owner:        context.repo.owner,
-                repo:         context.repo.repo,
-                issue_number: prNumber,
-                body,
-              });
-              core.info(`Created benchmark comment on PR #${prNumber}`);
-            }
