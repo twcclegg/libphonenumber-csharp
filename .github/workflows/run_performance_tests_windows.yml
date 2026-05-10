@@ -1,8 +1,6 @@
 name: run_performance_tests_windows
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
