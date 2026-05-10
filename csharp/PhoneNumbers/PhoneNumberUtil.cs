@@ -869,8 +869,10 @@ namespace PhoneNumbers
         /// should be stripped from the number. If this is false, they
         /// will be left unchanged in the number.</param>
         /// <returns>The normalized string version of the phone number.</returns>
+#if !(NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER)
         private static string NormalizeHelper(string number, Func<char, char> normalizationReplacements, bool removeNonMatches)
             => NormalizeHelper(new StringBuilder(number), normalizationReplacements, removeNonMatches).ToString();
+#endif
 
         private static StringBuilder NormalizeHelper(StringBuilder number, Func<char, char> normalizationReplacements, bool removeNonMatches)
         {

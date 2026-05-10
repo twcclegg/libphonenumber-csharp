@@ -606,6 +606,15 @@ namespace PhoneNumbers
             }
         }
 
+        private static string NormalizeHelper(string number, Func<char, char> normalizationReplacements, bool removeNonMatches)
+        {
+            if (number.Length == 0) return string.Empty;
+            Span<char> result = stackalloc char[number.Length];
+            var resultLength = 0;
+            NormalizeHelper(ref result, ref resultLength, number, normalizationReplacements, removeNonMatches);
+            return new string(result.Slice(0, resultLength));
+        }
+
         private static bool IsValidAlphaPhone(string number)
         {
             for (int alpha = 0, i = 0; i < number.Length; i++)
