@@ -90,10 +90,16 @@ namespace PhoneNumbers.Test
             new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(6174240000L).Build();
         private static readonly PhoneNumber USInvalidNumber =
             new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(123456789L).Build();
+        private static readonly PhoneNumber NANPATollFree =
+            new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(8002431234L).Build();
         private static readonly PhoneNumber BSNumber1 =
             new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(2423651234L).Build();
         private static readonly PhoneNumber AUNumber =
             new PhoneNumber.Builder().SetCountryCode(61).SetNationalNumber(236618300L).Build();
+        private static readonly PhoneNumber ARMobileNumber =
+            new PhoneNumber.Builder().SetCountryCode(54).SetNationalNumber(92214000000L).Build();
+        private static readonly PhoneNumber KOMobile =
+            new PhoneNumber.Builder().SetCountryCode(82).SetNationalNumber(101234567L).Build();
         private static readonly PhoneNumber NumberWithInvalidCountryCode =
             new PhoneNumber.Builder().SetCountryCode(999).SetNationalNumber(2423651234L).Build();
         private static readonly PhoneNumber InternationalTollFree =
@@ -123,6 +129,30 @@ namespace PhoneNumbers.Test
             // covered by the geocoding data file.
             Assert.Equal("United States",
                 geocoder.GetDescriptionForNumber(USNumber4, new Locale("en", "US")));
+        }
+
+        [Fact]
+        public void TestGetDescriptionForNumberBelongingToMultipleCountriesIsEmpty()
+        {
+            // Test that nothing is returned when the number passed in is valid but not covered by the
+            // geocoding data file and belongs to multiple countries.
+            Assert.Equal("",
+                geocoder.GetDescriptionForNumber(NANPATollFree, new Locale("en", "US")));
+        }
+
+        [Fact]
+        public void TestGetDescriptionForArgentinianMobileNumber()
+        {
+            Assert.Equal("La Plata",
+                geocoder.GetDescriptionForNumber(ARMobileNumber, Locale.English));
+        }
+
+        [Fact]
+        public void TestGetDescriptionForNonGeographicalNumberWithGeocodingPrefix()
+        {
+            // We have a geocoding prefix, but we shouldn't use it since this is not geographical.
+            Assert.Equal("South Korea",
+                geocoder.GetDescriptionForNumber(KOMobile, Locale.English));
         }
 
         [Fact]

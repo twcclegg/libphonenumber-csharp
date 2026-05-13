@@ -34,6 +34,7 @@
     <Compile Include="..\PhoneNumbers\BuildPrefixMapFromBin.cs" Link="Linked\BuildPrefixMapFromBin.cs" />
     <Compile Include="..\PhoneNumbers\MetadataFilter.cs" Link="Linked\MetadataFilter.cs" />
     <Compile Include="..\PhoneNumbers\PhoneRegex.cs" Link="Linked\PhoneRegex.cs" />
+    <Compile Include="..\PhoneNumbers\InternalRegexOptions.cs" Link="Linked\InternalRegexOptions.cs" />
   </ItemGroup>
 
 </Project>

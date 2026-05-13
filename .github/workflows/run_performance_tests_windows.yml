@@ -1,21 +1,71 @@
 name: run_performance_tests_windows
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   run_performance_tests_windows:
     runs-on: windows-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout PR / push branch
+        uses: actions/checkout@v6
+        with:
+          path: branch-code
+
+      - name: Checkout main branch (for comparison)
+        if: github.event_name == 'pull_request'
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          path: main-code
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 10.x
-      - name: Run performance tests
+
+      - name: Run benchmarks (PR branch)
         run: dotnet run -c Release --framework net10.0 -- --filter "*"
-        working-directory: ./csharp/PhoneNumbers.PerformanceTest
+        working-directory: ./branch-code/csharp/PhoneNumbers.PerformanceTest
+
+      - name: Run benchmarks (main branch)
+        if: github.event_name == 'pull_request'
+        run: dotnet run -c Release --framework net10.0 -- --filter "*"
+        working-directory: ./main-code/csharp/PhoneNumbers.PerformanceTest
+
+      - name: Stage benchmark artifact
+        if: github.event_name == 'pull_request'
+        shell: pwsh
+        run: |
+          $stage = "benchmark-artifact"
+          New-Item -ItemType Directory -Force -Path "$stage/branch-results" | Out-Null
+          New-Item -ItemType Directory -Force -Path "$stage/main-results"   | Out-Null
+
+          $prDir   = "branch-code/csharp/PhoneNumbers.PerformanceTest/BenchmarkDotNet.Artifacts/results"
+          $mainDir = "main-code/csharp/PhoneNumbers.PerformanceTest/BenchmarkDotNet.Artifacts/results"
+
+          if (Test-Path $prDir)   { Copy-Item "$prDir/*-report-github.md" "$stage/branch-results/" -ErrorAction SilentlyContinue }
+          if (Test-Path $mainDir) { Copy-Item "$mainDir/*-report-github.md" "$stage/main-results/"   -ErrorAction SilentlyContinue }
+
+          # PR metadata for the follow-up workflow (use head SHA, not the merge SHA in GITHUB_SHA)
+          @{
+            pr_number = ${{ github.event.pull_request.number }}
+            head_sha  = "${{ github.event.pull_request.head.sha }}"
+          } | ConvertTo-Json | Set-Content "$stage/pr-info.json"
+
+          Get-ChildItem -Recurse $stage | Select-Object FullName
+
+      - name: Upload benchmark artifact
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v7
+        with:
+          name: benchmark-results
+          path: benchmark-artifact/
+          retention-days: 7
+          if-no-files-found: error

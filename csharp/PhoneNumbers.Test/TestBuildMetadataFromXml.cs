@@ -192,6 +192,23 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
+        public void TestLoadInternationalFormatWithNaIsIgnored()
+        {
+            // When the intlFormat element contains "NA", it indicates the international format
+            // should be ignored entirely (not output as a literal "NA"). The format is dropped
+            // and the entry is not added to intlNumberFormat. See upstream
+            // BuildMetadataFromXml.loadInternationalFormat.
+            var xmlInput = "<numberFormat><intlFormat>NA</intlFormat></numberFormat>";
+            var numberFormatElement = ParseXmlString(xmlInput);
+            var metadata = new PhoneMetadata.Builder();
+            var nationalFormat = "$1 $2";
+
+            Assert.True(BuildMetadataFromXml.LoadInternationalFormat(metadata, numberFormatElement,
+                                                                    nationalFormat));
+            Assert.Empty(metadata.IntlNumberFormatList);
+        }
+
+        [Fact]
         public void TestLoadInternationalFormatUsesNationalFormatByDefault()
         {
             var xmlInput = "<numberFormat></numberFormat>";

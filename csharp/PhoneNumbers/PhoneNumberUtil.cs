@@ -1879,6 +1879,20 @@ namespace PhoneNumbers
         }
 
         /// <summary>
+        /// Returns the region codes that match the specific country calling code. For non-geographical
+        /// country calling codes, the region code 001 is returned. Also, in the case of no region code
+        /// being found, an empty list is returned.
+        /// </summary>
+        /// <param name="countryCallingCode">The country calling code for which region codes are wanted.</param>
+        /// <returns>The region codes that match the given country calling code.</returns>
+        public IReadOnlyList<string> GetRegionCodesForCountryCode(int countryCallingCode)
+        {
+            return countryCallingCodeToRegionCodeMap.TryGetValue(countryCallingCode, out var regionCodes)
+                ? regionCodes
+                : Array.Empty<string>();
+        }
+
+        /// <summary>
         /// Returns the country calling code for a specific region. For example, this would be 1 for the
         /// United States, and 64 for New Zealand.
         /// </summary>

@@ -261,7 +261,9 @@ namespace PhoneNumbers
             }
             else
             {
-                intlFormat.Format = intlFormatPattern[0].Value;
+                var intlFormatPatternValue = intlFormatPattern[0].Value;
+                if (intlFormatPatternValue != "NA")
+                    intlFormat.Format = intlFormatPatternValue;
                 hasExplicitIntlFormatDefined = true;
             }
 

@@ -1,0 +1,122 @@
+name: post_performance_test_comment
+
+# Runs in the base-repo context (NOT the PR's fork context), so GITHUB_TOKEN
+# has write access even for fork PRs. We never check out or execute PR code
+# here — we only read the benchmark markdown the PR workflow uploaded.
+
+on:
+  workflow_run:
+    workflows: [ "run_performance_tests_windows" ]
+    types: [ completed ]
+
+permissions:
+  pull-requests: write
+  issues: write
+  actions: read
+
+jobs:
+  post_comment:
+    if: >
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download benchmark artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: benchmark-results
+          path: benchmark-artifact
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Post benchmark results to PR
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            const artifactRoot = `${process.env.GITHUB_WORKSPACE}/benchmark-artifact`;
+            const prInfo = JSON.parse(fs.readFileSync(`${artifactRoot}/pr-info.json`, 'utf8'));
+            const prNumber = prInfo.pr_number;
+            const headSha  = prInfo.head_sha;
+
+            if (!prNumber) {
+              core.setFailed('pr-info.json did not contain pr_number');
+              return;
+            }
+
+            function readMarkdownReports(dir) {
+              if (!fs.existsSync(dir)) {
+                core.info(`Results directory not found: ${dir}`);
+                return '';
+              }
+              const files = fs.readdirSync(dir)
+                .filter(f => f.endsWith('-report-github.md'))
+                .sort();
+              if (files.length === 0) {
+                core.info(`No *-report-github.md files in ${dir}`);
+                return '';
+              }
+              return files
+                .map(f => fs.readFileSync(path.join(dir, f), 'utf8').trim())
+                .join('\n\n');
+            }
+
+            const prMarkdown   = readMarkdownReports(`${artifactRoot}/branch-results`);
+            const mainMarkdown = readMarkdownReports(`${artifactRoot}/main-results`);
+
+            if (!prMarkdown) {
+              core.warning('No PR benchmark markdown found — skipping comment');
+              return;
+            }
+
+            const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${context.payload.workflow_run.id}`;
+            const sha    = (headSha || '').slice(0, 7);
+
+            const body = [
+              '<!-- benchmark-results-marker -->',
+              '## 📊 Benchmark Results',
+              '',
+              `> Commit: \`${sha}\` · [Full run](${runUrl}) · Windows \`windows-latest\``,
+              '',
+              '<details open>',
+              '<summary><b>PR branch</b></summary>',
+              '',
+              prMarkdown,
+              '',
+              '</details>',
+              '',
+              '<details>',
+              '<summary><b><code>main</code> branch</b></summary>',
+              '',
+              mainMarkdown || '_No main branch results available._',
+              '',
+              '</details>',
+            ].join('\n');
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo:  context.repo.repo,
+              issue_number: prNumber,
+            });
+
+            const existing = comments.find(c => c.body?.includes('<!-- benchmark-results-marker -->'));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner:      context.repo.owner,
+                repo:       context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+              core.info(`Updated benchmark comment #${existing.id}`);
+            } else {
+              await github.rest.issues.createComment({
+                owner:        context.repo.owner,
+                repo:         context.repo.repo,
+                issue_number: prNumber,
+                body,
+              });
+              core.info(`Created benchmark comment on PR #${prNumber}`);
+            }

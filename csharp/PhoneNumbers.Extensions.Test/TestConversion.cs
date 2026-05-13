@@ -52,11 +52,11 @@ namespace PhoneNumbers.Extensions.Test
     }
 
 #if NET6_0_OR_GREATER
-    public record TestPhoneNumber(
+    internal record TestPhoneNumber(
         [property: JsonConverter(typeof(PhoneNumberConverter))]
         PhoneNumbers.PhoneNumber PhoneNumber);
 
-    public record TestString(string PhoneNumber);
+    internal record TestString(string PhoneNumber);
 #else
     public class TestPhoneNumber
     {

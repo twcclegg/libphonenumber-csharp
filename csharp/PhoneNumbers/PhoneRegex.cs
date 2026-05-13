@@ -40,9 +40,9 @@ namespace PhoneNumbers
         {
             this.pattern = pattern;
 
-            regex = new Lazy<Regex>(() => new Regex(this.pattern, RegexOptions.CultureInvariant), true);
-            allRegex = new Lazy<Regex>(() => new Regex($"^(?:{this.pattern})$", RegexOptions.CultureInvariant), true);
-            beginRegex = new Lazy<Regex>(() => new Regex($"^(?:{this.pattern})", RegexOptions.CultureInvariant), true);
+            regex = new Lazy<Regex>(() => new Regex(this.pattern, InternalRegexOptions.Default), true);
+            allRegex = new Lazy<Regex>(() => new Regex($"^(?:{this.pattern})$", InternalRegexOptions.Default), true);
+            beginRegex = new Lazy<Regex>(() => new Regex($"^(?:{this.pattern})", InternalRegexOptions.Default), true);
         }
 
         [Obsolete("This is an internal implementation detail not meant for public use")]
