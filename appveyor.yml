@@ -26,9 +26,7 @@ install:
   - ps: |
       $ProgressPreference = 'SilentlyContinue'
       Invoke-WebRequest -Uri 'https://dot.net/v1/dotnet-install.ps1' -OutFile "$env:TEMP\dotnet-install.ps1"
-      & "$env:TEMP\dotnet-install.ps1" -Channel 10.0
-      $env:PATH = "$env:LOCALAPPDATA\Microsoft\dotnet;" + $env:PATH
-      [Environment]::SetEnvironmentVariable('PATH', $env:PATH, 'Machine')
+      & "$env:TEMP\dotnet-install.ps1" -Channel 10.0 -InstallDir 'C:\Program Files\dotnet'
 before_build:
   - dotnet restore csharp -s https://api.nuget.org/v3/index.json
 build_script:
