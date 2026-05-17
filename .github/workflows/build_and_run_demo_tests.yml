@@ -1,0 +1,36 @@
+name: build_and_run_demo_tests
+
+on:
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'csharp/PhoneNumbers.Demo/**'
+      - 'csharp/PhoneNumbers.Demo.Tests/**'
+      - 'csharp/PhoneNumbers/**'
+      - 'resources/**'
+      - '.github/workflows/build_and_run_demo_tests.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build_and_run_demo_tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 9.x
+      - name: Restore dependencies
+        run: dotnet restore PhoneNumbers.Demo.slnx
+        working-directory: ./csharp
+      - name: Build solution
+        run: dotnet build PhoneNumbers.Demo.slnx --no-restore
+        working-directory: ./csharp
+      - name: Test demo project
+        run: dotnet test PhoneNumbers.Demo.slnx --no-build --verbosity normal
+        working-directory: ./csharp
