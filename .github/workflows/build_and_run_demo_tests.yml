@@ -26,11 +26,11 @@ jobs:
         with:
           dotnet-version: 9.x
       - name: Restore dependencies
-        run: dotnet restore PhoneNumbers.Demo.slnx
+        run: dotnet restore PhoneNumbers.Demo.Tests/PhoneNumbers.Demo.Tests.csproj
         working-directory: ./csharp
-      - name: Build solution
-        run: dotnet build PhoneNumbers.Demo.slnx --no-restore
+      - name: Build
+        run: dotnet build PhoneNumbers.Demo.Tests/PhoneNumbers.Demo.Tests.csproj --no-restore
         working-directory: ./csharp
       - name: Test demo project
-        run: dotnet test PhoneNumbers.Demo.slnx --no-build --verbosity normal
+        run: dotnet test PhoneNumbers.Demo.Tests/PhoneNumbers.Demo.Tests.csproj --no-build --verbosity normal
         working-directory: ./csharp
