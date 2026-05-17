@@ -1,0 +1,55 @@
+name: Deploy Demo to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'csharp/PhoneNumbers.Demo/**'
+      - 'csharp/PhoneNumbers/**'
+      - 'resources/**'
+      - '.github/workflows/deploy-demo.yml'
+  schedule:
+    # Rebuild weekly to pick up any NuGet dependency updates
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Publish Blazor WASM app
+        run: dotnet publish csharp/PhoneNumbers.Demo/PhoneNumbers.Demo.csproj -c Release -o release
+
+      - name: Configure for GitHub Pages
+        run: |
+          REPO_NAME=$(echo "${{ github.repository }}" | cut -d'/' -f2)
+          sed -i "s|<base href=\"/\" />|<base href=\"/${REPO_NAME}/\" />|g" release/wwwroot/index.html
+          cp release/wwwroot/index.html release/wwwroot/404.html
+          touch release/wwwroot/.nojekyll
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: release/wwwroot
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,124 @@
+@page "/live"
+
+<PageTitle>Live Formatter - libphonenumber-csharp</PageTitle>
+
+<div class="page-header">
+    <h1>Live Formatter</h1>
+    <p>Type digits and watch them formatted in real-time using the AsYouTypeFormatter, just like a native phone dialer.</p>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <div class="card-title">Region</div>
+    </div>
+
+    <div style="max-width: 240px;">
+        <select class="form-select" @onchange="OnRegionChange">
+            @foreach (var r in _regions)
+            {
+                <option value="@r.Code" selected="@(r.Code == _selectedRegion)">@r.Display</option>
+            }
+        </select>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <div class="card-title">Type Digits</div>
+        <div class="card-subtitle">Enter digits (0-9) and + to see formatting applied incrementally</div>
+    </div>
+
+    <input class="form-input form-input-phone form-input-lg"
+           type="text"
+           value="@_rawInput"
+           @oninput="OnDigitInput"
+           placeholder="Start typing a phone number..."
+           autocomplete="off" />
+
+    <div class="live-output mt-2 @(_formattedOutput.Length > 0 ? "has-value" : "")">
+        @if (_formattedOutput.Length > 0)
+        {
+            @_formattedOutput
+        }
+        else
+        {
+            <span class="live-placeholder">Formatted output will appear here</span>
+        }
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <div class="card-title">How It Works</div>
+    </div>
+    <p class="text-sm text-secondary" style="line-height: 1.7;">
+        The <code>AsYouTypeFormatter</code> processes one character at a time via <code>InputDigit(char)</code>,
+        returning the best-effort formatted string after each digit. It handles national prefixes,
+        international dialing codes, and region-specific formatting rules incrementally.
+        This is the same logic used by phone dialers to format numbers as you type.
+    </p>
+
+    @if (_rawInput.Length > 0)
+    {
+        <div class="mt-2">
+            <div class="result-label mb-1">Step-by-step formatting</div>
+            <div class="format-list">
+                @foreach (var step in _steps)
+                {
+                    <div class="format-item">
+                        <div class="format-name" style="min-width: 100px;">Input: '@step.Char'</div>
+                        <div class="format-value">@step.Output</div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private readonly PhoneNumberUtil _phoneUtil = PhoneNumberUtil.GetInstance();
+    private string _selectedRegion = "US";
+    private string _rawInput = "";
+    private string _formattedOutput = "";
+    private List<FormatStep> _steps = new();
+    private List<RegionOption> _regions = new();
+
+    protected override void OnInitialized()
+    {
+        _regions = _phoneUtil.GetSupportedRegions()
+            .OrderBy(r => r)
+            .Select(r => new RegionOption(r, $"{r} (+{_phoneUtil.GetCountryCodeForRegion(r)})"))
+            .ToList();
+    }
+
+    private void OnRegionChange(ChangeEventArgs e)
+    {
+        _selectedRegion = e.Value?.ToString() ?? "US";
+        Reformat();
+    }
+
+    private void OnDigitInput(ChangeEventArgs e)
+    {
+        var raw = e.Value?.ToString() ?? "";
+        _rawInput = new string(raw.Where(c => char.IsDigit(c) || c == '+').ToArray());
+        Reformat();
+    }
+
+    private void Reformat()
+    {
+        _steps.Clear();
+        _formattedOutput = "";
+
+        if (_rawInput.Length == 0) return;
+
+        var formatter = _phoneUtil.GetAsYouTypeFormatter(_selectedRegion);
+        foreach (var c in _rawInput)
+        {
+            _formattedOutput = formatter.InputDigit(c);
+            _steps.Add(new FormatStep(c, _formattedOutput));
+        }
+    }
+
+    private record FormatStep(char Char, string Output);
+    private record RegionOption(string Code, string Display);
+}

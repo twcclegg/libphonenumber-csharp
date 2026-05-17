@@ -1,0 +1,185 @@
+@page "/find"
+
+<PageTitle>Find Numbers - libphonenumber-csharp</PageTitle>
+
+<div class="page-header">
+    <h1>Find Numbers</h1>
+    <p>Extract and parse phone numbers from free-form text. Paste any text containing phone numbers to detect and parse them all.</p>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <div class="card-title">Input Text</div>
+    </div>
+
+    <div class="input-row">
+        <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Default Region</label>
+            <select class="form-select" @onchange="OnRegionChange">
+                @foreach (var r in _regions)
+                {
+                    <option value="@r.Code" selected="@(r.Code == _selectedRegion)">@r.Display</option>
+                }
+            </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Leniency</label>
+            <select class="form-select" @onchange="OnLeniencyChange">
+                <option value="POSSIBLE" selected="@(_leniency == PhoneNumberUtil.Leniency.POSSIBLE)">Possible</option>
+                <option value="VALID" selected="@(_leniency == PhoneNumberUtil.Leniency.VALID)">Valid</option>
+                <option value="STRICT_GROUPING" selected="@(_leniency == PhoneNumberUtil.Leniency.STRICT_GROUPING)">Strict Grouping</option>
+                <option value="EXACT_GROUPING" selected="@(_leniency == PhoneNumberUtil.Leniency.EXACT_GROUPING)">Exact Grouping</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group mt-2" style="margin-bottom:0">
+        <label class="form-label">Text</label>
+        <textarea class="form-textarea"
+                  value="@_textInput"
+                  @oninput="OnTextInput"
+                  placeholder="Paste or type text containing phone numbers..."></textarea>
+    </div>
+
+    <div class="flex gap-1 flex-wrap mt-2">
+        <button class="btn btn-sm btn-secondary" @onclick="LoadSample">Load Sample Text</button>
+        <button class="btn btn-sm btn-ghost" @onclick="ClearText">Clear</button>
+    </div>
+</div>
+
+@if (_matches.Count > 0)
+{
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Found @_matches.Count number@(_matches.Count != 1 ? "s" : "")</div>
+        </div>
+
+        <div class="match-list">
+            @foreach (var match in _matches)
+            {
+                <div class="match-item">
+                    <div class="match-raw">@match.RawString</div>
+                    <div class="match-meta">
+                        Position @match.Start &ndash; @(match.Start + match.Length)
+                    </div>
+                    <div class="match-details">
+                        <span class="badge badge-info">@_phoneUtil.Format(match.Number, PhoneNumberFormat.E164)</span>
+                        <span class="badge badge-neutral">@FormatType(_phoneUtil.GetNumberType(match.Number))</span>
+                        @{
+                            var region = _phoneUtil.GetRegionCodeForNumber(match.Number);
+                        }
+                        @if (region != null)
+                        {
+                            <span class="badge badge-accent">@region</span>
+                        }
+                        @if (_phoneUtil.IsValidNumber(match.Number))
+                        {
+                            <span class="badge badge-success">Valid</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-error">Invalid</span>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+else if (!string.IsNullOrWhiteSpace(_textInput))
+{
+    <div class="card">
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <p>No phone numbers found in the text with the current leniency level</p>
+        </div>
+    </div>
+}
+
+@code {
+    private readonly PhoneNumberUtil _phoneUtil = PhoneNumberUtil.GetInstance();
+    private string _selectedRegion = "US";
+    private PhoneNumberUtil.Leniency _leniency = PhoneNumberUtil.Leniency.POSSIBLE;
+    private string _textInput = "";
+    private List<PhoneNumberMatch> _matches = new();
+    private List<RegionOption> _regions = new();
+
+    protected override void OnInitialized()
+    {
+        _regions = _phoneUtil.GetSupportedRegions()
+            .OrderBy(r => r)
+            .Select(r => new RegionOption(r, $"{r} (+{_phoneUtil.GetCountryCodeForRegion(r)})"))
+            .ToList();
+    }
+
+    private void OnRegionChange(ChangeEventArgs e)
+    {
+        _selectedRegion = e.Value?.ToString() ?? "US";
+        Search();
+    }
+
+    private void OnLeniencyChange(ChangeEventArgs e)
+    {
+        _leniency = Enum.Parse<PhoneNumberUtil.Leniency>(e.Value?.ToString() ?? "POSSIBLE");
+        Search();
+    }
+
+    private void OnTextInput(ChangeEventArgs e)
+    {
+        _textInput = e.Value?.ToString() ?? "";
+        Search();
+    }
+
+    private void LoadSample()
+    {
+        _textInput = "Contact us at +1 (650) 253-0000 or email support. " +
+                     "Our UK office is at +44 20 7946 0958 and the German branch " +
+                     "can be reached at +49 30 123456. For emergencies in Australia, " +
+                     "call +61 2 3661 8300. You can also try our toll-free number " +
+                     "1-800-555-0199 or local number (415) 555-2671.";
+        Search();
+    }
+
+    private void ClearText()
+    {
+        _textInput = "";
+        _matches.Clear();
+    }
+
+    private void Search()
+    {
+        _matches.Clear();
+        if (string.IsNullOrWhiteSpace(_textInput)) return;
+
+        try
+        {
+            _matches = _phoneUtil.FindNumbers(_textInput, _selectedRegion, _leniency, long.MaxValue)
+                .Take(50)
+                .ToList();
+        }
+        catch
+        {
+            _matches.Clear();
+        }
+    }
+
+    private static string FormatType(PhoneNumberType type) => type switch
+    {
+        PhoneNumberType.FIXED_LINE => "Fixed Line",
+        PhoneNumberType.MOBILE => "Mobile",
+        PhoneNumberType.FIXED_LINE_OR_MOBILE => "Fixed/Mobile",
+        PhoneNumberType.TOLL_FREE => "Toll Free",
+        PhoneNumberType.PREMIUM_RATE => "Premium Rate",
+        PhoneNumberType.SHARED_COST => "Shared Cost",
+        PhoneNumberType.VOIP => "VoIP",
+        PhoneNumberType.PERSONAL_NUMBER => "Personal",
+        PhoneNumberType.PAGER => "Pager",
+        PhoneNumberType.UAN => "UAN",
+        PhoneNumberType.VOICEMAIL => "Voicemail",
+        _ => "Unknown"
+    };
+
+    private record RegionOption(string Code, string Display);
+}

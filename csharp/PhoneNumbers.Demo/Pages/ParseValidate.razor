@@ -1,0 +1,281 @@
+@page "/parse"
+
+<PageTitle>Parse &amp; Validate - libphonenumber-csharp</PageTitle>
+
+<div class="page-header">
+    <h1>Parse &amp; Validate</h1>
+    <p>Parse any phone number string, validate it against regional rules, and inspect all of its properties.</p>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <div class="card-title">Input</div>
+    </div>
+
+    <div class="input-row">
+        <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Phone Number</label>
+            <input class="form-input form-input-phone"
+                   type="text"
+                   value="@_phoneInput"
+                   @oninput="OnPhoneInput"
+                   placeholder="+44 20 7946 0958" />
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Default Region</label>
+            <select class="form-select" @onchange="OnRegionChange">
+                @foreach (var r in _regions)
+                {
+                    <option value="@r.Code" selected="@(r.Code == _selectedRegion)">@r.Display</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="flex gap-1 flex-wrap mt-2">
+        <button class="btn btn-sm btn-secondary" @onclick='() => SetExample("+1 650 253 0000", "US")'>US Example</button>
+        <button class="btn btn-sm btn-secondary" @onclick='() => SetExample("+44 20 7946 0958", "GB")'>UK Example</button>
+        <button class="btn btn-sm btn-secondary" @onclick='() => SetExample("+49 30 123456", "DE")'>DE Example</button>
+        <button class="btn btn-sm btn-secondary" @onclick='() => SetExample("+61 2 3661 8300", "AU")'>AU Example</button>
+        <button class="btn btn-sm btn-secondary" @onclick='() => SetExample("+81 3 6384 9000", "JP")'>JP Example</button>
+        <button class="btn btn-sm btn-secondary" @onclick='() => SetExample("0412 345 678", "AU")'>Local AU</button>
+    </div>
+</div>
+
+@if (_parseError != null)
+{
+    <div class="error-message mt-2">@_parseError</div>
+}
+else if (_parsed != null)
+{
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Validation</div>
+        </div>
+
+        <div class="result-grid">
+            <div class="result-item">
+                <div class="result-label">Is Valid</div>
+                <div class="result-value">
+                    @if (_isValid)
+                    {
+                        <span class="badge badge-success">Valid</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-error">Invalid</span>
+                    }
+                </div>
+            </div>
+            <div class="result-item">
+                <div class="result-label">Is Possible</div>
+                <div class="result-value">
+                    @if (_isPossible)
+                    {
+                        <span class="badge badge-success">Possible</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-warning">Not Possible</span>
+                    }
+                </div>
+            </div>
+            <div class="result-item">
+                <div class="result-label">Possible Reason</div>
+                <div class="result-value"><span class="badge badge-neutral">@_possibleReason</span></div>
+            </div>
+            <div class="result-item">
+                <div class="result-label">Number Type</div>
+                <div class="result-value"><span class="badge badge-info">@FormatType(_numberType)</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Parsed Properties</div>
+        </div>
+
+        <div class="data-row">
+            <div class="data-key">Country Code</div>
+            <div class="data-val data-val-mono">+@_parsed.CountryCode</div>
+        </div>
+        <div class="data-row">
+            <div class="data-key">National Number</div>
+            <div class="data-val data-val-mono">@_parsed.NationalNumber</div>
+        </div>
+        @if (_parsed.HasExtension)
+        {
+            <div class="data-row">
+                <div class="data-key">Extension</div>
+                <div class="data-val data-val-mono">@_parsed.Extension</div>
+            </div>
+        }
+        <div class="data-row">
+            <div class="data-key">Region</div>
+            <div class="data-val">@(_regionCode ?? "Unknown")</div>
+        </div>
+        <div class="data-row">
+            <div class="data-key">Is Geographical</div>
+            <div class="data-val">@(_phoneUtil.IsNumberGeographical(_parsed) ? "Yes" : "No")</div>
+        </div>
+        <div class="data-row">
+            <div class="data-key">Leading Zeros</div>
+            <div class="data-val">@(_parsed.HasNumberOfLeadingZeros ? _parsed.NumberOfLeadingZeros.ToString() : "0")</div>
+        </div>
+
+        @if (_isValid && _regionCode != null)
+        {
+            <div class="data-row">
+                <div class="data-key">Area Code Length</div>
+                <div class="data-val">@_phoneUtil.GetLengthOfGeographicalAreaCode(_parsed)</div>
+            </div>
+            <div class="data-row">
+                <div class="data-key">National Dest. Code Length</div>
+                <div class="data-val">@_phoneUtil.GetLengthOfNationalDestinationCode(_parsed)</div>
+            </div>
+        }
+    </div>
+
+    @if (_regionCode != null)
+    {
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Region Info: @_regionCode</div>
+            </div>
+
+            <div class="data-row">
+                <div class="data-key">Country Calling Code</div>
+                <div class="data-val data-val-mono">+@_phoneUtil.GetCountryCodeForRegion(_regionCode)</div>
+            </div>
+            <div class="data-row">
+                <div class="data-key">NANPA Country</div>
+                <div class="data-val">@(_phoneUtil.IsNANPACountry(_regionCode) ? "Yes" : "No")</div>
+            </div>
+            <div class="data-row">
+                <div class="data-key">Mobile Portable</div>
+                <div class="data-val">@(_phoneUtil.IsMobileNumberPortableRegion(_regionCode) ? "Yes" : "No")</div>
+            </div>
+
+            @if (_exampleNumber != null)
+            {
+                <div class="data-row">
+                    <div class="data-key">Example Number</div>
+                    <div class="data-val data-val-mono">@_phoneUtil.Format(_exampleNumber, PhoneNumberFormat.INTERNATIONAL)</div>
+                </div>
+            }
+
+            @if (_exampleMobile != null)
+            {
+                <div class="data-row">
+                    <div class="data-key">Example Mobile</div>
+                    <div class="data-val data-val-mono">@_phoneUtil.Format(_exampleMobile, PhoneNumberFormat.INTERNATIONAL)</div>
+                </div>
+            }
+        </div>
+    }
+}
+else
+{
+    <div class="card">
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </div>
+            <p>Enter a phone number above to see parsed results</p>
+        </div>
+    </div>
+}
+
+@code {
+    private readonly PhoneNumberUtil _phoneUtil = PhoneNumberUtil.GetInstance();
+    private string _phoneInput = "+44 20 7946 0958";
+    private string _selectedRegion = "GB";
+    private PhoneNumber? _parsed;
+    private string? _parseError;
+    private List<RegionOption> _regions = new();
+
+    private bool _isValid;
+    private bool _isPossible;
+    private PhoneNumberUtil.ValidationResult _possibleReason;
+    private PhoneNumberType _numberType;
+    private string? _regionCode;
+    private PhoneNumber? _exampleNumber;
+    private PhoneNumber? _exampleMobile;
+
+    protected override void OnInitialized()
+    {
+        _regions = _phoneUtil.GetSupportedRegions()
+            .OrderBy(r => r)
+            .Select(r => new RegionOption(r, $"{r} (+{_phoneUtil.GetCountryCodeForRegion(r)})"))
+            .ToList();
+        TryParse();
+    }
+
+    private void OnPhoneInput(ChangeEventArgs e)
+    {
+        _phoneInput = e.Value?.ToString() ?? "";
+        TryParse();
+    }
+
+    private void OnRegionChange(ChangeEventArgs e)
+    {
+        _selectedRegion = e.Value?.ToString() ?? "US";
+        TryParse();
+    }
+
+    private void SetExample(string number, string region)
+    {
+        _phoneInput = number;
+        _selectedRegion = region;
+        TryParse();
+    }
+
+    private void TryParse()
+    {
+        _parsed = null;
+        _parseError = null;
+        _exampleNumber = null;
+        _exampleMobile = null;
+
+        if (string.IsNullOrWhiteSpace(_phoneInput)) return;
+
+        try
+        {
+            _parsed = _phoneUtil.Parse(_phoneInput, _selectedRegion);
+            _isValid = _phoneUtil.IsValidNumber(_parsed);
+            _isPossible = _phoneUtil.IsPossibleNumber(_parsed);
+            _possibleReason = _phoneUtil.IsPossibleNumberWithReason(_parsed);
+            _numberType = _phoneUtil.GetNumberType(_parsed);
+            _regionCode = _phoneUtil.GetRegionCodeForNumber(_parsed);
+
+            if (_regionCode != null)
+            {
+                _exampleNumber = _phoneUtil.GetExampleNumber(_regionCode);
+                _exampleMobile = _phoneUtil.GetExampleNumberForType(_regionCode, PhoneNumberType.MOBILE);
+            }
+        }
+        catch (NumberParseException ex)
+        {
+            _parseError = ex.Message;
+        }
+    }
+
+    private static string FormatType(PhoneNumberType type) => type switch
+    {
+        PhoneNumberType.FIXED_LINE => "Fixed Line",
+        PhoneNumberType.MOBILE => "Mobile",
+        PhoneNumberType.FIXED_LINE_OR_MOBILE => "Fixed/Mobile",
+        PhoneNumberType.TOLL_FREE => "Toll Free",
+        PhoneNumberType.PREMIUM_RATE => "Premium Rate",
+        PhoneNumberType.SHARED_COST => "Shared Cost",
+        PhoneNumberType.VOIP => "VoIP",
+        PhoneNumberType.PERSONAL_NUMBER => "Personal",
+        PhoneNumberType.PAGER => "Pager",
+        PhoneNumberType.UAN => "UAN",
+        PhoneNumberType.VOICEMAIL => "Voicemail",
+        _ => "Unknown"
+    };
+
+    private record RegionOption(string Code, string Display);
+}

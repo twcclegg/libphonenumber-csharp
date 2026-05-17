@@ -1,0 +1,279 @@
+@page "/geo"
+
+<PageTitle>Geocoding &amp; Timezone - libphonenumber-csharp</PageTitle>
+
+<div class="page-header">
+    <h1>Geocoding &amp; Timezone</h1>
+    <p>Look up the geographic description, time zone, and carrier information associated with a phone number.</p>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <div class="card-title">Input</div>
+    </div>
+
+    <div class="input-row-3">
+        <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Phone Number</label>
+            <input class="form-input form-input-phone"
+                   type="text"
+                   value="@_phoneInput"
+                   @oninput="OnPhoneInput"
+                   placeholder="+1 650 253 0000" />
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Default Region</label>
+            <select class="form-select" @onchange="OnRegionChange">
+                @foreach (var r in _regions)
+                {
+                    <option value="@r.Code" selected="@(r.Code == _selectedRegion)">@r.Display</option>
+                }
+            </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Language</label>
+            <select class="form-select" @onchange="OnLocaleChange">
+                @foreach (var l in _locales)
+                {
+                    <option value="@l.Key" selected="@(l.Key == _selectedLocale)">@l.Value</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="flex gap-1 flex-wrap mt-2">
+        <button class="btn btn-sm btn-secondary" @onclick='() => SetExample("+1 650 253 0000", "US")'>US (Mountain View)</button>
+        <button class="btn btn-sm btn-secondary" @onclick='() => SetExample("+44 20 7946 0958", "GB")'>UK (London)</button>
+        <button class="btn btn-sm btn-secondary" @onclick='() => SetExample("+49 30 123456", "DE")'>DE (Berlin)</button>
+        <button class="btn btn-sm btn-secondary" @onclick='() => SetExample("+81 3 6384 9000", "JP")'>JP (Tokyo)</button>
+        <button class="btn btn-sm btn-secondary" @onclick='() => SetExample("+33 1 42 68 53 00", "FR")'>FR (Paris)</button>
+    </div>
+</div>
+
+@if (_parseError != null)
+{
+    <div class="error-message">@_parseError</div>
+}
+else if (_parsed != null)
+{
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Geographic Location</div>
+        </div>
+
+        <div class="result-grid">
+            <div class="result-item" style="grid-column: span 2;">
+                <div class="result-label">Description</div>
+                <div class="result-value" style="font-size: 1.125rem;">
+                    @if (!string.IsNullOrEmpty(_geoDescription))
+                    {
+                        @_geoDescription
+                    }
+                    else
+                    {
+                        <span class="text-secondary">No geographic data available</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Time Zones</div>
+        </div>
+
+        @if (_timeZones.Count > 0)
+        {
+            <div class="flex gap-sm flex-wrap">
+                @foreach (var tz in _timeZones)
+                {
+                    <span class="badge badge-accent">@tz</span>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="text-sm text-secondary">No timezone data available for this number</p>
+        }
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Carrier</div>
+        </div>
+
+        <div class="result-grid">
+            <div class="result-item" style="grid-column: span 2;">
+                <div class="result-label">Carrier Name</div>
+                <div class="result-value">
+                    @if (!string.IsNullOrEmpty(_carrierName))
+                    {
+                        @_carrierName
+                    }
+                    else
+                    {
+                        <span class="text-secondary">No carrier data available</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Number Details</div>
+        </div>
+
+        <div class="data-row">
+            <div class="data-key">Formatted</div>
+            <div class="data-val data-val-mono">@_phoneUtil.Format(_parsed, PhoneNumberFormat.INTERNATIONAL)</div>
+        </div>
+        <div class="data-row">
+            <div class="data-key">Valid</div>
+            <div class="data-val">
+                @if (_phoneUtil.IsValidNumber(_parsed))
+                {
+                    <span class="badge badge-success">Valid</span>
+                }
+                else
+                {
+                    <span class="badge badge-error">Invalid</span>
+                }
+            </div>
+        </div>
+        <div class="data-row">
+            <div class="data-key">Number Type</div>
+            <div class="data-val"><span class="badge badge-info">@FormatType(_phoneUtil.GetNumberType(_parsed))</span></div>
+        </div>
+        <div class="data-row">
+            <div class="data-key">Is Geographical</div>
+            <div class="data-val">@(_phoneUtil.IsNumberGeographical(_parsed) ? "Yes" : "No")</div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            </div>
+            <p>Enter a phone number above to see geographic and timezone data</p>
+        </div>
+    </div>
+}
+
+@code {
+    private readonly PhoneNumberUtil _phoneUtil = PhoneNumberUtil.GetInstance();
+    private readonly PhoneNumberOfflineGeocoder _geocoder = PhoneNumberOfflineGeocoder.GetInstance();
+    private readonly PhoneNumberToTimeZonesMapper _tzMapper = PhoneNumberToTimeZonesMapper.GetInstance();
+    private readonly PhoneNumberToCarrierMapper _carrierMapper = PhoneNumberToCarrierMapper.GetInstance();
+
+    private string _phoneInput = "+1 650 253 0000";
+    private string _selectedRegion = "US";
+    private string _selectedLocale = "en";
+    private PhoneNumber? _parsed;
+    private string? _parseError;
+    private string _geoDescription = "";
+    private List<string> _timeZones = new();
+    private string _carrierName = "";
+    private List<RegionOption> _regions = new();
+
+    private readonly Dictionary<string, string> _locales = new()
+    {
+        ["en"] = "English",
+        ["de"] = "German",
+        ["fr"] = "French",
+        ["it"] = "Italian",
+        ["ko"] = "Korean",
+        ["zh"] = "Chinese (Simplified)"
+    };
+
+    protected override void OnInitialized()
+    {
+        _regions = _phoneUtil.GetSupportedRegions()
+            .OrderBy(r => r)
+            .Select(r => new RegionOption(r, $"{r} (+{_phoneUtil.GetCountryCodeForRegion(r)})"))
+            .ToList();
+        TryParse();
+    }
+
+    private void OnPhoneInput(ChangeEventArgs e)
+    {
+        _phoneInput = e.Value?.ToString() ?? "";
+        TryParse();
+    }
+
+    private void OnRegionChange(ChangeEventArgs e)
+    {
+        _selectedRegion = e.Value?.ToString() ?? "US";
+        TryParse();
+    }
+
+    private void OnLocaleChange(ChangeEventArgs e)
+    {
+        _selectedLocale = e.Value?.ToString() ?? "en";
+        TryParse();
+    }
+
+    private void SetExample(string number, string region)
+    {
+        _phoneInput = number;
+        _selectedRegion = region;
+        TryParse();
+    }
+
+    private Locale GetLocale() => _selectedLocale switch
+    {
+        "de" => Locale.German,
+        "fr" => Locale.French,
+        "it" => Locale.Italian,
+        "ko" => Locale.Korean,
+        "zh" => Locale.SimplifiedChinese,
+        _ => Locale.English
+    };
+
+    private void TryParse()
+    {
+        _parsed = null;
+        _parseError = null;
+        _geoDescription = "";
+        _timeZones.Clear();
+        _carrierName = "";
+
+        if (string.IsNullOrWhiteSpace(_phoneInput)) return;
+
+        try
+        {
+            _parsed = _phoneUtil.Parse(_phoneInput, _selectedRegion);
+            var locale = GetLocale();
+
+            _geoDescription = _geocoder.GetDescriptionForNumber(_parsed, locale);
+            _timeZones = _tzMapper.GetTimeZonesForNumber(_parsed);
+            _carrierName = _carrierMapper.GetNameForNumber(_parsed, locale);
+        }
+        catch (NumberParseException ex)
+        {
+            _parseError = ex.Message;
+        }
+    }
+
+    private static string FormatType(PhoneNumberType type) => type switch
+    {
+        PhoneNumberType.FIXED_LINE => "Fixed Line",
+        PhoneNumberType.MOBILE => "Mobile",
+        PhoneNumberType.FIXED_LINE_OR_MOBILE => "Fixed/Mobile",
+        PhoneNumberType.TOLL_FREE => "Toll Free",
+        PhoneNumberType.PREMIUM_RATE => "Premium Rate",
+        PhoneNumberType.SHARED_COST => "Shared Cost",
+        PhoneNumberType.VOIP => "VoIP",
+        PhoneNumberType.PERSONAL_NUMBER => "Personal",
+        PhoneNumberType.PAGER => "Pager",
+        PhoneNumberType.UAN => "UAN",
+        PhoneNumberType.VOICEMAIL => "Voicemail",
+        _ => "Unknown"
+    };
+
+    private record RegionOption(string Code, string Display);
+}

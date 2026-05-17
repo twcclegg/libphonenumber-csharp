@@ -1,0 +1,217 @@
+@page "/"
+
+<PageTitle>libphonenumber-csharp Demo</PageTitle>
+
+<div class="hero">
+    <div class="hero-content">
+        <h1>libphonenumber-csharp</h1>
+        <p>
+            Google's phone number handling library, ported to C#.
+            Parse, format, validate, and enrich phone numbers for 200+ countries
+            &mdash; running entirely in your browser via WebAssembly.
+        </p>
+        <div class="hero-badges">
+            <span class="hero-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                NuGet Package
+            </span>
+            <span class="hero-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                @(_regionCount) Regions
+            </span>
+            <span class="hero-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                WebAssembly
+            </span>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <div class="card-title">Try It Now</div>
+        <div class="card-subtitle">Enter any phone number to see instant parsing, validation, and formatting</div>
+    </div>
+
+    <div class="input-row">
+        <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Phone Number</label>
+            <input class="form-input form-input-phone"
+                   type="text"
+                   value="@_phoneInput"
+                   @oninput="OnPhoneInput"
+                   placeholder="+1 650 253 0000" />
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Default Region</label>
+            <select class="form-select" @onchange="OnRegionChange">
+                @foreach (var r in _regions)
+                {
+                    <option value="@r.Code" selected="@(r.Code == _selectedRegion)">@r.Display</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    @if (_parseError != null)
+    {
+        <div class="error-message mt-2">@_parseError</div>
+    }
+    else if (_parsed != null)
+    {
+        <div class="result-grid mt-2">
+            <div class="result-item">
+                <div class="result-label">International</div>
+                <div class="result-value result-value-mono">@_phoneUtil.Format(_parsed, PhoneNumberFormat.INTERNATIONAL)</div>
+            </div>
+            <div class="result-item">
+                <div class="result-label">E.164</div>
+                <div class="result-value result-value-mono">@_phoneUtil.Format(_parsed, PhoneNumberFormat.E164)</div>
+            </div>
+            <div class="result-item">
+                <div class="result-label">Valid</div>
+                <div class="result-value">
+                    @if (_phoneUtil.IsValidNumber(_parsed))
+                    {
+                        <span class="badge badge-success">Valid</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-error">Invalid</span>
+                    }
+                </div>
+            </div>
+            <div class="result-item">
+                <div class="result-label">Number Type</div>
+                <div class="result-value"><span class="badge badge-info">@FormatType(_phoneUtil.GetNumberType(_parsed))</span></div>
+            </div>
+            <div class="result-item">
+                <div class="result-label">Region</div>
+                <div class="result-value">@(_phoneUtil.GetRegionCodeForNumber(_parsed) ?? "Unknown")</div>
+            </div>
+            <div class="result-item">
+                <div class="result-label">Country Code</div>
+                <div class="result-value result-value-mono">+@_parsed.CountryCode</div>
+            </div>
+        </div>
+    }
+</div>
+
+<h2 class="section-title mt-4">Explore Features</h2>
+
+<div class="feature-grid">
+    <a href="parse" class="feature-card">
+        <div class="feature-icon" style="background: var(--primary-light); color: var(--primary);">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+        <h3>Parse &amp; Validate</h3>
+        <p>Parse phone numbers from text, validate them, and inspect every property including type, region, and country code.</p>
+    </a>
+    <a href="format" class="feature-card">
+        <div class="feature-icon" style="background: var(--success-light); color: var(--success);">
+            <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        </div>
+        <h3>Formatting</h3>
+        <p>Format numbers as E.164, international, national, RFC 3966, and for out-of-country or mobile dialing.</p>
+    </a>
+    <a href="live" class="feature-card">
+        <div class="feature-icon" style="background: var(--warning-light); color: var(--warning);">
+            <svg viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+        </div>
+        <h3>Live Formatter</h3>
+        <p>Type digits and see them formatted in real-time using the as-you-type formatter, just like a phone dialer.</p>
+    </a>
+    <a href="find" class="feature-card">
+        <div class="feature-icon" style="background: #fce7f3; color: #ec4899;">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </div>
+        <h3>Find Numbers</h3>
+        <p>Extract and parse phone numbers embedded in free-form text with configurable matching leniency.</p>
+    </a>
+    <a href="geo" class="feature-card">
+        <div class="feature-icon" style="background: var(--accent-light); color: #0891b2;">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </div>
+        <h3>Geocoding &amp; Timezone</h3>
+        <p>Look up geographic descriptions, time zones, and carrier information for any phone number.</p>
+    </a>
+</div>
+
+<div class="card mt-3">
+    <div class="card-header">
+        <div class="card-title">Install</div>
+        <div class="card-subtitle">Add to your .NET project via NuGet</div>
+    </div>
+    <div class="install-block">
+        <span class="prompt">&gt;</span>dotnet add package libphonenumber-csharp
+    </div>
+    <div class="install-block mt-1">
+        <span class="prompt">&gt;</span>dotnet add package libphonenumber-csharp.extensions
+    </div>
+</div>
+
+@code {
+    private readonly PhoneNumberUtil _phoneUtil = PhoneNumberUtil.GetInstance();
+    private string _phoneInput = "+1 650 253 0000";
+    private string _selectedRegion = "US";
+    private PhoneNumber? _parsed;
+    private string? _parseError;
+    private List<RegionOption> _regions = new();
+    private int _regionCount;
+
+    protected override void OnInitialized()
+    {
+        var supported = _phoneUtil.GetSupportedRegions();
+        _regionCount = supported.Count;
+        _regions = supported
+            .OrderBy(r => r)
+            .Select(r => new RegionOption(r, $"{r} (+{_phoneUtil.GetCountryCodeForRegion(r)})"))
+            .ToList();
+        TryParse();
+    }
+
+    private void OnPhoneInput(ChangeEventArgs e)
+    {
+        _phoneInput = e.Value?.ToString() ?? "";
+        TryParse();
+    }
+
+    private void OnRegionChange(ChangeEventArgs e)
+    {
+        _selectedRegion = e.Value?.ToString() ?? "US";
+        TryParse();
+    }
+
+    private void TryParse()
+    {
+        _parsed = null;
+        _parseError = null;
+        if (string.IsNullOrWhiteSpace(_phoneInput)) return;
+        try
+        {
+            _parsed = _phoneUtil.Parse(_phoneInput, _selectedRegion);
+        }
+        catch (NumberParseException ex)
+        {
+            _parseError = ex.Message;
+        }
+    }
+
+    private static string FormatType(PhoneNumberType type) => type switch
+    {
+        PhoneNumberType.FIXED_LINE => "Fixed Line",
+        PhoneNumberType.MOBILE => "Mobile",
+        PhoneNumberType.FIXED_LINE_OR_MOBILE => "Fixed/Mobile",
+        PhoneNumberType.TOLL_FREE => "Toll Free",
+        PhoneNumberType.PREMIUM_RATE => "Premium Rate",
+        PhoneNumberType.SHARED_COST => "Shared Cost",
+        PhoneNumberType.VOIP => "VoIP",
+        PhoneNumberType.PERSONAL_NUMBER => "Personal",
+        PhoneNumberType.PAGER => "Pager",
+        PhoneNumberType.UAN => "UAN",
+        PhoneNumberType.VOICEMAIL => "Voicemail",
+        _ => "Unknown"
+    };
+
+    private record RegionOption(string Code, string Display);
+}

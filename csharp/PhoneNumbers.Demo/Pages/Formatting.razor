@@ -1,0 +1,179 @@
+@page "/format"
+
+<PageTitle>Formatting - libphonenumber-csharp</PageTitle>
+
+<div class="page-header">
+    <h1>Formatting</h1>
+    <p>See how a phone number looks in every supported format, including out-of-country and mobile dialing formats.</p>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <div class="card-title">Input</div>
+    </div>
+
+    <div class="input-row-3">
+        <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Phone Number</label>
+            <input class="form-input form-input-phone"
+                   type="text"
+                   value="@_phoneInput"
+                   @oninput="OnPhoneInput"
+                   placeholder="+1 650 253 0000" />
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Default Region</label>
+            <select class="form-select" @onchange="OnRegionChange">
+                @foreach (var r in _regions)
+                {
+                    <option value="@r.Code" selected="@(r.Code == _selectedRegion)">@r.Display</option>
+                }
+            </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Calling From</label>
+            <select class="form-select" @onchange="OnCallingFromChange">
+                @foreach (var r in _regions)
+                {
+                    <option value="@r.Code" selected="@(r.Code == _callingFrom)">@r.Display</option>
+                }
+            </select>
+        </div>
+    </div>
+</div>
+
+@if (_parseError != null)
+{
+    <div class="error-message">@_parseError</div>
+}
+else if (_parsed != null)
+{
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Standard Formats</div>
+        </div>
+
+        <div class="format-list">
+            <div class="format-item">
+                <div class="format-name">E.164</div>
+                <div class="format-value">@_phoneUtil.Format(_parsed, PhoneNumberFormat.E164)</div>
+            </div>
+            <div class="format-item">
+                <div class="format-name">International</div>
+                <div class="format-value">@_phoneUtil.Format(_parsed, PhoneNumberFormat.INTERNATIONAL)</div>
+            </div>
+            <div class="format-item">
+                <div class="format-name">National</div>
+                <div class="format-value">@_phoneUtil.Format(_parsed, PhoneNumberFormat.NATIONAL)</div>
+            </div>
+            <div class="format-item">
+                <div class="format-name">RFC 3966</div>
+                <div class="format-value">@_phoneUtil.Format(_parsed, PhoneNumberFormat.RFC3966)</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Contextual Formats</div>
+            <div class="card-subtitle">Formatted for dialing from @_callingFrom</div>
+        </div>
+
+        <div class="format-list">
+            <div class="format-item">
+                <div class="format-name">Out-of-Country</div>
+                <div class="format-value">@_phoneUtil.FormatOutOfCountryCallingNumber(_parsed, _callingFrom)</div>
+            </div>
+            <div class="format-item">
+                <div class="format-name">Mobile Dialing</div>
+                <div class="format-value">@_phoneUtil.FormatNumberForMobileDialing(_parsed, _callingFrom, true)</div>
+            </div>
+            <div class="format-item">
+                <div class="format-name">Mobile (No Format)</div>
+                <div class="format-value">@_phoneUtil.FormatNumberForMobileDialing(_parsed, _callingFrom, false)</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Other Properties</div>
+        </div>
+
+        <div class="format-list">
+            <div class="format-item">
+                <div class="format-name">National Significant</div>
+                <div class="format-value">@_phoneUtil.GetNationalSignificantNumber(_parsed)</div>
+            </div>
+            <div class="format-item">
+                <div class="format-name">Can Dial Intl.</div>
+                <div class="format-value">@(_phoneUtil.CanBeInternationallyDialled(_parsed) ? "Yes" : "No")</div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            </div>
+            <p>Enter a phone number above to see all format options</p>
+        </div>
+    </div>
+}
+
+@code {
+    private readonly PhoneNumberUtil _phoneUtil = PhoneNumberUtil.GetInstance();
+    private string _phoneInput = "+1 650 253 0000";
+    private string _selectedRegion = "US";
+    private string _callingFrom = "GB";
+    private PhoneNumber? _parsed;
+    private string? _parseError;
+    private List<RegionOption> _regions = new();
+
+    protected override void OnInitialized()
+    {
+        _regions = _phoneUtil.GetSupportedRegions()
+            .OrderBy(r => r)
+            .Select(r => new RegionOption(r, $"{r} (+{_phoneUtil.GetCountryCodeForRegion(r)})"))
+            .ToList();
+        TryParse();
+    }
+
+    private void OnPhoneInput(ChangeEventArgs e)
+    {
+        _phoneInput = e.Value?.ToString() ?? "";
+        TryParse();
+    }
+
+    private void OnRegionChange(ChangeEventArgs e)
+    {
+        _selectedRegion = e.Value?.ToString() ?? "US";
+        TryParse();
+    }
+
+    private void OnCallingFromChange(ChangeEventArgs e)
+    {
+        _callingFrom = e.Value?.ToString() ?? "US";
+        TryParse();
+    }
+
+    private void TryParse()
+    {
+        _parsed = null;
+        _parseError = null;
+        if (string.IsNullOrWhiteSpace(_phoneInput)) return;
+        try
+        {
+            _parsed = _phoneUtil.Parse(_phoneInput, _selectedRegion);
+        }
+        catch (NumberParseException ex)
+        {
+            _parseError = ex.Message;
+        }
+    }
+
+    private record RegionOption(string Code, string Display);
+}
