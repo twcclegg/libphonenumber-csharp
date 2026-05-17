@@ -112,7 +112,28 @@ Wrap `PhoneNumberUtil` calls that can throw (e.g. `Parse`) in try/catch for `Num
 
 The layout is sidebar + main content. At `max-width: 860px` the sidebar collapses off-screen with a toggle button. Grid layouts (`input-row`, `result-grid`, `feature-grid`) collapse to single-column on narrow viewports.
 
-## Testing requirements
+## Testing workflow (mandatory)
+
+Every code change must follow this workflow before the task is considered complete:
+
+1. Run the demo test suite and confirm it passes with zero failures:
+   ```bash
+   dotnet test csharp/PhoneNumbers.Demo.Tests -p:TargetFrameworks=net9.0
+   ```
+2. If the change touches any page, component, or logic branch not already exercised by an existing test, add a new test covering it in `csharp/PhoneNumbers.Demo.Tests/Pages/`.
+3. Never mark a task done while tests are failing or skipped.
+
+### Valuable tests to add
+
+A test is valuable if it covers an observable behaviour that isn't already tested:
+
+- A new conditional branch in a page (new happy path, new error case, new empty state).
+- A user interaction that wasn't tested before (clicking a button, changing a select, clearing an input).
+- A regression guard for a bug that was fixed — name it after the symptom, not the root cause.
+
+A test is **not** valuable if it duplicates existing coverage, tests CSS/styling, or just restates the implementation.
+
+## Testing requirements (detail)
 
 All changes must build cleanly (`dotnet build` with no warnings — `TreatWarningsAsErrors` is inherited from the solution).
 
