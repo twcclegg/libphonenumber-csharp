@@ -52,7 +52,18 @@
     </div>
 </div>
 
-@if (_parseError != null)
+@if (_isLoading)
+{
+    <div class="card">
+        <div class="empty-state">
+            <div class="empty-state__icon" aria-hidden="true">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            </div>
+            <p class="empty-state__message">Loading geocoding data&hellip;</p>
+        </div>
+    </div>
+}
+else if (_parseError != null)
 {
     <div class="error-message" role="alert">@_parseError</div>
 }
@@ -170,9 +181,9 @@ else
 
 @code {
     private readonly PhoneNumberUtil _phoneUtil = PhoneNumberUtil.GetInstance();
-    private readonly PhoneNumberOfflineGeocoder _geocoder = PhoneNumberOfflineGeocoder.GetInstance();
-    private readonly PhoneNumberToTimeZonesMapper _tzMapper = PhoneNumberToTimeZonesMapper.GetInstance();
-    private readonly PhoneNumberToCarrierMapper _carrierMapper = PhoneNumberToCarrierMapper.GetInstance();
+    private PhoneNumberOfflineGeocoder? _geocoder;
+    private PhoneNumberToTimeZonesMapper? _tzMapper;
+    private PhoneNumberToCarrierMapper? _carrierMapper;
 
     private string _phoneInput = "+1 650 253 0000";
     private string _selectedRegion = "US";
@@ -183,6 +194,7 @@ else
     private List<string> _timeZones = new();
     private string _carrierName = "";
     private List<RegionOption> _regions = new();
+    private bool _isLoading = true;
 
     private readonly Dictionary<string, string> _locales = new()
     {
@@ -194,12 +206,22 @@ else
         ["zh"] = "Chinese (Simplified)"
     };
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         _regions = _phoneUtil.GetSupportedRegions()
             .OrderBy(r => r)
             .Select(r => new RegionOption(r, $"{r} (+{_phoneUtil.GetCountryCodeForRegion(r)})"))
             .ToList();
+
+        // Yield so the loading state renders before we block the thread loading
+        // the large geocoding/timezone/carrier embedded binary datasets.
+        await Task.Yield();
+
+        _geocoder = PhoneNumberOfflineGeocoder.GetInstance();
+        _tzMapper = PhoneNumberToTimeZonesMapper.GetInstance();
+        _carrierMapper = PhoneNumberToCarrierMapper.GetInstance();
+
+        _isLoading = false;
         TryParse();
     }
 
@@ -253,9 +275,9 @@ else
             _parsed = _phoneUtil.Parse(_phoneInput, _selectedRegion);
             var locale = GetLocale();
 
-            _geoDescription = _geocoder.GetDescriptionForNumber(_parsed, locale);
-            _timeZones = _tzMapper.GetTimeZonesForNumber(_parsed);
-            _carrierName = _carrierMapper.GetNameForNumber(_parsed, locale);
+            _geoDescription = _geocoder?.GetDescriptionForNumber(_parsed, locale) ?? "";
+            _timeZones = _tzMapper?.GetTimeZonesForNumber(_parsed) ?? new List<string>();
+            _carrierName = _carrierMapper?.GetNameForNumber(_parsed, locale) ?? "";
         }
         catch (NumberParseException ex)
         {
