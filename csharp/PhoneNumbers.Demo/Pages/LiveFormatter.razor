@@ -3,17 +3,18 @@
 <PageTitle>Live Formatter - libphonenumber-csharp</PageTitle>
 
 <div class="page-header">
-    <h1>Live Formatter</h1>
-    <p>Type digits and watch them formatted in real-time using the AsYouTypeFormatter, just like a native phone dialer.</p>
+    <h1 class="page-header__title">Live Formatter</h1>
+    <p class="page-header__description">Type digits and watch them formatted in real-time using the AsYouTypeFormatter, just like a native phone dialer.</p>
 </div>
 
 <div class="card">
-    <div class="card-header">
-        <div class="card-title">Region</div>
+    <div class="card__header">
+        <div class="card__title">Region</div>
     </div>
 
-    <div style="max-width: 240px;">
-        <select class="form-select" @onchange="OnRegionChange">
+    <div class="live-formatter__region-control">
+        <label class="form__label" for="live-region">Select region</label>
+        <select id="live-region" class="form__select" @onchange="OnRegionChange">
             @foreach (var r in _regions)
             {
                 <option value="@r.Code" selected="@(r.Code == _selectedRegion)">@r.Display</option>
@@ -23,35 +24,41 @@
 </div>
 
 <div class="card">
-    <div class="card-header">
-        <div class="card-title">Type Digits</div>
-        <div class="card-subtitle">Enter digits (0-9) and + to see formatting applied incrementally</div>
+    <div class="card__header">
+        <div class="card__title">Type Digits</div>
+        <div class="card__subtitle">Enter digits (0-9) and + to see formatting applied incrementally</div>
     </div>
 
-    <input class="form-input form-input-phone form-input-lg"
+    <label class="form__label" for="live-input">Phone digits</label>
+    <input id="live-input"
+           class="form__input form__input--phone form__input--lg"
            type="text"
            value="@_rawInput"
            @oninput="OnDigitInput"
            placeholder="Start typing a phone number..."
-           autocomplete="off" />
+           autocomplete="off"
+           aria-describedby="live-output" />
 
-    <div class="live-output mt-2 @(_formattedOutput.Length > 0 ? "has-value" : "")">
+    <div id="live-output"
+         class="live-formatter__output mt-2 @(_formattedOutput.Length > 0 ? "live-formatter__output--active" : "")"
+         aria-live="polite"
+         aria-atomic="true">
         @if (_formattedOutput.Length > 0)
         {
             @_formattedOutput
         }
         else
         {
-            <span class="live-placeholder">Formatted output will appear here</span>
+            <span class="live-formatter__placeholder">Formatted output will appear here</span>
         }
     </div>
 </div>
 
 <div class="card">
-    <div class="card-header">
-        <div class="card-title">How It Works</div>
+    <div class="card__header">
+        <div class="card__title">How It Works</div>
     </div>
-    <p class="text-sm text-secondary" style="line-height: 1.7;">
+    <p class="text-sm text-secondary live-formatter__description">
         The <code>AsYouTypeFormatter</code> processes one character at a time via <code>InputDigit(char)</code>,
         returning the best-effort formatted string after each digit. It handles national prefixes,
         international dialing codes, and region-specific formatting rules incrementally.
@@ -61,13 +68,13 @@
     @if (_rawInput.Length > 0)
     {
         <div class="mt-2">
-            <div class="result-label mb-1">Step-by-step formatting</div>
+            <p class="section__subtitle">Step-by-step formatting</p>
             <div class="format-list">
                 @foreach (var step in _steps)
                 {
-                    <div class="format-item">
-                        <div class="format-name" style="min-width: 100px;">Input: '@step.Char'</div>
-                        <div class="format-value">@step.Output</div>
+                    <div class="format-list__item">
+                        <div class="format-list__name format-list__name--compact">Input: '@step.Char'</div>
+                        <div class="format-list__value">@step.Output</div>
                     </div>
                 }
             </div>

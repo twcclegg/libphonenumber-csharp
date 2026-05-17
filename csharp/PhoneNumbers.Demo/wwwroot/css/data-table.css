@@ -1,0 +1,43 @@
+/* ============ Data Table ============ */
+
+.data-table__row {
+    display: flex;
+    align-items: baseline;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+    gap: 1rem;
+}
+
+.data-table__row:last-child {
+    border-bottom: none;
+}
+
+.data-table__key {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    min-width: 180px;
+    flex-shrink: 0;
+}
+
+.data-table__value {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--text);
+}
+
+.data-table__value--mono {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+}
+
+@media (max-width: 860px) {
+    .data-table__row {
+        flex-direction: column;
+        gap: 0.125rem;
+    }
+
+    .data-table__key {
+        min-width: auto;
+    }
+}

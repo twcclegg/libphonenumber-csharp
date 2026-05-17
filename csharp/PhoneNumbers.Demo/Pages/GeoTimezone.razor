@@ -3,36 +3,38 @@
 <PageTitle>Geocoding &amp; Timezone - libphonenumber-csharp</PageTitle>
 
 <div class="page-header">
-    <h1>Geocoding &amp; Timezone</h1>
-    <p>Look up the geographic description, time zone, and carrier information associated with a phone number.</p>
+    <h1 class="page-header__title">Geocoding &amp; Timezone</h1>
+    <p class="page-header__description">Look up the geographic description, time zone, and carrier information associated with a phone number.</p>
 </div>
 
 <div class="card">
-    <div class="card-header">
-        <div class="card-title">Input</div>
+    <div class="card__header">
+        <div class="card__title">Input</div>
     </div>
 
-    <div class="input-row-3">
-        <div class="form-group" style="margin-bottom:0">
-            <label class="form-label">Phone Number</label>
-            <input class="form-input form-input-phone"
+    <div class="form__row--three-col">
+        <div class="form__group form__group--flush">
+            <label class="form__label" for="geo-phone">Phone Number</label>
+            <input id="geo-phone"
+                   class="form__input form__input--phone"
                    type="text"
                    value="@_phoneInput"
                    @oninput="OnPhoneInput"
-                   placeholder="+1 650 253 0000" />
+                   placeholder="+1 650 253 0000"
+                   autocomplete="tel" />
         </div>
-        <div class="form-group" style="margin-bottom:0">
-            <label class="form-label">Default Region</label>
-            <select class="form-select" @onchange="OnRegionChange">
+        <div class="form__group form__group--flush">
+            <label class="form__label" for="geo-region">Default Region</label>
+            <select id="geo-region" class="form__select" @onchange="OnRegionChange">
                 @foreach (var r in _regions)
                 {
                     <option value="@r.Code" selected="@(r.Code == _selectedRegion)">@r.Display</option>
                 }
             </select>
         </div>
-        <div class="form-group" style="margin-bottom:0">
-            <label class="form-label">Language</label>
-            <select class="form-select" @onchange="OnLocaleChange">
+        <div class="form__group form__group--flush">
+            <label class="form__label" for="geo-locale">Language</label>
+            <select id="geo-locale" class="form__select" @onchange="OnLocaleChange">
                 @foreach (var l in _locales)
                 {
                     <option value="@l.Key" selected="@(l.Key == _selectedLocale)">@l.Value</option>
@@ -42,113 +44,115 @@
     </div>
 
     <div class="flex gap-1 flex-wrap mt-2">
-        <button class="btn btn-sm btn-secondary" @onclick='() => SetExample("+1 650 253 0000", "US")'>US (Mountain View)</button>
-        <button class="btn btn-sm btn-secondary" @onclick='() => SetExample("+44 20 7946 0958", "GB")'>UK (London)</button>
-        <button class="btn btn-sm btn-secondary" @onclick='() => SetExample("+49 30 123456", "DE")'>DE (Berlin)</button>
-        <button class="btn btn-sm btn-secondary" @onclick='() => SetExample("+81 3 6384 9000", "JP")'>JP (Tokyo)</button>
-        <button class="btn btn-sm btn-secondary" @onclick='() => SetExample("+33 1 42 68 53 00", "FR")'>FR (Paris)</button>
+        <button class="btn btn--sm btn--secondary" @onclick='() => SetExample("+1 650 253 0000", "US")'>US (Mountain View)</button>
+        <button class="btn btn--sm btn--secondary" @onclick='() => SetExample("+44 20 7946 0958", "GB")'>UK (London)</button>
+        <button class="btn btn--sm btn--secondary" @onclick='() => SetExample("+49 30 123456", "DE")'>DE (Berlin)</button>
+        <button class="btn btn--sm btn--secondary" @onclick='() => SetExample("+81 3 6384 9000", "JP")'>JP (Tokyo)</button>
+        <button class="btn btn--sm btn--secondary" @onclick='() => SetExample("+33 1 42 68 53 00", "FR")'>FR (Paris)</button>
     </div>
 </div>
 
 @if (_parseError != null)
 {
-    <div class="error-message">@_parseError</div>
+    <div class="error-message" role="alert">@_parseError</div>
 }
 else if (_parsed != null)
 {
-    <div class="card">
-        <div class="card-header">
-            <div class="card-title">Geographic Location</div>
-        </div>
+    <div aria-live="polite">
+        <div class="card">
+            <div class="card__header">
+                <div class="card__title">Geographic Location</div>
+            </div>
 
-        <div class="result-grid">
-            <div class="result-item" style="grid-column: span 2;">
-                <div class="result-label">Description</div>
-                <div class="result-value" style="font-size: 1.125rem;">
-                    @if (!string.IsNullOrEmpty(_geoDescription))
-                    {
-                        @_geoDescription
-                    }
-                    else
-                    {
-                        <span class="text-secondary">No geographic data available</span>
-                    }
+            <div class="result-grid">
+                <div class="result-grid__item result-grid__item--full">
+                    <div class="result-grid__label">Description</div>
+                    <div class="result-grid__value result-grid__value--lg">
+                        @if (!string.IsNullOrEmpty(_geoDescription))
+                        {
+                            @_geoDescription
+                        }
+                        else
+                        {
+                            <span class="text-secondary">No geographic data available</span>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="card">
-        <div class="card-header">
-            <div class="card-title">Time Zones</div>
-        </div>
-
-        @if (_timeZones.Count > 0)
-        {
-            <div class="flex gap-sm flex-wrap">
-                @foreach (var tz in _timeZones)
-                {
-                    <span class="badge badge-accent">@tz</span>
-                }
+        <div class="card">
+            <div class="card__header">
+                <div class="card__title">Time Zones</div>
             </div>
-        }
-        else
-        {
-            <p class="text-sm text-secondary">No timezone data available for this number</p>
-        }
-    </div>
 
-    <div class="card">
-        <div class="card-header">
-            <div class="card-title">Carrier</div>
+            @if (_timeZones.Count > 0)
+            {
+                <div class="flex gap-sm flex-wrap">
+                    @foreach (var tz in _timeZones)
+                    {
+                        <span class="badge badge--accent">@tz</span>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-sm text-secondary">No timezone data available for this number</p>
+            }
         </div>
 
-        <div class="result-grid">
-            <div class="result-item" style="grid-column: span 2;">
-                <div class="result-label">Carrier Name</div>
-                <div class="result-value">
-                    @if (!string.IsNullOrEmpty(_carrierName))
-                    {
-                        @_carrierName
-                    }
-                    else
-                    {
-                        <span class="text-secondary">No carrier data available</span>
-                    }
+        <div class="card">
+            <div class="card__header">
+                <div class="card__title">Carrier</div>
+            </div>
+
+            <div class="result-grid">
+                <div class="result-grid__item result-grid__item--full">
+                    <div class="result-grid__label">Carrier Name</div>
+                    <div class="result-grid__value">
+                        @if (!string.IsNullOrEmpty(_carrierName))
+                        {
+                            @_carrierName
+                        }
+                        else
+                        {
+                            <span class="text-secondary">No carrier data available</span>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="card">
-        <div class="card-header">
-            <div class="card-title">Number Details</div>
-        </div>
-
-        <div class="data-row">
-            <div class="data-key">Formatted</div>
-            <div class="data-val data-val-mono">@_phoneUtil.Format(_parsed, PhoneNumberFormat.INTERNATIONAL)</div>
-        </div>
-        <div class="data-row">
-            <div class="data-key">Valid</div>
-            <div class="data-val">
-                @if (_phoneUtil.IsValidNumber(_parsed))
-                {
-                    <span class="badge badge-success">Valid</span>
-                }
-                else
-                {
-                    <span class="badge badge-error">Invalid</span>
-                }
+        <div class="card">
+            <div class="card__header">
+                <div class="card__title">Number Details</div>
             </div>
-        </div>
-        <div class="data-row">
-            <div class="data-key">Number Type</div>
-            <div class="data-val"><span class="badge badge-info">@FormatType(_phoneUtil.GetNumberType(_parsed))</span></div>
-        </div>
-        <div class="data-row">
-            <div class="data-key">Is Geographical</div>
-            <div class="data-val">@(_phoneUtil.IsNumberGeographical(_parsed) ? "Yes" : "No")</div>
+
+            <div class="data-table__row">
+                <div class="data-table__key">Formatted</div>
+                <div class="data-table__value data-table__value--mono">@_phoneUtil.Format(_parsed, PhoneNumberFormat.INTERNATIONAL)</div>
+            </div>
+            <div class="data-table__row">
+                <div class="data-table__key">Valid</div>
+                <div class="data-table__value">
+                    @if (_phoneUtil.IsValidNumber(_parsed))
+                    {
+                        <span class="badge badge--success">Valid</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge--error">Invalid</span>
+                    }
+                </div>
+            </div>
+            <div class="data-table__row">
+                <div class="data-table__key">Number Type</div>
+                <div class="data-table__value"><span class="badge badge--info">@FormatType(_phoneUtil.GetNumberType(_parsed))</span></div>
+            </div>
+            <div class="data-table__row">
+                <div class="data-table__key">Is Geographical</div>
+                <div class="data-table__value">@(_phoneUtil.IsNumberGeographical(_parsed) ? "Yes" : "No")</div>
+            </div>
         </div>
     </div>
 }
@@ -156,10 +160,10 @@ else
 {
     <div class="card">
         <div class="empty-state">
-            <div class="empty-state-icon">
+            <div class="empty-state__icon" aria-hidden="true">
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
             </div>
-            <p>Enter a phone number above to see geographic and timezone data</p>
+            <p class="empty-state__message">Enter a phone number above to see geographic and timezone data</p>
         </div>
     </div>
 }

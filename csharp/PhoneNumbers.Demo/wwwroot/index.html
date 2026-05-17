@@ -9,17 +9,32 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="css/app.css" rel="stylesheet" />
+    <link href="css/layout.css" rel="stylesheet" />
+    <link href="css/sidebar.css" rel="stylesheet" />
+    <link href="css/hero.css" rel="stylesheet" />
+    <link href="css/card.css" rel="stylesheet" />
+    <link href="css/page-header.css" rel="stylesheet" />
+    <link href="css/form.css" rel="stylesheet" />
+    <link href="css/badge.css" rel="stylesheet" />
+    <link href="css/result-grid.css" rel="stylesheet" />
+    <link href="css/format-list.css" rel="stylesheet" />
+    <link href="css/data-table.css" rel="stylesheet" />
+    <link href="css/feature-grid.css" rel="stylesheet" />
+    <link href="css/match-list.css" rel="stylesheet" />
+    <link href="css/live-formatter.css" rel="stylesheet" />
+    <link href="css/empty-state.css" rel="stylesheet" />
+    <link href="css/install-block.css" rel="stylesheet" />
 </head>
 <body>
     <div id="app">
-        <div class="loading">
-            <div class="loading-spinner"></div>
-            <p>Loading libphonenumber-csharp demo...</p>
-            <p class="loading-sub">Downloading WebAssembly runtime</p>
+        <div class="loading" role="status" aria-label="Loading application">
+            <div class="loading__spinner" aria-hidden="true"></div>
+            <p class="loading__text">Loading libphonenumber-csharp demo...</p>
+            <p class="loading__sub">Downloading WebAssembly runtime</p>
         </div>
     </div>
 
-    <div id="blazor-error-ui" style="display:none">
+    <div id="blazor-error-ui">
         An unhandled error has occurred.
         <a href="" class="reload">Reload</a>
     </div>
