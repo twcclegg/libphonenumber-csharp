@@ -1,0 +1,17 @@
+/* ============ Install Block ============ */
+
+.install-block {
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 0.875rem 1.25rem;
+    border-radius: var(--radius-xs);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    overflow-x: auto;
+}
+
+.install-block__prompt {
+    color: var(--accent);
+    user-select: none;
+    margin-right: 0.5rem;
+}

@@ -1,0 +1,52 @@
+/* ============ Live Formatter ============ */
+
+.live-formatter__region-control {
+    max-width: 240px;
+}
+
+.live-formatter__description {
+    line-height: 1.7;
+}
+
+.live-formatter__output {
+    font-family: var(--font-mono);
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--primary);
+    padding: 2rem 1.5rem;
+    background: var(--primary-light);
+    border-radius: var(--radius-sm);
+    text-align: center;
+    min-height: 5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.04em;
+    border: 2px dashed rgba(99, 102, 241, 0.2);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .live-formatter__output {
+        transition: all var(--transition);
+    }
+}
+
+.live-formatter__output--active {
+    border-color: transparent;
+    background: linear-gradient(135deg, var(--primary-light), #ede9fe);
+}
+
+.live-formatter__placeholder {
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--text-light);
+    letter-spacing: normal;
+}
+
+@media (max-width: 640px) {
+    .live-formatter__output {
+        font-size: 1.375rem;
+        padding: 1.5rem 1rem;
+    }
+}

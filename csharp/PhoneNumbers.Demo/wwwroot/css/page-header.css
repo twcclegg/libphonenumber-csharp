@@ -1,0 +1,19 @@
+/* ============ Page Header ============ */
+
+.page-header {
+    margin-bottom: 2rem;
+}
+
+.page-header__title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    margin-bottom: 0.375rem;
+}
+
+.page-header__description {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    max-width: 640px;
+    line-height: 1.6;
+}

@@ -1,0 +1,183 @@
+@page "/format"
+
+<PageTitle>Formatting - libphonenumber-csharp</PageTitle>
+
+<div class="page-header">
+    <h1 class="page-header__title">Formatting</h1>
+    <p class="page-header__description">See how a phone number looks in every supported format, including out-of-country and mobile dialing formats.</p>
+</div>
+
+<div class="card">
+    <div class="card__header">
+        <div class="card__title">Input</div>
+    </div>
+
+    <div class="form__row--three-col">
+        <div class="form__group form__group--flush">
+            <label class="form__label" for="format-phone">Phone Number</label>
+            <input id="format-phone"
+                   class="form__input form__input--phone"
+                   type="text"
+                   value="@_phoneInput"
+                   @oninput="OnPhoneInput"
+                   placeholder="+1 650 253 0000"
+                   autocomplete="tel" />
+        </div>
+        <div class="form__group form__group--flush">
+            <label class="form__label" for="format-region">Default Region</label>
+            <select id="format-region" class="form__select" @onchange="OnRegionChange">
+                @foreach (var r in _regions)
+                {
+                    <option value="@r.Code" selected="@(r.Code == _selectedRegion)">@r.Display</option>
+                }
+            </select>
+        </div>
+        <div class="form__group form__group--flush">
+            <label class="form__label" for="format-calling-from">Calling From</label>
+            <select id="format-calling-from" class="form__select" @onchange="OnCallingFromChange">
+                @foreach (var r in _regions)
+                {
+                    <option value="@r.Code" selected="@(r.Code == _callingFrom)">@r.Display</option>
+                }
+            </select>
+        </div>
+    </div>
+</div>
+
+@if (_parseError != null)
+{
+    <div class="error-message" role="alert">@_parseError</div>
+}
+else if (_parsed != null)
+{
+    <div aria-live="polite">
+        <div class="card">
+            <div class="card__header">
+                <div class="card__title">Standard Formats</div>
+            </div>
+
+            <div class="format-list">
+                <div class="format-list__item">
+                    <div class="format-list__name">E.164</div>
+                    <div class="format-list__value">@_phoneUtil.Format(_parsed, PhoneNumberFormat.E164)</div>
+                </div>
+                <div class="format-list__item">
+                    <div class="format-list__name">International</div>
+                    <div class="format-list__value">@_phoneUtil.Format(_parsed, PhoneNumberFormat.INTERNATIONAL)</div>
+                </div>
+                <div class="format-list__item">
+                    <div class="format-list__name">National</div>
+                    <div class="format-list__value">@_phoneUtil.Format(_parsed, PhoneNumberFormat.NATIONAL)</div>
+                </div>
+                <div class="format-list__item">
+                    <div class="format-list__name">RFC 3966</div>
+                    <div class="format-list__value">@_phoneUtil.Format(_parsed, PhoneNumberFormat.RFC3966)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card__header">
+                <div class="card__title">Contextual Formats</div>
+                <div class="card__subtitle">Formatted for dialing from @_callingFrom</div>
+            </div>
+
+            <div class="format-list">
+                <div class="format-list__item">
+                    <div class="format-list__name">Out-of-Country</div>
+                    <div class="format-list__value">@_phoneUtil.FormatOutOfCountryCallingNumber(_parsed, _callingFrom)</div>
+                </div>
+                <div class="format-list__item">
+                    <div class="format-list__name">Mobile Dialing</div>
+                    <div class="format-list__value">@_phoneUtil.FormatNumberForMobileDialing(_parsed, _callingFrom, true)</div>
+                </div>
+                <div class="format-list__item">
+                    <div class="format-list__name">Mobile (No Format)</div>
+                    <div class="format-list__value">@_phoneUtil.FormatNumberForMobileDialing(_parsed, _callingFrom, false)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card__header">
+                <div class="card__title">Other Properties</div>
+            </div>
+
+            <div class="format-list">
+                <div class="format-list__item">
+                    <div class="format-list__name">National Significant</div>
+                    <div class="format-list__value">@_phoneUtil.GetNationalSignificantNumber(_parsed)</div>
+                </div>
+                <div class="format-list__item">
+                    <div class="format-list__name">Can Dial Intl.</div>
+                    <div class="format-list__value">@(_phoneUtil.CanBeInternationallyDialled(_parsed) ? "Yes" : "No")</div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="empty-state">
+            <div class="empty-state__icon" aria-hidden="true">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            </div>
+            <p class="empty-state__message">Enter a phone number above to see all format options</p>
+        </div>
+    </div>
+}
+
+@code {
+    private readonly PhoneNumberUtil _phoneUtil = PhoneNumberUtil.GetInstance();
+    private string _phoneInput = "+1 650 253 0000";
+    private string _selectedRegion = "US";
+    private string _callingFrom = "GB";
+    private PhoneNumber? _parsed;
+    private string? _parseError;
+    private List<RegionOption> _regions = new();
+
+    protected override void OnInitialized()
+    {
+        _regions = _phoneUtil.GetSupportedRegions()
+            .OrderBy(r => r)
+            .Select(r => new RegionOption(r, $"{r} (+{_phoneUtil.GetCountryCodeForRegion(r)})"))
+            .ToList();
+        TryParse();
+    }
+
+    private void OnPhoneInput(ChangeEventArgs e)
+    {
+        _phoneInput = e.Value?.ToString() ?? "";
+        TryParse();
+    }
+
+    private void OnRegionChange(ChangeEventArgs e)
+    {
+        _selectedRegion = e.Value?.ToString() ?? "US";
+        TryParse();
+    }
+
+    private void OnCallingFromChange(ChangeEventArgs e)
+    {
+        _callingFrom = e.Value?.ToString() ?? "US";
+        TryParse();
+    }
+
+    private void TryParse()
+    {
+        _parsed = null;
+        _parseError = null;
+        if (string.IsNullOrWhiteSpace(_phoneInput)) return;
+        try
+        {
+            _parsed = _phoneUtil.Parse(_phoneInput, _selectedRegion);
+        }
+        catch (NumberParseException ex)
+        {
+            _parseError = ex.Message;
+        }
+    }
+
+    private record RegionOption(string Code, string Display);
+}
