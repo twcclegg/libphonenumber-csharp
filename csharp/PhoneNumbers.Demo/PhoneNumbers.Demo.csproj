@@ -5,6 +5,7 @@
     <RootNamespace>PhoneNumbers.Demo</RootNamespace>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <PathBase Condition="'$(PathBase)' == ''">/</PathBase>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,5 +16,28 @@
   <ItemGroup>
     <ProjectReference Include="..\PhoneNumbers\PhoneNumbers.csproj" />
   </ItemGroup>
+
+  <UsingTask TaskName="ReplaceFileText" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <InputFile Required="true" ParameterType="System.String" />
+      <OldText Required="true" ParameterType="System.String" />
+      <NewText Required="true" ParameterType="System.String" />
+    </ParameterGroup>
+    <Task>
+      <Code Type="Fragment" Language="cs">
+        var content = System.IO.File.ReadAllText(InputFile);
+        if (!content.Contains(OldText))
+            throw new System.InvalidOperationException($"Could not find '{OldText}' in {InputFile}");
+        content = content.Replace(OldText, NewText);
+        System.IO.File.WriteAllText(InputFile, content);
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <Target Name="UpdateBaseHref" AfterTargets="Publish" Condition="'$(PathBase)' != '/'">
+    <ReplaceFileText InputFile="$(PublishDir)wwwroot/index.html"
+                     OldText='&lt;base href="/" /&gt;'
+                     NewText='&lt;base href="$(PathBase)" /&gt;' />
+  </Target>
 
 </Project>

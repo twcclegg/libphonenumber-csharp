@@ -39,7 +39,7 @@ jobs:
       - name: Publish Blazor WASM app
         run: |
           REPO_NAME=$(echo "${{ github.repository }}" | cut -d'/' -f2)
-          dotnet publish csharp/PhoneNumbers.Demo/PhoneNumbers.Demo.csproj -c Release -o release -p:StaticWebAssetBasePath=/$REPO_NAME
+          dotnet publish csharp/PhoneNumbers.Demo/PhoneNumbers.Demo.csproj -c Release -o release -p:PathBase=/${REPO_NAME}/
 
       - name: Configure for GitHub Pages
         run: |
