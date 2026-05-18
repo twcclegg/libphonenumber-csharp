@@ -9,13 +9,17 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     open-pull-requests-limit: 2
+    cooldown:
+      default-days: 7
   - package-ecosystem: "nuget"
     directory: "/csharp/PhoneNumbers"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
     groups:
       PhoneNumbers_minor_patch_updates:
         update-types:
@@ -27,8 +31,10 @@ updates:
   - package-ecosystem: "nuget"
     directory: "/csharp/PhoneNumbers.Extensions"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
     groups:
       PhoneNumbers_Extensions_minor_patch_updates:
         update-types:
@@ -42,6 +48,8 @@ updates:
     schedule:
       interval: "monthly"
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
     groups:
       PhoneNumbers_Extensions_Test_minor_patch_updates:
         update-types:
@@ -55,6 +63,8 @@ updates:
     schedule:
       interval: "monthly"
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
     groups:
       PhoneNumbers_Test_minor_patch_updates:
         update-types:
@@ -68,6 +78,8 @@ updates:
     schedule:
       interval: "monthly"
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
     groups:
       PhoneNumbers_PerformanceTest_minor_patch_updates:
         update-types:
@@ -81,6 +93,8 @@ updates:
     schedule:
       interval: "quarterly"
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
     groups:
       PhoneNumbers_Demo_minor_patch_updates:
         update-types:
@@ -94,6 +108,8 @@ updates:
     schedule:
       interval: "quarterly"
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
     groups:
       PhoneNumbers_Demo_Tests_minor_patch_updates:
         update-types:
