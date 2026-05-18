@@ -48,7 +48,11 @@
     </div>
 </div>
 
-@if (_matches.Count > 0)
+@if (_searchError != null)
+{
+    <div class="error-message" role="alert">@_searchError</div>
+}
+else if (_matches.Count > 0)
 {
     <div class="card" aria-live="polite">
         <div class="card__header">
@@ -106,6 +110,7 @@ else if (!string.IsNullOrWhiteSpace(_textInput))
     private string _textInput = "";
     private List<PhoneNumberMatch> _matches = new();
     private List<RegionOption> _regions = new();
+    private string? _searchError;
 
     protected override void OnInitialized()
     {
@@ -147,11 +152,13 @@ else if (!string.IsNullOrWhiteSpace(_textInput))
     {
         _textInput = "";
         _matches.Clear();
+        _searchError = null;
     }
 
     private void Search()
     {
         _matches.Clear();
+        _searchError = null;
         if (string.IsNullOrWhiteSpace(_textInput)) return;
 
         try
@@ -160,9 +167,9 @@ else if (!string.IsNullOrWhiteSpace(_textInput))
                 .Take(50)
                 .ToList();
         }
-        catch
+        catch (Exception ex)
         {
-            _matches.Clear();
+            _searchError = ex.Message;
         }
     }
 

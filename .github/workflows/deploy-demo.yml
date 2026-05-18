@@ -6,6 +6,7 @@ on:
     paths:
       - 'csharp/PhoneNumbers.Demo/**'
       - 'csharp/PhoneNumbers/**'
+      - 'csharp/PhoneNumbers.Extensions/**'
       - 'resources/**'
       - '.github/workflows/deploy-demo.yml'
   schedule:
@@ -36,12 +37,12 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Publish Blazor WASM app
-        run: dotnet publish csharp/PhoneNumbers.Demo/PhoneNumbers.Demo.csproj -c Release -o release
+        run: |
+          REPO_NAME=$(echo "${{ github.repository }}" | cut -d'/' -f2)
+          dotnet publish csharp/PhoneNumbers.Demo/PhoneNumbers.Demo.csproj -c Release -o release -p:StaticWebAssetBasePath=/$REPO_NAME
 
       - name: Configure for GitHub Pages
         run: |
-          REPO_NAME=$(echo "${{ github.repository }}" | cut -d'/' -f2)
-          sed -i "s|<base href=\"/\" />|<base href=\"/${REPO_NAME}/\" />|g" release/wwwroot/index.html
           cp release/wwwroot/index.html release/wwwroot/404.html
           touch release/wwwroot/.nojekyll
 

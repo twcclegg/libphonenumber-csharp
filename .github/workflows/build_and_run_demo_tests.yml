@@ -7,6 +7,7 @@ on:
       - 'csharp/PhoneNumbers.Demo/**'
       - 'csharp/PhoneNumbers.Demo.Tests/**'
       - 'csharp/PhoneNumbers/**'
+      - 'csharp/PhoneNumbers.Extensions/**'
       - 'resources/**'
       - '.github/workflows/build_and_run_demo_tests.yml'
   workflow_dispatch:
