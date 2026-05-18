@@ -76,3 +76,29 @@ updates:
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
+  - package-ecosystem: "nuget"
+    directory: "/csharp/PhoneNumbers.Demo"
+    schedule:
+      interval: "quarterly"
+    open-pull-requests-limit: 5
+    groups:
+      PhoneNumbers_Demo_minor_patch_updates:
+        update-types:
+        - "minor"
+        - "patch"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+  - package-ecosystem: "nuget"
+    directory: "/csharp/PhoneNumbers.Demo.Tests"
+    schedule:
+      interval: "quarterly"
+    open-pull-requests-limit: 5
+    groups:
+      PhoneNumbers_Demo_Tests_minor_patch_updates:
+        update-types:
+        - "minor"
+        - "patch"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
