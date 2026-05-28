@@ -442,37 +442,41 @@ namespace PhoneNumbers
             IList<string> formattedNumberGroups)
         {
             var fromIndex = 0;
+            var candidate = normalizedCandidate.ToString();
             // Check each group of consecutive digits are not broken into separate groupings in the
             // normalizedCandidate string.
             for (var i = 0; i < formattedNumberGroups.Count; i++)
             {
                 // Fails if the substring of {@code normalizedCandidate} starting from {@code fromIndex}
                 // doesn't contain the consecutive digits in formattedNumberGroups[i].
-                fromIndex = normalizedCandidate.ToString().IndexOf(formattedNumberGroups[i], fromIndex, StringComparison.Ordinal);
+                fromIndex = candidate.IndexOf(formattedNumberGroups[i], fromIndex, StringComparison.Ordinal);
                 if (fromIndex < 0)
                 {
                     return false;
                 }
                 // Moves {@code fromIndex} forward.
                 fromIndex += formattedNumberGroups[i].Length;
-                if (i == 0 && fromIndex < normalizedCandidate.Length)
+                if (i == 0 && fromIndex < candidate.Length)
                 {
                     // We are at the position right after the NDC.
-                    if (char.IsDigit(normalizedCandidate[fromIndex]))
+                    if (char.IsDigit(candidate[fromIndex]))
                     {
                         // This means there is no formatting symbol after the NDC. In this case, we only
                         // accept the number if there is no formatting symbol at all in the number, except
                         // for extensions.
                         var nationalSignificantNumber = util.GetNationalSignificantNumber(number);
-                        return normalizedCandidate.ToString().Substring(fromIndex - formattedNumberGroups[i].Length)
-                            .StartsWith(nationalSignificantNumber, StringComparison.Ordinal);
+                        var nsnStart = fromIndex - formattedNumberGroups[i].Length;
+                        if (candidate.Length - nsnStart < nationalSignificantNumber.Length)
+                            return false;
+                        return string.Compare(candidate, nsnStart, nationalSignificantNumber, 0,
+                            nationalSignificantNumber.Length, StringComparison.Ordinal) == 0;
                     }
                 }
             }
             // The check here makes sure that we haven't mistakenly already used the extension to
             // match the last group of the subscriber number. Note the extension cannot have
             // formatting in-between digits.
-            return normalizedCandidate.ToString().Substring(fromIndex).Contains(number.Extension);
+            return candidate.IndexOf(number.Extension, fromIndex, StringComparison.Ordinal) >= 0;
         }
 
         public static bool AllNumberGroupsAreExactlyPresent(PhoneNumberUtil util,

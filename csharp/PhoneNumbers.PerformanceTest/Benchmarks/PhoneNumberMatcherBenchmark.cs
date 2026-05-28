@@ -47,10 +47,22 @@ namespace PhoneNumbers.PerformanceTest.Benchmarks
         }
 
         [Benchmark]
-        public int FindNumbers()
+        public int FindNumbers_Valid()
         {
             var checksum = 0;
             foreach (var match in _phoneNumberUtil.FindNumbers(_text, _defaultRegion))
+                checksum += match.RawString.Length;
+            return checksum;
+        }
+
+        // STRICT_GROUPING exercises AllNumberGroupsRemainGrouped, which the default VALID leniency
+        // does not. Useful to measure the matcher's group-formatting validation path.
+        [Benchmark]
+        public int FindNumbers_StrictGrouping()
+        {
+            var checksum = 0;
+            foreach (var match in _phoneNumberUtil.FindNumbers(_text, _defaultRegion,
+                         PhoneNumberUtil.Leniency.STRICT_GROUPING, long.MaxValue))
                 checksum += match.RawString.Length;
             return checksum;
         }

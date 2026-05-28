@@ -632,7 +632,13 @@ namespace PhoneNumbers
                 isCompleteNumber = true;
                 var startOfCountryCallingCode = iddMatcher.Length;
                 nationalNumber.Length = 0;
-                nationalNumber.Append(accruedInputWithoutFormatting.ToString().Substring(startOfCountryCallingCode));
+#if NETSTANDARD2_0
+                for (var k = startOfCountryCallingCode; k < accruedInputWithoutFormatting.Length; k++)
+                    nationalNumber.Append(accruedInputWithoutFormatting[k]);
+#else
+                nationalNumber.Append(accruedInputWithoutFormatting, startOfCountryCallingCode,
+                    accruedInputWithoutFormatting.Length - startOfCountryCallingCode);
+#endif
                 prefixBeforeNationalNumber.Length = 0;
                 prefixBeforeNationalNumber.Append(iddMatcher.Value);
                 if (accruedInputWithoutFormatting[0] != PhoneNumberUtil.PLUS_SIGN)
