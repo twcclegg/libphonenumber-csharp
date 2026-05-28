@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -138,7 +139,8 @@ internal static class Program
                 var map = ParseAreaCodeText(txtPath);
                 var outPath = Path.Combine(outputDir, $"{lang}.{countryCode}");
                 using var fs = File.Create(outPath);
-                BuildPrefixMapFromBin.WriteAreaCodeMap(fs, map);
+                using var gz = new GZipStream(fs, CompressionLevel.SmallestSize);
+                BuildPrefixMapFromBin.WriteAreaCodeMap(gz, map);
                 written++;
             }
         }
@@ -163,7 +165,8 @@ internal static class Program
 
         var map = ParseTimezoneText(inputFile, splitter: '&');
         using var fs = File.Create(outputFile);
-        BuildPrefixMapFromBin.WriteTimezoneMap(fs, map);
+        using var gz = new GZipStream(fs, CompressionLevel.SmallestSize);
+        BuildPrefixMapFromBin.WriteTimezoneMap(gz, map);
         Console.Out.WriteLine($"PhoneNumbers.MetadataBuilder: wrote {map.Count} timezone entries to {outputFile}");
         return 0;
     }
@@ -279,7 +282,8 @@ internal static class Program
             var key = MakeFileNameKey(metadata, isAlternateFormatsMetadata);
             var path = Path.Combine(outputDir, $"{filePrefix}_{key}");
             using var fs = File.Create(path);
-            BuildMetadataFromBin.WriteMetadata(fs, metadata);
+            using var gz = new GZipStream(fs, CompressionLevel.SmallestSize);
+            BuildMetadataFromBin.WriteMetadata(gz, metadata);
             written++;
         }
 

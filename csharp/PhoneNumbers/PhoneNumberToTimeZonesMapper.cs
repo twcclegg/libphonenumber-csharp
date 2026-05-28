@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO.Compression;
 using System.Linq;
 
 namespace PhoneNumbers
@@ -105,7 +106,8 @@ namespace PhoneNumbers
             var mapFile = names.FirstOrDefault(s => s.EndsWith(TZMAP_BIN_FILENAME, StringComparison.Ordinal))
                 ?? throw new MissingMetadataException(
                     $"Timezone data resource '{prefix}{TZMAP_BIN_FILENAME}' not found on assembly '{asm.GetName().Name}'.");
-            using var fp = asm.GetManifestResourceStream(mapFile);
+            using var raw = asm.GetManifestResourceStream(mapFile);
+            using var fp = new GZipStream(raw, CompressionMode.Decompress);
             var prefixMap = BuildPrefixMapFromBin.ReadTimezoneMap(fp);
             // Rehydrate as IDictionary<long, string[]> to match the existing constructor contract.
             IDictionary<long, string[]> dict = prefixMap;

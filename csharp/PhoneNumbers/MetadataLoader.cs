@@ -12,6 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Reflection;
 
 namespace PhoneNumbers
@@ -108,6 +109,12 @@ namespace PhoneNumbers
         }
 
         public Stream? LoadMetadata(string fileName)
-            => assembly.GetManifestResourceStream(resourcePrefix + fileName);
+        {
+            // The build pipeline gzips every bin before embedding it (see GZipStream wrapping in
+            // PhoneNumbers.MetadataBuilder). Decompress on the way out so callers see the plain
+            // bin format they already expect.
+            var raw = assembly.GetManifestResourceStream(resourcePrefix + fileName);
+            return raw == null ? null : new GZipStream(raw, CompressionMode.Decompress);
+        }
     }
 }
