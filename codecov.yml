@@ -1,0 +1,14 @@
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        # Allow overall coverage to drop by up to 1% without failing the build.
+        # Catches gradual rot without flagging tiny noise from refactors.
+        threshold: 1%
+    patch:
+      default:
+        # Patch coverage on changed lines must be at least 90%. Catches PRs that
+        # ship large uncovered blocks while tolerating a few hard-to-test lines
+        # (resource-loader plumbing, AOT-only branches, etc.).
+        target: 90%
