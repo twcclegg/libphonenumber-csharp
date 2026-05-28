@@ -27,6 +27,12 @@
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0' Or '$(TargetFramework)' == 'net9.0'">
     <Nullable>enable</Nullable>
+    <!--
+      Opt in to trim/AOT analysis on modern .NET TFMs. IsAotCompatible turns on the trim, single-file,
+      and AOT analyzers, and stamps the assembly with the metadata that lets consumers PublishAot
+      without warnings about untrimmable references. netstandard2.0 consumers are unaffected.
+    -->
+    <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
 
   <ItemGroup>

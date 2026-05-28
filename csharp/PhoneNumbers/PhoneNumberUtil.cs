@@ -994,7 +994,11 @@ namespace PhoneNumbers
         private HashSet<PhoneNumberType> GetSupportedTypesForMetadata(PhoneMetadata metadata)
         {
             var types = new HashSet<PhoneNumberType>();
+#if NETSTANDARD2_0
             foreach (PhoneNumberType type in Enum.GetValues(typeof(PhoneNumberType)))
+#else
+            foreach (var type in Enum.GetValues<PhoneNumberType>())
+#endif
             {
                 if (type == PhoneNumberType.FIXED_LINE_OR_MOBILE || type == PhoneNumberType.UNKNOWN)
                 {
