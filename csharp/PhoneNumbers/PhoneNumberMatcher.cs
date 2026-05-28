@@ -532,7 +532,30 @@ namespace PhoneNumbers
             }
             // The country-code will have a '-' following it.
             var startIndex = rfc3966Format.IndexOf('-') + 1;
-            return rfc3966Format.Substring(startIndex, endIndex - startIndex).Split('-');
+            return SplitRangeOnDash(rfc3966Format, startIndex, endIndex);
+        }
+
+        // Skips Substring(start, len).Split('-')'s intermediate string by counting groups in one
+        // pass and slicing directly into a right-sized array on the second.
+        private static string[] SplitRangeOnDash(string source, int startIndex, int endIndex)
+        {
+            var groupCount = 1;
+            for (var i = startIndex; i < endIndex; i++)
+                if (source[i] == '-') groupCount++;
+
+            var result = new string[groupCount];
+            var resultIdx = 0;
+            var groupStart = startIndex;
+            for (var i = startIndex; i < endIndex; i++)
+            {
+                if (source[i] == '-')
+                {
+                    result[resultIdx++] = source.Substring(groupStart, i - groupStart);
+                    groupStart = i + 1;
+                }
+            }
+            result[resultIdx] = source.Substring(groupStart, endIndex - groupStart);
+            return result;
         }
 
         /// <summary>
