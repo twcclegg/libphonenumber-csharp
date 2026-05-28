@@ -138,8 +138,7 @@ internal static class Program
                 var countryCode = Path.GetFileNameWithoutExtension(txtPath);
                 var map = ParseAreaCodeText(txtPath);
                 var outPath = Path.Combine(outputDir, $"{lang}.{countryCode}");
-                using var fs = File.Create(outPath);
-                using var gz = new GZipStream(fs, CompressionLevel.SmallestSize);
+                using var gz = new GZipStream(File.Create(outPath), CompressionLevel.SmallestSize);
                 BuildPrefixMapFromBin.WriteAreaCodeMap(gz, map);
                 written++;
             }
@@ -164,8 +163,7 @@ internal static class Program
         Directory.CreateDirectory(Path.GetDirectoryName(outputFile)!);
 
         var map = ParseTimezoneText(inputFile, splitter: '&');
-        using var fs = File.Create(outputFile);
-        using var gz = new GZipStream(fs, CompressionLevel.SmallestSize);
+        using var gz = new GZipStream(File.Create(outputFile), CompressionLevel.SmallestSize);
         BuildPrefixMapFromBin.WriteTimezoneMap(gz, map);
         Console.Out.WriteLine($"PhoneNumbers.MetadataBuilder: wrote {map.Count} timezone entries to {outputFile}");
         return 0;
@@ -281,8 +279,7 @@ internal static class Program
         {
             var key = MakeFileNameKey(metadata, isAlternateFormatsMetadata);
             var path = Path.Combine(outputDir, $"{filePrefix}_{key}");
-            using var fs = File.Create(path);
-            using var gz = new GZipStream(fs, CompressionLevel.SmallestSize);
+            using var gz = new GZipStream(File.Create(path), CompressionLevel.SmallestSize);
             BuildMetadataFromBin.WriteMetadata(gz, metadata);
             written++;
         }

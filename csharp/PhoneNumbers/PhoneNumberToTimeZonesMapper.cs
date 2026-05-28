@@ -106,7 +106,9 @@ namespace PhoneNumbers
             var mapFile = names.FirstOrDefault(s => s.EndsWith(TZMAP_BIN_FILENAME, StringComparison.Ordinal))
                 ?? throw new MissingMetadataException(
                     $"Timezone data resource '{prefix}{TZMAP_BIN_FILENAME}' not found on assembly '{asm.GetName().Name}'.");
-            using var raw = asm.GetManifestResourceStream(mapFile);
+            using var raw = asm.GetManifestResourceStream(mapFile)
+                ?? throw new MissingMetadataException(
+                    $"Timezone data resource '{mapFile}' not found on assembly '{asm.GetName().Name}'.");
             using var fp = new GZipStream(raw, CompressionMode.Decompress);
             var prefixMap = BuildPrefixMapFromBin.ReadTimezoneMap(fp);
             // Rehydrate as IDictionary<long, string[]> to match the existing constructor contract.
