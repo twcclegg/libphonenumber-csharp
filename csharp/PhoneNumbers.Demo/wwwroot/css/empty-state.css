@@ -1,0 +1,48 @@
+/* ============ Empty State ============ */
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--text-light);
+}
+
+.empty-state__icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+    opacity: 0.25;
+}
+
+.empty-state__message {
+    font-size: 0.9375rem;
+}
+
+/* ============ Error Message ============ */
+
+.error-message {
+    padding: 0.75rem 1rem;
+    background: var(--error-light);
+    color: var(--error);
+    border-radius: var(--radius-xs);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+/* ============ Section Titles ============ */
+
+.section__title {
+    font-size: 1.125rem;
+    font-weight: 650;
+    margin-bottom: 1rem;
+    letter-spacing: -0.01em;
+}
+
+.section__subtitle {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    margin-top: -0.625rem;
+    margin-bottom: 1rem;
+}

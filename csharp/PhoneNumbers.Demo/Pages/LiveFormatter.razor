@@ -1,0 +1,131 @@
+@page "/live"
+
+<PageTitle>Live Formatter - libphonenumber-csharp</PageTitle>
+
+<div class="page-header">
+    <h1 class="page-header__title">Live Formatter</h1>
+    <p class="page-header__description">Type digits and watch them formatted in real-time using the AsYouTypeFormatter, just like a native phone dialer.</p>
+</div>
+
+<div class="card">
+    <div class="card__header">
+        <div class="card__title">Region</div>
+    </div>
+
+    <div class="live-formatter__region-control">
+        <label class="form__label" for="live-region">Select region</label>
+        <select id="live-region" class="form__select" @onchange="OnRegionChange">
+            @foreach (var r in _regions)
+            {
+                <option value="@r.Code" selected="@(r.Code == _selectedRegion)">@r.Display</option>
+            }
+        </select>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card__header">
+        <div class="card__title">Type Digits</div>
+        <div class="card__subtitle">Enter digits (0-9) and + to see formatting applied incrementally</div>
+    </div>
+
+    <label class="form__label" for="live-input">Phone digits</label>
+    <input id="live-input"
+           class="form__input form__input--phone form__input--lg"
+           type="text"
+           value="@_rawInput"
+           @oninput="OnDigitInput"
+           placeholder="Start typing a phone number..."
+           autocomplete="off"
+           aria-describedby="live-output" />
+
+    <div id="live-output"
+         class="live-formatter__output mt-2 @(_formattedOutput.Length > 0 ? "live-formatter__output--active" : "")"
+         aria-live="polite"
+         aria-atomic="true">
+        @if (_formattedOutput.Length > 0)
+        {
+            @_formattedOutput
+        }
+        else
+        {
+            <span class="live-formatter__placeholder">Formatted output will appear here</span>
+        }
+    </div>
+</div>
+
+<div class="card">
+    <div class="card__header">
+        <div class="card__title">How It Works</div>
+    </div>
+    <p class="text-sm text-secondary live-formatter__description">
+        The <code>AsYouTypeFormatter</code> processes one character at a time via <code>InputDigit(char)</code>,
+        returning the best-effort formatted string after each digit. It handles national prefixes,
+        international dialing codes, and region-specific formatting rules incrementally.
+        This is the same logic used by phone dialers to format numbers as you type.
+    </p>
+
+    @if (_rawInput.Length > 0)
+    {
+        <div class="mt-2">
+            <p class="section__subtitle">Step-by-step formatting</p>
+            <div class="format-list">
+                @foreach (var step in _steps)
+                {
+                    <div class="format-list__item">
+                        <div class="format-list__name format-list__name--compact">Input: '@step.Char'</div>
+                        <div class="format-list__value">@step.Output</div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private readonly PhoneNumberUtil _phoneUtil = PhoneNumberUtil.GetInstance();
+    private string _selectedRegion = "US";
+    private string _rawInput = "";
+    private string _formattedOutput = "";
+    private List<FormatStep> _steps = new();
+    private List<RegionOption> _regions = new();
+
+    protected override void OnInitialized()
+    {
+        _regions = _phoneUtil.GetSupportedRegions()
+            .OrderBy(r => r)
+            .Select(r => new RegionOption(r, $"{r} (+{_phoneUtil.GetCountryCodeForRegion(r)})"))
+            .ToList();
+    }
+
+    private void OnRegionChange(ChangeEventArgs e)
+    {
+        _selectedRegion = e.Value?.ToString() ?? "US";
+        Reformat();
+    }
+
+    private void OnDigitInput(ChangeEventArgs e)
+    {
+        var raw = e.Value?.ToString() ?? "";
+        _rawInput = new string(raw.Where(c => char.IsDigit(c) || c == '+').ToArray());
+        Reformat();
+    }
+
+    private void Reformat()
+    {
+        _steps.Clear();
+        _formattedOutput = "";
+
+        if (_rawInput.Length == 0) return;
+
+        var formatter = _phoneUtil.GetAsYouTypeFormatter(_selectedRegion);
+        foreach (var c in _rawInput)
+        {
+            _formattedOutput = formatter.InputDigit(c);
+            _steps.Add(new FormatStep(c, _formattedOutput));
+        }
+    }
+
+    private record FormatStep(char Char, string Output);
+    private record RegionOption(string Code, string Display);
+}

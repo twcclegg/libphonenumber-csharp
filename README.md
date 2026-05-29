@@ -8,6 +8,9 @@ The code was rewritten from the Java source mostly unchanged, please refer to th
 
 The original Apache License 2.0 was preserved.
 
+> [!TIP]
+> **[Try the interactive demo →](https://twcclegg.github.io/libphonenumber-csharp/)** — parse, format, validate, and find phone numbers in your browser. No install required; runs entirely via WebAssembly.
+
 See [this](csharp/README.md) for details about the port.
 
 Phone number metadata is updated in the Google repo approximately every two weeks. This library is automatically updated by a [scheduled github action](https://github.com/twcclegg/libphonenumber-csharp/actions/workflows/create_new_release_on_new_metadata_update.yml) to include the latest metadata, usually within a day.

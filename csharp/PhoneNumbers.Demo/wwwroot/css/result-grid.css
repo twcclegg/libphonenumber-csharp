@@ -1,0 +1,54 @@
+/* ============ Result Grid ============ */
+
+.result-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.75rem;
+}
+
+.result-grid__item {
+    padding: 0.875rem 1rem;
+    background: var(--bg);
+    border-radius: var(--radius-xs);
+    border: 1px solid transparent;
+}
+
+.result-grid__label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+}
+
+.result-grid__value {
+    font-size: 0.9375rem;
+    font-weight: 550;
+    color: var(--text);
+    word-break: break-all;
+}
+
+.result-grid__value--mono {
+    font-family: var(--font-mono);
+    font-size: 0.9375rem;
+    letter-spacing: 0.01em;
+}
+
+.result-grid__item--full {
+    grid-column: span 2;
+}
+
+.result-grid__value--lg {
+    font-size: 1.125rem;
+}
+
+@media (max-width: 860px) {
+    .result-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .result-grid__item--full {
+        grid-column: span 1;
+    }
+}
