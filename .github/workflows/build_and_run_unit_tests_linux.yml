@@ -18,13 +18,13 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 9.x
+          dotnet-version: 10.x
       - name: Restore dependencies
         run: dotnet restore
         working-directory: ./csharp
       - name: Build solution
         run: dotnet build --no-restore
         working-directory: ./csharp
-      - name: Test solution targeting dotnet9.0 only
-        run: dotnet test --no-build --verbosity normal -p:TargetFrameworks=net9.0
+      - name: Test solution targeting dotnet10.0 only
+        run: dotnet test --no-build --verbosity normal -p:TargetFrameworks=net10.0
         working-directory: ./csharp

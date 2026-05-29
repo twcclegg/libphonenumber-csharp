@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netframework4.8;net8.0;net9.0</TargetFrameworks>
+    <TargetFrameworks>netframework4.8;net8.0;net9.0;net10.0</TargetFrameworks>
     <!--
       Pin the C# language version so all TFMs (including netframework4.8, which the SDK
       otherwise defaults to C# 7.3) accept post-7.3 syntax used by tests: `using var`
@@ -14,7 +14,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0' Or '$(TargetFramework)' == 'net9.0'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0' Or '$(TargetFramework)' == 'net9.0' Or '$(TargetFramework)' == 'net10.0'">
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
@@ -66,7 +66,7 @@
     <TestResourcesGeocodingDir>$(MSBuildThisFileDirectory)..\..\resources/test/geocoding</TestResourcesGeocodingDir>
     <TestResourcesCarrierDir>$(MSBuildThisFileDirectory)..\..\resources/test/carrier</TestResourcesCarrierDir>
     <MetadataBuilderProject>$(MSBuildThisFileDirectory)..\PhoneNumbers.MetadataBuilder\PhoneNumbers.MetadataBuilder.csproj</MetadataBuilderProject>
-    <MetadataBuilderDll>$(MSBuildThisFileDirectory)..\PhoneNumbers.MetadataBuilder\bin\$(Configuration)\net9.0\PhoneNumbers.MetadataBuilder.dll</MetadataBuilderDll>
+    <MetadataBuilderDll>$(MSBuildThisFileDirectory)..\PhoneNumbers.MetadataBuilder\bin\$(Configuration)\net10.0\PhoneNumbers.MetadataBuilder.dll</MetadataBuilderDll>
   </PropertyGroup>
 
   <!--

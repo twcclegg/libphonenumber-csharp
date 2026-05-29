@@ -28,15 +28,15 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 9.x
+          dotnet-version: 10.x
 
       - name: Run benchmarks (PR branch)
-        run: dotnet run -c Release --framework net9.0 -- --filter "*"
+        run: dotnet run -c Release --framework net10.0 -- --filter "*"
         working-directory: ./branch-code/csharp/PhoneNumbers.PerformanceTest
 
       - name: Run benchmarks (main branch)
         if: github.event_name == 'pull_request'
-        run: dotnet run -c Release --framework net9.0 -- --filter "*"
+        run: dotnet run -c Release --framework net10.0 -- --filter "*"
         working-directory: ./main-code/csharp/PhoneNumbers.PerformanceTest
 
       - name: Stage benchmark artifact
