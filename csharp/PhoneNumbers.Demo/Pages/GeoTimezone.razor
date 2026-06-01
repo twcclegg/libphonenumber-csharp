@@ -1,8 +1,11 @@
 @page "/geo"
+@inject NavigationManager Nav
 
 <PageTitle>Geocoding &amp; Timezone - libphonenumber-csharp</PageTitle>
 
+<div class="reveal">
 <div class="page-header">
+    <div class="page-header__eyebrow">OfflineGeocoder</div>
     <h1 class="page-header__title">Geocoding &amp; Timezone</h1>
     <p class="page-header__description">Look up the geographic description, time zone, and carrier information associated with a phone number.</p>
 </div>
@@ -20,6 +23,7 @@
                    type="text"
                    value="@_phoneInput"
                    @oninput="OnPhoneInput"
+                   @onchange="OnPhoneCommit"
                    placeholder="+1 650 253 0000"
                    autocomplete="tel" />
         </div>
@@ -44,11 +48,11 @@
     </div>
 
     <div class="flex gap-1 flex-wrap mt-2">
-        <button class="btn btn--sm btn--secondary" @onclick='() => SetExample("+1 650 253 0000", "US")'>US (Mountain View)</button>
-        <button class="btn btn--sm btn--secondary" @onclick='() => SetExample("+44 20 7946 0958", "GB")'>UK (London)</button>
-        <button class="btn btn--sm btn--secondary" @onclick='() => SetExample("+49 30 123456", "DE")'>DE (Berlin)</button>
-        <button class="btn btn--sm btn--secondary" @onclick='() => SetExample("+81 3 6384 9000", "JP")'>JP (Tokyo)</button>
-        <button class="btn btn--sm btn--secondary" @onclick='() => SetExample("+33 1 42 68 53 00", "FR")'>FR (Paris)</button>
+        <button class="btn btn--sm btn--chip" @onclick='() => SetExample("+1 650 253 0000", "US")'>US (Mountain View)</button>
+        <button class="btn btn--sm btn--chip" @onclick='() => SetExample("+44 20 7946 0958", "GB")'>UK (London)</button>
+        <button class="btn btn--sm btn--chip" @onclick='() => SetExample("+49 30 123456", "DE")'>DE (Berlin)</button>
+        <button class="btn btn--sm btn--chip" @onclick='() => SetExample("+81 3 6384 9000", "JP")'>JP (Tokyo)</button>
+        <button class="btn btn--sm btn--chip" @onclick='() => SetExample("+33 1 42 68 53 00", "FR")'>FR (Paris)</button>
     </div>
 </div>
 
@@ -178,6 +182,7 @@ else
         </div>
     </div>
 }
+</div>
 
 @code {
     private readonly PhoneNumberUtil _phoneUtil = PhoneNumberUtil.GetInstance();
@@ -213,6 +218,10 @@ else
             .Select(r => new RegionOption(r, $"{r} (+{_phoneUtil.GetCountryCodeForRegion(r)})"))
             .ToList();
 
+        var (n, r2) = UrlState.Read(Nav);
+        if (n != null) _phoneInput = n;
+        if (!string.IsNullOrEmpty(r2)) _selectedRegion = r2;
+
         // Yield so the loading state renders before we block the thread loading
         // the large geocoding/timezone/carrier embedded binary datasets.
         await Task.Yield();
@@ -225,16 +234,27 @@ else
         TryParse();
     }
 
+    // @oninput keeps the live results in sync on every keystroke, but does NOT touch the URL.
     private void OnPhoneInput(ChangeEventArgs e)
     {
         _phoneInput = e.Value?.ToString() ?? "";
         TryParse();
     }
 
+    // @onchange fires when the field is committed (blur / Enter), so the URL is only
+    // rewritten once the user is done typing — never mid-keystroke.
+    private void OnPhoneCommit(ChangeEventArgs e)
+    {
+        _phoneInput = e.Value?.ToString() ?? "";
+        TryParse();
+        SyncUrl();
+    }
+
     private void OnRegionChange(ChangeEventArgs e)
     {
         _selectedRegion = e.Value?.ToString() ?? "US";
         TryParse();
+        SyncUrl();
     }
 
     private void OnLocaleChange(ChangeEventArgs e)
@@ -248,7 +268,11 @@ else
         _phoneInput = number;
         _selectedRegion = region;
         TryParse();
+        SyncUrl();
     }
+
+    private void SyncUrl()
+        => Nav.NavigateTo(UrlState.Build(Nav, _phoneInput, _selectedRegion), forceLoad: false, replace: true);
 
     private Locale GetLocale() => _selectedLocale switch
     {

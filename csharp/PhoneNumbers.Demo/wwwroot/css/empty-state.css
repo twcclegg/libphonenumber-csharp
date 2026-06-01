@@ -1,48 +1,56 @@
-/* ============ Empty State ============ */
+/* ============================================================
+   Empty state
+   ============================================================ */
 
 .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
-    padding: 3rem 2rem;
-    color: var(--text-light);
+    padding: var(--space-8) var(--space-4);
+    color: var(--text-muted);
 }
 
 .empty-state__icon {
-    font-size: 2.5rem;
-    margin-bottom: 0.75rem;
-    opacity: 0.25;
+    width: 56px;
+    height: 56px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--surface-2);
+    color: var(--text-muted);
+    margin-bottom: var(--space-3);
+}
+
+.empty-state__icon svg {
+    width: 26px;
+    height: 26px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 .empty-state__message {
-    font-size: 0.9375rem;
+    font-size: var(--fs-base);
+    max-width: 36ch;
 }
 
-/* ============ Error Message ============ */
+/* ============================================================
+   Error message / alert
+   ============================================================ */
 
 .error-message {
-    padding: 0.75rem 1rem;
-    background: var(--error-light);
-    color: var(--error);
-    border-radius: var(--radius-xs);
-    font-size: 0.8125rem;
-    font-weight: 500;
     display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 1rem;
-}
-
-/* ============ Section Titles ============ */
-
-.section__title {
-    font-size: 1.125rem;
-    font-weight: 650;
-    margin-bottom: 1rem;
-    letter-spacing: -0.01em;
-}
-
-.section__subtitle {
-    font-size: 0.8125rem;
-    color: var(--text-secondary);
-    margin-top: -0.625rem;
-    margin-bottom: 1rem;
+    align-items: flex-start;
+    gap: 0.6rem;
+    background: var(--error-bg);
+    color: var(--error-fg);
+    border: 1px solid color-mix(in srgb, var(--error-solid) 30%, transparent);
+    border-radius: var(--radius-sm);
+    padding: 0.8rem 1rem;
+    font-size: var(--fs-sm);
+    font-weight: 500;
+    margin-bottom: var(--space-4);
 }

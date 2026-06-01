@@ -1,46 +1,57 @@
-/* ============ Format List ============ */
+/* ============================================================
+   Format list (labelled rows with mono value)
+   ============================================================ */
 
 .format-list {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
 }
 
 .format-list__item {
     display: flex;
     align-items: center;
-    padding: 0.75rem 1rem;
-    background: var(--bg);
-    border-radius: var(--radius-xs);
-    gap: 1rem;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.format-list__item:last-child {
+    border-bottom: none;
 }
 
 .format-list__name {
-    font-size: 0.75rem;
+    font-size: var(--fs-sm);
     font-weight: 600;
     color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    min-width: 140px;
+    min-width: 130px;
     flex-shrink: 0;
 }
 
 .format-list__name--compact {
     min-width: 100px;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    color: var(--text-muted);
 }
 
 .format-list__value {
     font-family: var(--font-mono);
-    font-size: 0.9375rem;
+    font-size: var(--fs-md);
     color: var(--text);
+    text-align: right;
     flex: 1;
     word-break: break-all;
 }
 
-@media (max-width: 860px) {
+@media (max-width: 640px) {
     .format-list__item {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.25rem;
+    }
+
+    .format-list__value {
+        text-align: left;
     }
 }

@@ -1,44 +1,39 @@
-/* ============ Badge ============ */
+/* ============================================================
+   Badge
+   ============================================================ */
 
 .badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.25rem;
-    padding: 0.1875rem 0.625rem;
-    border-radius: 9999px;
-    font-size: 0.75rem;
+    gap: 0.32rem;
+    padding: 0.18rem 0.55rem;
+    border-radius: var(--radius-pill);
+    font-size: var(--fs-xs);
     font-weight: 600;
+    font-family: var(--font-sans);
     white-space: nowrap;
     line-height: 1.5;
+    border: 1px solid transparent;
 }
 
-.badge--success {
-    background: var(--success-light);
-    color: #059669;
+.badge svg {
+    width: 12px;
+    height: 12px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
-.badge--error {
-    background: var(--error-light);
-    color: #dc2626;
-}
+.badge--success { background: var(--success-bg); color: var(--success-fg); }
+.badge--error   { background: var(--error-bg);   color: var(--error-fg); }
+.badge--warning { background: var(--warning-bg); color: var(--warning-fg); }
+.badge--info    { background: var(--info-bg);    color: var(--info-fg); }
+.badge--neutral { background: var(--neutral-bg); color: var(--neutral-fg); }
+.badge--accent  { background: var(--accent-soft); color: var(--accent-soft-fg); border-color: var(--accent-soft-border); }
 
-.badge--warning {
-    background: var(--warning-light);
-    color: #d97706;
-}
-
-.badge--info {
-    background: var(--primary-light);
-    color: var(--primary);
-}
-
-.badge--neutral {
-    background: var(--bg);
-    color: var(--text-secondary);
-    border: 1px solid var(--border);
-}
-
-.badge--accent {
-    background: var(--accent-light);
-    color: #0891b2;
+.badge--lg {
+    font-size: var(--fs-sm);
+    padding: 0.3rem 0.7rem;
 }

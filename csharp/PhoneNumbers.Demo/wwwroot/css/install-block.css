@@ -1,17 +1,23 @@
-/* ============ Install Block ============ */
+/* ============================================================
+   Install block (code)
+   ============================================================ */
 
 .install-block {
-    background: #1e293b;
-    color: #e2e8f0;
-    padding: 0.875rem 1.25rem;
-    border-radius: var(--radius-xs);
     font-family: var(--font-mono);
-    font-size: 0.8125rem;
+    font-size: var(--fs-base);
+    background: var(--code-bg);
+    color: var(--code-text);
+    border-radius: var(--radius-sm);
+    padding: 0.8rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
     overflow-x: auto;
 }
 
 .install-block__prompt {
-    color: var(--accent);
+    color: var(--accent-2);
     user-select: none;
-    margin-right: 0.5rem;
+    font-weight: 600;
+    margin-right: 0;
 }

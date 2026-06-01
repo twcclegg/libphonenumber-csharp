@@ -1,15 +1,19 @@
 @page "/live"
+@inject NavigationManager Nav
 
 <PageTitle>Live Formatter - libphonenumber-csharp</PageTitle>
 
+<div class="reveal">
 <div class="page-header">
+    <div class="page-header__eyebrow">AsYouTypeFormatter</div>
     <h1 class="page-header__title">Live Formatter</h1>
-    <p class="page-header__description">Type digits and watch them formatted in real-time using the AsYouTypeFormatter, just like a native phone dialer.</p>
+    <p class="page-header__description">Format a number incrementally as it is dialled. Unlike a one-shot <code>Format()</code>, the <code>AsYouTypeFormatter</code> works on a half-typed number and tracks where the caret should sit as it inserts spaces and brackets &mdash; exactly what a phone keypad needs.</p>
 </div>
 
 <div class="card">
     <div class="card__header">
         <div class="card__title">Region</div>
+        <div class="card__subtitle">The assumed region for numbers typed without a + country code</div>
     </div>
 
     <div class="live-formatter__region-control">
@@ -39,19 +43,62 @@
            autocomplete="off"
            aria-describedby="live-output" />
 
+    <div class="flex gap-1 flex-wrap mt-2">
+        <button class="btn btn--sm btn--chip" @onclick='() => SetExample("6502530000", "US")'>US number</button>
+        <button class="btn btn--sm btn--chip" @onclick='() => SetExample("02079460958", "GB")'>UK number</button>
+        <button class="btn btn--sm btn--chip" @onclick='() => SetExample("0412345678", "AU")'>AU mobile</button>
+        <button class="btn btn--sm btn--chip" @onclick='() => SetExample("+81363849000", "JP")'>+ International</button>
+    </div>
+
     <div id="live-output"
          class="live-formatter__output mt-2 @(_formattedOutput.Length > 0 ? "live-formatter__output--active" : "")"
          aria-live="polite"
          aria-atomic="true">
         @if (_formattedOutput.Length > 0)
         {
-            @_formattedOutput
+            <span class="live-formatter__text">@_caretBefore</span>
+            <span class="live-formatter__caret" aria-hidden="true"></span>
+            <span class="live-formatter__text">@_caretAfter</span>
         }
         else
         {
             <span class="live-formatter__placeholder">Formatted output will appear here</span>
+            <span class="live-formatter__caret" aria-hidden="true"></span>
         }
     </div>
+</div>
+
+<div class="card">
+    <div class="card__header">
+        <div class="card__title">Caret Tracking</div>
+        <div class="card__subtitle">Where the keypad should put the cursor after the last digit</div>
+    </div>
+
+    @if (_rawInput.Length == 0)
+    {
+        <p class="live-formatter__placeholder">Start typing to watch the remembered caret position update.</p>
+    }
+    else
+    {
+        <div class="result-grid">
+            <div class="result-grid__item">
+                <div class="result-grid__label">Remembered position</div>
+                <div class="result-grid__value">
+                    <span class="badge badge--accent">index @_caretPos of @_formattedOutput.Length</span>
+                </div>
+            </div>
+            <div class="result-grid__item">
+                <div class="result-grid__label">Caret sits after</div>
+                <div class="result-grid__value data-table__value--mono">@CaretContext()</div>
+            </div>
+        </div>
+        <p class="text-sm text-secondary live-formatter__description mt-2">
+            <code>InputDigitAndRememberPosition</code> records the digit you just typed and
+            <code>GetRememberedPosition</code> reports its index in the reformatted string. As the
+            formatter inserts spaces and brackets, that index shifts to stay anchored to your digit &mdash;
+            so a keypad can keep the cursor in the right place. A plain <code>Format()</code> cannot do this.
+        </p>
+    }
 </div>
 
 <div class="card">
@@ -60,16 +107,18 @@
     </div>
     <p class="text-sm text-secondary live-formatter__description">
         The <code>AsYouTypeFormatter</code> processes one character at a time via <code>InputDigit(char)</code>,
-        returning the best-effort formatted string after each digit. It handles national prefixes,
-        international dialing codes, and region-specific formatting rules incrementally.
-        This is the same logic used by phone dialers to format numbers as you type.
+        returning the best-effort formatted string after each digit &mdash; handling national prefixes,
+        international dialing codes and region-specific grouping incrementally, exactly like a phone dialer.
+        It is deliberately narrow: it formats, it does not validate. To parse a completed number and inspect
+        its validity, type, region and every canonical format, head to
+        <a class="live-formatter__link" href="parse">Parse &amp; Validate</a>.
     </p>
 
     @if (_rawInput.Length > 0)
     {
         <div class="mt-2">
             <p class="section__subtitle">Step-by-step formatting</p>
-            <div class="format-list">
+            <div class="format-list" id="live-steps">
                 @foreach (var step in _steps)
                 {
                     <div class="format-list__item">
@@ -81,12 +130,16 @@
         </div>
     }
 </div>
+</div>
 
 @code {
     private readonly PhoneNumberUtil _phoneUtil = PhoneNumberUtil.GetInstance();
     private string _selectedRegion = "US";
     private string _rawInput = "";
     private string _formattedOutput = "";
+    private string _caretBefore = "";
+    private string _caretAfter = "";
+    private int _caretPos;
     private List<FormatStep> _steps = new();
     private List<RegionOption> _regions = new();
 
@@ -96,12 +149,16 @@
             .OrderBy(r => r)
             .Select(r => new RegionOption(r, $"{r} (+{_phoneUtil.GetCountryCodeForRegion(r)})"))
             .ToList();
+
+        var (_, r2) = UrlState.Read(Nav);
+        if (!string.IsNullOrEmpty(r2)) _selectedRegion = r2;
     }
 
     private void OnRegionChange(ChangeEventArgs e)
     {
         _selectedRegion = e.Value?.ToString() ?? "US";
         Reformat();
+        Nav.NavigateTo(UrlState.Build(Nav, null, _selectedRegion), forceLoad: false, replace: true);
     }
 
     private void OnDigitInput(ChangeEventArgs e)
@@ -111,19 +168,48 @@
         Reformat();
     }
 
+    private void SetExample(string raw, string region)
+    {
+        _rawInput = raw;
+        _selectedRegion = region;
+        Reformat();
+        Nav.NavigateTo(UrlState.Build(Nav, null, _selectedRegion), forceLoad: false, replace: true);
+    }
+
     private void Reformat()
     {
         _steps.Clear();
         _formattedOutput = "";
+        _caretBefore = "";
+        _caretAfter = "";
+        _caretPos = 0;
 
         if (_rawInput.Length == 0) return;
 
         var formatter = _phoneUtil.GetAsYouTypeFormatter(_selectedRegion);
-        foreach (var c in _rawInput)
+        for (var i = 0; i < _rawInput.Length; i++)
         {
-            _formattedOutput = formatter.InputDigit(c);
+            var c = _rawInput[i];
+            // Remember the position of the most recently typed digit so the keypad knows where the
+            // caret belongs once the formatter has inserted its spacing/brackets around it.
+            _formattedOutput = i == _rawInput.Length - 1
+                ? formatter.InputDigitAndRememberPosition(c)
+                : formatter.InputDigit(c);
             _steps.Add(new FormatStep(c, _formattedOutput));
         }
+
+        _caretPos = Math.Clamp(formatter.GetRememberedPosition(), 0, _formattedOutput.Length);
+        _caretBefore = _formattedOutput.Substring(0, _caretPos);
+        _caretAfter = _formattedOutput.Substring(_caretPos);
+    }
+
+    private string CaretContext()
+    {
+        if (_caretPos <= 0) return "the start";
+        var lastChar = _formattedOutput[_caretPos - 1];
+        return _caretPos < _formattedOutput.Length
+            ? $"'{lastChar}'  (before '{_formattedOutput[_caretPos]}')"
+            : $"'{lastChar}'  (end)";
     }
 
     private record FormatStep(char Char, string Output);

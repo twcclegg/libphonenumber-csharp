@@ -1,13 +1,9 @@
 @inherits LayoutComponentBase
+@implements IDisposable
+@inject IJSRuntime JS
+@inject NavigationManager Nav
 
 <div class="app-layout">
-    <button class="sidebar__toggle"
-            @onclick="ToggleSidebar"
-            aria-label="Toggle navigation"
-            aria-expanded="@_sidebarOpen">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-    </button>
-
     @if (_sidebarOpen)
     {
         <div class="sidebar__overlay sidebar__overlay--visible" @onclick="CloseSidebar"></div>
@@ -17,15 +13,36 @@
         <div class="sidebar__header">
             <a href="" class="sidebar__logo">
                 <div class="sidebar__logo-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="white" width="20" height="20" aria-hidden="true">
                         <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
                     </svg>
                 </div>
                 <div>
                     <div class="sidebar__title">libphonenumber</div>
-                    <div class="sidebar__subtitle">C# / WebAssembly</div>
+                    <div class="sidebar__subtitle">C# · WebAssembly</div>
                 </div>
             </a>
+            <div class="sidebar__top-actions">
+                <button class="rail-icon-btn @(_shareCopied ? "rail-icon-btn--done" : "")"
+                        @onclick="CopyLink"
+                        aria-label="@(_shareCopied ? "Link copied" : "Copy shareable link")"
+                        title="Copy shareable link">
+                    @if (_shareCopied)
+                    {
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                    }
+                    else
+                    {
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                    }
+                </button>
+                <button class="rail-icon-btn"
+                        @onclick="ToggleTheme"
+                        aria-label="@(_theme == "dark" ? "Switch to light mode" : "Switch to dark mode")"
+                        title="Toggle theme">
+                    @ThemeIcon()
+                </button>
+            </div>
         </div>
 
         <div class="sidebar__nav">
@@ -91,11 +108,40 @@
         </div>
 
         <div class="sidebar__footer">
-            Running entirely in your browser via WebAssembly
+            <span class="wasm-pill">
+                <span class="wasm-dot" aria-hidden="true"></span>
+                Running in your browser
+            </span>
         </div>
     </nav>
 
     <main class="app-layout__content">
+        <div class="topbar">
+            <button class="icon-btn" @onclick="OpenSidebar" aria-label="Open navigation" aria-expanded="@_sidebarOpen">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </button>
+            <span class="topbar__title">@_currentTitle</span>
+            <span class="topbar__spacer"></span>
+            <div class="topbar__actions">
+                <button class="icon-btn @(_shareCopied ? "icon-btn--done" : "")"
+                        @onclick="CopyLink"
+                        aria-label="@(_shareCopied ? "Link copied" : "Copy shareable link")">
+                    @if (_shareCopied)
+                    {
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                    }
+                    else
+                    {
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                    }
+                </button>
+                <button class="icon-btn" @onclick="ToggleTheme"
+                        aria-label="@(_theme == "dark" ? "Switch to light mode" : "Switch to dark mode")">
+                    @ThemeIcon()
+                </button>
+            </div>
+        </div>
+
         <div class="app-layout__container">
             @Body
         </div>
@@ -104,7 +150,86 @@
 
 @code {
     private bool _sidebarOpen;
+    private string _theme = "light";
+    private bool _shareCopied;
+    private string _currentTitle = "Home";
 
-    private void ToggleSidebar() => _sidebarOpen = !_sidebarOpen;
+    private static readonly Dictionary<string, string> Titles = new()
+    {
+        [""] = "Home",
+        ["parse"] = "Parse & Validate",
+        ["format"] = "Formatting",
+        ["live"] = "Live Formatter",
+        ["find"] = "Find Numbers",
+        ["geo"] = "Geo & Timezone",
+    };
+
+    protected override void OnInitialized()
+    {
+        Nav.LocationChanged += OnLocationChanged;
+        UpdateTitle();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                _theme = await JS.InvokeAsync<string>("phoneDemo.getTheme");
+                StateHasChanged();
+            }
+            catch (JSException)
+            {
+                // Prerender / non-browser host — keep the default theme.
+            }
+        }
+    }
+
+    private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        UpdateTitle();
+        _sidebarOpen = false;
+        StateHasChanged();
+    }
+
+    private void UpdateTitle()
+    {
+        var path = Nav.ToBaseRelativePath(Nav.Uri);
+        var q = path.IndexOf('?');
+        if (q >= 0) path = path[..q];
+        path = path.Trim('/');
+        _currentTitle = Titles.TryGetValue(path, out var title) ? title : "Home";
+    }
+
+    private void OpenSidebar() => _sidebarOpen = true;
     private void CloseSidebar() => _sidebarOpen = false;
+
+    private async Task ToggleTheme()
+    {
+        _theme = await JS.InvokeAsync<string>("phoneDemo.toggleTheme");
+    }
+
+    private async Task CopyLink()
+    {
+        await JS.InvokeVoidAsync("phoneDemo.copyText", Nav.Uri);
+        _shareCopied = true;
+        StateHasChanged();
+        await Task.Delay(1500);
+        _shareCopied = false;
+        StateHasChanged();
+    }
+
+    private RenderFragment ThemeIcon() => builder =>
+    {
+        // sun when in dark mode (to switch to light), moon otherwise
+        builder.AddMarkupContent(0, _theme == "dark"
+            ? "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41\"/></svg>"
+            : "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z\"/></svg>");
+    };
+
+    public void Dispose()
+    {
+        Nav.LocationChanged -= OnLocationChanged;
+    }
 }
