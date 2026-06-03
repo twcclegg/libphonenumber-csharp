@@ -24,6 +24,19 @@ dotnet run -c Release --framework net9.0 -- --filter "*PhoneNumberWorkflowBenchm
 The full benchmark includes the `100000` phone-number data set and may take several minutes,
 especially when multiple runtime jobs are available on the machine.
 
+Other available benchmarks:
+
+- `*AsYouTypeFormatterBenchmark*` — per-keystroke cost of `AsYouTypeFormatter.InputDigit` over
+  a representative set of regional numbers.
+- `*PhoneNumberMatcherBenchmark*` — `PhoneNumberUtil.FindNumbers` over a synthetic text body
+  with phone numbers embedded between filler sentences.
+- `*ParsingHelpersBenchmark*` — `PhoneNumberUtil.ExtractPossibleNumber` measured separately
+  for clean inputs (no leading junk) and inputs that force the strip path.
+- `*ColdStartBenchmark*` — cost a consumer pays the first time they touch the library: bare
+  `PhoneNumberUtil` construction, construction plus lazy-load of every region's metadata,
+  and an isolated first-region lookup. Uses BDN's `RunStrategy.ColdStart` with
+  `invocationCount: 1` so each measurement is a genuine first-use, not a steady-state loop.
+
 The benchmark data is generated from valid example numbers in the bundled metadata and expanded
 deterministically to the configured `PhoneNumberCount` values, up to 100,000 inputs. Each benchmark
 iteration parses, validates, and formats every number in that data set.

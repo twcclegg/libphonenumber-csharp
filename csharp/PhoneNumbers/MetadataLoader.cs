@@ -12,6 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Reflection;
 
 namespace PhoneNumbers
@@ -68,6 +69,20 @@ namespace PhoneNumbers
     /// concatenates the configured prefix with the supplied file name and calls
     /// <c>Assembly.GetManifestResourceStream</c>.
     /// </summary>
+    /// <remarks>
+    /// <para><strong>Resource encoding contract:</strong> this loader expects the manifest resource
+    /// bytes to be <c>gzip</c>-compressed and wraps the returned stream in a
+    /// <see cref="GZipStream"/> for decompression. The build pipeline in
+    /// <c>PhoneNumbers.MetadataBuilder</c> applies this compression automatically before embedding.
+    /// </para>
+    /// <para>If you point this loader at a custom assembly whose <c>PhoneNumberMetadata_*</c>
+    /// (or analogously prefixed) resources are <em>uncompressed</em> bin bytes, decoding will fail
+    /// with an <see cref="System.IO.InvalidDataException"/> from <see cref="GZipStream"/> on first
+    /// lazy-load. Options: gzip your resources before embedding, run them through
+    /// <c>PhoneNumbers.MetadataBuilder</c> which does so by default, or implement
+    /// <see cref="IMetadataLoader"/> directly and skip this class — <see cref="MetadataSource"/>
+    /// reads whatever stream the loader returns without further wrapping.</para>
+    /// </remarks>
     public sealed class EmbeddedResourceMetadataLoader : IMetadataLoader
     {
         /// <summary>
@@ -96,7 +111,8 @@ namespace PhoneNumbers
             : this(assembly, DefaultResourcePrefix) { }
 
         /// <summary>
-        /// Constructs a loader with a custom assembly and resource-name prefix.
+        /// Constructs a loader with a custom assembly and resource-name prefix. The assembly's
+        /// resources must be gzip-compressed bin files — see the class-level remarks for details.
         /// </summary>
         /// <param name="assembly">Assembly to read manifest resources from.</param>
         /// <param name="resourcePrefix">Prefix prepended to every <c>fileName</c> passed to
@@ -108,6 +124,12 @@ namespace PhoneNumbers
         }
 
         public Stream? LoadMetadata(string fileName)
-            => assembly.GetManifestResourceStream(resourcePrefix + fileName);
+        {
+            // The build pipeline gzips every bin before embedding it (see GZipStream wrapping in
+            // PhoneNumbers.MetadataBuilder). Decompress on the way out so callers see the plain
+            // bin format they already expect.
+            var raw = assembly.GetManifestResourceStream(resourcePrefix + fileName);
+            return raw == null ? null : new GZipStream(raw, CompressionMode.Decompress);
+        }
     }
 }

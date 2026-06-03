@@ -21,6 +21,7 @@ using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("PhoneNumbers.Test")]
 [assembly: InternalsVisibleTo("PhoneNumbers.MetadataBuilder")]
+[assembly: InternalsVisibleTo("PhoneNumbers.PerformanceTest")]
 
 namespace PhoneNumbers
 {

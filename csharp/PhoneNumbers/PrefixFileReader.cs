@@ -19,6 +19,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 
@@ -122,9 +123,10 @@ namespace PhoneNumbers
         private AreaCodeMap LoadAreaCodeMapFromFile(string fileName)
         {
             var resName = phonePrefixDataDirectory + fileName;
-            using var fp = assembly.GetManifestResourceStream(resName)
+            using var raw = assembly.GetManifestResourceStream(resName)
                 ?? throw new MissingMetadataException(
                     $"Prefix map resource '{resName}' not found on assembly '{assembly.GetName().Name}'.");
+            using var fp = new GZipStream(raw, CompressionMode.Decompress);
 
             var sortedMap = BuildPrefixMapFromBin.ReadAreaCodeMap(fp);
             var areaCodeMap = new AreaCodeMap();
