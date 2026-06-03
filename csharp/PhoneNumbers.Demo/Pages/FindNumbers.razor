@@ -1,8 +1,11 @@
 @page "/find"
+@inject NavigationManager Nav
 
 <PageTitle>Find Numbers - libphonenumber-csharp</PageTitle>
 
+<div class="reveal">
 <div class="page-header">
+    <div class="page-header__eyebrow">PhoneNumberMatcher</div>
     <h1 class="page-header__title">Find Numbers</h1>
     <p class="page-header__description">Extract and parse phone numbers from free-form text. Paste any text containing phone numbers to detect and parse them all.</p>
 </div>
@@ -102,6 +105,7 @@ else if (!string.IsNullOrWhiteSpace(_textInput))
         </div>
     </div>
 }
+</div>
 
 @code {
     private readonly PhoneNumberUtil _phoneUtil = PhoneNumberUtil.GetInstance();
@@ -118,12 +122,16 @@ else if (!string.IsNullOrWhiteSpace(_textInput))
             .OrderBy(r => r)
             .Select(r => new RegionOption(r, $"{r} (+{_phoneUtil.GetCountryCodeForRegion(r)})"))
             .ToList();
+
+        var (_, r2) = UrlState.Read(Nav);
+        if (!string.IsNullOrEmpty(r2)) _selectedRegion = r2;
     }
 
     private void OnRegionChange(ChangeEventArgs e)
     {
         _selectedRegion = e.Value?.ToString() ?? "US";
         Search();
+        Nav.NavigateTo(UrlState.Build(Nav, null, _selectedRegion), forceLoad: false, replace: true);
     }
 
     private void OnLeniencyChange(ChangeEventArgs e)

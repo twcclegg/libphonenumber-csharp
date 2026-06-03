@@ -1,24 +1,107 @@
-/* ============ App Layout ============ */
+/* ============================================================
+   App layout shell
+   ============================================================ */
 
 .app-layout {
-    /* layout shell — children are sidebar (fixed) and content */
+    /* sidebar is fixed; content is offset by its width */
 }
 
 .app-layout__content {
     margin-left: var(--sidebar-width);
     min-height: 100vh;
-    padding: 2rem 2.5rem;
+    background:
+        radial-gradient(1200px 520px at 80% -10%, var(--accent-glow), transparent 60%),
+        linear-gradient(180deg, var(--bg-grad-a), var(--bg-grad-b));
 }
 
 .app-layout__container {
-    max-width: 960px;
+    max-width: var(--maxw);
     margin: 0 auto;
+    padding: clamp(1.25rem, 4vw, 3rem) clamp(1rem, 4vw, 3rem) 5rem;
+}
+
+/* ============================================================
+   Topbar (mobile only)
+   ============================================================ */
+
+.topbar {
+    display: none;
+    align-items: center;
+    gap: var(--space-3);
+    padding: 0.7rem 1rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 40;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .topbar { backdrop-filter: blur(12px); }
+}
+
+.topbar__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--fs-md);
+}
+
+.topbar__spacer { flex: 1; }
+
+.topbar__actions {
+    display: flex;
+    gap: var(--space-2);
+}
+
+/* ============================================================
+   Icon button (topbar / page chrome)
+   ============================================================ */
+
+.icon-btn {
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.icon-btn:hover {
+    color: var(--text);
+    border-color: var(--border-strong);
+    background: var(--surface-2);
+}
+
+.icon-btn:focus-visible {
+    outline: var(--ring-w) solid var(--accent);
+    outline-offset: 2px;
+}
+
+.icon-btn svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.icon-btn--done {
+    color: var(--success-fg);
+    border-color: var(--success-solid);
 }
 
 @media (max-width: 860px) {
     .app-layout__content {
         margin-left: 0;
-        padding: 1.25rem;
-        padding-top: 4rem;
+    }
+
+    .topbar {
+        display: flex;
     }
 }

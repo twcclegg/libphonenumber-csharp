@@ -1,4 +1,7 @@
 using Bunit;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.DependencyInjection;
+using PhoneNumbers.Demo;
 using PhoneNumbers.Demo.Pages;
 using Xunit;
 
@@ -6,6 +9,18 @@ namespace PhoneNumbers.Demo.Tests.Pages;
 
 public class HomePageTests : TestContext
 {
+    [Fact]
+    public void prepopulates_number_and_region_from_url_query()
+    {
+        var nav = Services.GetRequiredService<NavigationManager>();
+        nav.NavigateTo("/?n=%2B44%2020%207946%200958&r=GB");
+
+        var cut = RenderComponent<Home>();
+
+        var values = cut.FindAll(".result-grid__value--mono");
+        Assert.Contains(values, v => v.TextContent.Contains("+442079460958"));
+    }
+
     [Fact]
     public void shows_valid_badge_for_prepopulated_us_number()
     {
@@ -96,6 +111,32 @@ public class HomePageTests : TestContext
         // Australian local number should parse with AU region
         var items = cut.FindAll(".result-grid__item");
         Assert.NotEmpty(items);
+    }
+
+    [Fact]
+    public void commits_number_to_url_when_input_is_committed()
+    {
+        var nav = Services.GetRequiredService<NavigationManager>();
+        var cut = RenderComponent<Home>();
+
+        // The change event represents a committed value (blur / Enter).
+        cut.Find("#home-phone").Change("+44 20 7946 0958");
+
+        var (number, _) = UrlState.Read(nav);
+        Assert.Equal("+44 20 7946 0958", number);
+    }
+
+    [Fact]
+    public void typing_does_not_update_url_until_committed()
+    {
+        var nav = Services.GetRequiredService<NavigationManager>();
+        var cut = RenderComponent<Home>();
+        var urlBeforeTyping = nav.Uri;
+
+        // Raw keystrokes (input event) must not trigger navigation — only a commit does.
+        cut.Find("#home-phone").Input("+44 20 7946 0958");
+
+        Assert.Equal(urlBeforeTyping, nav.Uri);
     }
 
     [Fact]

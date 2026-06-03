@@ -1,26 +1,31 @@
 @page "/"
+@inject NavigationManager Nav
 
 <PageTitle>libphonenumber-csharp Demo</PageTitle>
 
+<div class="reveal">
 <div class="hero">
     <div class="hero__content">
-        <h1 class="hero__title">libphonenumber-csharp</h1>
+        <span class="hero__eyebrow">
+            <span class="wasm-dot" aria-hidden="true"></span>
+            Google's libphonenumber, ported to C#
+        </span>
+        <h1 class="hero__title">Phone numbers, <em>handled.</em></h1>
         <p class="hero__description">
-            Google's phone number handling library, ported to C#.
-            Parse, format, validate, and enrich phone numbers for 200+ countries
-            &mdash; running entirely in your browser via WebAssembly.
+            Parse, format, validate and enrich phone numbers for @(_regionCount)+ regions &mdash;
+            running entirely in your browser via WebAssembly. No server, no API calls.
         </p>
         <div class="hero__badges">
             <span class="hero__badge">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-                NuGet Package
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                NuGet package
             </span>
             <span class="hero__badge">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                @(_regionCount) Regions
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                @(_regionCount) regions
             </span>
             <span class="hero__badge">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
                 WebAssembly
             </span>
         </div>
@@ -29,23 +34,24 @@
 
 <div class="card">
     <div class="card__header">
-        <div class="card__title">Try It Now</div>
-        <div class="card__subtitle">Enter any phone number to see instant parsing, validation, and formatting</div>
+        <div class="card__title">Try it now</div>
+        <div class="card__subtitle">Enter any phone number for instant parsing, validation and formatting.</div>
     </div>
 
     <div class="form__row">
         <div class="form__group form__group--flush">
-            <label class="form__label" for="home-phone">Phone Number</label>
+            <label class="form__label" for="home-phone">Phone number</label>
             <input id="home-phone"
                    class="form__input form__input--phone"
                    type="text"
                    value="@_phoneInput"
                    @oninput="OnPhoneInput"
+                   @onchange="OnPhoneCommit"
                    placeholder="+1 650 253 0000"
                    autocomplete="tel" />
         </div>
         <div class="form__group form__group--flush">
-            <label class="form__label" for="home-region">Default Region</label>
+            <label class="form__label" for="home-region">Default region</label>
             <select id="home-region" class="form__select" @onchange="OnRegionChange">
                 @foreach (var r in _regions)
                 {
@@ -61,7 +67,7 @@
     }
     else if (_parsed != null)
     {
-        <div class="result-grid mt-2" aria-live="polite">
+        <div class="result-grid mt-2 reveal" aria-live="polite">
             <div class="result-grid__item">
                 <div class="result-grid__label">International</div>
                 <div class="result-grid__value result-grid__value--mono">@_phoneUtil.Format(_parsed, PhoneNumberFormat.INTERNATIONAL)</div>
@@ -84,7 +90,7 @@
                 </div>
             </div>
             <div class="result-grid__item">
-                <div class="result-grid__label">Number Type</div>
+                <div class="result-grid__label">Number type</div>
                 <div class="result-grid__value"><span class="badge badge--info">@FormatType(_phoneUtil.GetNumberType(_parsed))</span></div>
             </div>
             <div class="result-grid__item">
@@ -92,14 +98,14 @@
                 <div class="result-grid__value">@(_phoneUtil.GetRegionCodeForNumber(_parsed) ?? "Unknown")</div>
             </div>
             <div class="result-grid__item">
-                <div class="result-grid__label">Country Code</div>
+                <div class="result-grid__label">Country code</div>
                 <div class="result-grid__value result-grid__value--mono">+@_parsed.CountryCode</div>
             </div>
         </div>
     }
 </div>
 
-<h2 class="section__title mt-4">Explore Features</h2>
+<h2 class="section__title mt-4">Explore features</h2>
 
 <div class="feature-grid">
     <a href="parse" class="feature-grid__card">
@@ -108,6 +114,7 @@
         </div>
         <h3 class="feature-grid__card-title">Parse &amp; Validate</h3>
         <p class="feature-grid__card-description">Parse phone numbers from text, validate them, and inspect every property including type, region, and country code.</p>
+        <span class="feature-grid__go" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
     </a>
     <a href="format" class="feature-grid__card">
         <div class="feature-grid__icon feature-grid__icon--success" aria-hidden="true">
@@ -115,6 +122,7 @@
         </div>
         <h3 class="feature-grid__card-title">Formatting</h3>
         <p class="feature-grid__card-description">Format numbers as E.164, international, national, RFC 3966, and for out-of-country or mobile dialing.</p>
+        <span class="feature-grid__go" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
     </a>
     <a href="live" class="feature-grid__card">
         <div class="feature-grid__icon feature-grid__icon--warning" aria-hidden="true">
@@ -122,6 +130,7 @@
         </div>
         <h3 class="feature-grid__card-title">Live Formatter</h3>
         <p class="feature-grid__card-description">Type digits and see them formatted in real-time using the as-you-type formatter, just like a phone dialer.</p>
+        <span class="feature-grid__go" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
     </a>
     <a href="find" class="feature-grid__card">
         <div class="feature-grid__icon feature-grid__icon--pink" aria-hidden="true">
@@ -129,6 +138,7 @@
         </div>
         <h3 class="feature-grid__card-title">Find Numbers</h3>
         <p class="feature-grid__card-description">Extract and parse phone numbers embedded in free-form text with configurable matching leniency.</p>
+        <span class="feature-grid__go" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
     </a>
     <a href="geo" class="feature-grid__card">
         <div class="feature-grid__icon feature-grid__icon--accent" aria-hidden="true">
@@ -136,20 +146,22 @@
         </div>
         <h3 class="feature-grid__card-title">Geocoding &amp; Timezone</h3>
         <p class="feature-grid__card-description">Look up geographic descriptions, time zones, and carrier information for any phone number.</p>
+        <span class="feature-grid__go" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
     </a>
 </div>
 
 <div class="card mt-3">
     <div class="card__header">
         <div class="card__title">Install</div>
-        <div class="card__subtitle">Add to your .NET project via NuGet</div>
+        <div class="card__subtitle">Add to your .NET project via NuGet.</div>
     </div>
     <div class="install-block">
-        <span class="install-block__prompt" aria-hidden="true">&gt;</span>dotnet add package libphonenumber-csharp
+        <span class="install-block__prompt" aria-hidden="true">$</span>dotnet add package libphonenumber-csharp
     </div>
     <div class="install-block mt-1">
-        <span class="install-block__prompt" aria-hidden="true">&gt;</span>dotnet add package libphonenumber-csharp.extensions
+        <span class="install-block__prompt" aria-hidden="true">$</span>dotnet add package libphonenumber-csharp.extensions
     </div>
+</div>
 </div>
 
 @code {
@@ -169,20 +181,39 @@
             .OrderBy(r => r)
             .Select(r => new RegionOption(r, $"{r} (+{_phoneUtil.GetCountryCodeForRegion(r)})"))
             .ToList();
+
+        var (n, r2) = UrlState.Read(Nav);
+        if (n != null) _phoneInput = n;
+        if (!string.IsNullOrEmpty(r2)) _selectedRegion = r2;
+
         TryParse();
     }
 
+    // @oninput keeps the live results in sync on every keystroke, but does NOT touch the URL.
     private void OnPhoneInput(ChangeEventArgs e)
     {
         _phoneInput = e.Value?.ToString() ?? "";
         TryParse();
     }
 
+    // @onchange fires when the field is committed (blur / Enter), so the URL is only
+    // rewritten once the user is done typing — never mid-keystroke.
+    private void OnPhoneCommit(ChangeEventArgs e)
+    {
+        _phoneInput = e.Value?.ToString() ?? "";
+        TryParse();
+        SyncUrl();
+    }
+
     private void OnRegionChange(ChangeEventArgs e)
     {
         _selectedRegion = e.Value?.ToString() ?? "US";
         TryParse();
+        SyncUrl();
     }
+
+    private void SyncUrl()
+        => Nav.NavigateTo(UrlState.Build(Nav, _phoneInput, _selectedRegion), forceLoad: false, replace: true);
 
     private void TryParse()
     {

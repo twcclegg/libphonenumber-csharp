@@ -1,52 +1,89 @@
-/* ============ Live Formatter ============ */
+/* ============================================================
+   Live formatter
+   ============================================================ */
 
 .live-formatter__region-control {
-    max-width: 240px;
+    max-width: 280px;
 }
 
 .live-formatter__description {
+    color: var(--text-secondary);
     line-height: 1.7;
 }
 
 .live-formatter__output {
-    font-family: var(--font-mono);
-    font-size: 2rem;
-    font-weight: 600;
-    color: var(--primary);
-    padding: 2rem 1.5rem;
-    background: var(--primary-light);
-    border-radius: var(--radius-sm);
-    text-align: center;
-    min-height: 5rem;
+    margin-top: var(--space-4);
+    min-height: 84px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    letter-spacing: 0.04em;
-    border: 2px dashed rgba(99, 102, 241, 0.2);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-    .live-formatter__output {
-        transition: all var(--transition);
-    }
+    gap: 2px;
+    padding: var(--space-4) var(--space-5);
+    border-radius: var(--radius-sm);
+    border: 1.5px dashed var(--border-strong);
+    background: var(--surface-inset);
+    font-family: var(--font-mono);
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    letter-spacing: 0.02em;
+    color: var(--text);
+    transition: var(--transition);
 }
 
 .live-formatter__output--active {
-    border-color: transparent;
-    background: linear-gradient(135deg, var(--primary-light), #ede9fe);
+    border-style: solid;
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    color: var(--accent-soft-fg);
 }
 
 .live-formatter__placeholder {
     font-family: var(--font-sans);
-    font-size: 1rem;
+    font-size: var(--fs-md);
     font-weight: 400;
-    color: var(--text-light);
-    letter-spacing: normal;
+    color: var(--text-muted);
+    letter-spacing: 0;
 }
 
-@media (max-width: 640px) {
-    .live-formatter__output {
-        font-size: 1.375rem;
-        padding: 1.5rem 1rem;
+/* Preserve the spaces/brackets the formatter inserts when the output is split
+   around the remembered caret position. */
+.live-formatter__text {
+    white-space: pre;
+}
+
+.live-formatter__link {
+    color: var(--accent-fg);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.live-formatter__link:hover {
+    color: var(--accent-solid-hover);
+}
+
+.live-formatter__link:focus-visible {
+    outline: var(--ring-w) solid var(--accent);
+    outline-offset: 2px;
+    border-radius: var(--radius-xs);
+}
+
+.live-formatter__caret {
+    width: 2px;
+    height: 1.4em;
+    background: var(--accent);
+    opacity: 0;
+    flex-shrink: 0;
+}
+
+.live-formatter__output--active .live-formatter__caret {
+    opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .live-formatter__output--active .live-formatter__caret {
+        animation: blink 1.1s step-end infinite;
     }
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
 }

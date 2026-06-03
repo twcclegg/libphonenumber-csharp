@@ -1,8 +1,11 @@
 @page "/parse"
+@inject NavigationManager Nav
 
 <PageTitle>Parse &amp; Validate - libphonenumber-csharp</PageTitle>
 
+<div class="reveal">
 <div class="page-header">
+    <div class="page-header__eyebrow">PhoneNumberUtil.Parse</div>
     <h1 class="page-header__title">Parse &amp; Validate</h1>
     <p class="page-header__description">Parse any phone number string, validate it against regional rules, and inspect all of its properties.</p>
 </div>
@@ -20,6 +23,7 @@
                    type="text"
                    value="@_phoneInput"
                    @oninput="OnPhoneInput"
+                   @onchange="OnPhoneCommit"
                    placeholder="+44 20 7946 0958"
                    autocomplete="tel" />
         </div>
@@ -35,12 +39,12 @@
     </div>
 
     <div class="flex gap-1 flex-wrap mt-2">
-        <button class="btn btn--sm btn--secondary" @onclick='() => SetExample("+1 650 253 0000", "US")'>US Example</button>
-        <button class="btn btn--sm btn--secondary" @onclick='() => SetExample("+44 20 7946 0958", "GB")'>UK Example</button>
-        <button class="btn btn--sm btn--secondary" @onclick='() => SetExample("+49 30 123456", "DE")'>DE Example</button>
-        <button class="btn btn--sm btn--secondary" @onclick='() => SetExample("+61 2 3661 8300", "AU")'>AU Example</button>
-        <button class="btn btn--sm btn--secondary" @onclick='() => SetExample("+81 3 6384 9000", "JP")'>JP Example</button>
-        <button class="btn btn--sm btn--secondary" @onclick='() => SetExample("0412 345 678", "AU")'>Local AU</button>
+        <button class="btn btn--sm btn--chip" @onclick='() => SetExample("+1 650 253 0000", "US")'>US Example</button>
+        <button class="btn btn--sm btn--chip" @onclick='() => SetExample("+44 20 7946 0958", "GB")'>UK Example</button>
+        <button class="btn btn--sm btn--chip" @onclick='() => SetExample("+49 30 123456", "DE")'>DE Example</button>
+        <button class="btn btn--sm btn--chip" @onclick='() => SetExample("+61 2 3661 8300", "AU")'>AU Example</button>
+        <button class="btn btn--sm btn--chip" @onclick='() => SetExample("+81 3 6384 9000", "JP")'>JP Example</button>
+        <button class="btn btn--sm btn--chip" @onclick='() => SetExample("0412 345 678", "AU")'>Local AU</button>
     </div>
 </div>
 
@@ -190,6 +194,7 @@ else
         </div>
     </div>
 }
+</div>
 
 @code {
     private readonly PhoneNumberUtil _phoneUtil = PhoneNumberUtil.GetInstance();
@@ -213,19 +218,35 @@ else
             .OrderBy(r => r)
             .Select(r => new RegionOption(r, $"{r} (+{_phoneUtil.GetCountryCodeForRegion(r)})"))
             .ToList();
+
+        var (n, r2) = UrlState.Read(Nav);
+        if (n != null) _phoneInput = n;
+        if (!string.IsNullOrEmpty(r2)) _selectedRegion = r2;
+
         TryParse();
     }
 
+    // @oninput keeps the live results in sync on every keystroke, but does NOT touch the URL.
     private void OnPhoneInput(ChangeEventArgs e)
     {
         _phoneInput = e.Value?.ToString() ?? "";
         TryParse();
     }
 
+    // @onchange fires when the field is committed (blur / Enter), so the URL is only
+    // rewritten once the user is done typing — never mid-keystroke.
+    private void OnPhoneCommit(ChangeEventArgs e)
+    {
+        _phoneInput = e.Value?.ToString() ?? "";
+        TryParse();
+        SyncUrl();
+    }
+
     private void OnRegionChange(ChangeEventArgs e)
     {
         _selectedRegion = e.Value?.ToString() ?? "US";
         TryParse();
+        SyncUrl();
     }
 
     private void SetExample(string number, string region)
@@ -233,7 +254,11 @@ else
         _phoneInput = number;
         _selectedRegion = region;
         TryParse();
+        SyncUrl();
     }
+
+    private void SyncUrl()
+        => Nav.NavigateTo(UrlState.Build(Nav, _phoneInput, _selectedRegion), forceLoad: false, replace: true);
 
     private void TryParse()
     {

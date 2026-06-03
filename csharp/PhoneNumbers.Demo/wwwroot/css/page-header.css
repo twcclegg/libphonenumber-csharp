@@ -1,19 +1,48 @@
-/* ============ Page Header ============ */
+/* ============================================================
+   Page header
+   ============================================================ */
 
 .page-header {
-    margin-bottom: 2rem;
+    margin-bottom: var(--space-5);
+}
+
+.page-header__eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-fg);
+    margin-bottom: 0.5rem;
 }
 
 .page-header__title {
-    font-size: 1.75rem;
-    font-weight: 700;
-    letter-spacing: -0.025em;
-    margin-bottom: 0.375rem;
+    font-size: var(--fs-3xl);
+    letter-spacing: -0.02em;
 }
 
 .page-header__description {
-    font-size: 1rem;
     color: var(--text-secondary);
-    max-width: 640px;
+    font-size: var(--fs-lg);
+    max-width: 60ch;
+    margin-top: 0.6rem;
     line-height: 1.6;
+}
+
+/* ============================================================
+   Section titles
+   ============================================================ */
+
+.section__title {
+    font-family: var(--font-display);
+    font-size: var(--fs-xl);
+    font-weight: 600;
+    margin-bottom: var(--space-4);
+    letter-spacing: -0.01em;
+}
+
+.section__subtitle {
+    font-size: var(--fs-sm);
+    color: var(--text-secondary);
+    margin-top: -0.4rem;
+    margin-bottom: var(--space-4);
 }
