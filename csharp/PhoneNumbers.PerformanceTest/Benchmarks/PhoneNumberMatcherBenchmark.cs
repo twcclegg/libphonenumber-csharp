@@ -5,9 +5,7 @@ using BenchmarkDotNet.Jobs;
 namespace PhoneNumbers.PerformanceTest.Benchmarks
 {
     [MemoryDiagnoser]
-    [SimpleJob(RuntimeMoniker.Net48)]
-    [SimpleJob(RuntimeMoniker.Net80)]
-    [SimpleJob(RuntimeMoniker.Net90)]
+    [SimpleJob(RuntimeMoniker.Net10_0)]
     public class PhoneNumberMatcherBenchmark
     {
         // Filler text interleaved between embedded numbers so the matcher has to skip non-number
@@ -24,7 +22,7 @@ namespace PhoneNumbers.PerformanceTest.Benchmarks
         private string _text = null!;
 #endif
 
-        [Params(100, 1000)]
+        [Params(100)]
         public int PhoneNumberCount { get; set; }
 
         [GlobalSetup]

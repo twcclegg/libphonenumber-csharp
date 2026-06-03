@@ -10,9 +10,7 @@ namespace PhoneNumbers.PerformanceTest.Benchmarks
     /// use of the library, before any region metadata has been loaded.
     /// </summary>
     [MemoryDiagnoser]
-    [SimpleJob(RunStrategy.ColdStart, RuntimeMoniker.Net48, launchCount: 1, warmupCount: 1, iterationCount: 20, invocationCount: 1)]
-    [SimpleJob(RunStrategy.ColdStart, RuntimeMoniker.Net80, launchCount: 1, warmupCount: 1, iterationCount: 20, invocationCount: 1)]
-    [SimpleJob(RunStrategy.ColdStart, RuntimeMoniker.Net90, launchCount: 1, warmupCount: 1, iterationCount: 20, invocationCount: 1)]
+    [SimpleJob(RunStrategy.ColdStart, RuntimeMoniker.Net10_0, launchCount: 1, warmupCount: 1, iterationCount: 20, invocationCount: 1)]
     public class ColdStartBenchmark
     {
         // The country-code-to-region map and one fresh PhoneNumberUtil are kept around so the

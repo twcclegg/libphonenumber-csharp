@@ -3,6 +3,16 @@ name: run_performance_tests_windows
 on:
   pull_request:
     branches: [ "main" ]
+  # Pushes to main refresh the cached benchmark baseline that PRs compare against,
+  # so we never recompute main's numbers on every PR run.
+  push:
+    branches: [ "main" ]
+  # GitHub evicts any cache not accessed within 7 days (not configurable). This repo
+  # can idle longer than that, so re-measure and re-save the main baseline twice a week
+  # to keep it warm — and to self-heal if it was ever evicted. Sun + Wed keeps the
+  # largest gap to ~4 days, comfortably under the 7-day window.
+  schedule:
+    - cron: "0 7 * * 0,3"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -13,32 +23,55 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 30
     steps:
-      - name: Checkout PR / push branch
+      - name: Checkout
         uses: actions/checkout@v6
-        with:
-          path: branch-code
-
-      - name: Checkout main branch (for comparison)
-        if: github.event_name == 'pull_request'
-        uses: actions/checkout@v6
-        with:
-          ref: main
-          path: main-code
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 10.x
 
-      - name: Run benchmarks (PR branch)
-        run: dotnet run -c Release --framework net10.0 -- --filter "*"
-        working-directory: ./branch-code/csharp/PhoneNumbers.PerformanceTest
-
-      - name: Run benchmarks (main branch)
+      # On a PR, restore the most recent main baseline produced by a push-to-main run
+      # instead of re-benchmarking main here. The prefix restore-key returns the latest
+      # available baseline regardless of the exact main commit it was measured on.
+      - name: Restore main benchmark baseline
         if: github.event_name == 'pull_request'
-        run: dotnet run -c Release --framework net10.0 -- --filter "*"
-        working-directory: ./main-code/csharp/PhoneNumbers.PerformanceTest
+        uses: actions/cache/restore@v4
+        with:
+          path: main-baseline
+          key: benchmark-main-${{ github.event.pull_request.base.sha }}
+          restore-keys: |
+            benchmark-main-
 
+      - name: Run benchmarks
+        run: dotnet run -c Release --framework net10.0 -- --filter "*"
+        working-directory: ./csharp/PhoneNumbers.PerformanceTest
+
+      # On push to main (or the keep-warm schedule), publish this run's results as the
+      # new baseline for future PRs.
+      - name: Stage main baseline
+        if: github.event_name != 'pull_request'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path "main-baseline" | Out-Null
+          $resultsDir = "csharp/PhoneNumbers.PerformanceTest/BenchmarkDotNet.Artifacts/results"
+          if (Test-Path $resultsDir) {
+            Copy-Item "$resultsDir/*-report-github.md" "main-baseline/" -ErrorAction SilentlyContinue
+          }
+
+      - name: Save main benchmark baseline
+        if: github.event_name != 'pull_request'
+        uses: actions/cache/save@v4
+        with:
+          path: main-baseline
+          # Unique per run so every push/cron writes a *fresh* cache entry. cache/save
+          # cannot overwrite an existing key, and the keep-warm cron never restores the
+          # baseline, so reusing benchmark-main-<sha> would let the timer lapse when main
+          # is unchanged. The PR prefix restore-key picks the most recently created entry.
+          key: benchmark-main-${{ github.sha }}-${{ github.run_id }}
+
+      # On a PR, bundle the freshly-measured branch results with the restored main
+      # baseline so the follow-up workflow can post a side-by-side comparison.
       - name: Stage benchmark artifact
         if: github.event_name == 'pull_request'
         shell: pwsh
@@ -47,11 +80,13 @@ jobs:
           New-Item -ItemType Directory -Force -Path "$stage/branch-results" | Out-Null
           New-Item -ItemType Directory -Force -Path "$stage/main-results"   | Out-Null
 
-          $prDir   = "branch-code/csharp/PhoneNumbers.PerformanceTest/BenchmarkDotNet.Artifacts/results"
-          $mainDir = "main-code/csharp/PhoneNumbers.PerformanceTest/BenchmarkDotNet.Artifacts/results"
-
-          if (Test-Path $prDir)   { Copy-Item "$prDir/*-report-github.md" "$stage/branch-results/" -ErrorAction SilentlyContinue }
-          if (Test-Path $mainDir) { Copy-Item "$mainDir/*-report-github.md" "$stage/main-results/"   -ErrorAction SilentlyContinue }
+          $prDir = "csharp/PhoneNumbers.PerformanceTest/BenchmarkDotNet.Artifacts/results"
+          if (Test-Path $prDir) {
+            Copy-Item "$prDir/*-report-github.md" "$stage/branch-results/" -ErrorAction SilentlyContinue
+          }
+          if (Test-Path "main-baseline") {
+            Copy-Item "main-baseline/*-report-github.md" "$stage/main-results/" -ErrorAction SilentlyContinue
+          }
 
           # PR metadata for the follow-up workflow (use head SHA, not the merge SHA in GITHUB_SHA)
           @{
