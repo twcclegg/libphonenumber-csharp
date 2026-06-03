@@ -10,8 +10,8 @@ The library tracks upstream metadata releases (~every two weeks) via the `create
 
 ## Repository layout
 
-- `csharp/PhoneNumbers/` — main library (NuGet `libphonenumber-csharp`). Multi-targets `netstandard2.0;net8.0;net9.0`. `<TreatWarningsAsErrors>true</TreatWarningsAsErrors>` is set, so warnings break the build.
-- `csharp/PhoneNumbers.Test/` — xUnit tests, ported from the Java tests. Multi-targets `netframework4.8;net8.0;net9.0`.
+- `csharp/PhoneNumbers/` — main library (NuGet `libphonenumber-csharp`). Multi-targets `netstandard2.0;net8.0;net9.0;net10.0`. `<TreatWarningsAsErrors>true</TreatWarningsAsErrors>` is set, so warnings break the build.
+- `csharp/PhoneNumbers.Test/` — xUnit tests, ported from the Java tests. Multi-targets `netframework4.8;net8.0;net9.0;net10.0`.
 - `csharp/PhoneNumbers.Extensions/` — separate NuGet (`libphonenumber-csharp.extensions`) with C#-idiomatic helpers that don't exist in the Java library.
 - `csharp/PhoneNumbers.PerformanceTest/` — BenchmarkDotNet harness.
 - `csharp/PhoneNumbers.MetadataBuilder/` — build-time tool that converts XML metadata + geocoding/timezone text files into per-region binary files. Source-links a small set of files from `PhoneNumbers/` so it doesn't depend on (and can't cycle with) the main library at build time.
@@ -58,8 +58,8 @@ Benchmarks:
 
 ```bash
 cd csharp/PhoneNumbers.PerformanceTest
-dotnet run -c Release --framework net9.0 -- --filter "*"
-dotnet run -c Release --framework net9.0 -- --filter "*PhoneNumberWorkflowBenchmark*"
+dotnet run -c Release --framework net10.0 -- --filter "*"
+dotnet run -c Release --framework net10.0 -- --filter "*PhoneNumberWorkflowBenchmark*"
 ```
 
 ## Architecture notes that span files

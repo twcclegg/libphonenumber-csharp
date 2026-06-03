@@ -39,7 +39,10 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: main-baseline
-          key: benchmark-main-${{ github.event.pull_request.base.sha }}
+          # actions/cache/restore requires `key`, but we never expect an exact hit:
+          # save keys carry a unique -<run_id> suffix, so this is a deliberate near-miss
+          # and the prefix restore-key below always supplies the most recently created baseline.
+          key: benchmark-main-
           restore-keys: |
             benchmark-main-
 

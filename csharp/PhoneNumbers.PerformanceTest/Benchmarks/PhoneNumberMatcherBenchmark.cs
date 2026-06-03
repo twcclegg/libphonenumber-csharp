@@ -12,15 +12,9 @@ namespace PhoneNumbers.PerformanceTest.Benchmarks
         // content. Kept short to keep total input length proportional to PhoneNumberCount.
         private const string Filler = " Lorem ipsum dolor sit amet, consectetur adipiscing elit. Call ";
 
-#if NETFRAMEWORK
-        private PhoneNumberUtil _phoneNumberUtil = null;
-        private string _defaultRegion = null;
-        private string _text = null;
-#else
         private PhoneNumberUtil _phoneNumberUtil = null!;
         private string _defaultRegion = null!;
         private string _text = null!;
-#endif
 
         [Params(100)]
         public int PhoneNumberCount { get; set; }
