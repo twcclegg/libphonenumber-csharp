@@ -10,21 +10,14 @@ namespace PhoneNumbers.PerformanceTest.Benchmarks
     /// use of the library, before any region metadata has been loaded.
     /// </summary>
     [MemoryDiagnoser]
-    [SimpleJob(RunStrategy.ColdStart, RuntimeMoniker.Net48, launchCount: 1, warmupCount: 1, iterationCount: 20, invocationCount: 1)]
-    [SimpleJob(RunStrategy.ColdStart, RuntimeMoniker.Net80, launchCount: 1, warmupCount: 1, iterationCount: 20, invocationCount: 1)]
-    [SimpleJob(RunStrategy.ColdStart, RuntimeMoniker.Net90, launchCount: 1, warmupCount: 1, iterationCount: 20, invocationCount: 1)]
+    [SimpleJob(RunStrategy.ColdStart, RuntimeMoniker.Net10_0, launchCount: 1, warmupCount: 1, iterationCount: 20, invocationCount: 1)]
     public class ColdStartBenchmark
     {
         // The country-code-to-region map and one fresh PhoneNumberUtil are kept around so the
         // FirstRegionLookup benchmark has a pre-constructed util whose region cache has NOT been
         // touched for the target region (we pick a region we never look up during setup).
-#if NETFRAMEWORK
-        private PhoneNumberUtil _warmInstance = null;
-        private string[] _supportedRegions = null;
-#else
         private PhoneNumberUtil _warmInstance = null!;
         private string[] _supportedRegions = null!;
-#endif
 
         // Region selected for FirstRegionLookup. Chosen as a small-but-real region so its metadata
         // payload size is representative of the average region rather than an outlier like US/CN.

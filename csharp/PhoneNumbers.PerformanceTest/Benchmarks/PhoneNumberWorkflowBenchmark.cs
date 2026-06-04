@@ -4,20 +4,13 @@ using BenchmarkDotNet.Jobs;
 namespace PhoneNumbers.PerformanceTest.Benchmarks
 {
     [MemoryDiagnoser]
-    [SimpleJob(RuntimeMoniker.Net48)]
-    [SimpleJob(RuntimeMoniker.Net80)]
-    [SimpleJob(RuntimeMoniker.Net90)]
+    [SimpleJob(RuntimeMoniker.Net10_0)]
     public class PhoneNumberWorkflowBenchmark
     {
-#if NETFRAMEWORK
-        private PhoneNumberUtil _phoneNumberUtil = null;
-        private PhoneNumberBenchmarkCase[] _phoneNumbers = null;
-#else
         private PhoneNumberUtil _phoneNumberUtil = null!;
         private PhoneNumberBenchmarkCase[] _phoneNumbers = null!;
-#endif
 
-        [Params(1000, 10000, 100000)]
+        [Params(1000, 10000)]
         public int PhoneNumberCount { get; set; }
 
         [GlobalSetup]

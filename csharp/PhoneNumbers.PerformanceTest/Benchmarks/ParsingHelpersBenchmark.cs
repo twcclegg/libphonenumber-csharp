@@ -4,20 +4,13 @@ using BenchmarkDotNet.Jobs;
 namespace PhoneNumbers.PerformanceTest.Benchmarks
 {
     [MemoryDiagnoser]
-    [SimpleJob(RuntimeMoniker.Net48)]
-    [SimpleJob(RuntimeMoniker.Net80)]
-    [SimpleJob(RuntimeMoniker.Net90)]
+    [SimpleJob(RuntimeMoniker.Net10_0)]
     public class ParsingHelpersBenchmark
     {
-#if NETFRAMEWORK
-        private string[] _inputs = null;
-        private string[] _inputsWithLeadingJunk = null;
-#else
         private string[] _inputs = null!;
         private string[] _inputsWithLeadingJunk = null!;
-#endif
 
-        [Params(1000, 10000)]
+        [Params(1000)]
         public int PhoneNumberCount { get; set; }
 
         [GlobalSetup]

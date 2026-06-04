@@ -5,26 +5,18 @@ using BenchmarkDotNet.Jobs;
 namespace PhoneNumbers.PerformanceTest.Benchmarks
 {
     [MemoryDiagnoser]
-    [SimpleJob(RuntimeMoniker.Net48)]
-    [SimpleJob(RuntimeMoniker.Net80)]
-    [SimpleJob(RuntimeMoniker.Net90)]
+    [SimpleJob(RuntimeMoniker.Net10_0)]
     public class PhoneNumberMatcherBenchmark
     {
         // Filler text interleaved between embedded numbers so the matcher has to skip non-number
         // content. Kept short to keep total input length proportional to PhoneNumberCount.
         private const string Filler = " Lorem ipsum dolor sit amet, consectetur adipiscing elit. Call ";
 
-#if NETFRAMEWORK
-        private PhoneNumberUtil _phoneNumberUtil = null;
-        private string _defaultRegion = null;
-        private string _text = null;
-#else
         private PhoneNumberUtil _phoneNumberUtil = null!;
         private string _defaultRegion = null!;
         private string _text = null!;
-#endif
 
-        [Params(100, 1000)]
+        [Params(100)]
         public int PhoneNumberCount { get; set; }
 
         [GlobalSetup]
