@@ -1,0 +1,14 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Phone number metadata / region issue
+    url: https://github.com/google/libphonenumber/issues
+    about: >-
+      This library uses the phone number metadata verbatim from Google's
+      upstream libphonenumber. Issues about a specific region's numbering,
+      validation rules, or formatting must be filed with Google — they are
+      synced here automatically and cannot be fixed in this repository.
+  - name: Reproduce on the Google demo first
+    url: https://libphonenumber.appspot.com
+    about: >-
+      If the behaviour also reproduces on Google's official demo, it is an
+      upstream issue and should be reported to google/libphonenumber.
