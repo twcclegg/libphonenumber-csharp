@@ -1,6 +1,10 @@
 #! /bin/bash
-# Exit bash script on any command that returns a non zero error code
-set -e
+# Exit on any error, treat unset variables as errors, and fail a pipeline if any
+# stage fails. The pipefail matters here: every network read below is `curl | jq`
+# (or `curl | grep | sed`), and without it a failed curl would feed empty input to
+# the parser and the script would happily proceed with an empty version string —
+# potentially cutting a bogus release. Fail closed instead.
+set -euo pipefail
 
 if [ $# -ne 1 ]
 then
@@ -8,26 +12,26 @@ then
     exit 123
 fi
 
-if [ ! command -v jq &> /dev/null ]
+if ! command -v jq &> /dev/null
 then
     echo "jq required"
     exit 123
 fi
 
 getLatestGitHubRelease() {
-    curl "https://api.github.com/repos/$1/releases/latest" | jq -r .tag_name
+    curl --fail --silent --show-error --location "https://api.github.com/repos/$1/releases/latest" | jq -r .tag_name
 }
 
 getLatestNugetRelease() {
-    curl "https://www.nuget.org/packages/$1/" | grep 'og:title' | sed "s/.*$1 \([^\"]*\).*/\1/"
+    curl --fail --silent --show-error --location "https://www.nuget.org/packages/$1/" | grep 'og:title' | sed "s/.*$1 \([^\"]*\).*/\1/"
 }
 
 getReleaseDelta() {
-    curl https://api.github.com/repos/$1/compare/$2...$3 | jq .files[].filename
+    curl --fail --silent --show-error --location "https://api.github.com/repos/$1/compare/$2...$3" | jq .files[].filename
 }
 
 createRelease() {
-    curl -f -H "Authorization: Bearer $GITHUB_TOKEN" -d "{\"tag_name\":\"$2\",\",name\":\"$2\"}" "https://api.github.com/repos/$1/releases"
+    curl --fail --silent --show-error -H "Authorization: Bearer $GITHUB_TOKEN" -d "{\"tag_name\":\"$2\",\"name\":\"$2\"}" --location "https://api.github.com/repos/$1/releases"
 }
 
 GITHUB_TOKEN=$1
