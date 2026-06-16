@@ -1,0 +1,12 @@
+# Code owners for libphonenumber-csharp.
+# These owners are requested for review automatically when someone opens a PR
+# touching matching paths. See:
+# https://docs.github.com/articles/about-code-owners
+
+# Default owner for everything in the repo.
+*                       @twcclegg
+
+# Security-sensitive automation and supply-chain config.
+/.github/               @twcclegg
+/.github/workflows/     @twcclegg
+/appveyor.yml           @twcclegg
