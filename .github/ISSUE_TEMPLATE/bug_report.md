@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-# Contributing to libphonenumber-csharp
+# Bug report
 
 Thanks for contributing to libphonenumber-csharp!
 
