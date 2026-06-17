@@ -1,6 +1,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/76abbk0qveot0mbo/branch/main?svg=true)](https://ci.appveyor.com/project/twcclegg/libphonenumber-csharp/branch/main)
 [![codecov](https://codecov.io/gh/twcclegg/libphonenumber-csharp/branch/main/graph/badge.svg)](https://codecov.io/gh/twcclegg/libphonenumber-csharp)
 [![NuGet](https://img.shields.io/nuget/dt/libphonenumber-csharp.svg)](https://www.nuget.org/packages/libphonenumber-csharp/)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/twcclegg/libphonenumber-csharp/badge)](https://scorecard.dev/viewer/?uri=github.com/twcclegg/libphonenumber-csharp)
 
 C# port of Google's [libphonenumber library](https://github.com/google/libphonenumber).
 

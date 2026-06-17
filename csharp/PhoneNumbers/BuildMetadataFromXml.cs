@@ -23,6 +23,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace PhoneNumbers
@@ -102,7 +103,23 @@ namespace PhoneNumbers
             bool liteBuild = false, bool specialBuild = false, bool isShortNumberMetadata = false,
             bool isAlternateFormatsMetadata = false)
         {
-            var document = XDocument.Load(metadataStream);
+            // Load with a hardened reader. The public PhoneNumberUtil.CreateInstance(Stream)
+            // constructor accepts caller-supplied XML, so we guard that path against XML external
+            // entity (XXE) attacks. The metadata files carry a benign internal DTD subset (only
+            // <!ELEMENT> declarations, no entities), so we must still allow DtdProcessing.Parse;
+            // the security comes from XmlResolver = null (no external DTD/entity is ever fetched)
+            // plus a cap on characters produced by entity expansion (mitigates entity-expansion
+            // denial-of-service such as "billion laughs"). Modern .NET already defaults XmlResolver
+            // to null, but we set these explicitly as defense-in-depth (and to satisfy static
+            // analyzers such as CA3075).
+            var readerSettings = new XmlReaderSettings
+            {
+                DtdProcessing = DtdProcessing.Parse,
+                XmlResolver = null,
+                MaxCharactersFromEntities = 1024 * 1024,
+            };
+            using var reader = XmlReader.Create(metadataStream, readerSettings);
+            var document = XDocument.Load(reader);
 
             var metadataCollection = new List<PhoneMetadata>();
             var metadataFilter = GetMetadataFilter(liteBuild, specialBuild);
