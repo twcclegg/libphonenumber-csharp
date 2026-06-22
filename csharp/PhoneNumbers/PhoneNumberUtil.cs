@@ -851,7 +851,6 @@ namespace PhoneNumbers
             // be the length of the area code plus the length of the mobile token.
             return countryCallingCode switch
             {
-                52 => "1",
                 54 => "9",
                 _ => ""
             };
