@@ -12,7 +12,7 @@ init:
       {
         Update-AppveyorBuild -Version "$(((nuget list libphonenumber-csharp -Source https://api.nuget.org/v3/index.json | findstr "libphonenumber-csharp[^.-]") -split ' ')[1])-$($env:APPVEYOR_REPO_COMMIT.substring(0,7))"
       }
-image: Visual Studio 2022
+image: Visual Studio 2026
 configuration: Release
 environment:
   COVERALLS_REPO_TOKEN:
@@ -22,11 +22,6 @@ pull_requests:
 branches:
   only:
     - main
-install:
-  - ps: |
-      $ProgressPreference = 'SilentlyContinue'
-      Invoke-WebRequest -Uri 'https://dot.net/v1/dotnet-install.ps1' -OutFile "$env:TEMP\dotnet-install.ps1"
-      & "$env:TEMP\dotnet-install.ps1" -Channel 10.0 -InstallDir 'C:\Program Files\dotnet'
 before_build:
   - dotnet restore csharp -s https://api.nuget.org/v3/index.json
 build_script:
