@@ -115,10 +115,21 @@ namespace PhoneNumbers
         {
             if (number.NationalNumber == 0)
             {
-                // Unparseable numbers that kept their raw input just use that.
-                // This is the only case where a number can be formatted as E164 without a
-                // leading '+' symbol (but the original number wasn't parseable anyway).
+                // Unparseable numbers that kept their raw input just use that, unless default country was
+                // specified and the format is E164. In that case, we prepend the raw input with the country
+                // code.
                 var rawInput = number.RawInput;
+                if (rawInput.Length > 0
+                    && number.HasCountryCode
+                    && number.CountryCodeSource == PhoneNumber.Types.CountryCodeSource.FROM_DEFAULT_COUNTRY
+                    && numberFormat == PhoneNumberFormat.E164)
+                {
+                    // Note PrefixNumberWithCountryCallingCode appends, so build the prefix first.
+                    var prefixedNumber = new StringBuilder();
+                    PrefixNumberWithCountryCallingCode(number.CountryCode, numberFormat, prefixedNumber);
+                    prefixedNumber.Append(rawInput);
+                    return prefixedNumber.ToString();
+                }
                 if (rawInput.Length > 0 || !number.HasCountryCode)
                 {
                     return rawInput;

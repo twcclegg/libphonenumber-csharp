@@ -993,6 +993,17 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
+        public void TestFormatAuShortCodeNumber()
+        {
+            var auShortCodeNumber = phoneUtil.Parse("000", RegionCode.AU);
+            Assert.Equal("+61000", phoneUtil.Format(auShortCodeNumber, PhoneNumberFormat.E164));
+
+            var pgShortCodeNumber = new PhoneNumber.Builder()
+                .SetCountryCode(675).SetNationalNumber(0L).SetRawInput("+675000").Build();
+            Assert.Equal("+675000", phoneUtil.Format(pgShortCodeNumber, PhoneNumberFormat.E164));
+        }
+
+        [Fact]
         public void TestFormatNumberWithExtension()
         {
             var nzNumber = new PhoneNumber.Builder().MergeFrom(NZNumber).SetExtension("1234").Build();
