@@ -88,7 +88,7 @@ FILES=$(getReleaseDelta google/libphonenumber "v${DEPLOYED_NUGET_TAG}" $UPSTREAM
 
 if echo $FILES | grep '\.java'
 then
-   #echo "has java files, automatic update not possible"
+   echo "has java files, automatic update not possible"
    #exit 123
 fi
 
