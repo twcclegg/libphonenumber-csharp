@@ -15,6 +15,10 @@ on:
         description: 'Continue even when the upstream release changes .proto files'
         type: boolean
         default: false
+      dry_run:
+        description: 'Report what the run would do and stop before changing anything - nothing is committed, pushed or released'
+        type: boolean
+        default: false
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -52,3 +56,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SKIP_JAVA_CHECK: ${{ inputs.skip_java_check || false }}
           SKIP_PROTO_CHECK: ${{ inputs.skip_proto_check || false }}
+          DRY_RUN: ${{ inputs.dry_run || false }}

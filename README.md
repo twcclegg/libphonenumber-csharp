@@ -180,6 +180,22 @@ If you have reviewed the upstream diff and the Java changes don't need porting (
 
 Skipping a check means the release ships upstream metadata from a version whose Java-side changes were not ported, so read the upstream diff first — the script prints the offending filenames before it stops.
 
+### Dry runs
+
+`--dry-run` (or the **dry_run** workflow input) runs every read-only step — version lookups, repository checks, the upstream diff gates, the upstream clone — reports what a real run would do, and stops before the first change to the working tree. Nothing is copied, generated, committed, pushed or released, no token is required, and the clean-`main` requirement is relaxed to a warning so it works from a feature branch:
+
+```bash
+# what would tonight's scheduled run do?
+bash lib/github-actions-metadata-update.sh --dry-run
+```
+
+`UPSTREAM_TAG` and `DEPLOYED_VERSION` override the two version lookups, which lets you replay any historical release pair — useful for seeing how a given release trips the gates:
+
+```bash
+UPSTREAM_TAG=v9.0.33 DEPLOYED_VERSION=9.0.32 \
+  bash lib/github-actions-metadata-update.sh --dry-run
+```
+
 ## Contributing
 See [CONTRIBUTING.md](CONTRIBUTING.md)
 
