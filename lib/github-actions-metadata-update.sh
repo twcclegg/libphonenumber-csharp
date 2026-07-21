@@ -19,21 +19,42 @@ usage() {
 Usage: github-actions-metadata-update.sh [options] [github-token]
 
 The GitHub token may be supplied as the positional argument or via the
-GITHUB_TOKEN environment variable.
+GITHUB_TOKEN environment variable. It is required unless --dry-run is used.
 
 Options:
   --skip-java-check    Continue even when the upstream diff contains .java files.
                        Only use this when those changes have been reviewed and do
                        not need porting to the C# library.
   --skip-proto-check   Continue even when the upstream diff contains .proto files.
+  --dry-run            Run every read-only step - version lookups, repository
+                       checks, the upstream diff gates and the upstream clone -
+                       report what would happen, then stop before the first
+                       change to the working tree. Nothing is copied, generated,
+                       committed, pushed or released. On a branch other than a
+                       clean main the usual hard checks become warnings, so a dry
+                       run works from a feature branch.
   -h, --help           Show this help and exit.
 
 Environment variables:
   GITHUB_TOKEN             GitHub token used for the api calls and the release.
   SKIP_JAVA_CHECK          Same as --skip-java-check (true/1/yes).
   SKIP_PROTO_CHECK         Same as --skip-proto-check (true/1/yes).
+  DRY_RUN                  Same as --dry-run (true/1/yes).
+  UPSTREAM_TAG             Use this upstream tag (e.g. v9.0.33) instead of asking
+                           github for the latest release. Mainly for dry runs.
+  DEPLOYED_VERSION         Use this published version (e.g. 9.0.32) instead of
+                           asking nuget.org. Mainly for dry runs - together with
+                           UPSTREAM_TAG it replays any historical release pair.
   EXPECTED_MAJOR_VERSION   Upstream major version this port tracks (default 9).
   TEST_TARGET_FRAMEWORK    Framework used for the pre-commit test run (default net10.0).
+
+Examples:
+  # what would the nightly run do right now?
+  github-actions-metadata-update.sh --dry-run
+
+  # replay a release that changed java files, with the override in place
+  UPSTREAM_TAG=v9.0.33 DEPLOYED_VERSION=9.0.32 \
+      github-actions-metadata-update.sh --dry-run --skip-java-check
 EOF
 }
 
@@ -67,6 +88,9 @@ isTrue() {
 GITHUB_TOKEN="${GITHUB_TOKEN:-}"
 SKIP_JAVA_CHECK="${SKIP_JAVA_CHECK:-false}"
 SKIP_PROTO_CHECK="${SKIP_PROTO_CHECK:-false}"
+DRY_RUN="${DRY_RUN:-false}"
+UPSTREAM_TAG="${UPSTREAM_TAG:-}"
+DEPLOYED_VERSION="${DEPLOYED_VERSION:-}"
 EXPECTED_MAJOR_VERSION="${EXPECTED_MAJOR_VERSION:-9}"
 TEST_TARGET_FRAMEWORK="${TEST_TARGET_FRAMEWORK:-net10.0}"
 
@@ -75,6 +99,7 @@ do
     case "$1" in
         --skip-java-check) SKIP_JAVA_CHECK=true ;;
         --skip-proto-check) SKIP_PROTO_CHECK=true ;;
+        --dry-run) DRY_RUN=true ;;
         -h|--help) usage; exit 0 ;;
         -*) usage >&2; fail ${EXIT_USAGE} "unknown option: $1" ;;
         *) GITHUB_TOKEN="$1" ;;
@@ -82,17 +107,39 @@ do
     shift
 done
 
-if [ -z "${GITHUB_TOKEN}" ]
+if isTrue "${DRY_RUN}"
+then
+    log "dry run: no files will be changed, nothing will be committed, pushed or released"
+    if [ -z "${GITHUB_TOKEN}" ]
+    then
+        warn "no github token, api calls will be unauthenticated and subject to a much lower rate limit"
+    fi
+elif [ -z "${GITHUB_TOKEN}" ]
 then
     usage >&2
     fail ${EXIT_USAGE} "GitHub token required"
 fi
 
-for tool in curl jq git javac java dotnet
+for tool in curl jq git
 do
     if ! command -v "${tool}" &> /dev/null
     then
         fail ${EXIT_MISSING_PREREQUISITE} "${tool} required"
+    fi
+done
+
+# Only needed once the script starts generating and building, which a dry run
+# never reaches - report them there rather than refusing to run.
+for tool in javac java dotnet
+do
+    if ! command -v "${tool}" &> /dev/null
+    then
+        if isTrue "${DRY_RUN}"
+        then
+            warn "${tool} not found, a real run would stop here"
+        else
+            fail ${EXIT_MISSING_PREREQUISITE} "${tool} required"
+        fi
     fi
 done
 
@@ -103,12 +150,20 @@ NUGET_PACKAGE_ID=libphonenumber-csharp
 GITHUB_ACTION_WORKING_DIRECTORY=$(pwd)
 
 # Authenticated api calls, so the job is not subject to the unauthenticated rate
-# limit shared by every action runner on the same address.
+# limit shared by every action runner on the same address. The header is built as
+# an array so the token stays a single argument, and is omitted entirely when
+# there is no token (dry runs only).
+GITHUB_AUTH_HEADER=()
+if [ -n "${GITHUB_TOKEN}" ]
+then
+    GITHUB_AUTH_HEADER=(-H "Authorization: Bearer ${GITHUB_TOKEN}")
+fi
+
 ghApi() {
     curl --fail --silent --show-error --location --retry 3 --retry-delay 5 \
         -H "Accept: application/vnd.github+json" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
-        -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+        "${GITHUB_AUTH_HEADER[@]}" \
         "$@"
 }
 
@@ -131,11 +186,23 @@ createRelease() {
         | ghApi -X POST --data @- "https://api.github.com/repos/$1/releases" > /dev/null
 }
 
-UPSTREAM_GITHUB_RELEASE_TAG=$(getLatestGitHubRelease ${UPSTREAM_REPOSITORY})
-DEPLOYED_NUGET_TAG=$(getLatestNugetRelease ${NUGET_PACKAGE_ID})
+if [ -n "${UPSTREAM_TAG}" ]
+then
+    UPSTREAM_GITHUB_RELEASE_TAG="${UPSTREAM_TAG}"
+    log "${UPSTREAM_REPOSITORY} release overridden to ${UPSTREAM_GITHUB_RELEASE_TAG}"
+else
+    UPSTREAM_GITHUB_RELEASE_TAG=$(getLatestGitHubRelease ${UPSTREAM_REPOSITORY})
+    log "${UPSTREAM_REPOSITORY} latest release is ${UPSTREAM_GITHUB_RELEASE_TAG}"
+fi
 
-log "${UPSTREAM_REPOSITORY} latest release is ${UPSTREAM_GITHUB_RELEASE_TAG}"
-log "${NUGET_PACKAGE_ID} latest release is ${DEPLOYED_NUGET_TAG}"
+if [ -n "${DEPLOYED_VERSION}" ]
+then
+    DEPLOYED_NUGET_TAG="${DEPLOYED_VERSION}"
+    log "${NUGET_PACKAGE_ID} version overridden to ${DEPLOYED_NUGET_TAG}"
+else
+    DEPLOYED_NUGET_TAG=$(getLatestNugetRelease ${NUGET_PACKAGE_ID})
+    log "${NUGET_PACKAGE_ID} latest release is ${DEPLOYED_NUGET_TAG}"
+fi
 
 if [[ ! "${UPSTREAM_GITHUB_RELEASE_TAG}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
 then
@@ -180,14 +247,25 @@ then
     fail 1 "must be run from the root of the ${GITHUB_REPOSITORY_NAME} repository"
 fi
 
+# A dry run changes nothing, so neither of these is dangerous there - downgrade
+# them to warnings so the pipeline can be exercised from a feature branch.
+requireRepositoryState() {
+    if isTrue "${DRY_RUN}"
+    then
+        warn "$1 (ignored for the dry run)"
+    else
+        fail 1 "$1"
+    fi
+}
+
 if [ "$(git branch --show-current)" != "main" ]
 then
-    fail 1 "must be on main branch"
+    requireRepositoryState "must be on main branch"
 fi
 
 if [ -n "$(git status --porcelain)" ]
 then
-    fail 1 "working directory is not clean"
+    requireRepositoryState "working directory is not clean"
 fi
 
 WORK_DIR=$(mktemp -d)
@@ -237,16 +315,34 @@ then
     fi
 fi
 
-git config --global user.email '<>'
-git config --global user.name 'libphonenumber-csharp-bot'
+if ! isTrue "${DRY_RUN}"
+then
+    git config --global user.email '<>'
+    git config --global user.name 'libphonenumber-csharp-bot'
+fi
 
-git clone --depth 1 --branch "${UPSTREAM_GITHUB_RELEASE_TAG}" \
+# Cloning upstream is safe either way: it only writes to the temporary directory,
+# and it is the last thing that can fail before the working tree is touched.
+git -c advice.detachedHead=false clone --quiet --depth 1 --branch "${UPSTREAM_GITHUB_RELEASE_TAG}" \
     "https://github.com/${UPSTREAM_REPOSITORY}.git" "${WORK_DIR}/libphonenumber"
 
 UPSTREAM_RESOURCES="${WORK_DIR}/libphonenumber/resources"
 if [ -z "$(ls -A "${UPSTREAM_RESOURCES}" 2> /dev/null)" ]
 then
     fail 1 "upstream resources directory is missing or empty"
+fi
+
+# Everything past this point writes to the working tree or to github.
+if isTrue "${DRY_RUN}"
+then
+    log ""
+    log "dry run complete, a real run would now:"
+    log "  - replace ${GITHUB_ACTION_WORKING_DIRECTORY}/resources with $(find "${UPSTREAM_RESOURCES}" -type f | wc -l | tr -d ' ') files from ${UPSTREAM_GITHUB_RELEASE_TAG}"
+    log "  - regenerate csharp/PhoneNumbers/LocaleData.cs with $(java -version 2>&1 | head -n 1 || echo 'the local jdk')"
+    log "  - run dotnet restore, build and test (${TEST_TARGET_FRAMEWORK})"
+    log "  - commit \"feat: automatic upgrade to ${UPSTREAM_GITHUB_RELEASE_TAG}\" and push to main"
+    log "  - create release ${UPSTREAM_GITHUB_RELEASE_TAG} in ${GITHUB_REPOSITORY_OWNER}/${GITHUB_REPOSITORY_NAME}"
+    exit 0
 fi
 
 rm -rf "${GITHUB_ACTION_WORKING_DIRECTORY:?}/resources"/*
