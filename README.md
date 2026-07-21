@@ -14,7 +14,7 @@ The original Apache License 2.0 was preserved.
 
 See [this](csharp/README.md) for details about the port.
 
-Phone number metadata is updated in the Google repo approximately every two weeks. This library is automatically updated by a [scheduled github action](https://github.com/twcclegg/libphonenumber-csharp/actions/workflows/create_new_release_on_new_metadata_update.yml) to include the latest metadata, usually within a day.
+Phone number metadata is updated in the Google repo approximately every two weeks. This library is automatically updated by a [scheduled github action](https://github.com/twcclegg/libphonenumber-csharp/actions/workflows/create_new_release_on_new_metadata_update.yml) to include the latest metadata, usually within a day. See [Metadata updates](#metadata-updates) for how that works and how to run it manually.
 
 ## Installation
 
@@ -156,6 +156,29 @@ For more information on metadata usage, please refer to the [main repository faq
 ```bash
 dotnet test csharp/PhoneNumbers.sln
 ```
+
+## Metadata updates
+
+The [`create_new_release_on_new_metadata_update`](https://github.com/twcclegg/libphonenumber-csharp/actions/workflows/create_new_release_on_new_metadata_update.yml) workflow runs daily and drives [`lib/github-actions-metadata-update.sh`](lib/github-actions-metadata-update.sh). When the latest `google/libphonenumber` release is newer than the published NuGet package, it copies the upstream `resources/`, regenerates `csharp/PhoneNumbers/LocaleData.cs`, builds and tests, then commits, pushes and creates a matching GitHub release.
+
+Before doing any of that it inspects the upstream diff and stops if it contains `.java` or `.proto` files, because changes to the Java sources may need porting by hand and an unattended metadata bump would silently skip them.
+
+### Skipping the java (or proto) check
+
+If you have reviewed the upstream diff and the Java changes don't need porting (for example test-only or build-file changes), you can run the update anyway:
+
+* **From the Actions UI** — open [create_new_release_on_new_metadata_update](https://github.com/twcclegg/libphonenumber-csharp/actions/workflows/create_new_release_on_new_metadata_update.yml), click **Run workflow**, and tick **skip_java_check** (and/or **skip_proto_check**). Scheduled runs always leave both unticked.
+* **Locally** — pass the flag or set the environment variable:
+
+  ```bash
+  bash lib/github-actions-metadata-update.sh --skip-java-check "$GITHUB_TOKEN"
+  # or
+  SKIP_JAVA_CHECK=true bash lib/github-actions-metadata-update.sh "$GITHUB_TOKEN"
+  ```
+
+  `--skip-proto-check` / `SKIP_PROTO_CHECK` work the same way, and `--help` lists every option.
+
+Skipping a check means the release ships upstream metadata from a version whose Java-side changes were not ported, so read the upstream diff first — the script prints the offending filenames before it stops.
 
 ## Contributing
 See [CONTRIBUTING.md](CONTRIBUTING.md)

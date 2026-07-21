@@ -1,125 +1,288 @@
 #! /bin/bash
+# Syncs resources/ + LocaleData.cs from the latest google/libphonenumber release,
+# builds and tests, then commits, pushes and creates a GitHub release.
+#
 # Exit on any error, treat unset variables as errors, and fail a pipeline if any
-# stage fails. The pipefail matters here: every network read below is `curl | jq`
-# (or `curl | grep | sed`), and without it a failed curl would feed empty input to
-# the parser and the script would happily proceed with an empty version string —
-# potentially cutting a bogus release. Fail closed instead.
+# stage fails. The pipefail matters here: every network read below is `curl | jq`,
+# and without it a failed curl would feed empty input to the parser and the script
+# would happily proceed with an empty version string — potentially cutting a bogus
+# release. Fail closed instead.
 set -euo pipefail
 
-if [ $# -ne 1 ]
+# Exit codes
+readonly EXIT_USAGE=2
+readonly EXIT_MISSING_PREREQUISITE=3
+readonly EXIT_NEEDS_ATTENTION=4
+
+usage() {
+    cat <<'EOF'
+Usage: github-actions-metadata-update.sh [options] [github-token]
+
+The GitHub token may be supplied as the positional argument or via the
+GITHUB_TOKEN environment variable.
+
+Options:
+  --skip-java-check    Continue even when the upstream diff contains .java files.
+                       Only use this when those changes have been reviewed and do
+                       not need porting to the C# library.
+  --skip-proto-check   Continue even when the upstream diff contains .proto files.
+  -h, --help           Show this help and exit.
+
+Environment variables:
+  GITHUB_TOKEN             GitHub token used for the api calls and the release.
+  SKIP_JAVA_CHECK          Same as --skip-java-check (true/1/yes).
+  SKIP_PROTO_CHECK         Same as --skip-proto-check (true/1/yes).
+  EXPECTED_MAJOR_VERSION   Upstream major version this port tracks (default 9).
+  TEST_TARGET_FRAMEWORK    Framework used for the pre-commit test run (default net10.0).
+EOF
+}
+
+log() {
+    echo "$*"
+}
+
+warn() {
+    echo "warning: $*" >&2
+}
+
+# fail <exit-code> <message>
+fail() {
+    local code=$1
+    shift
+    echo "error: $*" >&2
+    if [ -n "${GITHUB_STEP_SUMMARY:-}" ]
+    then
+        echo "$*" >> "${GITHUB_STEP_SUMMARY}"
+    fi
+    exit "${code}"
+}
+
+isTrue() {
+    case "${1,,}" in
+        true|1|yes|y) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
+GITHUB_TOKEN="${GITHUB_TOKEN:-}"
+SKIP_JAVA_CHECK="${SKIP_JAVA_CHECK:-false}"
+SKIP_PROTO_CHECK="${SKIP_PROTO_CHECK:-false}"
+EXPECTED_MAJOR_VERSION="${EXPECTED_MAJOR_VERSION:-9}"
+TEST_TARGET_FRAMEWORK="${TEST_TARGET_FRAMEWORK:-net10.0}"
+
+while [ $# -gt 0 ]
+do
+    case "$1" in
+        --skip-java-check) SKIP_JAVA_CHECK=true ;;
+        --skip-proto-check) SKIP_PROTO_CHECK=true ;;
+        -h|--help) usage; exit 0 ;;
+        -*) usage >&2; fail ${EXIT_USAGE} "unknown option: $1" ;;
+        *) GITHUB_TOKEN="$1" ;;
+    esac
+    shift
+done
+
+if [ -z "${GITHUB_TOKEN}" ]
 then
-    echo "GitHub token required"
-    exit 123
+    usage >&2
+    fail ${EXIT_USAGE} "GitHub token required"
 fi
 
-if ! command -v jq &> /dev/null
-then
-    echo "jq required"
-    exit 123
-fi
+for tool in curl jq git javac java dotnet
+do
+    if ! command -v "${tool}" &> /dev/null
+    then
+        fail ${EXIT_MISSING_PREREQUISITE} "${tool} required"
+    fi
+done
+
+GITHUB_REPOSITORY_OWNER=twcclegg
+GITHUB_REPOSITORY_NAME=libphonenumber-csharp
+UPSTREAM_REPOSITORY=google/libphonenumber
+NUGET_PACKAGE_ID=libphonenumber-csharp
+GITHUB_ACTION_WORKING_DIRECTORY=$(pwd)
+
+# Authenticated api calls, so the job is not subject to the unauthenticated rate
+# limit shared by every action runner on the same address.
+ghApi() {
+    curl --fail --silent --show-error --location --retry 3 --retry-delay 5 \
+        -H "Accept: application/vnd.github+json" \
+        -H "X-GitHub-Api-Version: 2022-11-28" \
+        -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+        "$@"
+}
 
 getLatestGitHubRelease() {
-    curl --fail --silent --show-error --location "https://api.github.com/repos/$1/releases/latest" | jq -r .tag_name
+    ghApi "https://api.github.com/repos/$1/releases/latest" | jq -er '.tag_name'
 }
 
 getLatestNugetRelease() {
-    curl --fail --silent --show-error --location "https://www.nuget.org/packages/$1/" | grep 'og:title' | sed "s/.*$1 \([^\"]*\).*/\1/"
+    curl --fail --silent --show-error --location --retry 3 --retry-delay 5 \
+        "https://api.nuget.org/v3-flatcontainer/${1,,}/index.json" \
+        | jq -er '[.versions[] | select(test("-") | not)] | last'
 }
 
 getReleaseDelta() {
-    curl --fail --silent --show-error --location "https://api.github.com/repos/$1/compare/$2...$3" | jq .files[].filename
+    ghApi "https://api.github.com/repos/$1/compare/$2...$3"
 }
 
 createRelease() {
-    curl --fail --silent --show-error -H "Authorization: Bearer $GITHUB_TOKEN" -d "{\"tag_name\":\"$2\",\"name\":\"$2\"}" --location "https://api.github.com/repos/$1/releases"
+    jq -n --arg tag "$2" '{tag_name: $tag, name: $tag}' \
+        | ghApi -X POST --data @- "https://api.github.com/repos/$1/releases" > /dev/null
 }
 
-GITHUB_TOKEN=$1
-UPSTREAM_GITHUB_RELEASE_TAG=$(getLatestGitHubRelease google/libphonenumber)
-DEPLOYED_NUGET_TAG=$(getLatestNugetRelease libphonenumber-csharp)
-GITHUB_REPOSITORY_OWNER=twcclegg
-GITHUB_REPOSITORY_NAME=libphonenumber-csharp
-GITHUB_ACTION_WORKING_DIRECTORY=$(pwd)
+UPSTREAM_GITHUB_RELEASE_TAG=$(getLatestGitHubRelease ${UPSTREAM_REPOSITORY})
+DEPLOYED_NUGET_TAG=$(getLatestNugetRelease ${NUGET_PACKAGE_ID})
 
-echo "google/libphonenumber latest release is ${UPSTREAM_GITHUB_RELEASE_TAG}"
-echo "libphonenumber-csharp latest release is ${DEPLOYED_NUGET_TAG}"
+log "${UPSTREAM_REPOSITORY} latest release is ${UPSTREAM_GITHUB_RELEASE_TAG}"
+log "${NUGET_PACKAGE_ID} latest release is ${DEPLOYED_NUGET_TAG}"
 
-if [ "${UPSTREAM_GITHUB_RELEASE_TAG:1:1}" != "9" ]
+if [[ ! "${UPSTREAM_GITHUB_RELEASE_TAG}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
 then
-    echo "major version update"
-    exit 123
+    fail 1 "unexpected upstream release tag: ${UPSTREAM_GITHUB_RELEASE_TAG}"
 fi
 
-if [ "$DEPLOYED_NUGET_TAG" = "${UPSTREAM_GITHUB_RELEASE_TAG:1}" ]
+if [[ ! "${DEPLOYED_NUGET_TAG}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
 then
-    echo "versions match, new release not required"
+    fail 1 "unexpected deployed nuget version: ${DEPLOYED_NUGET_TAG}"
+fi
+
+UPSTREAM_VERSION="${UPSTREAM_GITHUB_RELEASE_TAG#v}"
+UPSTREAM_MAJOR_VERSION="${UPSTREAM_VERSION%%.*}"
+
+if [ "${UPSTREAM_MAJOR_VERSION}" != "${EXPECTED_MAJOR_VERSION}" ]
+then
+    fail ${EXIT_NEEDS_ATTENTION} \
+        "major version update: upstream is ${UPSTREAM_GITHUB_RELEASE_TAG}, this port tracks ${EXPECTED_MAJOR_VERSION}.x"
+fi
+
+if [ "${DEPLOYED_NUGET_TAG}" = "${UPSTREAM_VERSION}" ]
+then
+    log "versions match, new release not required"
     exit 0
 fi
 
-mkdir ~/GitHub
-
-cd ~/GitHub
-git clone https://github.com/${GITHUB_REPOSITORY_OWNER}/${GITHUB_REPOSITORY_NAME}.git
-cd ${GITHUB_REPOSITORY_NAME}
-git checkout main
-
-cd ~/GitHub/$GITHUB_REPOSITORY_NAME
-if [ $(git branch --show-current) != "main" ]
+# Nothing to do when the published package is already ahead of upstream, which
+# happens after a C# only patch release.
+OLDEST_VERSION=$(printf '%s\n%s\n' "${UPSTREAM_VERSION}" "${DEPLOYED_NUGET_TAG}" | sort -V | head -n 1)
+if [ "${OLDEST_VERSION}" = "${UPSTREAM_VERSION}" ]
 then
-    echo "must be on main branch"
-    exit 123
+    log "deployed version ${DEPLOYED_NUGET_TAG} is ahead of upstream ${UPSTREAM_VERSION}, new release not required"
+    exit 0
+fi
+
+# The checkout this script runs in is the one that gets committed and pushed, so
+# it is the one that has to be on a clean main.
+cd "${GITHUB_ACTION_WORKING_DIRECTORY}"
+
+if [ ! -d resources ] || [ ! -f lib/DumpLocale.java ]
+then
+    fail 1 "must be run from the root of the ${GITHUB_REPOSITORY_NAME} repository"
+fi
+
+if [ "$(git branch --show-current)" != "main" ]
+then
+    fail 1 "must be on main branch"
 fi
 
 if [ -n "$(git status --porcelain)" ]
 then
-    echo "working directory is not clean"
-    exit 123
+    fail 1 "working directory is not clean"
 fi
 
-cd ~/GitHub
-git clone https://github.com/google/libphonenumber.git
-cd libphonenumber
-git checkout master
+WORK_DIR=$(mktemp -d)
+cleanup() {
+    rm -rf "${WORK_DIR}"
+}
+trap cleanup EXIT
 
-cd ~/GitHub/libphonenumber
-PREVIOUS=$(git describe --abbrev=0)
+COMPARE_JSON=$(getReleaseDelta ${UPSTREAM_REPOSITORY} "v${DEPLOYED_NUGET_TAG}" "${UPSTREAM_GITHUB_RELEASE_TAG}")
+FILES=$(jq -er '.files // error("compare response contains no file list") | .[].filename' <<< "${COMPARE_JSON}")
 
-FILES=$(getReleaseDelta google/libphonenumber "v${DEPLOYED_NUGET_TAG}" $UPSTREAM_GITHUB_RELEASE_TAG)
-
-if echo $FILES | grep '\.java'
+if [ -z "${FILES}" ]
 then
-   echo "has java files, automatic update not possible"
-   exit 123
+    fail 1 "no changed files reported between v${DEPLOYED_NUGET_TAG} and ${UPSTREAM_GITHUB_RELEASE_TAG}"
 fi
 
-if echo $FILES | grep 'proto'
+# The compare api returns at most 300 files, so the checks below can miss changes
+# in a very large release.
+if [ "$(jq -r '.files | length' <<< "${COMPARE_JSON}")" -ge 300 ]
 then
-   echo "has proto files, automatic update not possible"
-   exit 123
+    warn "the compare api returned the maximum of 300 files, the change list may be truncated"
+fi
+
+JAVA_FILES=$(grep -E '\.java$' <<< "${FILES}" || true)
+if [ -n "${JAVA_FILES}" ]
+then
+    printf 'upstream diff contains java files:\n%s\n' "${JAVA_FILES}"
+    if isTrue "${SKIP_JAVA_CHECK}"
+    then
+        warn "continuing anyway because --skip-java-check / SKIP_JAVA_CHECK is set"
+    else
+        fail ${EXIT_NEEDS_ATTENTION} \
+            "has java files, automatic update not possible (re-run with --skip-java-check or SKIP_JAVA_CHECK=true to override)"
+    fi
+fi
+
+PROTO_FILES=$(grep -E '\.proto$' <<< "${FILES}" || true)
+if [ -n "${PROTO_FILES}" ]
+then
+    printf 'upstream diff contains proto files:\n%s\n' "${PROTO_FILES}"
+    if isTrue "${SKIP_PROTO_CHECK}"
+    then
+        warn "continuing anyway because --skip-proto-check / SKIP_PROTO_CHECK is set"
+    else
+        fail ${EXIT_NEEDS_ATTENTION} \
+            "has proto files, automatic update not possible (re-run with --skip-proto-check or SKIP_PROTO_CHECK=true to override)"
+    fi
 fi
 
 git config --global user.email '<>'
 git config --global user.name 'libphonenumber-csharp-bot'
 
-git fetch origin
-git reset --hard $UPSTREAM_GITHUB_RELEASE_TAG
-rm -rf ${GITHUB_ACTION_WORKING_DIRECTORY}/resources/*
-cp -r resources/* ${GITHUB_ACTION_WORKING_DIRECTORY}/resources
-cd ${GITHUB_ACTION_WORKING_DIRECTORY}
-cd lib
-javac DumpLocale.java && java DumpLocale > ../csharp/PhoneNumbers/LocaleData.cs
-rm DumpLocale.class
+git clone --depth 1 --branch "${UPSTREAM_GITHUB_RELEASE_TAG}" \
+    "https://github.com/${UPSTREAM_REPOSITORY}.git" "${WORK_DIR}/libphonenumber"
+
+UPSTREAM_RESOURCES="${WORK_DIR}/libphonenumber/resources"
+if [ -z "$(ls -A "${UPSTREAM_RESOURCES}" 2> /dev/null)" ]
+then
+    fail 1 "upstream resources directory is missing or empty"
+fi
+
+rm -rf "${GITHUB_ACTION_WORKING_DIRECTORY:?}/resources"/*
+cp -r "${UPSTREAM_RESOURCES}/." "${GITHUB_ACTION_WORKING_DIRECTORY}/resources/"
+
+# Generate into the temporary directory first, so a failure part way through can
+# never leave a truncated LocaleData.cs or a stray DumpLocale.class behind for
+# `git add -A` to pick up.
+cd "${GITHUB_ACTION_WORKING_DIRECTORY}/lib"
+javac -d "${WORK_DIR}/classes" DumpLocale.java
+java -cp "${WORK_DIR}/classes" DumpLocale > "${WORK_DIR}/LocaleData.cs"
+
+if [ ! -s "${WORK_DIR}/LocaleData.cs" ]
+then
+    fail 1 "DumpLocale produced no output"
+fi
+
+mv "${WORK_DIR}/LocaleData.cs" "${GITHUB_ACTION_WORKING_DIRECTORY}/csharp/PhoneNumbers/LocaleData.cs"
+
+cd "${GITHUB_ACTION_WORKING_DIRECTORY}"
+if [ -z "$(git status --porcelain)" ]
+then
+    log "no changes after metadata sync, new release not required"
+    exit 0
+fi
 
 # Ensure project builds and passes tests before committing
-cd ${GITHUB_ACTION_WORKING_DIRECTORY}
-cd csharp
+cd "${GITHUB_ACTION_WORKING_DIRECTORY}/csharp"
 dotnet restore
 dotnet build --no-restore
-dotnet test --no-build --verbosity normal -p:TargetFrameworks=net9.0
+dotnet test --no-build --verbosity normal "-p:TargetFrameworks=${TEST_TARGET_FRAMEWORK}"
 
-cd ${GITHUB_ACTION_WORKING_DIRECTORY}
+cd "${GITHUB_ACTION_WORKING_DIRECTORY}"
 git add -A
 git commit -m "feat: automatic upgrade to ${UPSTREAM_GITHUB_RELEASE_TAG}"
 git push
 
-createRelease ${GITHUB_REPOSITORY_OWNER}/${GITHUB_REPOSITORY_NAME} $UPSTREAM_GITHUB_RELEASE_TAG
+createRelease ${GITHUB_REPOSITORY_OWNER}/${GITHUB_REPOSITORY_NAME} "${UPSTREAM_GITHUB_RELEASE_TAG}"
+log "created release ${UPSTREAM_GITHUB_RELEASE_TAG}"
