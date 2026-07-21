@@ -6,6 +6,15 @@ on:
   schedule:
     - cron: '0 8 * * *'
   workflow_dispatch:
+    inputs:
+      skip_java_check:
+        description: 'Continue even when the upstream release changes .java files (only tick this once those changes have been reviewed as not needing a port)'
+        type: boolean
+        default: false
+      skip_proto_check:
+        description: 'Continue even when the upstream release changes .proto files'
+        type: boolean
+        default: false
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -20,14 +29,26 @@ jobs:
   create_new_release_on_new_metadata_update:
     runs-on: ubuntu-latest
     steps:
+      # Credentials are persisted on purpose: the update script pushes through this checkout.
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - name: Setup .NET
         uses: actions/setup-dotnet@9a946fdbd5fb07b82b2f5a4466058b876ab72bb2 # v5
         with:
-          dotnet-version: 9.x
+          dotnet-version: 10.x
+      # DumpLocale.java regenerates csharp/PhoneNumbers/LocaleData.cs from java.util.Locale,
+      # so the jdk is an input to the generated file rather than an incidental tool. Pinned
+      # to temurin 17 to match the header of the committed LocaleData.cs - changing it would
+      # rewrite the locale data from a different CLDR version.
+      - name: Setup Java
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        with:
+          distribution: temurin
+          java-version: '17'
       - name: Get new metadata information and create new GitHub release
         timeout-minutes: 30
         run: |
-          bash lib/github-actions-metadata-update.sh ${GITHUB_TOKEN}
+          bash lib/github-actions-metadata-update.sh "${GITHUB_TOKEN}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SKIP_JAVA_CHECK: ${{ inputs.skip_java_check || false }}
+          SKIP_PROTO_CHECK: ${{ inputs.skip_proto_check || false }}
