@@ -194,7 +194,7 @@ ghApi() {
     curl --fail --silent --show-error --location --retry 3 --retry-delay 5 \
         -H "Accept: application/vnd.github+json" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
-        "${GITHUB_AUTH_HEADER[@]}" \
+        ${GITHUB_AUTH_HEADER[@]+"${GITHUB_AUTH_HEADER[@]}"} \
         "$@"
 }
 
@@ -229,7 +229,7 @@ then
     UPSTREAM_GITHUB_RELEASE_TAG="${UPSTREAM_TAG}"
     log "${UPSTREAM_REPOSITORY} release overridden to ${UPSTREAM_GITHUB_RELEASE_TAG}"
 else
-    UPSTREAM_GITHUB_RELEASE_TAG=$(getLatestGitHubRelease ${UPSTREAM_REPOSITORY})
+    UPSTREAM_GITHUB_RELEASE_TAG=$(getLatestGitHubRelease "${UPSTREAM_REPOSITORY}")
     log "${UPSTREAM_REPOSITORY} latest release is ${UPSTREAM_GITHUB_RELEASE_TAG}"
 fi
 
@@ -238,7 +238,7 @@ then
     DEPLOYED_NUGET_TAG="${DEPLOYED_VERSION}"
     log "${NUGET_PACKAGE_ID} version overridden to ${DEPLOYED_NUGET_TAG}"
 else
-    DEPLOYED_NUGET_TAG=$(getLatestNugetRelease ${NUGET_PACKAGE_ID})
+    DEPLOYED_NUGET_TAG=$(getLatestNugetRelease "${NUGET_PACKAGE_ID}")
     log "${NUGET_PACKAGE_ID} latest release is ${DEPLOYED_NUGET_TAG}"
 fi
 
@@ -322,7 +322,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-COMPARE_JSON=$(getReleaseDelta ${UPSTREAM_REPOSITORY} "v${DEPLOYED_NUGET_TAG}" "${UPSTREAM_GITHUB_RELEASE_TAG}")
+COMPARE_JSON=$(getReleaseDelta "${UPSTREAM_REPOSITORY}" "v${DEPLOYED_NUGET_TAG}" "${UPSTREAM_GITHUB_RELEASE_TAG}")
 FILES=$(jq -er '.files // error("compare response contains no file list") | .[].filename' <<< "${COMPARE_JSON}")
 
 if [ -z "${FILES}" ]
@@ -363,12 +363,6 @@ then
     fi
 fi
 
-if ! isTrue "${DRY_RUN}"
-then
-    git config --global user.email '<>'
-    git config --global user.name 'libphonenumber-csharp-bot'
-fi
-
 # Cloning upstream is safe either way: it only writes to the temporary directory,
 # and it is the last thing that can fail before the working tree is touched.
 git -c advice.detachedHead=false clone --quiet --depth 1 --branch "${UPSTREAM_GITHUB_RELEASE_TAG}" \
@@ -393,7 +387,8 @@ then
     exit 0
 fi
 
-rm -rf "${GITHUB_ACTION_WORKING_DIRECTORY:?}/resources"/*
+rm -rf "${GITHUB_ACTION_WORKING_DIRECTORY:?}/resources"
+mkdir -p "${GITHUB_ACTION_WORKING_DIRECTORY}/resources"
 cp -r "${UPSTREAM_RESOURCES}/." "${GITHUB_ACTION_WORKING_DIRECTORY}/resources/"
 
 # Generate into the temporary directory first, so a failure part way through can
@@ -425,7 +420,8 @@ dotnet test --no-build --verbosity normal "-p:TargetFrameworks=${TEST_TARGET_FRA
 
 cd "${GITHUB_ACTION_WORKING_DIRECTORY}"
 git add -A
-git commit -m "feat: automatic upgrade to ${UPSTREAM_GITHUB_RELEASE_TAG}"
+git -c user.email='<>' -c user.name='libphonenumber-csharp-bot' \
+    commit -m "feat: automatic upgrade to ${UPSTREAM_GITHUB_RELEASE_TAG}"
 git push
 
 createRelease "${GITHUB_REPOSITORY}" "${UPSTREAM_GITHUB_RELEASE_TAG}"
