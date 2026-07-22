@@ -196,6 +196,10 @@ UPSTREAM_TAG=v9.0.33 DEPLOYED_VERSION=9.0.32 \
   bash lib/github-actions-metadata-update.sh --dry-run
 ```
 
+### Running it against a fork
+
+Nothing about the target repository is hard-coded. The script commits and pushes through whatever checkout it runs in, and takes the repository to release from `GITHUB_REPOSITORY` — set automatically by GitHub Actions, and otherwise derived from the `origin` remote. So a fork releases to itself, and the dry-run summary names the repository it would publish to. `UPSTREAM_REPOSITORY` (default `google/libphonenumber`) and `NUGET_PACKAGE_ID` (default `libphonenumber-csharp`) are overridable the same way.
+
 ## Contributing
 See [CONTRIBUTING.md](CONTRIBUTING.md)
 

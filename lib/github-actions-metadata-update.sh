@@ -37,6 +37,13 @@ Options:
 
 Environment variables:
   GITHUB_TOKEN             GitHub token used for the api calls and the release.
+  GITHUB_REPOSITORY        owner/name of the repository to commit to and release
+                           from. Set automatically by GitHub Actions; falls back
+                           to the origin remote, so a fork releases to itself.
+  UPSTREAM_REPOSITORY      Repository the metadata comes from
+                           (default google/libphonenumber).
+  NUGET_PACKAGE_ID         Package whose published version is compared against
+                           the upstream release (default libphonenumber-csharp).
   SKIP_JAVA_CHECK          Same as --skip-java-check (true/1/yes).
   SKIP_PROTO_CHECK         Same as --skip-proto-check (true/1/yes).
   DRY_RUN                  Same as --dry-run (true/1/yes).
@@ -78,8 +85,13 @@ fail() {
     exit "${code}"
 }
 
+# Lower casing without ${var,,}, which needs bash 4 - macOS still ships bash 3.2.
+toLower() {
+    printf '%s' "$1" | tr '[:upper:]' '[:lower:]'
+}
+
 isTrue() {
-    case "${1,,}" in
+    case "$(toLower "$1")" in
         true|1|yes|y) return 0 ;;
         *) return 1 ;;
     esac
@@ -143,11 +155,30 @@ do
     fi
 done
 
-GITHUB_REPOSITORY_OWNER=twcclegg
-GITHUB_REPOSITORY_NAME=libphonenumber-csharp
-UPSTREAM_REPOSITORY=google/libphonenumber
-NUGET_PACKAGE_ID=libphonenumber-csharp
+UPSTREAM_REPOSITORY="${UPSTREAM_REPOSITORY:-google/libphonenumber}"
+NUGET_PACKAGE_ID="${NUGET_PACKAGE_ID:-libphonenumber-csharp}"
 GITHUB_ACTION_WORKING_DIRECTORY=$(pwd)
+
+# Which repository this run targets. Actions sets GITHUB_REPOSITORY for us; when
+# it is not set fall back to the origin remote, so a fork or a scratch clone
+# releases to itself instead of to the upstream project.
+resolveRepository() {
+    local url
+
+    if [ -n "${GITHUB_REPOSITORY:-}" ]
+    then
+        echo "${GITHUB_REPOSITORY}"
+        return 0
+    fi
+
+    url=$(git remote get-url origin 2> /dev/null || true)
+    url="${url%.git}"
+
+    case "${url}" in
+        *github.com[:/]*) echo "${url##*github.com}" | sed 's|^[:/]*||' ;;
+        *) return 1 ;;
+    esac
+}
 
 # Authenticated api calls, so the job is not subject to the unauthenticated rate
 # limit shared by every action runner on the same address. The header is built as
@@ -171,10 +202,17 @@ getLatestGitHubRelease() {
     ghApi "https://api.github.com/repos/$1/releases/latest" | jq -er '.tag_name'
 }
 
+# The flat container index is specified as a list of versions, not a sorted one,
+# so pick the highest stable version rather than trusting document order.
 getLatestNugetRelease() {
+    local packageId
+    packageId=$(toLower "$1")
+
     curl --fail --silent --show-error --location --retry 3 --retry-delay 5 \
-        "https://api.nuget.org/v3-flatcontainer/${1,,}/index.json" \
-        | jq -er '[.versions[] | select(test("-") | not)] | last'
+        "https://api.nuget.org/v3-flatcontainer/${packageId}/index.json" \
+        | jq -er '.versions[] | select(test("-") | not)' \
+        | sort -V \
+        | tail -n 1
 }
 
 getReleaseDelta() {
@@ -244,8 +282,18 @@ cd "${GITHUB_ACTION_WORKING_DIRECTORY}"
 
 if [ ! -d resources ] || [ ! -f lib/DumpLocale.java ]
 then
-    fail 1 "must be run from the root of the ${GITHUB_REPOSITORY_NAME} repository"
+    fail 1 "must be run from the root of the repository (no resources/ and lib/DumpLocale.java here)"
 fi
+
+GITHUB_REPOSITORY=$(resolveRepository) \
+    || fail 1 "could not determine the target repository, set GITHUB_REPOSITORY to owner/name"
+
+if [[ ! "${GITHUB_REPOSITORY}" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]]
+then
+    fail 1 "unexpected target repository: ${GITHUB_REPOSITORY}"
+fi
+
+log "target repository is ${GITHUB_REPOSITORY}"
 
 # A dry run changes nothing, so neither of these is dangerous there - downgrade
 # them to warnings so the pipeline can be exercised from a feature branch.
@@ -341,7 +389,7 @@ then
     log "  - regenerate csharp/PhoneNumbers/LocaleData.cs with $(java -version 2>&1 | head -n 1 || echo 'the local jdk')"
     log "  - run dotnet restore, build and test (${TEST_TARGET_FRAMEWORK})"
     log "  - commit \"feat: automatic upgrade to ${UPSTREAM_GITHUB_RELEASE_TAG}\" and push to main"
-    log "  - create release ${UPSTREAM_GITHUB_RELEASE_TAG} in ${GITHUB_REPOSITORY_OWNER}/${GITHUB_REPOSITORY_NAME}"
+    log "  - create release ${UPSTREAM_GITHUB_RELEASE_TAG} in ${GITHUB_REPOSITORY}"
     exit 0
 fi
 
@@ -380,5 +428,5 @@ git add -A
 git commit -m "feat: automatic upgrade to ${UPSTREAM_GITHUB_RELEASE_TAG}"
 git push
 
-createRelease ${GITHUB_REPOSITORY_OWNER}/${GITHUB_REPOSITORY_NAME} "${UPSTREAM_GITHUB_RELEASE_TAG}"
+createRelease "${GITHUB_REPOSITORY}" "${UPSTREAM_GITHUB_RELEASE_TAG}"
 log "created release ${UPSTREAM_GITHUB_RELEASE_TAG}"

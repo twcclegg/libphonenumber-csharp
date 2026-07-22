@@ -50,8 +50,10 @@ jobs:
           java-version: '17'
       - name: Get new metadata information and create new GitHub release
         timeout-minutes: 30
+        # The token is read from GITHUB_TOKEN below rather than passed as an
+        # argument, so it never appears on the process command line.
         run: |
-          bash lib/github-actions-metadata-update.sh "${GITHUB_TOKEN}"
+          bash lib/github-actions-metadata-update.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SKIP_JAVA_CHECK: ${{ inputs.skip_java_check || false }}
