@@ -665,8 +665,10 @@ namespace PhoneNumbers
             PhoneNumber number,
             out int nationalSignificantNumberLength)
         {
+            // Defensively cap the number of leading zeros to avoid OOM from malicious input.
+            var numberOfLeadingZeros = Math.Min(number.NumberOfLeadingZeros, 10);
             nationalSignificantNumberLength = 0;
-            for (var i = 0; i < number.NumberOfLeadingZeros; i++)
+            for (var i = 0; i < numberOfLeadingZeros; i++)
                 nationalNumber[nationalSignificantNumberLength++] = '0';
 
             number.NationalNumber.TryFormat(nationalNumber[nationalSignificantNumberLength..], out var charsWritten);
