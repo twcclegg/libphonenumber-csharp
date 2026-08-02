@@ -44,6 +44,10 @@ Environment variables:
                            (default google/libphonenumber).
   NUGET_PACKAGE_ID         Package whose published version is compared against
                            the upstream release (default libphonenumber-csharp).
+  NUGET_EXTENSIONS_PACKAGE_ID
+                           Helper package of C#-idiomatic additions beyond the java
+                           port, linked from the release notes
+                           (default <NUGET_PACKAGE_ID>.extensions).
   SKIP_JAVA_CHECK          Same as --skip-java-check (true/1/yes).
   SKIP_PROTO_CHECK         Same as --skip-proto-check (true/1/yes).
   DRY_RUN                  Same as --dry-run (true/1/yes).
@@ -160,6 +164,7 @@ done
 
 UPSTREAM_REPOSITORY="${UPSTREAM_REPOSITORY:-google/libphonenumber}"
 NUGET_PACKAGE_ID="${NUGET_PACKAGE_ID:-libphonenumber-csharp}"
+NUGET_EXTENSIONS_PACKAGE_ID="${NUGET_EXTENSIONS_PACKAGE_ID:-${NUGET_PACKAGE_ID}.extensions}"
 GITHUB_ACTION_WORKING_DIRECTORY=$(pwd)
 
 # Which repository this run targets. Actions sets GITHUB_REPOSITORY for us; when
@@ -222,8 +227,21 @@ getReleaseDelta() {
     ghApi "https://api.github.com/repos/$1/compare/$2...$3"
 }
 
+# generate_release_notes appends the commit/PR changelog below the links.
 createRelease() {
-    jq -n --arg tag "$2" '{tag_name: $tag, name: $tag}' \
+    jq -n --arg tag "$2" --arg version "${2#v}" \
+        --arg pkg "${NUGET_PACKAGE_ID}" --arg ext "${NUGET_EXTENSIONS_PACKAGE_ID}" \
+        --arg upstream "${UPSTREAM_REPOSITORY}" '
+        {
+            tag_name: $tag,
+            name: $tag,
+            generate_release_notes: true,
+            body: (
+                "[\($pkg) \($version)](https://www.nuget.org/packages/\($pkg)/\($version))"
+                + " · [\($ext) \($version)](https://www.nuget.org/packages/\($ext)/\($version))"
+                + " · [upstream \($tag)](https://github.com/\($upstream)/releases/tag/\($tag))"
+            )
+        }' \
         | ghApi -X POST --data @- "https://api.github.com/repos/$1/releases" > /dev/null
 }
 
