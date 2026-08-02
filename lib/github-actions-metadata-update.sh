@@ -54,6 +54,8 @@ Environment variables:
                            UPSTREAM_TAG it replays any historical release pair.
   EXPECTED_MAJOR_VERSION   Upstream major version this port tracks (default 9).
   TEST_TARGET_FRAMEWORK    Framework used for the pre-commit test run (default net10.0).
+  PUBLISH_WORKFLOW         Workflow dispatched to publish the release to nuget.org
+                           (default publish_nuget.yml).
 
 Examples:
   # what would the nightly run do right now?
@@ -105,6 +107,7 @@ UPSTREAM_TAG="${UPSTREAM_TAG:-}"
 DEPLOYED_VERSION="${DEPLOYED_VERSION:-}"
 EXPECTED_MAJOR_VERSION="${EXPECTED_MAJOR_VERSION:-9}"
 TEST_TARGET_FRAMEWORK="${TEST_TARGET_FRAMEWORK:-net10.0}"
+PUBLISH_WORKFLOW="${PUBLISH_WORKFLOW:-publish_nuget.yml}"
 
 while [ $# -gt 0 ]
 do
@@ -222,6 +225,13 @@ getReleaseDelta() {
 createRelease() {
     jq -n --arg tag "$2" '{tag_name: $tag, name: $tag}' \
         | ghApi -X POST --data @- "https://api.github.com/repos/$1/releases" > /dev/null
+}
+
+# github suppresses push events from GITHUB_TOKEN, so ask for the publish run directly.
+dispatchPublish() {
+    jq -n --arg ref "$2" '{ref: $ref}' \
+        | ghApi -X POST --data @- \
+            "https://api.github.com/repos/$1/actions/workflows/${PUBLISH_WORKFLOW}/dispatches" > /dev/null
 }
 
 if [ -n "${UPSTREAM_TAG}" ]
@@ -384,6 +394,7 @@ then
     log "  - run dotnet restore, build and test (${TEST_TARGET_FRAMEWORK})"
     log "  - commit \"feat: automatic upgrade to ${UPSTREAM_GITHUB_RELEASE_TAG}\" and push to main"
     log "  - create release ${UPSTREAM_GITHUB_RELEASE_TAG} in ${GITHUB_REPOSITORY}"
+    log "  - dispatch ${PUBLISH_WORKFLOW} against ${UPSTREAM_GITHUB_RELEASE_TAG} to publish to nuget"
     exit 0
 fi
 
@@ -426,3 +437,6 @@ git push
 
 createRelease "${GITHUB_REPOSITORY}" "${UPSTREAM_GITHUB_RELEASE_TAG}"
 log "created release ${UPSTREAM_GITHUB_RELEASE_TAG}"
+
+dispatchPublish "${GITHUB_REPOSITORY}" "${UPSTREAM_GITHUB_RELEASE_TAG}"
+log "dispatched ${PUBLISH_WORKFLOW} for ${UPSTREAM_GITHUB_RELEASE_TAG}"
