@@ -41,7 +41,7 @@ jobs:
       # available baseline regardless of the exact main commit it was measured on.
       - name: Restore main benchmark baseline
         if: github.event_name == 'pull_request'
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: main-baseline
           # actions/cache/restore requires `key`, but we never expect an exact hit:
