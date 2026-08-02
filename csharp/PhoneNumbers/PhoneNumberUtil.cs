@@ -50,6 +50,10 @@ namespace PhoneNumbers
         // The ITU says the maximum length should be 15, but we have found longer numbers in Germany.
         internal const int MAX_LENGTH_FOR_NSN = 17;
 
+        // We don't allow input strings for parsing to be longer than this. This prevents malicious
+        // input from overflowing the regular-expression engine.
+        private const int MAX_INPUT_STRING_LENGTH = 250;
+
         // Region-code for the unknown region.
         private const string UNKNOWN_REGION = "ZZ";
         private const int NANPA_COUNTRY_CODE = 1;
@@ -1448,7 +1452,8 @@ namespace PhoneNumbers
 
         internal static int GetNationalSignificantNumberLength(PhoneNumber number)
         {
-            var len = number.NumberOfLeadingZeros;
+            // Kept in step with the cap applied by GetNationalSignificantNumberImpl.
+            var len = Math.Min(number.NumberOfLeadingZeros, 10);
             var n = number.NationalNumber;
             do len++; while ((n /= 10) != 0);
             return len;
@@ -1976,6 +1981,10 @@ namespace PhoneNumbers
         /// <returns>True if the number is a valid vanity number.</returns>
         public bool IsAlphaNumber(string number)
         {
+            if (number.Length > MAX_INPUT_STRING_LENGTH)
+            {
+                return false;
+            }
             if (!IsViablePhoneNumber(number))
             {
                 // Number is too short, or doesn't match the basic phone number pattern.
@@ -2695,9 +2704,7 @@ namespace PhoneNumbers
             if (numberToParse == null)
                 throw new NumberParseException(ErrorType.NOT_A_NUMBER, "The phone number supplied was null.");
 
-            // We don't allow input strings for parsing to be longer than 250 chars. This prevents malicious
-            // input from overflowing the regular-expression engine.
-            if (numberToParse.Length > 250)
+            if (numberToParse.Length > MAX_INPUT_STRING_LENGTH)
                 throw new NumberParseException(ErrorType.TOO_LONG, "The string supplied was too long to parse.");
 
             var nationalNumber = new StringBuilder();
