@@ -1,4 +1,4 @@
-name: run_performance_tests_windows
+name: run_performance_tests
 
 on:
   pull_request:
@@ -22,8 +22,8 @@ permissions:
   contents: read
 
 jobs:
-  run_performance_tests_windows:
-    runs-on: windows-latest
+  run_performance_tests:
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 30
     steps:
       - name: Checkout
@@ -47,9 +47,11 @@ jobs:
           # actions/cache/restore requires `key`, but we never expect an exact hit:
           # save keys carry a unique -<run_id> suffix, so this is a deliberate near-miss
           # and the prefix restore-key below always supplies the most recently created baseline.
-          key: benchmark-main-
+          # The prefix names the runner: timings are only comparable against a baseline
+          # measured on the same hardware, so changing runner must change the key.
+          key: benchmark-main-linux-arm64-
           restore-keys: |
-            benchmark-main-
+            benchmark-main-linux-arm64-
 
       - name: Run benchmarks
         run: dotnet run -c Release --framework net10.0 -- --filter "*"
@@ -58,14 +60,14 @@ jobs:
       # On push to main (or the keep-warm schedule), publish this run's results as the
       # new baseline for future PRs.
       - name: Stage main baseline
-        if: github.event_name != 'pull_request'
-        shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force -Path "main-baseline" | Out-Null
-          $resultsDir = "csharp/PhoneNumbers.PerformanceTest/BenchmarkDotNet.Artifacts/results"
-          if (Test-Path $resultsDir) {
-            Copy-Item "$resultsDir/*-report-github.md" "main-baseline/" -ErrorAction SilentlyContinue
-          }
+          mkdir -p main-baseline
+          results_dir="csharp/PhoneNumbers.PerformanceTest/BenchmarkDotNet.Artifacts/results"
+          if [ -d "${results_dir}" ]
+          then
+            cp "${results_dir}"/*-report-github.md main-baseline/ 2> /dev/null || true
+          fi
+        if: github.event_name != 'pull_request'
 
       - name: Save main benchmark baseline
         if: github.event_name != 'pull_request'
@@ -76,33 +78,34 @@ jobs:
           # cannot overwrite an existing key, and the keep-warm cron never restores the
           # baseline, so reusing benchmark-main-<sha> would let the timer lapse when main
           # is unchanged. The PR prefix restore-key picks the most recently created entry.
-          key: benchmark-main-${{ github.sha }}-${{ github.run_id }}
+          key: benchmark-main-linux-arm64-${{ github.sha }}-${{ github.run_id }}
 
       # On a PR, bundle the freshly-measured branch results with the restored main
       # baseline so the follow-up workflow can post a side-by-side comparison.
       - name: Stage benchmark artifact
         if: github.event_name == 'pull_request'
-        shell: pwsh
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          # Head SHA, not the merge SHA in GITHUB_SHA.
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          $stage = "benchmark-artifact"
-          New-Item -ItemType Directory -Force -Path "$stage/branch-results" | Out-Null
-          New-Item -ItemType Directory -Force -Path "$stage/main-results"   | Out-Null
+          stage="benchmark-artifact"
+          mkdir -p "${stage}/branch-results" "${stage}/main-results"
 
-          $prDir = "csharp/PhoneNumbers.PerformanceTest/BenchmarkDotNet.Artifacts/results"
-          if (Test-Path $prDir) {
-            Copy-Item "$prDir/*-report-github.md" "$stage/branch-results/" -ErrorAction SilentlyContinue
-          }
-          if (Test-Path "main-baseline") {
-            Copy-Item "main-baseline/*-report-github.md" "$stage/main-results/" -ErrorAction SilentlyContinue
-          }
+          pr_dir="csharp/PhoneNumbers.PerformanceTest/BenchmarkDotNet.Artifacts/results"
+          if [ -d "${pr_dir}" ]
+          then
+            cp "${pr_dir}"/*-report-github.md "${stage}/branch-results/" 2> /dev/null || true
+          fi
+          if [ -d "main-baseline" ]
+          then
+            cp main-baseline/*-report-github.md "${stage}/main-results/" 2> /dev/null || true
+          fi
 
-          # PR metadata for the follow-up workflow (use head SHA, not the merge SHA in GITHUB_SHA)
-          @{
-            pr_number = ${{ github.event.pull_request.number }}
-            head_sha  = "${{ github.event.pull_request.head.sha }}"
-          } | ConvertTo-Json | Set-Content "$stage/pr-info.json"
+          jq -n --argjson pr_number "${PR_NUMBER}" --arg head_sha "${HEAD_SHA}" \
+            '{pr_number: $pr_number, head_sha: $head_sha}' > "${stage}/pr-info.json"
 
-          Get-ChildItem -Recurse $stage | Select-Object FullName
+          find "${stage}" -type f
 
       - name: Upload benchmark artifact
         if: github.event_name == 'pull_request'

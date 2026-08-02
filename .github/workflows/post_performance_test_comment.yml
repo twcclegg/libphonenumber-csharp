@@ -6,7 +6,7 @@ name: post_performance_test_comment
 
 on:
   workflow_run:
-    workflows: [ "run_performance_tests_windows" ]
+    workflows: [ "run_performance_tests" ]
     types: [ completed ]
 
 permissions:
@@ -78,7 +78,7 @@ jobs:
               '<!-- benchmark-results-marker -->',
               '## 📊 Benchmark Results',
               '',
-              `> Commit: \`${sha}\` · [Full run](${runUrl}) · Windows \`windows-latest\``,
+              `> Commit: \`${sha}\` · [Full run](${runUrl}) · Linux \`ubuntu-24.04-arm\``,
               '',
               '<details open>',
               '<summary><b>PR branch</b></summary>',
