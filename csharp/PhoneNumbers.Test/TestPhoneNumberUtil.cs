@@ -493,6 +493,31 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
+        public void TestNormaliseHandlesInputLongerThanTheStackBuffer()
+        {
+            // These entry points take caller-supplied strings of any length, so their scratch buffer
+            // has to come off the heap once the input grows past what is safe to stack-allocate.
+            const int repeats = 50_000;
+
+            var input = new StringBuilder(repeats * 3);
+            var digits = new StringBuilder(repeats * 2);
+            for (var i = 0; i < repeats; i++)
+            {
+                input.Append("1-2");
+                digits.Append("12");
+            }
+
+            var inputNumber = input.ToString();
+            var expectedDigits = digits.ToString();
+
+            Assert.Equal(expectedDigits, PhoneNumberUtil.Normalize(inputNumber));
+            Assert.Equal(expectedDigits, PhoneNumberUtil.NormalizeDigitsOnly(inputNumber));
+            Assert.Equal(expectedDigits, PhoneNumberUtil.NormalizeDiallableCharsOnly(inputNumber));
+            // Punctuation is retained by this one, so it round-trips.
+            Assert.Equal(inputNumber, PhoneNumberUtil.ConvertAlphaCharactersInNumber(inputNumber));
+        }
+
+        [Fact]
         public void TestFormatUSNumber()
         {
             Assert.Equal("650 253 0000", phoneUtil.Format(USNumber, PhoneNumberFormat.NATIONAL));
