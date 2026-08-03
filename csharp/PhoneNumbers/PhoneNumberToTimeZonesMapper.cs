@@ -1,7 +1,11 @@
 ﻿#nullable disable
 using System;
 using System.Collections.Generic;
+#if NET8_0_OR_GREATER
+using System.Collections.Frozen;
+#else
 using System.Collections.Immutable;
+#endif
 using System.IO.Compression;
 using System.Linq;
 
@@ -11,12 +15,22 @@ namespace PhoneNumbers
     {
         private static readonly string[] UNKNOWN_TIMEZONE = { "Etc/Unknown" };
 
+        // Built once at startup and then only read, and probed once per digit of the number being
+        // looked up, so the lookup cost dominates the construction cost.
+#if NET8_0_OR_GREATER
+        private readonly FrozenDictionary<long, string[]> map;
+#else
         private readonly ImmutableDictionary<long, string[]> map;
+#endif
         private readonly PhoneNumberUtil phoneUtil;
 
         internal PhoneNumberToTimeZonesMapper(IDictionary<long, string[]> source)
         {
+#if NET8_0_OR_GREATER
+            map = source.ToFrozenDictionary();
+#else
             map = source.ToImmutableDictionary();
+#endif
             phoneUtil = PhoneNumberUtil.GetInstance();
         }
 
@@ -24,8 +38,9 @@ namespace PhoneNumbers
         {
             while (0L < phonePrefix)
             {
-                if (map.ContainsKey(phonePrefix))
-                    return map[phonePrefix].ToList();
+                // One probe per prefix, not two: this runs once per digit of the number.
+                if (map.TryGetValue(phonePrefix, out var timeZones))
+                    return timeZones.ToList();
 
                 phonePrefix /= 10L;
             }
