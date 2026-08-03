@@ -10,8 +10,8 @@ The library tracks upstream metadata releases (~every two weeks) via the `create
 
 ## Repository layout
 
-- `csharp/PhoneNumbers/` — main library (NuGet `libphonenumber-csharp`). Multi-targets `netstandard2.0;net8.0;net9.0;net10.0`. `<TreatWarningsAsErrors>true</TreatWarningsAsErrors>` is set, so warnings break the build.
-- `csharp/PhoneNumbers.Test/` — xUnit tests, ported from the Java tests. Multi-targets `netframework4.8;net8.0;net9.0;net10.0`.
+- `csharp/PhoneNumbers/` — main library (NuGet `libphonenumber-csharp`). Multi-targets `netstandard2.0;net8.0;net10.0`. `<TreatWarningsAsErrors>true</TreatWarningsAsErrors>` is set, so warnings break the build.
+- `csharp/PhoneNumbers.Test/` — xUnit tests, ported from the Java tests. Multi-targets `netframework4.8;net8.0;net10.0`.
 - `csharp/PhoneNumbers.Extensions/` — separate NuGet (`libphonenumber-csharp.extensions`) with C#-idiomatic helpers that don't exist in the Java library.
 - `csharp/PhoneNumbers.PerformanceTest/` — BenchmarkDotNet harness.
 - `csharp/PhoneNumbers.MetadataBuilder/` — build-time tool that converts XML metadata + geocoding/timezone text files into per-region binary files. Source-links a small set of files from `PhoneNumbers/` so it doesn't depend on (and can't cycle with) the main library at build time.
@@ -36,8 +36,8 @@ dotnet restore csharp
 dotnet build csharp --no-restore
 # Full test matrix:
 dotnet test csharp/PhoneNumbers.sln
-# Faster: net9.0 only (matches the Linux PR check):
-dotnet test csharp/PhoneNumbers.sln -p:TargetFrameworks=net9.0
+# Faster: net10.0 only (matches the Linux PR check):
+dotnet test csharp/PhoneNumbers.sln -p:TargetFrameworks=net10.0
 ```
 
 Run a single test (xUnit filter syntax):
@@ -75,7 +75,7 @@ dotnet run -c Release --framework net10.0 -- --filter "*PhoneNumberWorkflowBench
   - `PhoneNumberOfflineGeocoder`, `PhoneNumberToTimeZonesMapper` — geo/tz lookups; backed by `geocoding.zip` / `timezones/map_data.txt`.
   - `AreaCodeMap` + `AreaCodeMapStorageStrategy` / `DefaultMapStorage` / `FlyweightMapStorage` — prefix → string lookup used by geocoder/carrier/timezone mappers.
 - **Regex caching.** Use `RegexCache` / `PhoneRegex` rather than constructing `Regex` ad hoc on hot paths — phone parsing is regex-heavy and the cache matters for throughput.
-- **Nullable reference types** are enabled only for `net8.0`/`net9.0` targets, not `netstandard2.0` (see csproj `Condition`). New code should still annotate.
+- **Nullable reference types** are enabled on every target except `netstandard2.0` (see csproj `Condition`). New code should still annotate.
 
 ## Working with this port vs. upstream Java
 
