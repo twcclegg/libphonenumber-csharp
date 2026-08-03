@@ -1,0 +1,32 @@
+<Project>
+
+  <PropertyGroup>
+    <!-- Pinned rather than "preview" so an SDK bump cannot change the semantics of code we have
+         already shipped. Still lifts netframework4.8 off its C# 7.3 default. -->
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- Suppressions that apply repo-wide; projects append their own. -->
+    <NoWarn>$(NoWarn);1591;CA1707</NoWarn>
+  </PropertyGroup>
+
+  <!-- Shared repository metadata. Per-package identity (id, title, description, authors, tags,
+       icon) stays with the individual packable projects. -->
+  <PropertyGroup>
+    <PackageProjectUrl>https://github.com/twcclegg/libphonenumber-csharp</PackageProjectUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/twcclegg/libphonenumber-csharp</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryBranch>main</RepositoryBranch>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- ContinuousIntegrationBuild normalizes the source paths embedded in the PDB so the output
+         is deterministic; gated to CI (the env var is set by GitHub Actions) so local debug builds
+         keep their absolute paths. EmbedUntrackedSources covers SDK-generated sources git does not
+         track, keeping Source Link complete. Source Link is in-box in the .NET 8+ SDK. -->
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+</Project>

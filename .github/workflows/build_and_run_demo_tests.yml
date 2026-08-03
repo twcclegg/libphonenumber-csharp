@@ -8,6 +8,9 @@ on:
       - 'csharp/PhoneNumbers.Demo.Tests/**'
       - 'csharp/PhoneNumbers/**'
       - 'csharp/PhoneNumbers.Extensions/**'
+      # Shared build settings and package versions apply to the demo projects too.
+      - 'csharp/Directory.Build.props'
+      - 'csharp/Directory.Packages.props'
       - 'resources/**'
       - '.github/workflows/build_and_run_demo_tests.yml'
   workflow_dispatch:

@@ -19,105 +19,17 @@ updates:
       codeql-action:
         patterns:
         - "github/codeql-action*"
+  # Every package version lives in csharp/Directory.Packages.props, so one entry covers
+  # all projects instead of one per project directory.
   - package-ecosystem: "nuget"
-    directory: "/csharp/PhoneNumbers"
+    directory: "/csharp"
     schedule:
       interval: "monthly"
     open-pull-requests-limit: 5
     cooldown:
       default-days: 7
     groups:
-      PhoneNumbers_minor_patch_updates:
-        update-types:
-        - "minor"
-        - "patch"
-    ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
-  - package-ecosystem: "nuget"
-    directory: "/csharp/PhoneNumbers.Extensions"
-    schedule:
-      interval: "monthly"
-    open-pull-requests-limit: 5
-    cooldown:
-      default-days: 7
-    groups:
-      PhoneNumbers_Extensions_minor_patch_updates:
-        update-types:
-        - "minor"
-        - "patch"
-    ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
-  - package-ecosystem: "nuget"
-    directory: "/csharp/PhoneNumbers.Extensions.Test"
-    schedule:
-      interval: "monthly"
-    open-pull-requests-limit: 5
-    cooldown:
-      default-days: 7
-    groups:
-      PhoneNumbers_Extensions_Test_minor_patch_updates:
-        update-types:
-        - "minor"
-        - "patch"
-    ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
-  - package-ecosystem: "nuget"
-    directory: "/csharp/PhoneNumbers.Test"
-    schedule:
-      interval: "monthly"
-    open-pull-requests-limit: 5
-    cooldown:
-      default-days: 7
-    groups:
-      PhoneNumbers_Test_minor_patch_updates:
-        update-types:
-        - "minor"
-        - "patch"
-    ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
-  - package-ecosystem: "nuget"
-    directory: "/csharp/PhoneNumbers.PerformanceTest"
-    schedule:
-      interval: "monthly"
-    open-pull-requests-limit: 5
-    cooldown:
-      default-days: 7
-    groups:
-      PhoneNumbers_PerformanceTest_minor_patch_updates:
-        update-types:
-        - "minor"
-        - "patch"
-    ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
-  - package-ecosystem: "nuget"
-    directory: "/csharp/PhoneNumbers.Demo"
-    schedule:
-      interval: "quarterly"
-    open-pull-requests-limit: 5
-    cooldown:
-      default-days: 7
-    groups:
-      PhoneNumbers_Demo_minor_patch_updates:
-        update-types:
-        - "minor"
-        - "patch"
-    ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
-  - package-ecosystem: "nuget"
-    directory: "/csharp/PhoneNumbers.Demo.Tests"
-    schedule:
-      interval: "quarterly"
-    open-pull-requests-limit: 5
-    cooldown:
-      default-days: 7
-    groups:
-      PhoneNumbers_Demo_Tests_minor_patch_updates:
+      nuget_minor_patch_updates:
         update-types:
         - "minor"
         - "patch"

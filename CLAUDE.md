@@ -10,7 +10,9 @@ The library tracks upstream metadata releases (~every two weeks) via the `create
 
 ## Repository layout
 
-- `csharp/PhoneNumbers/` — main library (NuGet `libphonenumber-csharp`). Multi-targets `netstandard2.0;net8.0;net10.0`. `<TreatWarningsAsErrors>true</TreatWarningsAsErrors>` is set, so warnings break the build.
+- `csharp/Directory.Build.props` — build settings shared by every project: `LangVersion`, `TreatWarningsAsErrors` (so warnings break the build), the repo-wide `NoWarn` baseline, repository metadata, and the reproducible-build/Source Link switches. Set things here rather than per-csproj.
+- `csharp/Directory.Packages.props` — Central Package Management. Every package version lives here; a `PackageReference` carrying its own `Version` is an error (`NU1008`).
+- `csharp/PhoneNumbers/` — main library (NuGet `libphonenumber-csharp`). Multi-targets `netstandard2.0;net8.0;net10.0`.
 - `csharp/PhoneNumbers.Test/` — xUnit tests, ported from the Java tests. Multi-targets `netframework4.8;net8.0;net10.0`.
 - `csharp/PhoneNumbers.Extensions/` — separate NuGet (`libphonenumber-csharp.extensions`) with C#-idiomatic helpers that don't exist in the Java library.
 - `csharp/PhoneNumbers.PerformanceTest/` — BenchmarkDotNet harness.

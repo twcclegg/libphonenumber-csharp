@@ -4,16 +4,9 @@
     <!-- netframework4.8 needs the .NET Framework test host, so it is Windows-only. No CI job covers it. -->
     <TargetFrameworks Condition="'$(OS)' == 'Windows_NT'">netframework4.8;net8.0;net10.0</TargetFrameworks>
     <TargetFrameworks Condition="'$(OS)' != 'Windows_NT'">net8.0;net10.0</TargetFrameworks>
-    <!--
-      Pin the C# language version so all TFMs (including netframework4.8, which the SDK
-      otherwise defaults to C# 7.3) accept post-7.3 syntax used by tests: `using var`
-      declarations, `?` nullable annotations under `#nullable enable`, etc.
-    -->
-    <LangVersion>preview</LangVersion>
     <AssemblyName>PhoneNumbers.Test</AssemblyName>
     <PackageId>PhoneNumbers.Test</PackageId>
-    <NoWarn>$(NoWarn);CA1014;CA1707</NoWarn>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>$(NoWarn);CA1014</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' != 'netframework4.8'">
@@ -32,15 +25,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <!-- In-box from net8.0 up; referencing it there trips NU1510 (prunable package). -->
-    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" Condition="'$(TargetFramework)' == 'netframework4.8'" />
-    <PackageReference Include="xunit" Version="2.9.3" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
+    <PackageReference Include="System.Text.RegularExpressions" Condition="'$(TargetFramework)' == 'netframework4.8'" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="coverlet.collector" Version="6.0.4">
+    <PackageReference Include="coverlet.collector">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
