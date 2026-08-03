@@ -1,6 +1,6 @@
 ## Performance testing history
 
-See [Github Actions](https://github.com/twcclegg/libphonenumber-csharp/actions/workflows/run_performance_tests_windows.yml) for a history of previous runs, in the logs, you can see the performance results for each method being tested
+See [Github Actions](https://github.com/twcclegg/libphonenumber-csharp/actions/workflows/run_performance_tests.yml) for a history of previous runs, in the logs, you can see the performance results for each method being tested
 
 ## Running locally
 
