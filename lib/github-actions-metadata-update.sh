@@ -229,12 +229,13 @@ getReleaseDelta() {
 
 # generate_release_notes appends the commit/PR changelog below the links.
 createRelease() {
-    jq -n --arg tag "$2" --arg version "${2#v}" \
+    jq -n --arg tag "$2" --arg version "${2#v}" --arg commit "$3" \
         --arg pkg "${NUGET_PACKAGE_ID}" --arg ext "${NUGET_EXTENSIONS_PACKAGE_ID}" \
         --arg upstream "${UPSTREAM_REPOSITORY}" '
         {
             tag_name: $tag,
             name: $tag,
+            target_commitish: $commit,
             generate_release_notes: true,
             body: (
                 "[\($pkg) \($version)](https://www.nuget.org/packages/\($pkg)/\($version))"
@@ -453,8 +454,10 @@ git -c user.email='<>' -c user.name='libphonenumber-csharp-bot' \
     commit -m "feat: automatic upgrade to ${UPSTREAM_GITHUB_RELEASE_TAG}"
 git push
 
-createRelease "${GITHUB_REPOSITORY}" "${UPSTREAM_GITHUB_RELEASE_TAG}"
-log "created release ${UPSTREAM_GITHUB_RELEASE_TAG}"
+# Tag the commit just pushed, not whatever main's head is by the time github answers.
+RELEASE_COMMIT=$(git rev-parse HEAD)
+createRelease "${GITHUB_REPOSITORY}" "${UPSTREAM_GITHUB_RELEASE_TAG}" "${RELEASE_COMMIT}"
+log "created release ${UPSTREAM_GITHUB_RELEASE_TAG} at ${RELEASE_COMMIT}"
 
 dispatchPublish "${GITHUB_REPOSITORY}" "${UPSTREAM_GITHUB_RELEASE_TAG}"
 log "dispatched ${PUBLISH_WORKFLOW} for ${UPSTREAM_GITHUB_RELEASE_TAG}"
