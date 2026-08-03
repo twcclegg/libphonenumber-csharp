@@ -25,9 +25,11 @@ concurrency:
   cancel-in-progress: false
 
 # Elevated above the read-only default because the update script pushes a commit
-# and creates a GitHub release via GITHUB_TOKEN.
+# and creates a GitHub release via GITHUB_TOKEN. actions: write lets it dispatch
+# publish_nuget.yml, which the release's own push event cannot trigger.
 permissions:
   contents: write
+  actions: write
 
 jobs:
   create_new_release_on_new_metadata_update:

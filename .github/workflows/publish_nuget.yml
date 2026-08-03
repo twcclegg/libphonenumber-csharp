@@ -1,0 +1,83 @@
+name: publish_nuget
+
+# Packs and publishes both packages. Fired by the vX.Y.Z tag that
+# create_new_release_on_new_metadata_update.yml pushes; the tag is the version.
+# Tests are not re-run here - a tag only points at a commit already on main.
+
+on:
+  push:
+    tags: [ 'v*' ]
+  # Lets a failed publish be retried by dispatching against the tag.
+  workflow_dispatch:
+
+# Never cancel a publish in flight; --skip-duplicate makes a repeat run harmless.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  publish_nuget:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      # NuGet/login exchanges this workflow's OIDC token for a short-lived
+      # nuget.org api key, so no push secret is stored in the repo.
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: 10.x
+
+      # Fail closed on a non-release ref rather than publishing the csproj placeholder.
+      - name: Resolve package version from tag
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          if [[ ! "${tag}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          then
+            echo "error: expected a vX.Y.Z tag, got '${tag}'" >&2
+            exit 1
+          fi
+          echo "VERSION=${tag#v}" >> "${GITHUB_ENV}"
+          echo "publishing version ${tag#v}" >> "${GITHUB_STEP_SUMMARY}"
+
+      - name: Restore dependencies
+        run: dotnet restore csharp --source https://api.nuget.org/v3/index.json
+
+      - name: Pack
+        run: |
+          dotnet pack csharp/PhoneNumbers -c Release --no-restore \
+            -p:VersionPrefix="${VERSION}" -o artifacts
+          dotnet pack csharp/PhoneNumbers.Extensions -c Release --no-restore \
+            -p:VersionPrefix="${VERSION}" -o artifacts
+
+      - name: Upload packages
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: nuget-packages
+          path: artifacts/*.nupkg
+          if-no-files-found: error
+
+      - name: NuGet login
+        id: nuget_login
+        uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0
+        with:
+          user: twcclegg
+
+      # --skip-duplicate so a re-run after a partial failure pushes only what is missing.
+      - name: Push to nuget.org
+        env:
+          NUGET_API_KEY: ${{ steps.nuget_login.outputs.NUGET_API_KEY }}
+        run: |
+          dotnet nuget push "artifacts/*.nupkg" \
+            --api-key "${NUGET_API_KEY}" \
+            --source https://api.nuget.org/v3/index.json \
+            --skip-duplicate

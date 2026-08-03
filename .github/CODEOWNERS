@@ -9,4 +9,3 @@
 # Security-sensitive automation and supply-chain config.
 /.github/               @twcclegg
 /.github/workflows/     @twcclegg
-/appveyor.yml           @twcclegg
