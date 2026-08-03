@@ -15,7 +15,8 @@ permissions:
 jobs:
   build_and_run_unit_tests_linux:
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 20
+    # Packs three times in total (release check plus the determinism rebuild).
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -64,3 +65,29 @@ jobs:
             exit 1
           fi
           echo "packaging ok: both packages at ${version}, extensions dependency pinned"
+
+      # Determinism guard: recompiling the same commit must produce byte-identical assemblies.
+      # Cleaning first also drops the generated metadata bins, so this covers MetadataBuilder's
+      # output and how it gets embedded, not just the compiler's.
+      - name: Verify build is reproducible
+        run: |
+          version=9.9.9
+          dotnet clean csharp/PhoneNumbers -c Release --verbosity quiet
+          dotnet pack csharp/PhoneNumbers -c Release \
+            -p:VersionPrefix="${version}" -o packtest-repro
+
+          for tfm in netstandard2.0 net8.0 net10.0
+          do
+            asset="lib/${tfm}/PhoneNumbers.dll"
+            first=$(unzip -p "packtest/libphonenumber-csharp.${version}.nupkg" "${asset}" | sha256sum | cut -d' ' -f1)
+            second=$(unzip -p "packtest-repro/libphonenumber-csharp.${version}.nupkg" "${asset}" | sha256sum | cut -d' ' -f1)
+            if [ "${first}" != "${second}" ]
+            then
+              echo "error: ${asset} differs between two builds of the same commit" >&2
+              echo "  ${first}" >&2
+              echo "  ${second}" >&2
+              exit 1
+            fi
+            echo "${asset}: ${first}"
+          done
+          echo "reproducible: every assembly identical across a clean rebuild"
