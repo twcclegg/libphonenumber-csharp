@@ -33,3 +33,34 @@ jobs:
       - name: Test solution targeting dotnet10.0 only
         run: dotnet test --no-build --verbosity normal -p:TargetFrameworks=net10.0
         working-directory: ./csharp
+
+      # Mirrors publish_nuget.yml so a broken pack fails here instead of during a release.
+      # The dependency assertion matters most: the extensions package must pin the exact
+      # same libphonenumber-csharp version, which only happens if VersionPrefix reaches
+      # the ProjectReference.
+      - name: Verify release packaging
+        run: |
+          version=9.9.9
+          dotnet pack csharp/PhoneNumbers -c Release --no-restore \
+            -p:VersionPrefix="${version}" -o packtest
+          dotnet pack csharp/PhoneNumbers.Extensions -c Release --no-restore \
+            -p:VersionPrefix="${version}" -o packtest
+          ls -l packtest
+
+          for id in libphonenumber-csharp libphonenumber-csharp.extensions
+          do
+            if [ ! -f "packtest/${id}.${version}.nupkg" ]
+            then
+              echo "error: expected packtest/${id}.${version}.nupkg" >&2
+              exit 1
+            fi
+          done
+
+          nuspec=$(unzip -p "packtest/libphonenumber-csharp.extensions.${version}.nupkg" '*.nuspec')
+          if ! grep -qE "id=\"libphonenumber-csharp\"[^>]*version=\"${version}\"" <<< "${nuspec}"
+          then
+            echo "error: extensions package does not depend on libphonenumber-csharp ${version}" >&2
+            printf '%s\n' "${nuspec}" >&2
+            exit 1
+          fi
+          echo "packaging ok: both packages at ${version}, extensions dependency pinned"
