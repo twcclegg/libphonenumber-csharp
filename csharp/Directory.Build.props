@@ -9,6 +9,16 @@
     <NoWarn>$(NoWarn);1591;CA1707</NoWarn>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <!-- Audit transitive packages too: that is where advisories against our netstandard2.0-only
+         dependencies would show up. The findings must stay warnings — with TreatWarningsAsErrors
+         above, a newly published advisory would otherwise fail the release build days after a
+         commit that did not touch anything. -->
+    <NuGetAudit>true</NuGetAudit>
+    <NuGetAuditMode>all</NuGetAuditMode>
+    <WarningsNotAsErrors>$(WarningsNotAsErrors);NU1901;NU1902;NU1903;NU1904</WarningsNotAsErrors>
+  </PropertyGroup>
+
   <!-- Shared repository metadata. Per-package identity (id, title, description, authors, tags,
        icon) stays with the individual packable projects. -->
   <PropertyGroup>
