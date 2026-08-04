@@ -24,6 +24,14 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+#if NET8_0_OR_GREATER
+using System.Collections.Frozen;
+// Frozen on net8+: built once at construction, then probed on every parse. Aliased so the
+// per-target difference lives here instead of at every declaration.
+using RegionCodeMap = System.Collections.Frozen.FrozenDictionary<int, System.Collections.Generic.List<string>>;
+#else
+using RegionCodeMap = System.Collections.Generic.Dictionary<int, System.Collections.Generic.List<string>>;
+#endif
 
 namespace PhoneNumbers
 {
@@ -62,7 +70,7 @@ namespace PhoneNumbers
         // by that country calling code. In the case of multiple regions sharing a calling code, such as
         // the NANPA regions, the one indicated with "isMainCountryForCode" in the metadata should be
         // first.
-        private readonly Dictionary<int, List<string>> countryCallingCodeToRegionCodeMap;
+        private readonly RegionCodeMap countryCallingCodeToRegionCodeMap;
 
         // The set of regions the library supports.
         private readonly HashSet<string> supportedRegions;
@@ -554,16 +562,25 @@ namespace PhoneNumbers
                 out countryCodeToNonGeographicalMetadataMap, out phoneMetadataSource);
         }
 
+        // On net8+ this snapshots the caller's map rather than aliasing it, so a caller that mutates
+        // the dictionary it passed in no longer affects an already-constructed PhoneNumberUtil.
+        private static RegionCodeMap FreezeRegionCodeMap(Dictionary<int, List<string>> map) =>
+#if NET8_0_OR_GREATER
+            map.ToFrozenDictionary();
+#else
+            map;
+#endif
+
         private static void Initialize(
             IMetadataLoader loader,
             Dictionary<int, List<string>> ccToRegions,
-            out Dictionary<int, List<string>> outMap,
+            out RegionCodeMap outMap,
             out HashSet<string> outSupportedRegions,
             out HashSet<string> outNanpaRegions,
             out Dictionary<int, PhoneMetadata> outNonGeoMap,
             out MetadataSource outSource)
         {
-            outMap = ccToRegions;
+            outMap = FreezeRegionCodeMap(ccToRegions);
             outSource = new MetadataSource(loader, "PhoneNumberMetadata");
 
 #if NET6_0_OR_GREATER
