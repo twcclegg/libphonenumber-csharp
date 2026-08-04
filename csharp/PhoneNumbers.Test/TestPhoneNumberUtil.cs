@@ -142,6 +142,20 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
+        public void TestGetSupportedRegionsReturnsACopy()
+        {
+            var regions = phoneUtil.GetSupportedRegions();
+            Assert.Contains(RegionCode.US, regions);
+
+            // Mutating what the caller was handed must not touch the instance: this is a singleton,
+            // and supportedRegions is what IsValidRegionCode consults.
+            regions.Clear();
+
+            Assert.Contains(RegionCode.US, phoneUtil.GetSupportedRegions());
+            Assert.True(phoneUtil.IsValidNumber(USNumber));
+        }
+
+        [Fact]
         public void TestGetInstanceLoadBadMetadata()
         {
             Assert.Null(phoneUtil.GetMetadataForRegion("No Such Region"));

@@ -29,8 +29,10 @@ using System.Collections.Frozen;
 // Frozen on net8+: built once at construction, then probed on every parse. Aliased so the
 // per-target difference lives here instead of at every declaration.
 using RegionCodeMap = System.Collections.Frozen.FrozenDictionary<int, System.Collections.Generic.List<string>>;
+using RegionCodeSet = System.Collections.Frozen.FrozenSet<string>;
 #else
 using RegionCodeMap = System.Collections.Generic.Dictionary<int, System.Collections.Generic.List<string>>;
+using RegionCodeSet = System.Collections.Generic.HashSet<string>;
 #endif
 
 namespace PhoneNumbers
@@ -73,10 +75,10 @@ namespace PhoneNumbers
         private readonly RegionCodeMap countryCallingCodeToRegionCodeMap;
 
         // The set of regions the library supports.
-        private readonly HashSet<string> supportedRegions;
+        private readonly RegionCodeSet supportedRegions;
 
         // The set of regions that share country calling code 1.
-        private readonly HashSet<string> nanpaRegions;
+        private readonly RegionCodeSet nanpaRegions;
 
         // Set of country codes that have geographically assigned mobile numbers (see GEO_MOBILE_COUNTRIES
         // below) which are not based on *area codes*. For example, in China mobile numbers start with a
@@ -571,28 +573,37 @@ namespace PhoneNumbers
             map;
 #endif
 
+        private static RegionCodeSet FreezeRegionCodeSet(HashSet<string> set) =>
+#if NET8_0_OR_GREATER
+            set.ToFrozenSet();
+#else
+            set;
+#endif
+
         private static void Initialize(
             IMetadataLoader loader,
             Dictionary<int, List<string>> ccToRegions,
             out RegionCodeMap outMap,
-            out HashSet<string> outSupportedRegions,
-            out HashSet<string> outNanpaRegions,
+            out RegionCodeSet outSupportedRegions,
+            out RegionCodeSet outNanpaRegions,
             out Dictionary<int, PhoneMetadata> outNonGeoMap,
             out MetadataSource outSource)
         {
             outMap = FreezeRegionCodeMap(ccToRegions);
             outSource = new MetadataSource(loader, "PhoneNumberMetadata");
 
+            // Built mutable, then frozen once at the end: IsValidRegionCode probes supportedRegions
+            // on nearly every entry point, and neither set is written again after this.
 #if NET6_0_OR_GREATER
-            outSupportedRegions = new HashSet<string>(280); // currently 245 items
+            var supported = new HashSet<string>(280); // currently 245 items
             outNonGeoMap = new Dictionary<int, PhoneMetadata>(16);
 #else
-            outSupportedRegions = new HashSet<string>();
+            var supported = new HashSet<string>();
             outNonGeoMap = new Dictionary<int, PhoneMetadata>();
 #endif
             foreach (var entry in ccToRegions)
             {
-                outSupportedRegions.UnionWith(entry.Value);
+                supported.UnionWith(entry.Value);
                 if (entry.Value.Contains(REGION_CODE_FOR_NON_GEO_ENTITY))
                 {
                     // Eager-load the ~9 non-geographical-entity metadata files so the
@@ -604,10 +615,12 @@ namespace PhoneNumbers
                     if (m != null) outNonGeoMap[entry.Key] = m;
                 }
             }
-            outSupportedRegions.Remove(REGION_CODE_FOR_NON_GEO_ENTITY);
+            supported.Remove(REGION_CODE_FOR_NON_GEO_ENTITY);
+            outSupportedRegions = FreezeRegionCodeSet(supported);
 
-            outNanpaRegions = ccToRegions.TryGetValue(NANPA_COUNTRY_CODE, out var regions)
-                ? new HashSet<string>(regions) : new HashSet<string>();
+            outNanpaRegions = FreezeRegionCodeSet(
+                ccToRegions.TryGetValue(NANPA_COUNTRY_CODE, out var regions)
+                    ? new HashSet<string>(regions) : new HashSet<string>());
         }
 
         // Mirrors the file-naming convention emitted by PhoneNumbers.MetadataBuilder: region code
@@ -944,7 +957,11 @@ namespace PhoneNumbers
         /// library supports.</returns>
         public HashSet<string> GetSupportedRegions()
         {
-            return supportedRegions;
+            // A copy, not the instance's own set. Java returns Collections.unmodifiableSet here; the
+            // return type is part of the signature so it cannot become IReadOnlySet without a
+            // binary break, and handing out the live set let any caller Remove() a region and break
+            // validation for the rest of the process. No internal caller uses this method.
+            return new HashSet<string>(supportedRegions);
         }
 
         /// <summary>
