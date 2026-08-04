@@ -84,14 +84,15 @@ namespace PhoneNumbers
                 rented = ArrayPool<char>.Shared.Rent(number.Length);
             }
 
-            Span<char> buffer = rented is null ? stackalloc char[MaxStackallocChars] : rented;
+            // Sized to the input, not to MaxStackallocChars: stackalloc zero-initializes, so a
+            // fixed-size buffer would clear 512 bytes on every call to normalize a short number.
+            Span<char> buffer = rented is null ? stackalloc char[number.Length] : rented;
             try
             {
-                // Both the fixed-size stackalloc and a rented array can be longer than the input.
-                // Slice to the input length so capacity stays exactly what it was when each caller
-                // sized its own buffer: the normalizers rely on running out of room to drop
-                // characters whose numeric value needs more digits than the character it came from,
-                // and a larger buffer would silently change that output.
+                // ArrayPool hands back an array at least as long as requested, so slice to the input
+                // length: the normalizers rely on running out of room to drop characters whose
+                // numeric value needs more digits than the character it came from, and extra
+                // capacity would silently change that output.
                 var result = buffer.Slice(0, number.Length);
                 var resultLength = 0;
 
