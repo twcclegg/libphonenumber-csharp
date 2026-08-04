@@ -564,13 +564,15 @@ namespace PhoneNumbers
                 out countryCodeToNonGeographicalMetadataMap, out phoneMetadataSource);
         }
 
-        // On net8+ this snapshots the caller's map rather than aliasing it, so a caller that mutates
-        // the dictionary it passed in no longer affects an already-constructed PhoneNumberUtil.
+        // Copies the mapping instead of aliasing the caller's dictionary, so adding or removing a
+        // country code from the dictionary passed to the constructor cannot alter an already-built
+        // PhoneNumberUtil. Both branches are shallow: the List<string> values stay shared, so
+        // mutating one of those lists is still visible here.
         private static RegionCodeMap FreezeRegionCodeMap(Dictionary<int, List<string>> map) =>
 #if NET8_0_OR_GREATER
             map.ToFrozenDictionary();
 #else
-            map;
+            new Dictionary<int, List<string>>(map);
 #endif
 
         private static RegionCodeSet FreezeRegionCodeSet(HashSet<string> set) =>

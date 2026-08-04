@@ -110,6 +110,9 @@ namespace PhoneNumbers
                     case NormalizeMode.AlphaCharactersToDigits:
                         NormalizeHelper(ref result, ref resultLength, number, MapAlphaPhone, false);
                         break;
+                    default:
+                        // Rather than silently returning an empty string for an unhandled mode.
+                        throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
                 }
 
                 return new string(result.Slice(0, resultLength));
