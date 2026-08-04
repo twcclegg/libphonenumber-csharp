@@ -190,8 +190,14 @@
     </ItemGroup>
   </Target>
 
-  <!-- Make the generated files visible to clean. -->
-  <Target Name="CleanBinaryMetadata" AfterTargets="Clean">
+  <!--
+    Make the generated files visible to clean. Runs only on the outer cross-targeting build (where
+    TargetFramework is empty) or on a genuine single-TFM project: the bins are shared across TFMs,
+    so letting all three inner cleans fire would race three RemoveDir calls on one directory and
+    fail with MSB3231 when one enumerates a file another has already deleted.
+  -->
+  <Target Name="CleanBinaryMetadata" AfterTargets="Clean"
+          Condition="'$(TargetFramework)' == '' Or '$(TargetFrameworks)' == ''">
     <RemoveDir Directories="$(BinaryMetadataDir)" Condition="Exists('$(BinaryMetadataDir)')" />
     <RemoveDir Directories="$(BinaryGeocodingDir)" Condition="Exists('$(BinaryGeocodingDir)')" />
     <RemoveDir Directories="$(BinaryTimezonesDir)" Condition="Exists('$(BinaryTimezonesDir)')" />

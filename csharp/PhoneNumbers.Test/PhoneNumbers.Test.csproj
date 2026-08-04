@@ -133,7 +133,9 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="CleanTestGeocoding" AfterTargets="Clean">
+  <!-- Outer build only; see the matching note on CleanBinaryMetadata in PhoneNumbers.csproj. -->
+  <Target Name="CleanTestGeocoding" AfterTargets="Clean"
+          Condition="'$(TargetFramework)' == '' Or '$(TargetFrameworks)' == ''">
     <RemoveDir Directories="$(BinaryTestGeocodingDir)" Condition="Exists('$(BinaryTestGeocodingDir)')" />
     <RemoveDir Directories="$(BinaryTestCarrierDir)" Condition="Exists('$(BinaryTestCarrierDir)')" />
   </Target>
