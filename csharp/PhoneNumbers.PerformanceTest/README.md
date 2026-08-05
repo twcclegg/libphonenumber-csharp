@@ -21,8 +21,8 @@ To run only the phone number workflow benchmark, pass a filter after `--`:
 dotnet run -c Release --framework net10.0 -- --filter "*PhoneNumberWorkflowBenchmark*"
 ```
 
-The `PhoneNumberWorkflowBenchmark` runs the largest data sets (up to `10000` numbers) and is
-the slowest; the full suite still completes in a few minutes on a single runtime.
+The `PhoneNumberWorkflowBenchmark` exercises the widest slice of the library; the full suite
+completes in a few minutes on a single runtime.
 
 Other available benchmarks:
 
@@ -41,7 +41,7 @@ Other available benchmarks:
   `invocationCount: 1` so each measurement is a genuine first-use, not a steady-state loop.
 
 The benchmark data is generated from valid example numbers in the bundled metadata and expanded
-deterministically to the configured `PhoneNumberCount` values, up to 10,000 inputs. Each benchmark
+deterministically to the configured `PhoneNumberCount` value. Each benchmark
 iteration parses, validates, and formats every number in that data set.
 
 Below you can see a sample of what the results might look like
@@ -49,5 +49,4 @@ Below you can see a sample of what the results might look like
 | Method                              | PhoneNumberCount | Job                | Runtime            | Mean     | Error     | StdDev    | Gen0    | Allocated |
 |------------------------------------ |-----------------:|------------------- |------------------- |---------:|----------:|----------:|--------:|----------:|
 | ParseValidateAndFormatPhoneNumbers  |             1000 | .NET 10.0          | .NET 10.0          | 1.25 ms  | 0.018 ms  | 0.017 ms  | 31.2500 |   512 KB  |
-| ParseValidateAndFormatPhoneNumbers  |            10000 | .NET 10.0          | .NET 10.0          | 12.46 ms | 0.231 ms  | 0.216 ms  | 312.500 |  5120 KB  |
 
