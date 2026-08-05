@@ -22,7 +22,10 @@ dotnet run -c Release --framework net10.0 -- --filter "*PhoneNumberWorkflowBench
 ```
 
 The `PhoneNumberWorkflowBenchmark` exercises the widest slice of the library; the full suite
-completes in a few minutes on a single runtime.
+completes in a few minutes on a single runtime. Alongside the end-to-end
+`ParseValidateAndFormatPhoneNumbers` it measures `ParseOnly`, `ValidateOnly` and `FormatOnly`
+against the same data, so a cost — allocation especially — can be attributed to a phase instead of
+only being visible as a total.
 
 Other available benchmarks:
 
