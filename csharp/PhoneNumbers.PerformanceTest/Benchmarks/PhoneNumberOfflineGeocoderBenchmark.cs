@@ -44,9 +44,9 @@ namespace PhoneNumbers.PerformanceTest.Benchmarks
             _numbers = numbers.ToArray();
 
             // One locale per region that actually resolves, so the display-country benchmark walks
-            // the whole table instead of repeatedly hitting one warm entry. Not every phone-metadata
-            // region is an ISO country (AC and TA, for instance), so the resolvable ones are
-            // selected here rather than assumed.
+            // the whole table instead of repeatedly hitting one warm entry. AC and XK are phone
+            // regions with no localised name, and they return empty rather than resolving, so the
+            // Length check drops them.
             _locales = phoneNumberUtil.GetSupportedRegions()
                 .OrderBy(regionCode => regionCode, StringComparer.Ordinal)
                 .Select(regionCode => new Locale("en", regionCode))
