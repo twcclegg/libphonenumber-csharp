@@ -167,9 +167,9 @@ namespace PhoneNumbers
             long maxTries)
         {
             if (maxTries < 0)
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(maxTries), maxTries, "Must be >= 0.");
 
-            phoneUtil = util ?? throw new ArgumentNullException();
+            phoneUtil = util ?? throw new ArgumentNullException(nameof(util));
             this.text = text ?? "";
             preferredRegion = country;
             this.leniency = leniency;
@@ -614,7 +614,7 @@ namespace PhoneNumbers
         public static bool ContainsMoreThanOneSlash(string candidate)
         {
             var firstSlashIndex = candidate.IndexOf('/');
-            return firstSlashIndex > 0 && candidate.Substring(firstSlashIndex + 1).Contains("/");
+            return firstSlashIndex > 0 && candidate.IndexOf('/', firstSlashIndex + 1) >= 0;
         }
 
         public static bool ContainsOnlyValidXChars(

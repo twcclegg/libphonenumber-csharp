@@ -16,6 +16,7 @@
  */
 
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace PhoneNumbers
 {
@@ -107,17 +108,18 @@ namespace PhoneNumbers
                 return null;
             }
             var phonePrefix =
-                long.Parse(number.CountryCode + phoneUtil.GetNationalSignificantNumber(number));
+                long.Parse(number.CountryCode + phoneUtil.GetNationalSignificantNumber(number),
+                    CultureInfo.InvariantCulture);
             var currentIndex = numOfEntries - 1;
             var currentSetOfLengths = areaCodeMapStorage.GetPossibleLengths();
             var length = currentSetOfLengths.Count;
             while (length > 0)
             {
                 var possibleLength = currentSetOfLengths[length - 1];
-                var phonePrefixStr = phonePrefix.ToString();
+                var phonePrefixStr = phonePrefix.ToString(CultureInfo.InvariantCulture);
                 if (phonePrefixStr.Length > possibleLength)
                 {
-                    phonePrefix = long.Parse(phonePrefixStr.Substring(0, possibleLength));
+                    phonePrefix = long.Parse(phonePrefixStr.Substring(0, possibleLength), CultureInfo.InvariantCulture);
                 }
                 currentIndex = BinarySearch(0, currentIndex, phonePrefix);
                 if (currentIndex < 0)

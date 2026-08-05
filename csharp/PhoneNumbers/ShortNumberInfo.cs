@@ -364,7 +364,7 @@ namespace PhoneNumbers
         private static string GetRegionCodeForShortNumberFromRegionList(PhoneNumber number,
             List<string> regionCodes)
         {
-            if (!regionCodes.Any())
+            if (regionCodes.Count == 0)
             {
                 return null;
             }

@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 #if NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
@@ -699,13 +700,15 @@ namespace PhoneNumbers
             for (var i = 0; i < numberOfLeadingZeros; i++)
                 nationalNumber[nationalSignificantNumberLength++] = '0';
 
-            number.NationalNumber.TryFormat(nationalNumber[nationalSignificantNumberLength..], out var charsWritten);
+            number.NationalNumber.TryFormat(nationalNumber[nationalSignificantNumberLength..], out var charsWritten,
+                default, CultureInfo.InvariantCulture);
             nationalSignificantNumberLength += charsWritten;
         }
 
         private static void AppendNumberToSpan(ref Span<char> span, ref int index, int numberToAppend)
         {
-            checked((uint)numberToAppend).TryFormat(span[index..], out var charsWritten);
+            checked((uint)numberToAppend).TryFormat(span[index..], out var charsWritten,
+                default, CultureInfo.InvariantCulture);
             index += charsWritten;
         }
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 #if !(NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER)
@@ -106,7 +107,7 @@ namespace PhoneNumbers
             // If a leading zero(s) has been set, we prefix this now. Note this is not a national prefix.
             // Defensively cap the number of leading zeros to avoid OOM from malicious input.
             if (!number.HasNumberOfLeadingZeros)
-                return number.NationalNumber.ToString();
+                return number.NationalNumber.ToString(CultureInfo.InvariantCulture);
 
             var nationalNumber = new StringBuilder();
             nationalNumber.Append('0', Math.Min(number.NumberOfLeadingZeros, 10));

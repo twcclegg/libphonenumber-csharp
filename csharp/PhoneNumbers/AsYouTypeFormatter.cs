@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -679,7 +680,7 @@ namespace PhoneNumbers
             {
                 currentMetadata = GetMetadataForRegion(newRegionCode);
             }
-            var countryCodeString = countryCode.ToString();
+            var countryCodeString = countryCode.ToString(CultureInfo.InvariantCulture);
             prefixBeforeNationalNumber.Append(countryCodeString).Append(SeparatorBeforeNationalNumber);
             // When we have successfully extracted the IDD, the previously extracted NDD should be cleared
             // because it is no longer valid.
@@ -702,7 +703,7 @@ namespace PhoneNumbers
             else
             {
                 if ((uint)(nextChar - '0') > 9)
-                    nextChar = ((int)char.GetNumericValue(nextChar)).ToString()[0];
+                    nextChar = ((int)char.GetNumericValue(nextChar)).ToString(CultureInfo.InvariantCulture)[0];
                 accruedInputWithoutFormatting.Append(nextChar);
                 nationalNumber.Append(nextChar);
             }
