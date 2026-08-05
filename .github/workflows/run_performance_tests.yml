@@ -94,3 +94,29 @@ jobs:
           path: benchmark-artifact/
           retention-days: 7
           if-no-files-found: error
+
+      # BenchmarkDotNet exits 0 even when a benchmark throws — it reports that row as NA and carries
+      # on. Without this the job stays green while measuring nothing. Runs after the upload so the
+      # partial results are still available for diagnosis.
+      - name: Fail on benchmarks that produced no result
+        run: |
+          failed=0
+          for dir in \
+            "csharp/PhoneNumbers.PerformanceTest/BenchmarkDotNet.Artifacts/results" \
+            "/tmp/base-tree/csharp/PhoneNumbers.PerformanceTest/BenchmarkDotNet.Artifacts/results"
+          do
+            if [ ! -d "${dir}" ]
+            then
+              continue
+            fi
+            if grep -hE '\|[[:space:]]*NA[[:space:]]*\|' "${dir}"/*-report-github.md 2> /dev/null
+            then
+              echo "error: the rows above from ${dir} have no measurement" >&2
+              failed=1
+            fi
+          done
+          if [ "${failed}" -ne 0 ]
+          then
+            exit 1
+          fi
+          echo "every benchmark produced a result"
