@@ -153,6 +153,34 @@ csharp_space_between_square_brackets = false
 
 max_line_length = 99999
 
+# Analyzer rules enforced beyond the SDK default set, for the shipped library only. The test, demo
+# and benchmark projects are not held to these.
+[csharp/PhoneNumbers/*.cs]
+#
+# Opting in to specific rules rather than raising AnalysisMode: at the Recommended tier this
+# codebase reports 135 findings, and ~107 of them cannot be acted on. Most are public-API changes
+# the package cannot make (CA1002/CA1024/CA1051/CA1052 - fields to properties, List<T> in
+# signatures, static holder types), or churn in files kept diffable against the upstream Java
+# source (CA1309 asks for an explicit StringComparison on string.Equals, which is already ordinal;
+# CA2201 objects to the bare `throw new Exception` the Java original also uses). Suppressing that
+# many rules is more to maintain, and hides which ones are deliberate.
+
+# Culture-dependent parsing and formatting. Java's Long.parseLong and Long.toString are invariant,
+# so the current-culture overloads are a porting divergence rather than a style preference.
+dotnet_diagnostic.CA1305.severity = error
+
+# Argument exceptions thrown without a parameter name, which produces "Value cannot be null." with
+# no indication of which argument was at fault.
+dotnet_diagnostic.CA2208.severity = error
+
+# Avoidable allocations on the parse and match paths.
+dotnet_diagnostic.CA1834.severity = error
+dotnet_diagnostic.CA1847.severity = error
+dotnet_diagnostic.CA1860.severity = error
+
+# Redundant explicit initialisation to a field's default value.
+dotnet_diagnostic.CA1805.severity = error
+
 # Xml project files
 [*.{csproj,vbproj,vcxproj,vcxproj.filters,proj,nativeproj,locproj}]
 indent_size = 2
