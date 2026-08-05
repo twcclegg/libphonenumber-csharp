@@ -25,6 +25,17 @@ jobs:
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v5
         with:
           dotnet-version: 10.x
+
+      # Central Package Management keeps every version in one file, so hashing it plus the project
+      # files is enough to invalidate this when a dependency moves. Deliberately not added to
+      # publish_nuget.yml: the release path should resolve from nuget.org rather than a mutable cache.
+      - name: Cache NuGet packages
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('csharp/Directory.Packages.props', 'csharp/**/*.csproj') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-${{ runner.arch }}-
       - name: Restore dependencies
         run: dotnet restore
         working-directory: ./csharp
