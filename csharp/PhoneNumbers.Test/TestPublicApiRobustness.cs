@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Xunit;
 
 namespace PhoneNumbers.Test
@@ -228,7 +229,7 @@ namespace PhoneNumbers.Test
         private static string Describe(string input)
         {
             if (input.Length > 40)
-                return $"<{input.Length} chars starting {(int)input[0]:x4}>";
+                return FormattableString.Invariant($"<{input.Length} chars starting {(int)input[0]:x4}>");
 
             var text = new System.Text.StringBuilder(input.Length + 2);
             foreach (var c in input)
@@ -236,7 +237,7 @@ namespace PhoneNumbers.Test
                 if (c is >= ' ' and <= '~')
                     text.Append(c);
                 else
-                    text.Append("\\u").Append(((int)c).ToString("x4"));
+                    text.Append("\\u").Append(((int)c).ToString("x4", CultureInfo.InvariantCulture));
             }
 
             return text.ToString();
