@@ -1,11 +1,33 @@
 name: run_performance_tests
 
+# Benchmarking is the longest job in the repo, so it only runs when something it measures could have
+# moved. PhoneNumbers is listed because PerformanceTest is not in the solution: nothing else compiles
+# it, so without this a library change could break the benchmarks unnoticed.
 on:
   pull_request:
     branches: [ "main" ]
+    paths:
+      - 'csharp/PhoneNumbers/**'
+      - 'csharp/PhoneNumbers.PerformanceTest/**'
+      - 'csharp/Directory.Build.props'
+      - 'csharp/Directory.Packages.props'
+      - 'resources/**'
+      - 'global.json'
+      - 'nuget.config'
+      - '.github/workflows/run_performance_tests.yml'
   # Keeps a run against main in the Actions history; there is nothing to compare it to.
+  # GitHub Actions does not support YAML anchors, so this list is duplicated rather than shared.
   push:
     branches: [ "main" ]
+    paths:
+      - 'csharp/PhoneNumbers/**'
+      - 'csharp/PhoneNumbers.PerformanceTest/**'
+      - 'csharp/Directory.Build.props'
+      - 'csharp/Directory.Packages.props'
+      - 'resources/**'
+      - 'global.json'
+      - 'nuget.config'
+      - '.github/workflows/run_performance_tests.yml'
   workflow_dispatch:
 
 concurrency:
@@ -43,6 +65,39 @@ jobs:
           restore-keys: |
             nuget-${{ runner.os }}-${{ runner.arch }}-
 
+      - name: Check out the PR base alongside the branch
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          git worktree add /tmp/base-tree "${BASE_SHA}"
+          echo "comparing against base ${BASE_SHA}" >> "${GITHUB_STEP_SUMMARY}"
+
+      # Compiling both trees at once overlaps two restores and two rounds of metadata generation.
+      # The MetadataBuilder mutex is keyed on the output directory, so the trees do not contend.
+      # Only the builds overlap: running the benchmarks concurrently would have them competing for
+      # the same cores and make both sets of numbers meaningless.
+      - name: Build both benchmark trees
+        run: |
+          pids=""
+          dotnet build -c Release --framework net10.0 csharp/PhoneNumbers.PerformanceTest &
+          pids="$!"
+          if [ -d /tmp/base-tree ]
+          then
+            dotnet build -c Release --framework net10.0 /tmp/base-tree/csharp/PhoneNumbers.PerformanceTest &
+            pids="${pids} $!"
+          fi
+          failed=0
+          for pid in ${pids}
+          do
+            wait "${pid}" || failed=1
+          done
+          if [ "${failed}" -ne 0 ]
+          then
+            echo "error: a benchmark tree failed to build" >&2
+            exit 1
+          fi
+
       # Measure the base commit on THIS runner, in THIS job, rather than reusing a cached
       # baseline measured on some earlier runner. Cross-machine variance on shared runners
       # is a few percent, which is the same size as the differences we are trying to detect,
@@ -51,16 +106,12 @@ jobs:
       # noise regardless.
       - name: Benchmark the PR base
         if: github.event_name == 'pull_request'
-        env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
-          git worktree add /tmp/base-tree "${BASE_SHA}"
-          echo "benchmarking base ${BASE_SHA}" >> "${GITHUB_STEP_SUMMARY}"
           cd /tmp/base-tree/csharp/PhoneNumbers.PerformanceTest
-          dotnet run -c Release --framework net10.0 -- --filter "*"
+          dotnet run -c Release --framework net10.0 --no-build -- --filter "*"
 
       - name: Run benchmarks
-        run: dotnet run -c Release --framework net10.0 -- --filter "*"
+        run: dotnet run -c Release --framework net10.0 --no-build -- --filter "*"
         working-directory: ./csharp/PhoneNumbers.PerformanceTest
 
       # Bundle both sets of results so the follow-up workflow can post the comparison.
