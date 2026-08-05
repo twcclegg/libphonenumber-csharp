@@ -2743,7 +2743,7 @@ namespace PhoneNumbers
             if (numberToParse.Length > MAX_INPUT_STRING_LENGTH)
                 throw new NumberParseException(ErrorType.TOO_LONG, "The string supplied was too long to parse.");
 
-            var nationalNumber = new StringBuilder();
+            var nationalNumber = StringBuilderCache.Acquire(numberToParse.Length);
             BuildNationalNumberForParsing(numberToParse, nationalNumber);
 
             var nationalNumberString = nationalNumber.ToString();
@@ -2772,7 +2772,7 @@ namespace PhoneNumbers
             var regionMetadata = GetMetadataForRegion(defaultRegion);
             // Check to see if the number is given in international format so we know whether this number is
             // from the default region or not.
-            var normalizedNationalNumber = new StringBuilder();
+            var normalizedNationalNumber = StringBuilderCache.Acquire(numberToParse.Length);
             int countryCode;
             try
             {
@@ -2857,6 +2857,10 @@ namespace PhoneNumbers
 
             SetItalianLeadingZerosForPhoneNumber(normalizedNationalNumberString, phoneNumber);
             phoneNumber.NationalNumber = ulong.Parse(normalizedNationalNumberString, CultureInfo.InvariantCulture);
+
+            // Only on the way out: the throw paths above leave the buffers to the collector.
+            StringBuilderCache.Release(nationalNumber);
+            StringBuilderCache.Release(normalizedNationalNumber);
         }
 
         /// <summary>
