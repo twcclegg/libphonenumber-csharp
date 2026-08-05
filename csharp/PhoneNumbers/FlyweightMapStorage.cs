@@ -17,7 +17,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace PhoneNumbers
@@ -160,46 +159,52 @@ namespace PhoneNumbers
             return wordSize == ShortNumBytes ? buffer.GetShort(index) : buffer.GetInt(index);
         }
 
-        private class ByteBuffer
+        /// <summary>
+        /// Fixed-size scratch buffer of 16- and 32-bit words. Reads land on the binary-search path in
+        /// <see cref="AreaCodeMap.Lookup"/>, so each one is a pair of array reads rather than a stream
+        /// seek through a BinaryReader. Byte order is little-endian, matching what the BinaryWriter
+        /// this replaced produced; the buffer never leaves the process, so only self-consistency
+        /// actually matters.
+        /// </summary>
+        private sealed class ByteBuffer
         {
-            private readonly BinaryReader reader;
-            private readonly MemoryStream stream;
-            private readonly BinaryWriter writer;
+            private readonly byte[] bytes;
 
             public ByteBuffer(int size)
             {
-                stream = new MemoryStream(new byte[size]);
-                reader = new BinaryReader(stream);
-                writer = new BinaryWriter(stream);
+                bytes = new byte[size];
             }
 
             public void PutShort(int offset, short value)
             {
-                stream.Seek(offset, SeekOrigin.Begin);
-                writer.Write(value);
+                bytes[offset] = (byte)value;
+                bytes[offset + 1] = (byte)(value >> 8);
             }
 
             public void PutInt(int offset, int value)
             {
-                stream.Seek(offset, SeekOrigin.Begin);
-                writer.Write(value);
+                bytes[offset] = (byte)value;
+                bytes[offset + 1] = (byte)(value >> 8);
+                bytes[offset + 2] = (byte)(value >> 16);
+                bytes[offset + 3] = (byte)(value >> 24);
             }
 
             public short GetShort(int offset)
             {
-                stream.Seek(offset, SeekOrigin.Begin);
-                return reader.ReadInt16();
+                return (short)(bytes[offset] | (bytes[offset + 1] << 8));
             }
 
             public int GetInt(int offset)
             {
-                stream.Seek(offset, SeekOrigin.Begin);
-                return reader.ReadInt32();
+                return bytes[offset]
+                    | (bytes[offset + 1] << 8)
+                    | (bytes[offset + 2] << 16)
+                    | (bytes[offset + 3] << 24);
             }
 
             public int GetCapacity()
             {
-                return stream.Capacity;
+                return bytes.Length;
             }
         }
     }

@@ -99,6 +99,36 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
+        public void TestFlyweightStorageRoundTripsShortSizedPrefixes()
+        {
+            var mapStorage = new FlyweightMapStorage();
+            mapStorage.ReadFromSortedMap(CreateFlyweightStorageMapCandidate());
+
+            Assert.Equal("1212|New York\n1213|New York\n1214|New York\n1480|Arizona\n",
+                mapStorage.ToString());
+        }
+
+        [Fact]
+        public void TestFlyweightStorageRoundTripsIntSizedPrefixes()
+        {
+            // Prefixes past short range, so the buffer stores them as 32-bit words rather than 16.
+            var sortedMap = new SortedDictionary<int, string>
+            {
+                [121212345] = "New York",
+                [121212346] = "New York",
+                [148034434] = "Arizona",
+                [148034435] = "Arizona"
+            };
+
+            var mapStorage = new FlyweightMapStorage();
+            mapStorage.ReadFromSortedMap(sortedMap);
+
+            Assert.Equal(
+                "121212345|New York\n121212346|New York\n148034434|Arizona\n148034435|Arizona\n",
+                mapStorage.ToString());
+        }
+
+        [Fact]
         public void TestGetSmallerMapStorageChoosesDefaultImpl_ShouldImplementToStringWithTheRightFormat()
         {
             var mapStorage = new AreaCodeMap().GetSmallerMapStorage(CreateDefaultStorageMapCandidate());
