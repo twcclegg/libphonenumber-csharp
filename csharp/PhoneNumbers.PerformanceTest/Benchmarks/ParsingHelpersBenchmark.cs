@@ -4,7 +4,7 @@ using BenchmarkDotNet.Jobs;
 namespace PhoneNumbers.PerformanceTest.Benchmarks
 {
     [MemoryDiagnoser]
-    [SimpleJob(RuntimeMoniker.Net10_0, warmupCount: 3, iterationCount: 7)]
+    [SimpleJob(RuntimeMoniker.Net10_0)]
     public class ParsingHelpersBenchmark
     {
         private string[] _inputs = null!;

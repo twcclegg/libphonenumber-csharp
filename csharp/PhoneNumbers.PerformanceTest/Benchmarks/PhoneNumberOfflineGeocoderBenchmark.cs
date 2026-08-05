@@ -12,7 +12,7 @@ namespace PhoneNumbers.PerformanceTest.Benchmarks
     /// which isolates the country-name table behind the fallback path.
     /// </summary>
     [MemoryDiagnoser]
-    [SimpleJob(RuntimeMoniker.Net10_0, warmupCount: 3, iterationCount: 7)]
+    [SimpleJob(RuntimeMoniker.Net10_0)]
     public class PhoneNumberOfflineGeocoderBenchmark
     {
         private PhoneNumberOfflineGeocoder _geocoder = null!;
