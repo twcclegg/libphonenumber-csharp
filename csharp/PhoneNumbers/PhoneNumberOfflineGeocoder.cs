@@ -67,11 +67,17 @@ namespace PhoneNumbers
 
         private static string GetCountryName(string country, string language)
         {
-            var names = LocaleData.Data[country];
+            // Not every phone-metadata region is an ISO country, so some have no entry at all: AC
+            // (calling code 247) and XK are both reachable here via GetRegionDisplayName. Returning
+            // null lets the caller run its language fallback and end up with an empty description,
+            // which is what GetDescriptionForNumber documents for a region it cannot name.
+            if (!LocaleData.Data.TryGetValue(country, out var names))
+                return null;
             if (!names.TryGetValue(language, out var name))
                 return null;
+            // A leading '*' marks a name shared with another language, stored once and pointed at.
             if (name.Length > 0 && name[0] == '*')
-                return names[name.Substring(1)];
+                return names.TryGetValue(name.Substring(1), out var sharedName) ? sharedName : null;
             return name;
         }
     }

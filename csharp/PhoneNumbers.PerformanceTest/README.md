@@ -32,6 +32,9 @@ Other available benchmarks:
   with phone numbers embedded between filler sentences.
 - `*ParsingHelpersBenchmark*` — `PhoneNumberUtil.ExtractPossibleNumber` measured separately
   for clean inputs (no leading junk) and inputs that force the strip path.
+- `*PhoneNumberOfflineGeocoderBenchmark*` — `PhoneNumberOfflineGeocoder.GetDescriptionForNumber`
+  end-to-end, plus `Locale.GetDisplayCountry` on its own to isolate the country-name table that
+  backs the fallback path when a number has no finer-grained area description.
 - `*ColdStartBenchmark*` — cost a consumer pays the first time they touch the library: bare
   `PhoneNumberUtil` construction, construction plus lazy-load of every region's metadata,
   and an isolated first-region lookup. Uses BDN's `RunStrategy.ColdStart` with

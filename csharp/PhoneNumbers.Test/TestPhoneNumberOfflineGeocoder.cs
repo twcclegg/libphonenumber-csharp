@@ -33,6 +33,17 @@ namespace PhoneNumbers.Test
             Assert.Equal(string.Empty, new Locale("en", string.Empty).GetDisplayCountry("abc"));
         }
 
+        [Theory]
+        // Phone-metadata regions that are not ISO countries, so they have no localised name at all.
+        // These used to throw KeyNotFoundException out of the geocoder.
+        [InlineData("AC")]
+        [InlineData("XK")]
+        public void GetDisplayCountry_WhenCountryHasNoLocalisedName_ShouldReturnAnEmptyDisplayCountry(
+            string regionCode)
+        {
+            Assert.Equal(string.Empty, new Locale("en", regionCode).GetDisplayCountry("en"));
+        }
+
         [Fact]
         public void GetDisplayCountry_WhenUnknownLanguage_ShouldReturnADefaultDisplayCountry()
         {
