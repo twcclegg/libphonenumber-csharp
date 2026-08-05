@@ -3,16 +3,10 @@ name: run_performance_tests
 on:
   pull_request:
     branches: [ "main" ]
-  # Pushes to main refresh the cached benchmark baseline that PRs compare against,
-  # so we never recompute main's numbers on every PR run.
+  # Keeps a run against main in the Actions history; there is nothing to compare it to.
   push:
     branches: [ "main" ]
-  # GitHub evicts any cache not accessed within 7 days (not configurable). This repo
-  # can idle longer than that, so re-measure and re-save the main baseline twice a week
-  # to keep it warm — and to self-heal if it was ever evicted. Sun + Wed keeps the
-  # largest gap to ~4 days, comfortably under the 7-day window.
-  schedule:
-    - cron: "0 7 * * 0,3"
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -30,58 +24,35 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+          # Full history so the PR's base commit can be checked out and benchmarked here.
+          fetch-depth: 0
 
       - name: Setup .NET
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v5
         with:
           dotnet-version: 10.x
 
-      # On a PR, restore the most recent main baseline produced by a push-to-main run
-      # instead of re-benchmarking main here. The prefix restore-key returns the latest
-      # available baseline regardless of the exact main commit it was measured on.
-      - name: Restore main benchmark baseline
+      # Measure the base commit on THIS runner, in THIS job, rather than reusing a cached
+      # baseline measured on some earlier runner. Cross-machine variance on shared runners
+      # is a few percent, which is the same size as the differences we are trying to detect,
+      # so a cached baseline cannot support a conclusion either way.
+      # Base runs first, so any warm-up bias favours the branch; treat sub-percent deltas as
+      # noise regardless.
+      - name: Benchmark the PR base
         if: github.event_name == 'pull_request'
-        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: main-baseline
-          # actions/cache/restore requires `key`, but we never expect an exact hit:
-          # save keys carry a unique -<run_id> suffix, so this is a deliberate near-miss
-          # and the prefix restore-key below always supplies the most recently created baseline.
-          # The prefix names the runner: timings are only comparable against a baseline
-          # measured on the same hardware, so changing runner must change the key.
-          key: benchmark-main-linux-arm64-
-          restore-keys: |
-            benchmark-main-linux-arm64-
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          git worktree add /tmp/base-tree "${BASE_SHA}"
+          echo "benchmarking base ${BASE_SHA}" >> "${GITHUB_STEP_SUMMARY}"
+          cd /tmp/base-tree/csharp/PhoneNumbers.PerformanceTest
+          dotnet run -c Release --framework net10.0 -- --filter "*"
 
       - name: Run benchmarks
         run: dotnet run -c Release --framework net10.0 -- --filter "*"
         working-directory: ./csharp/PhoneNumbers.PerformanceTest
 
-      # On push to main (or the keep-warm schedule), publish this run's results as the
-      # new baseline for future PRs.
-      - name: Stage main baseline
-        run: |
-          mkdir -p main-baseline
-          results_dir="csharp/PhoneNumbers.PerformanceTest/BenchmarkDotNet.Artifacts/results"
-          if [ -d "${results_dir}" ]
-          then
-            cp "${results_dir}"/*-report-github.md main-baseline/ 2> /dev/null || true
-          fi
-        if: github.event_name != 'pull_request'
-
-      - name: Save main benchmark baseline
-        if: github.event_name != 'pull_request'
-        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: main-baseline
-          # Unique per run so every push/cron writes a *fresh* cache entry. cache/save
-          # cannot overwrite an existing key, and the keep-warm cron never restores the
-          # baseline, so reusing benchmark-main-<sha> would let the timer lapse when main
-          # is unchanged. The PR prefix restore-key picks the most recently created entry.
-          key: benchmark-main-linux-arm64-${{ github.sha }}-${{ github.run_id }}
-
-      # On a PR, bundle the freshly-measured branch results with the restored main
-      # baseline so the follow-up workflow can post a side-by-side comparison.
+      # Bundle both sets of results so the follow-up workflow can post the comparison.
       - name: Stage benchmark artifact
         if: github.event_name == 'pull_request'
         env:
@@ -93,13 +64,21 @@ jobs:
           mkdir -p "${stage}/branch-results" "${stage}/main-results"
 
           pr_dir="csharp/PhoneNumbers.PerformanceTest/BenchmarkDotNet.Artifacts/results"
+          base_dir="/tmp/base-tree/csharp/PhoneNumbers.PerformanceTest/BenchmarkDotNet.Artifacts/results"
           if [ -d "${pr_dir}" ]
           then
             cp "${pr_dir}"/*-report-github.md "${stage}/branch-results/" 2> /dev/null || true
           fi
-          if [ -d "main-baseline" ]
+          if [ -d "${base_dir}" ]
           then
-            cp main-baseline/*-report-github.md "${stage}/main-results/" 2> /dev/null || true
+            cp "${base_dir}"/*-report-github.md "${stage}/main-results/" 2> /dev/null || true
+          fi
+
+          # A missing baseline would otherwise post a one-sided comment that reads like a result.
+          if [ -z "$(ls -A "${stage}/main-results")" ]
+          then
+            echo "error: no base benchmark results found at ${base_dir}" >&2
+            exit 1
           fi
 
           jq -n --argjson pr_number "${PR_NUMBER}" --arg head_sha "${HEAD_SHA}" \

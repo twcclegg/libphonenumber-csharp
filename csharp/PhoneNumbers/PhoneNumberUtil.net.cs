@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,6 +9,22 @@ namespace PhoneNumbers
 {
     public partial class PhoneNumberUtil
     {
+        /// <summary>
+        /// Longest input we will normalize on the stack. Above this the buffer is rented, since the
+        /// public Normalize* entry points accept caller-supplied strings of any length and a
+        /// stackalloc proportional to that input can overflow the stack.
+        /// </summary>
+        private const int MaxStackallocChars = 256;
+
+        /// <summary>Which normalization the shared buffer path should apply.</summary>
+        private enum NormalizeMode
+        {
+            Full,
+            DigitsOnly,
+            DiallableCharsOnly,
+            AlphaCharactersToDigits,
+        }
+
         /// <summary>
         /// Normalizes a string of characters representing a phone number. This performs the following
         /// conversions:
@@ -24,19 +41,8 @@ namespace PhoneNumbers
         /// </summary>
         /// <param name="number">A string of characters representing a phone number.</param>
         /// <returns>The normalized string version of the phone number.</returns>
-        public static string Normalize(string? number)
-        {
-            if (number == null)
-            {
-                return string.Empty;
-            }
-
-            Span<char> result = stackalloc char[number.Length];
-            var resultLength = 0;
-
-            Normalize(ref result, ref resultLength, number);
-            return new string(result.Slice(0, resultLength));
-        }
+        public static string Normalize(string? number) =>
+            number == null ? string.Empty : NormalizeToString(number, NormalizeMode.Full);
 
         /// <summary>
         /// Normalizes a string of characters representing a phone number. This converts wide-ascii and
@@ -44,19 +50,8 @@ namespace PhoneNumbers
         /// </summary>
         /// <param name="number">A string of characters representing a phone number.</param>
         /// <returns>The normalized string version of the phone number.</returns>
-        public static string NormalizeDigitsOnly(string? number)
-        {
-            if (number == null)
-            {
-                return string.Empty;
-            }
-
-            Span<char> result = stackalloc char[number.Length];
-            var resultLength = 0;
-
-            NormalizeDigits(ref result, ref resultLength, number, false /* strip non-digits */);
-            return new string(result.Slice(0, resultLength));
-        }
+        public static string NormalizeDigitsOnly(string? number) =>
+            number == null ? string.Empty : NormalizeToString(number, NormalizeMode.DigitsOnly);
 
         /// <summary>
         /// Normalizes a string of characters representing a phone number. This strips all characters which
@@ -64,19 +59,8 @@ namespace PhoneNumbers
         /// </summary>
         /// <param name="number"> a string of characters representing a phone number</param>
         /// <returns> the normalized string version of the phone number</returns>
-        public static string NormalizeDiallableCharsOnly(string? number)
-        {
-            if (number == null)
-            {
-                return string.Empty;
-            }
-
-            Span<char> result = stackalloc char[number.Length];
-            var resultLength = 0;
-
-            NormalizeHelper(ref result, ref resultLength, number, MapDiallableChar, true /* remove non matches */);
-            return new string(result.Slice(0, resultLength));
-        }
+        public static string NormalizeDiallableCharsOnly(string? number) =>
+            number == null ? string.Empty : NormalizeToString(number, NormalizeMode.DiallableCharsOnly);
 
         /// <summary>
         /// Converts all alpha characters in a number to their respective digits on a keypad, but retains
@@ -84,18 +68,62 @@ namespace PhoneNumbers
         /// </summary>
         /// <param name="number"></param>
         /// <returns></returns>
-        public static string ConvertAlphaCharactersInNumber(string? number)
+        public static string ConvertAlphaCharactersInNumber(string? number) =>
+            number == null ? string.Empty : NormalizeToString(number, NormalizeMode.AlphaCharactersToDigits);
+
+        /// <summary>
+        /// Runs one of the normalizers over <paramref name="number"/> into a scratch buffer and
+        /// returns the result. Buffers up to <see cref="MaxStackallocChars"/> come from the stack;
+        /// longer ones are rented, so an oversized input cannot overflow the stack.
+        /// </summary>
+        private static string NormalizeToString(string number, NormalizeMode mode)
         {
-            if (number == null)
+            char[]? rented = null;
+            if (number.Length > MaxStackallocChars)
             {
-                return string.Empty;
+                rented = ArrayPool<char>.Shared.Rent(number.Length);
             }
 
-            Span<char> result = stackalloc char[number.Length];
-            var resultLength = 0;
+            // Sized to the input, not to MaxStackallocChars: stackalloc zero-initializes, so a
+            // fixed-size buffer would clear 512 bytes on every call to normalize a short number.
+            Span<char> buffer = rented is null ? stackalloc char[number.Length] : rented;
+            try
+            {
+                // ArrayPool hands back an array at least as long as requested, so slice to the input
+                // length: the normalizers rely on running out of room to drop characters whose
+                // numeric value needs more digits than the character it came from, and extra
+                // capacity would silently change that output.
+                var result = buffer.Slice(0, number.Length);
+                var resultLength = 0;
 
-            NormalizeHelper(ref result, ref resultLength, number, MapAlphaPhone, false);
-            return new string(result.Slice(0, resultLength));
+                switch (mode)
+                {
+                    case NormalizeMode.Full:
+                        Normalize(ref result, ref resultLength, number);
+                        break;
+                    case NormalizeMode.DigitsOnly:
+                        NormalizeDigits(ref result, ref resultLength, number, false /* strip non-digits */);
+                        break;
+                    case NormalizeMode.DiallableCharsOnly:
+                        NormalizeHelper(ref result, ref resultLength, number, MapDiallableChar, true /* remove non matches */);
+                        break;
+                    case NormalizeMode.AlphaCharactersToDigits:
+                        NormalizeHelper(ref result, ref resultLength, number, MapAlphaPhone, false);
+                        break;
+                    default:
+                        // Rather than silently returning an empty string for an unhandled mode.
+                        throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
+                }
+
+                return new string(result.Slice(0, resultLength));
+            }
+            finally
+            {
+                if (rented != null)
+                {
+                    ArrayPool<char>.Shared.Return(rented);
+                }
+            }
         }
 
         /// <summary>

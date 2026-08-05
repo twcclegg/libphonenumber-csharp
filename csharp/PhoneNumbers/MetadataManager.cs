@@ -61,14 +61,14 @@ namespace PhoneNumbers
             shortNumberSource = new(loader, ShortNumberMetadataPrefix);
         }
 
-#if NET6_0_OR_GREATER
+#if !NETSTANDARD2_0
         public static PhoneMetadata? GetAlternateFormatsForCountry(int countryCallingCode)
 #else
         public static PhoneMetadata GetAlternateFormatsForCountry(int countryCallingCode)
 #endif
             => alternateFormatsSource.GetMetadataForNonGeographicalRegion(countryCallingCode);
 
-#if NET6_0_OR_GREATER
+#if !NETSTANDARD2_0
         internal static PhoneMetadata? GetShortNumberMetadataForRegion(string regionCode)
 #else
         internal static PhoneMetadata GetShortNumberMetadataForRegion(string regionCode)

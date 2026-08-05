@@ -7,6 +7,9 @@ on:
       - 'csharp/PhoneNumbers.Demo/**'
       - 'csharp/PhoneNumbers/**'
       - 'csharp/PhoneNumbers.Extensions/**'
+      # Shared build settings and package versions apply to the demo projects too.
+      - 'csharp/Directory.Build.props'
+      - 'csharp/Directory.Packages.props'
       - 'resources/**'
       - '.github/workflows/deploy-demo.yml'
   schedule:

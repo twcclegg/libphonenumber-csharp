@@ -101,7 +101,7 @@ namespace PhoneNumbers
         // Empty blacklist, meaning we filter nothing.
         internal static MetadataFilter EmptyFilter() => new(new Dictionary<string, SortedSet<string>>());
 
-#if NET6_0_OR_GREATER
+#if !NETSTANDARD2_0
         public override bool Equals(object? obj)
 #else
         public override bool Equals(object obj)
@@ -194,7 +194,7 @@ namespace PhoneNumbers
         /// strings should be treated as a special case by the flag checking code and not passed here.
         /// </summary>
 
-#if NET6_0_OR_GREATER
+#if !NETSTANDARD2_0
         internal static Dictionary<string, SortedSet<string>> ParseFieldMapFromString(string? str)
 #else
         internal static Dictionary<string, SortedSet<string>> ParseFieldMapFromString(string str)

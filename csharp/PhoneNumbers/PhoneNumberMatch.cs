@@ -25,7 +25,7 @@ namespace PhoneNumbers
         public string RawString { get; }
         public PhoneNumber Number { get; }
 
-#if NET6_0_OR_GREATER
+#if !NETSTANDARD2_0
         public PhoneNumberMatch(int start, string? rawString, PhoneNumber? number)
 #else
         public PhoneNumberMatch(int start, string rawString, PhoneNumber number)
@@ -40,7 +40,7 @@ namespace PhoneNumbers
             Number = number;
         }
 
-#if NET6_0_OR_GREATER
+#if !NETSTANDARD2_0
         public override bool Equals(object? obj)
 #else
         public override bool Equals(object obj)

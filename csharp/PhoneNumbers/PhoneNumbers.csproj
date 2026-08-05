@@ -8,34 +8,16 @@
     <!-- Placeholder only. The real version comes from the release tag: publish_nuget.yml -->
     <VersionPrefix>0.0.0</VersionPrefix>
     <Authors>Patrick Mézard;Thomas Clegg;Jarrod Alexander;Google;libphonenumber contributors</Authors>
-    <TargetFrameworks>netstandard2.0;net8.0;net9.0;net10.0</TargetFrameworks>
-    <LangVersion>preview</LangVersion>
+    <TargetFrameworks>netstandard2.0;net8.0;net10.0</TargetFrameworks>
     <PackageTags>phonenumber phone libphonenumber e164 e.164 international</PackageTags>
-    <PackageProjectUrl>https://github.com/twcclegg/libphonenumber-csharp</PackageProjectUrl>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageIcon>icon.png</PackageIcon>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <RepositoryUrl>https://github.com/twcclegg/libphonenumber-csharp</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <RepositoryBranch>main</RepositoryBranch>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <DebugType>embedded</DebugType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>$(NoWarn);1591;CA1062;CA1707</NoWarn>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <!--
-      Reproducible-build / Source Link settings. ContinuousIntegrationBuild normalizes
-      source-file paths embedded in the PDB so the published binary is deterministic; it
-      is gated to CI (the env var is set by GitHub Actions) so local debug
-      builds keep their absolute paths. EmbedUntrackedSources embeds SDK-generated sources
-      (e.g. AssemblyInfo) that git doesn't track, so Source Link stays complete. Source
-      Link itself is in-box in the .NET 8+ SDK — no PackageReference is required.
-    -->
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+    <NoWarn>$(NoWarn);CA1062</NoWarn>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0' Or '$(TargetFramework)' == 'net9.0' Or '$(TargetFramework)' == 'net10.0'">
+  <PropertyGroup Condition="'$(TargetFramework)' != 'netstandard2.0'">
     <Nullable>enable</Nullable>
     <!--
       Opt in to trim/AOT analysis on modern .NET TFMs. IsAotCompatible turns on the trim, single-file,
@@ -208,8 +190,14 @@
     </ItemGroup>
   </Target>
 
-  <!-- Make the generated files visible to clean. -->
-  <Target Name="CleanBinaryMetadata" AfterTargets="Clean">
+  <!--
+    Make the generated files visible to clean. Runs only on the outer cross-targeting build (where
+    TargetFramework is empty) or on a genuine single-TFM project: the bins are shared across TFMs,
+    so letting all three inner cleans fire would race three RemoveDir calls on one directory and
+    fail with MSB3231 when one enumerates a file another has already deleted.
+  -->
+  <Target Name="CleanBinaryMetadata" AfterTargets="Clean"
+          Condition="'$(TargetFramework)' == '' Or '$(TargetFrameworks)' == ''">
     <RemoveDir Directories="$(BinaryMetadataDir)" Condition="Exists('$(BinaryMetadataDir)')" />
     <RemoveDir Directories="$(BinaryGeocodingDir)" Condition="Exists('$(BinaryGeocodingDir)')" />
     <RemoveDir Directories="$(BinaryTimezonesDir)" Condition="Exists('$(BinaryTimezonesDir)')" />
@@ -217,7 +205,7 @@
   </Target>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' ">
-    <PackageReference Include="System.Collections.Immutable" Version="8.0.0" />
+    <PackageReference Include="System.Collections.Immutable" />
   </ItemGroup>
 
 </Project>

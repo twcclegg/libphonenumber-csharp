@@ -142,6 +142,20 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
+        public void TestGetSupportedRegionsReturnsACopy()
+        {
+            var regions = phoneUtil.GetSupportedRegions();
+            Assert.Contains(RegionCode.US, regions);
+
+            // Mutating what the caller was handed must not touch the instance: this is a singleton,
+            // and supportedRegions is what IsValidRegionCode consults.
+            regions.Clear();
+
+            Assert.Contains(RegionCode.US, phoneUtil.GetSupportedRegions());
+            Assert.True(phoneUtil.IsValidNumber(USNumber));
+        }
+
+        [Fact]
         public void TestGetInstanceLoadBadMetadata()
         {
             Assert.Null(phoneUtil.GetMetadataForRegion("No Such Region"));
@@ -490,6 +504,31 @@ namespace PhoneNumbers.Test
         public void TestNormalizeDiallableCharsOnlyHandlesNull()
         {
             Assert.Equal(string.Empty, PhoneNumberUtil.NormalizeDiallableCharsOnly(null));
+        }
+
+        [Fact]
+        public void TestNormaliseHandlesInputLongerThanTheStackBuffer()
+        {
+            // These entry points take caller-supplied strings of any length, so their scratch buffer
+            // has to come off the heap once the input grows past what is safe to stack-allocate.
+            const int repeats = 50_000;
+
+            var input = new StringBuilder(repeats * 3);
+            var digits = new StringBuilder(repeats * 2);
+            for (var i = 0; i < repeats; i++)
+            {
+                input.Append("1-2");
+                digits.Append("12");
+            }
+
+            var inputNumber = input.ToString();
+            var expectedDigits = digits.ToString();
+
+            Assert.Equal(expectedDigits, PhoneNumberUtil.Normalize(inputNumber));
+            Assert.Equal(expectedDigits, PhoneNumberUtil.NormalizeDigitsOnly(inputNumber));
+            Assert.Equal(expectedDigits, PhoneNumberUtil.NormalizeDiallableCharsOnly(inputNumber));
+            // Punctuation is retained by this one, so it round-trips.
+            Assert.Equal(inputNumber, PhoneNumberUtil.ConvertAlphaCharactersInNumber(inputNumber));
         }
 
         [Fact]

@@ -17,6 +17,9 @@
 
 using System.Collections.Generic;
 using System.Linq;
+#if NET8_0_OR_GREATER
+using System.Collections.Frozen;
+#endif
 
 namespace PhoneNumbers
 {
@@ -69,13 +72,21 @@ namespace PhoneNumbers
         /// by that country calling code. In the case of multiple regions sharing a calling code, such as
         /// the NANPA regions, the one indicated with "isMainCountryForCode" in the metadata should be first.
         /// </summary>
+#if NET8_0_OR_GREATER
+        private readonly FrozenDictionary<int, List<string>> countryCallingCodeToRegionCodeMap;
+#else
         private readonly Dictionary<int, List<string>> countryCallingCodeToRegionCodeMap;
+#endif
 
         private ShortNumberInfo()
         {
             // TODO: Create ShortNumberInfo for a given map
-            countryCallingCodeToRegionCodeMap =
-                CountryCodeToRegionCodeMap.GetCountryCodeToRegionCodeMap();
+            var map = CountryCodeToRegionCodeMap.GetCountryCodeToRegionCodeMap();
+#if NET8_0_OR_GREATER
+            countryCallingCodeToRegionCodeMap = map.ToFrozenDictionary();
+#else
+            countryCallingCodeToRegionCodeMap = map;
+#endif
         }
 
         /// <summary>

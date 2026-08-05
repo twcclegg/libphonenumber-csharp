@@ -19,15 +19,20 @@
  */
 
 using System.Collections.Generic;
+#if NET8_0_OR_GREATER
+using System.Collections.Frozen;
+#else
 using System.Collections.Immutable;
+#endif
 
 namespace PhoneNumbers
 {
 
     internal class ShortNumbersRegionCodeSet
     {
-        // A set of all region codes for which data is available.
-        internal static readonly ImmutableHashSet<string> RegionCodeSet = ImmutableHashSet.Create(
+        // Declared ahead of RegionCodeSet: static initializers run in textual order.
+        private static readonly string[] regionCodes =
+        {
             "AC",
             "AD",
             "AE",
@@ -269,6 +274,14 @@ namespace PhoneNumbers
             "ZA",
             "ZM",
             "ZW"
-        );
+        };
+
+        // A set of all region codes for which data is available. Probed on every short number
+        // lookup, ahead of the cached metadata load.
+#if NET8_0_OR_GREATER
+        internal static readonly FrozenSet<string> RegionCodeSet = regionCodes.ToFrozenSet();
+#else
+        internal static readonly ImmutableHashSet<string> RegionCodeSet = ImmutableHashSet.Create(regionCodes);
+#endif
     }
 }
