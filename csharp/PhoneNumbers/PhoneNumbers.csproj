@@ -14,6 +14,10 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <DebugType>embedded</DebugType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- No PackageValidationBaselineVersion yet: 9.0.36 still ships a net9.0 asset this package no
+         longer produces. Set it to the first release without net9.0 to compare against a baseline;
+         until then only the cross-target surface within this package is checked. -->
+    <EnablePackageValidation>true</EnablePackageValidation>
     <NoWarn>$(NoWarn);CA1062</NoWarn>
   </PropertyGroup>
 
