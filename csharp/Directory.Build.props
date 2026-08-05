@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <!-- Pinned rather than "preview" so an SDK bump cannot change the semantics of code we have
-         already shipped. Still lifts netframework4.8 off its C# 7.3 default. -->
+         already shipped. -->
     <LangVersion>latest</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <!-- Suppressions that apply repo-wide; projects append their own. -->

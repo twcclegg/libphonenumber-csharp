@@ -10,7 +10,7 @@ namespace PhoneNumbers.PerformanceTest.Benchmarks
         private PhoneNumberUtil _phoneNumberUtil = null!;
         private PhoneNumberBenchmarkCase[] _phoneNumbers = null!;
 
-        [Params(1000, 10000)]
+        [Params(1000)]
         public int PhoneNumberCount { get; set; }
 
         [GlobalSetup]

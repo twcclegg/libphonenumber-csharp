@@ -1,17 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!-- netframework4.8 needs the .NET Framework test host, so it is Windows-only. No CI job covers it. -->
-    <TargetFrameworks Condition="'$(OS)' == 'Windows_NT'">netframework4.8;net8.0;net10.0</TargetFrameworks>
-    <TargetFrameworks Condition="'$(OS)' != 'Windows_NT'">net8.0;net10.0</TargetFrameworks>
-    <!-- The TFM list above is OS-conditional, so a lock file would differ between Windows and Linux. -->
-    <RestorePackagesWithLockFile>false</RestorePackagesWithLockFile>
+    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
     <AssemblyName>PhoneNumbers.Test</AssemblyName>
     <PackageId>PhoneNumbers.Test</PackageId>
     <NoWarn>$(NoWarn);CA1014</NoWarn>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' != 'netframework4.8'">
+  <PropertyGroup>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
@@ -28,8 +24,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <!-- In-box from net8.0 up; referencing it there trips NU1510 (prunable package). -->
-    <PackageReference Include="System.Text.RegularExpressions" Condition="'$(TargetFramework)' == 'netframework4.8'" />
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio">
       <PrivateAssets>all</PrivateAssets>

@@ -13,7 +13,7 @@ The library tracks upstream metadata releases (~every two weeks) via the `create
 - `csharp/Directory.Build.props` — build settings shared by every project: `LangVersion`, `TreatWarningsAsErrors` (so warnings break the build), the repo-wide `NoWarn` baseline, repository metadata, and the reproducible-build/Source Link switches. Set things here rather than per-csproj.
 - `csharp/Directory.Packages.props` — Central Package Management. Every package version lives here; a `PackageReference` carrying its own `Version` is an error (`NU1008`).
 - `csharp/PhoneNumbers/` — main library (NuGet `libphonenumber-csharp`). Multi-targets `netstandard2.0;net8.0;net10.0`.
-- `csharp/PhoneNumbers.Test/` — xUnit tests, ported from the Java tests. Multi-targets `netframework4.8;net8.0;net10.0`.
+- `csharp/PhoneNumbers.Test/` — xUnit tests, ported from the Java tests. Multi-targets `net8.0;net10.0`.
 - `csharp/PhoneNumbers.Extensions/` — separate NuGet (`libphonenumber-csharp.extensions`) with C#-idiomatic helpers that don't exist in the Java library.
 - `csharp/PhoneNumbers.PerformanceTest/` — BenchmarkDotNet harness.
 - `csharp/PhoneNumbers.MetadataBuilder/` — build-time tool that converts XML metadata + geocoding/timezone text files into per-region binary files. Source-links a small set of files from `PhoneNumbers/` so it doesn't depend on (and can't cycle with) the main library at build time.
@@ -89,5 +89,4 @@ dotnet run -c Release --framework net10.0 -- --filter "*PhoneNumberWorkflowBench
 
 - CI is GitHub Actions only, on `ubuntu-24.04-arm`. There are no Windows runners.
 - PRs trigger `build_and_run_unit_tests_linux.yml` (net10.0 only) and `run_all_tests_and_upload_code_coverage.yml` (whole solution, every TFM, uploads to Codecov).
-- The test projects' `netframework4.8` target is conditioned on `'$(OS)' == 'Windows_NT'` — it only builds for developers on Windows, and no CI job covers it.
 - Releases are tag-driven: a `vX.Y.Z` tag fires `publish_nuget.yml`, which packs both projects at the tag's version and pushes to nuget.org via trusted publishing (GitHub OIDC, `NuGet/login`) — there is no API key secret. Metadata-bump tags are created by `create_new_release_on_new_metadata_update.yml`.
