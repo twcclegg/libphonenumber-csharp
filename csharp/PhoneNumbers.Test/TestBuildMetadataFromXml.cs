@@ -15,6 +15,7 @@
  */
 
 using System;
+using System.Globalization;
 using System.IO;
 using System.Xml.Linq;
 using Xunit;
@@ -226,7 +227,8 @@ namespace PhoneNumbers.Test
         public void TestLoadNationalFormat()
         {
             var nationalFormat = "$1 $2";
-            var xmlInput = string.Format("<numberFormat><format>{0}</format></numberFormat>",
+            var xmlInput = string.Format(CultureInfo.InvariantCulture,
+                "<numberFormat><format>{0}</format></numberFormat>",
                                             nationalFormat);
             var numberFormatElement = ParseXmlString(xmlInput);
             var metadata = new PhoneMetadata.Builder();

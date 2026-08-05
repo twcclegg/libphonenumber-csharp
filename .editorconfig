@@ -181,6 +181,11 @@ dotnet_diagnostic.CA1860.severity = error
 # Redundant explicit initialisation to a field's default value.
 dotnet_diagnostic.CA1805.severity = error
 
+# Tests take the culture rule only — a test that parses or formats under the runner's locale can
+# behave differently on a contributor's machine. The performance rules above earn nothing here.
+[csharp/PhoneNumbers.Test/*.cs]
+dotnet_diagnostic.CA1305.severity = error
+
 # Xml project files
 [*.{csproj,vbproj,vcxproj,vcxproj.filters,proj,nativeproj,locproj}]
 indent_size = 2
