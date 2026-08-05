@@ -25,7 +25,9 @@ The `PhoneNumberWorkflowBenchmark` exercises the widest slice of the library; th
 completes in a few minutes on a single runtime. Alongside the end-to-end
 `ParseValidateAndFormatPhoneNumbers` it measures `ParseOnly`, `ValidateOnly` and `FormatOnly`
 against the same data, so a cost — allocation especially — can be attributed to a phase instead of
-only being visible as a total.
+only being visible as a total. `ParseNationalFormat` and `ParseWithExtension` re-render those same
+numbers the way callers usually supply them: the seed data is E164, which is the cheapest input
+`Parse` can take, since the national-prefix and extension patterns both fail and cost nothing.
 
 Other available benchmarks:
 
