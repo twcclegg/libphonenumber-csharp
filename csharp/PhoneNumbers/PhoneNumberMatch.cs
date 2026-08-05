@@ -32,9 +32,11 @@ namespace PhoneNumbers
 #endif
         {
             if (start < 0)
-                throw new ArgumentException("Start index must be >= 0.");
-            if (rawString == null || number == null)
-                throw new ArgumentNullException();
+                throw new ArgumentException("Start index must be >= 0.", nameof(start));
+            if (rawString == null)
+                throw new ArgumentNullException(nameof(rawString));
+            if (number == null)
+                throw new ArgumentNullException(nameof(number));
             Start = start;
             RawString = rawString;
             Number = number;

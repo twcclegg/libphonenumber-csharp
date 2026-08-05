@@ -27,7 +27,7 @@ namespace PhoneNumbers
     /// </summary>
     public abstract class AreaCodeMapStorageStrategy
     {
-        protected int NumOfEntries = 0;
+        protected int NumOfEntries;
         protected readonly List<int> PossibleLengths = [];
 
         /// <summary>
@@ -80,9 +80,9 @@ namespace PhoneNumbers
             for (var i = 0; i < GetNumOfEntries(); i++)
             {
                 output.Append(GetPrefix(i))
-                    .Append("|")
+                    .Append('|')
                     .Append(GetDescription(i))
-                    .Append("\n");
+                    .Append('\n');
             }
             return output.ToString();
         }

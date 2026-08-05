@@ -1,6 +1,7 @@
 ﻿#nullable disable
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 #if NET8_0_OR_GREATER
 using System.Collections.Frozen;
 #else
@@ -67,7 +68,10 @@ namespace PhoneNumbers
         /// </returns>
         public List<string> GetTimeZonesForGeographicalNumber(PhoneNumber number)
         {
-            return LookUpPrefix(long.Parse(string.Concat(number.CountryCode.ToString(), phoneUtil.GetNationalSignificantNumber(number))));
+            return LookUpPrefix(long.Parse(
+                string.Concat(number.CountryCode.ToString(CultureInfo.InvariantCulture),
+                    phoneUtil.GetNationalSignificantNumber(number)),
+                CultureInfo.InvariantCulture));
         }
 
         /// <summary>
@@ -132,7 +136,7 @@ namespace PhoneNumbers
         }
 
         private static readonly object lockObj = new object();
-        private static PhoneNumberToTimeZonesMapper instance = null;
+        private static PhoneNumberToTimeZonesMapper instance;
         public static PhoneNumberToTimeZonesMapper GetInstance()
         {
             lock (lockObj)

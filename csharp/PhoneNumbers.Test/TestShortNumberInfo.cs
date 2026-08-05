@@ -15,6 +15,7 @@
  */
 
 using System;
+using System.Globalization;
 using Xunit;
 
 namespace PhoneNumbers.Test
@@ -101,7 +102,7 @@ namespace PhoneNumbers.Test
             Assert.Equal(ShortNumberInfo.ShortNumberCost.PREMIUM_RATE, ShortInfo.GetExpectedCostForRegion(
                 Parse(premiumRateExample, RegionCode.FR), RegionCode.FR));
             var premiumRateNumber = new PhoneNumber.Builder().SetCountryCode(33)
-                .SetNationalNumber(ulong.Parse(premiumRateExample)).Build();
+                .SetNationalNumber(ulong.Parse(premiumRateExample, CultureInfo.InvariantCulture)).Build();
             Assert.Equal(ShortNumberInfo.ShortNumberCost.PREMIUM_RATE,
                 ShortInfo.GetExpectedCost(premiumRateNumber));
 
@@ -110,7 +111,7 @@ namespace PhoneNumbers.Test
             Assert.Equal(ShortNumberInfo.ShortNumberCost.STANDARD_RATE, ShortInfo.GetExpectedCostForRegion(
                 Parse(standardRateExample, RegionCode.FR), RegionCode.FR));
             var standardRateNumber = new PhoneNumber.Builder().SetCountryCode(33)
-                .SetNationalNumber(ulong.Parse(standardRateExample)).Build();
+                .SetNationalNumber(ulong.Parse(standardRateExample, CultureInfo.InvariantCulture)).Build();
             Assert.Equal(ShortNumberInfo.ShortNumberCost.STANDARD_RATE,
                 ShortInfo.GetExpectedCost(standardRateNumber));
 
@@ -119,7 +120,7 @@ namespace PhoneNumbers.Test
             Assert.Equal(ShortNumberInfo.ShortNumberCost.TOLL_FREE,
                 ShortInfo.GetExpectedCostForRegion(Parse(tollFreeExample, RegionCode.FR), RegionCode.FR));
             var tollFreeNumber = new PhoneNumber.Builder().SetCountryCode(33)
-                .SetNationalNumber(ulong.Parse(tollFreeExample)).Build();
+                .SetNationalNumber(ulong.Parse(tollFreeExample, CultureInfo.InvariantCulture)).Build();
             Assert.Equal(ShortNumberInfo.ShortNumberCost.TOLL_FREE,
                 ShortInfo.GetExpectedCost(tollFreeNumber));
 

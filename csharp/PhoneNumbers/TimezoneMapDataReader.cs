@@ -1,6 +1,7 @@
 ﻿#nullable disable
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Collections.Immutable;
 using System.IO;
 using System.Text;
@@ -47,7 +48,7 @@ namespace PhoneNumbers
                 while (null != (line = LineReader(lines)))
                 {
                     var pnPrefix = line[0];
-                    tmpMap[long.Parse(pnPrefix)] = line[1].Split(splitters, StringSplitOptions.RemoveEmptyEntries);
+                    tmpMap[long.Parse(pnPrefix, CultureInfo.InvariantCulture)] = line[1].Split(splitters, StringSplitOptions.RemoveEmptyEntries);
                 }
             }
 

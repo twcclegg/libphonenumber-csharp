@@ -16,6 +16,7 @@
  */
 
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace PhoneNumbers
 {
@@ -107,17 +108,20 @@ namespace PhoneNumbers
                 return null;
             }
             var phonePrefix =
-                long.Parse(number.CountryCode + phoneUtil.GetNationalSignificantNumber(number));
+                long.Parse(number.CountryCode + phoneUtil.GetNationalSignificantNumber(number),
+                    CultureInfo.InvariantCulture);
             var currentIndex = numOfEntries - 1;
             var currentSetOfLengths = areaCodeMapStorage.GetPossibleLengths();
             var length = currentSetOfLengths.Count;
             while (length > 0)
             {
                 var possibleLength = currentSetOfLengths[length - 1];
-                var phonePrefixStr = phonePrefix.ToString();
-                if (phonePrefixStr.Length > possibleLength)
+                // Truncating to the leading possibleLength digits is division, not a round trip
+                // through ToString/Substring/Parse - this runs once per distinct possible length.
+                var digits = CountDigits(phonePrefix);
+                if (digits > possibleLength)
                 {
-                    phonePrefix = long.Parse(phonePrefixStr.Substring(0, possibleLength));
+                    phonePrefix /= PowersOfTen[digits - possibleLength];
                 }
                 currentIndex = BinarySearch(0, currentIndex, phonePrefix);
                 if (currentIndex < 0)
@@ -133,6 +137,32 @@ namespace PhoneNumbers
                     length--;
             }
             return null;
+        }
+
+        /// <summary>
+        /// Indexed by the number of digits to drop. A long holds at most 19 digits, so dropping more
+        /// than 18 is not reachable from a prefix that has at least one digit left.
+        /// </summary>
+        private static readonly long[] PowersOfTen =
+        {
+            1L, 10L, 100L, 1000L, 10000L, 100000L, 1000000L, 10000000L, 100000000L, 1000000000L,
+            10000000000L, 100000000000L, 1000000000000L, 10000000000000L, 100000000000000L,
+            1000000000000000L, 10000000000000000L, 100000000000000000L, 1000000000000000000L
+        };
+
+        /// <summary>
+        /// Number of decimal digits in <paramref name="value"/>, which is always positive here since
+        /// it is built from a country calling code followed by the national significant number.
+        /// </summary>
+        private static int CountDigits(long value)
+        {
+            var digits = 1;
+            while (value >= 10)
+            {
+                value /= 10;
+                digits++;
+            }
+            return digits;
         }
 
         /// <summary>

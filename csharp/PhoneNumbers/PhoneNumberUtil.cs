@@ -2402,7 +2402,7 @@ namespace PhoneNumbers
                 // so, we remove the country calling code, and do some checks on the validity of the number
                 // before and after.
                 var defaultCountryCode = defaultRegionMetadata.CountryCode;
-                var defaultCountryCodeString = defaultCountryCode.ToString();
+                var defaultCountryCodeString = defaultCountryCode.ToString(CultureInfo.InvariantCulture);
                 var normalizedNumber = fullNumber.ToString();
                 if (normalizedNumber.StartsWith(defaultCountryCodeString, StringComparison.Ordinal))
                 {

@@ -18,6 +18,9 @@
          longer produces. Set it to the first release without net9.0 to compare against a baseline;
          until then only the cross-target surface within this package is checked. -->
     <EnablePackageValidation>true</EnablePackageValidation>
+    <!-- Rules enforced on top of the default set are listed in .editorconfig, with the reasoning. -->
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
     <NoWarn>$(NoWarn);CA1062</NoWarn>
   </PropertyGroup>
 
