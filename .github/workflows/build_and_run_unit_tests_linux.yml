@@ -36,22 +36,11 @@ jobs:
           key: nuget-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('csharp/Directory.Packages.props', 'csharp/**/*.csproj') }}
           restore-keys: |
             nuget-${{ runner.os }}-${{ runner.arch }}-
+      # --locked-mode fails the restore rather than silently resolving a different transitive version
+      # than packages.lock.json records.
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore --locked-mode
         working-directory: ./csharp
-
-      # TEMPORARY: harvests the generated packages.lock.json files so they can be committed without a
-      # local dotnet install. Removed once they are in the repo.
-      - name: Restore the projects outside the solution
-        run: |
-          dotnet restore csharp/PhoneNumbers.PerformanceTest
-          dotnet restore csharp/PhoneNumbers.Demo.Tests
-      - name: Upload lock files
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
-        with:
-          name: packages-lock-files
-          path: csharp/**/packages.lock.json
-          if-no-files-found: error
       - name: Build solution
         run: dotnet build --no-restore
         working-directory: ./csharp
