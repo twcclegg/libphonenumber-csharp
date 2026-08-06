@@ -249,13 +249,13 @@ namespace PhoneNumbers
         // don't support this since we haven't seen real examples and this introduces many false
         // interpretations as the extension labels are not standardized.
         // const int extLimitAfterExplicitLabel = 20;
-        private const string extLimitAfterExplicitLabelString = "(\\d{1,20})";
+        private const string extLimitAfterExplicitLabelString = "(?<ext>\\d{1,20})";
           // const int extLimitAfterLikelyLabel = 15;
-        private const string extLimitAfterLikelyLabelString = "(\\d{1,15})";
+        private const string extLimitAfterLikelyLabelString = "(?<ext>\\d{1,15})";
         // const int extLimitAfterAmbiguousChar = 9;
-        private const string extLimitAfterAmbiguousCharString = "(\\d{1,9})";
+        private const string extLimitAfterAmbiguousCharString = "(?<ext>\\d{1,9})";
         // const int extLimitWhenNotSure = 6;
-        private const string extLimitWhenNotSureString = "(\\d{1,6})";
+        private const string extLimitWhenNotSureString = "(?<ext>\\d{1,6})";
 
         private const string possibleSeparatorsBetweenNumberAndExtLabel = "[ \u00A0\\t,]*";
         // Optional full stop (.) or colon, followed by zero or more spaces/tabs/commas.
@@ -2599,17 +2599,15 @@ namespace PhoneNumbers
             // it is an extension.
             if (m.Success && IsViablePhoneNumberPrefix(numberString, m.Index))
             {
-                // The numbers are captured into groups in the regular expression.
-                for (int i = 1, length = m.Groups.Count; i < length; i++)
+                // Every alternative captures into the same named group, so at most one of them has a
+                // value and there is nothing to search for. Walking Groups instead materialised a
+                // Group per alternative, which cost more than the match itself.
+                var ext = m.Groups["ext"];
+                if (ext.Success)
                 {
-                    if (m.Groups[i].Success)
-                    {
-                        // We go through the capturing groups until we find one that captured some digits. If none
-                        // did, then we will return the empty string.
-                        var extension = m.Groups[i].Value;
-                        number.Remove(m.Index, number.Length - m.Index);
-                        return extension;
-                    }
+                    var extension = ext.Value;
+                    number.Remove(m.Index, number.Length - m.Index);
+                    return extension;
                 }
             }
             return "";
