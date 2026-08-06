@@ -16,6 +16,8 @@ namespace PhoneNumbers.PerformanceTest.Benchmarks
         private PhoneNumberUtil _phoneNumberUtil = null!;
         private PhoneNumberBenchmarkCase[] _phoneNumbers = null!;
         private PhoneNumber[] _parsedNumbers = null!;
+        private PhoneNumberBenchmarkCase[] _nationalFormat = null!;
+        private PhoneNumberBenchmarkCase[] _withExtension = null!;
 
         [Params(1000)]
         public int PhoneNumberCount { get; set; }
@@ -32,6 +34,23 @@ namespace PhoneNumbers.PerformanceTest.Benchmarks
             {
                 _parsedNumbers[i] =
                     _phoneNumberUtil.Parse(_phoneNumbers[i].NumberToParse, _phoneNumbers[i].DefaultRegion);
+            }
+
+            // The seed data is all E164, which is the cheapest thing Parse can be handed: no national
+            // prefix to strip and no extension, so the two regex matches that dominate a real parse both
+            // fail and cost nothing. Re-render the same numbers the way callers usually supply them.
+            _nationalFormat = new PhoneNumberBenchmarkCase[_parsedNumbers.Length];
+            _withExtension = new PhoneNumberBenchmarkCase[_parsedNumbers.Length];
+            for (var i = 0; i < _parsedNumbers.Length; i++)
+            {
+                var region = _phoneNumbers[i].DefaultRegion;
+                _nationalFormat[i] = new PhoneNumberBenchmarkCase(
+                    _phoneNumberUtil.Format(_parsedNumbers[i], PhoneNumberFormat.NATIONAL), region);
+
+                var extended = new PhoneNumber.Builder().MergeFrom(_parsedNumbers[i])
+                    .SetExtension("123").Build();
+                _withExtension[i] = new PhoneNumberBenchmarkCase(
+                    _phoneNumberUtil.Format(extended, PhoneNumberFormat.INTERNATIONAL), region);
             }
         }
 
@@ -65,6 +84,42 @@ namespace PhoneNumbers.PerformanceTest.Benchmarks
             for (var i = 0; i < _phoneNumbers.Length; i++)
             {
                 var phoneNumber = _phoneNumbers[i];
+                checksum += _phoneNumberUtil
+                    .Parse(phoneNumber.NumberToParse, phoneNumber.DefaultRegion).CountryCode;
+            }
+
+            return checksum;
+        }
+
+        /// <summary>
+        /// The same numbers in national format, so the national prefix actually gets stripped. That
+        /// path costs roughly twice what an E164 parse does, and it is what most callers hand in.
+        /// </summary>
+        [Benchmark]
+        public int ParseNationalFormat()
+        {
+            var checksum = 0;
+            for (var i = 0; i < _nationalFormat.Length; i++)
+            {
+                var phoneNumber = _nationalFormat[i];
+                checksum += _phoneNumberUtil
+                    .Parse(phoneNumber.NumberToParse, phoneNumber.DefaultRegion).CountryCode;
+            }
+
+            return checksum;
+        }
+
+        /// <summary>
+        /// With an extension, so the extension pattern matches rather than failing. A successful match
+        /// on that alternation is by far the most expensive thing a parse can do.
+        /// </summary>
+        [Benchmark]
+        public int ParseWithExtension()
+        {
+            var checksum = 0;
+            for (var i = 0; i < _withExtension.Length; i++)
+            {
+                var phoneNumber = _withExtension[i];
                 checksum += _phoneNumberUtil
                     .Parse(phoneNumber.NumberToParse, phoneNumber.DefaultRegion).CountryCode;
             }
