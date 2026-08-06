@@ -60,6 +60,15 @@ namespace PhoneNumbers
         public string Replace(string value, string replacement) => regex.Value.Replace(value, replacement);
 
         public bool IsMatchAll(string value) => allRegex.Value.IsMatch(value);
+
+#if NET7_0_OR_GREATER
+        /// <summary>
+        /// Lets callers test a slice without materialising it. Internal because a public member here
+        /// would exist on the net8.0 and net10.0 assets but not on netstandard2.0. At a major version
+        /// the string overloads should become span overloads outright - see issue #375.
+        /// </summary>
+        internal bool IsMatchAll(ReadOnlySpan<char> value) => allRegex.Value.IsMatch(value);
+#endif
         public Match MatchAll(string value) => allRegex.Value.Match(value);
 
         public bool IsMatchBeginning(string value) => beginRegex.Value.IsMatch(value);
