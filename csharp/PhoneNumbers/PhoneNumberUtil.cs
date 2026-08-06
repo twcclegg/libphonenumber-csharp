@@ -2540,7 +2540,7 @@ namespace PhoneNumbers
                 {
                     // If the original number was viable, and the resultant number is not, we return.
                     if (isViableOriginalNumber &&
-                        !nationalNumberRule.IsMatchAll(numberString.Substring(prefixMatch.Length)))
+                        !IsMatchAllFrom(nationalNumberRule, numberString, prefixMatch.Length))
                         return false;
                     if (getCarrier && numOfGroups > 1 && prefixMatch.Groups[numOfGroups - 1].Success)
                         carrierCode = prefixMatch.Groups[1].Value;
@@ -2572,12 +2572,32 @@ namespace PhoneNumbers
         /// <param name="number">The non-normalized telephone number that we wish to strip the extension from.</param>
         /// <param name="numberString">The same number as a string</param>
         /// <returns>The phone extension.</returns>
+        /// <summary>
+        /// Whether the rule matches everything from <paramref name="start"/> onwards. Both of these
+        /// only ever fed a slice to a regex, so on targets with span matching the slice never becomes
+        /// a string.
+        /// </summary>
+        private static bool IsMatchAllFrom(PhoneRegex rule, string value, int start) =>
+#if NET7_0_OR_GREATER
+            rule.IsMatchAll(value.AsSpan(start));
+#else
+            rule.IsMatchAll(value.Substring(start));
+#endif
+
+        /// <summary>Whether the first <paramref name="length"/> characters look like a phone number.</summary>
+        private static bool IsViablePhoneNumberPrefix(string number, int length) =>
+#if NET7_0_OR_GREATER
+            length >= MIN_LENGTH_FOR_NSN && ValidPhoneNumber().IsMatch(number.AsSpan(0, length));
+#else
+            IsViablePhoneNumber(number.Substring(0, length));
+#endif
+
         static string MaybeStripExtension(StringBuilder number, string numberString)
         {
             var m = ExtnPattern().Match(numberString);
             // If we find a potential extension, and the number preceding this is a viable number, we assume
             // it is an extension.
-            if (m.Success && IsViablePhoneNumber(numberString.Substring(0, m.Index)))
+            if (m.Success && IsViablePhoneNumberPrefix(numberString, m.Index))
             {
                 // The numbers are captured into groups in the regular expression.
                 for (int i = 1, length = m.Groups.Count; i < length; i++)
