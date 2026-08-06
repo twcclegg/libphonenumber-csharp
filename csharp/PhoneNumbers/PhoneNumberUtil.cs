@@ -678,6 +678,26 @@ namespace PhoneNumbers
             return ValidPhoneNumber().IsMatch(number);
         }
 
+        /// <summary>
+        /// Whether the rule matches everything from <paramref name="start"/> onwards. Both of these
+        /// only ever fed a slice to a regex, so on targets with span matching the slice never becomes
+        /// a string.
+        /// </summary>
+        private static bool IsMatchAllFrom(PhoneRegex rule, string value, int start) =>
+#if NET7_0_OR_GREATER
+            rule.IsMatchAll(value.AsSpan(start));
+#else
+            rule.IsMatchAll(value.Substring(start));
+#endif
+
+        /// <summary>Whether the first <paramref name="length"/> characters look like a phone number.</summary>
+        private static bool IsViablePhoneNumberPrefix(string number, int length) =>
+#if NET7_0_OR_GREATER
+            length >= MIN_LENGTH_FOR_NSN && ValidPhoneNumber().IsMatch(number.AsSpan(0, length));
+#else
+            IsViablePhoneNumber(number.Substring(0, length));
+#endif
+
         private static void Normalize(StringBuilder number)
         {
             if (IsValidAlphaPhone(number))
@@ -2572,26 +2592,6 @@ namespace PhoneNumbers
         /// <param name="number">The non-normalized telephone number that we wish to strip the extension from.</param>
         /// <param name="numberString">The same number as a string</param>
         /// <returns>The phone extension.</returns>
-        /// <summary>
-        /// Whether the rule matches everything from <paramref name="start"/> onwards. Both of these
-        /// only ever fed a slice to a regex, so on targets with span matching the slice never becomes
-        /// a string.
-        /// </summary>
-        private static bool IsMatchAllFrom(PhoneRegex rule, string value, int start) =>
-#if NET7_0_OR_GREATER
-            rule.IsMatchAll(value.AsSpan(start));
-#else
-            rule.IsMatchAll(value.Substring(start));
-#endif
-
-        /// <summary>Whether the first <paramref name="length"/> characters look like a phone number.</summary>
-        private static bool IsViablePhoneNumberPrefix(string number, int length) =>
-#if NET7_0_OR_GREATER
-            length >= MIN_LENGTH_FOR_NSN && ValidPhoneNumber().IsMatch(number.AsSpan(0, length));
-#else
-            IsViablePhoneNumber(number.Substring(0, length));
-#endif
-
         static string MaybeStripExtension(StringBuilder number, string numberString)
         {
             var m = ExtnPattern().Match(numberString);
