@@ -82,7 +82,7 @@
     BuildMetadataBuilder runs the MetadataBuilder project's Build target via the in-process
     <MSBuild> task. Two reasons we do NOT shell out to `dotnet run` instead:
       1. `dotnet run` builds-then-runs in a separate process, and MSBuild cannot coordinate two
-         concurrent invocations. When `dotnet build PhoneNumbers.sln` builds PhoneNumbers and
+         concurrent invocations. When `dotnet build PhoneNumbers.slnx` builds PhoneNumbers and
          PhoneNumbers.Test in parallel, both projects' outer cross-targeting builds would each
          spawn that command targeting MetadataBuilder, racing on MetadataBuilder's own obj
          folder (CS2012 on refint/PhoneNumbers.MetadataBuilder.dll).

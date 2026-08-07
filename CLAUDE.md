@@ -42,9 +42,9 @@ Build / test:
 dotnet restore csharp
 dotnet build csharp --no-restore
 # Full test matrix:
-dotnet test csharp/PhoneNumbers.sln
+dotnet test csharp/PhoneNumbers.slnx
 # Faster: net10.0 only (matches the Linux PR check):
-dotnet test csharp/PhoneNumbers.sln -p:TargetFrameworks=net10.0
+dotnet test csharp/PhoneNumbers.slnx -p:TargetFrameworks=net10.0
 ```
 
 Run a single test (xUnit filter syntax):

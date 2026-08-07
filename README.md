@@ -183,10 +183,10 @@ For more information on metadata usage, please refer to the [main repository faq
 
 ```bash
 # Every project, every target framework.
-dotnet test csharp/PhoneNumbers.sln
+dotnet test csharp/PhoneNumbers.slnx
 
 # Faster, and what the pull request check runs.
-dotnet test csharp/PhoneNumbers.sln -p:TargetFrameworks=net10.0
+dotnet test csharp/PhoneNumbers.slnx -p:TargetFrameworks=net10.0
 ```
 
 The binary metadata the library reads at run time is generated during the build, so a plain
