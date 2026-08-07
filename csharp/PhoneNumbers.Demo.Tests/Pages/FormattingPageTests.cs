@@ -4,12 +4,12 @@ using Xunit;
 
 namespace PhoneNumbers.Demo.Tests.Pages;
 
-public class FormattingPageTests : TestContext
+public class FormattingPageTests : BunitContext
 {
     [Fact]
     public void shows_all_four_standard_formats_on_init()
     {
-        var cut = RenderComponent<Formatting>();
+        var cut = Render<Formatting>();
 
         var formatNames = cut.FindAll(".format-list__name").Select(n => n.TextContent.Trim()).ToList();
         Assert.Contains("E.164", formatNames);
@@ -21,7 +21,7 @@ public class FormattingPageTests : TestContext
     [Fact]
     public void shows_e164_format_value_for_prepopulated_us_number()
     {
-        var cut = RenderComponent<Formatting>();
+        var cut = Render<Formatting>();
 
         var items = cut.FindAll(".format-list__item");
         var e164Item = items.FirstOrDefault(i => i.QuerySelector(".format-list__name")?.TextContent.Trim() == "E.164");
@@ -32,7 +32,7 @@ public class FormattingPageTests : TestContext
     [Fact]
     public void shows_contextual_formats_section()
     {
-        var cut = RenderComponent<Formatting>();
+        var cut = Render<Formatting>();
 
         var cardTitles = cut.FindAll(".card__title").Select(t => t.TextContent.Trim()).ToList();
         Assert.Contains("Contextual Formats", cardTitles);
@@ -41,7 +41,7 @@ public class FormattingPageTests : TestContext
     [Fact]
     public void shows_out_of_country_and_mobile_dialing_formats()
     {
-        var cut = RenderComponent<Formatting>();
+        var cut = Render<Formatting>();
 
         var formatNames = cut.FindAll(".format-list__name").Select(n => n.TextContent.Trim()).ToList();
         Assert.Contains("Out-of-Country", formatNames);
@@ -51,7 +51,7 @@ public class FormattingPageTests : TestContext
     [Fact]
     public void shows_error_for_unparseable_input()
     {
-        var cut = RenderComponent<Formatting>();
+        var cut = Render<Formatting>();
 
         cut.Find("#format-phone").Input("INVALID");
 
@@ -61,7 +61,7 @@ public class FormattingPageTests : TestContext
     [Fact]
     public void shows_empty_state_when_input_cleared()
     {
-        var cut = RenderComponent<Formatting>();
+        var cut = Render<Formatting>();
 
         cut.Find("#format-phone").Input("");
 
@@ -72,7 +72,7 @@ public class FormattingPageTests : TestContext
     [Fact]
     public void shows_national_significant_number_in_other_properties()
     {
-        var cut = RenderComponent<Formatting>();
+        var cut = Render<Formatting>();
 
         var formatNames = cut.FindAll(".format-list__name").Select(n => n.TextContent.Trim()).ToList();
         Assert.Contains("National Significant", formatNames);
@@ -82,7 +82,7 @@ public class FormattingPageTests : TestContext
     [Fact]
     public void changing_phone_number_updates_all_formats()
     {
-        var cut = RenderComponent<Formatting>();
+        var cut = Render<Formatting>();
 
         cut.Find("#format-phone").Input("+44 20 7946 0958");
 

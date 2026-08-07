@@ -6,7 +6,7 @@ using Xunit;
 
 namespace PhoneNumbers.Demo.Tests;
 
-public class UrlStateTests : TestContext
+public class UrlStateTests : BunitContext
 {
     private NavigationManager Nav => Services.GetRequiredService<NavigationManager>();
 
