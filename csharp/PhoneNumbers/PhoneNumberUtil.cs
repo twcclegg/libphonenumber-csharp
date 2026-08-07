@@ -2544,6 +2544,25 @@ namespace PhoneNumbers
             }
             // Attempt to parse the first digits as a national prefix.
             numberString ??= number.ToString();
+
+            // Whether the groups are needed at all is known before matching: only a transform rule or
+            // a requested carrier code reads them. Without either, the length of the prefix is the
+            // only thing this method uses, and that can be had without materialising a Match.
+            if (string.IsNullOrEmpty(metadata.NationalPrefixTransformRule) && !getCarrier)
+            {
+                var prefixLength = metadata.MatchNationalPrefixLengthForParsing(numberString);
+                if (prefixLength < 0)
+                    return false;
+
+                var rule = metadata.GeneralDesc.GetNationalNumberPattern();
+                // If the original number was viable, and the resultant number is not, we return.
+                if (rule.IsMatchAll(numberString) && !IsMatchAllFrom(rule, numberString, prefixLength))
+                    return false;
+
+                number?.Remove(0, prefixLength);
+                return true;
+            }
+
             var prefixMatch = metadata.MatchNationalPrefixForParsing(numberString);
             if (prefixMatch?.Success == true)
             {

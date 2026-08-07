@@ -72,6 +72,19 @@ namespace PhoneNumbers
         public Match MatchAll(string value) => allRegex.Value.Match(value);
 
         public bool IsMatchBeginning(string value) => beginRegex.Value.IsMatch(value);
+
+#if NET7_0_OR_GREATER
+        /// <summary>
+        /// Length of the match anchored at the start, or -1 if there is none. EnumerateMatches yields
+        /// a ValueMatch struct, so a caller that only needs the length never materialises a Match.
+        /// </summary>
+        internal int MatchBeginningLength(ReadOnlySpan<char> value)
+        {
+            foreach (var match in beginRegex.Value.EnumerateMatches(value))
+                return match.Length;
+            return -1;
+        }
+#endif
         public Match MatchBeginning(string value) => beginRegex.Value.Match(value);
     }
 }

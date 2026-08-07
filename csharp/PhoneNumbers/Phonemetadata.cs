@@ -136,6 +136,30 @@ namespace PhoneNumbers
             return PhoneRegex.Get(NationalPrefixForParsing).MatchBeginning(value);
         }
 
+        /// <summary>
+        /// How many characters of the national prefix <paramref name="value"/> starts with, or -1 if
+        /// it does not start with one. Callers that only need to know how much to strip use this so
+        /// no Match is materialised; the groups are only needed for a transform rule or carrier code.
+        /// </summary>
+        internal int MatchNationalPrefixLengthForParsing(string value)
+        {
+            if (_nationalPrefixForParsingLiteral == 0)
+                _nationalPrefixForParsingLiteral = (sbyte)(Regex.Escape(NationalPrefixForParsing) == NationalPrefixForParsing ? 1 : -1);
+
+            // A literal prefix matches itself, so its length is known without running the regex.
+            if (_nationalPrefixForParsingLiteral > 0)
+                return value.StartsWith(NationalPrefixForParsing, StringComparison.Ordinal)
+                    ? NationalPrefixForParsing.Length
+                    : -1;
+
+#if NET7_0_OR_GREATER
+            return PhoneRegex.Get(NationalPrefixForParsing).MatchBeginningLength(value.AsSpan());
+#else
+            var match = PhoneRegex.Get(NationalPrefixForParsing).MatchBeginning(value);
+            return match.Success ? match.Length : -1;
+#endif
+        }
+
         public bool HasNationalPrefixTransformRule => NationalPrefixTransformRule?.Length > 0;
         public string NationalPrefixTransformRule { get; internal set; } = "";
 
