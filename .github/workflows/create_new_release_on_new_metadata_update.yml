@@ -24,16 +24,19 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 
-# Elevated above the read-only default because the update script pushes a commit
-# and creates a GitHub release via GITHUB_TOKEN. actions: write lets it dispatch
-# publish_nuget.yml, which the release's own push event cannot trigger.
 permissions:
-  contents: write
-  actions: write
+  contents: read
 
 jobs:
   create_new_release_on_new_metadata_update:
     runs-on: ubuntu-latest
+    # Elevated above the read-only default at the job rather than the file level, so a
+    # workflow-wide write token is never minted. The update script pushes a commit and
+    # creates a GitHub release via GITHUB_TOKEN; actions: write lets it dispatch
+    # publish_nuget.yml, which the release's own push event cannot trigger.
+    permissions:
+      contents: write
+      actions: write
     steps:
       # Credentials are persisted on purpose: the update script pushes through this checkout.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
