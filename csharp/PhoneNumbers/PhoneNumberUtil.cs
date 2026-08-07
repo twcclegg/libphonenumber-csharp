@@ -2378,6 +2378,38 @@ namespace PhoneNumbers
         // The fullNumber buffer is always mutated (Normalize is unconditional, and any leading '+' or
         // IDD prefix is stripped) — this is true even on the return-0 / no-country-code path. Callers
         // that need the original content untouched must pass a copy.
+        /// <summary>Number of decimal digits in a non-negative value.</summary>
+        private static int DecimalDigitCount(int value)
+        {
+            var digits = 1;
+            while (value >= 10)
+            {
+                value /= 10;
+                digits++;
+            }
+
+            return digits;
+        }
+
+        /// <summary>
+        /// Whether the buffer begins with the decimal digits of <paramref name="countryCode"/>, without
+        /// rendering either side to a string. Equivalent to an ordinal StartsWith on the two.
+        /// </summary>
+        private static bool StartsWithCountryCode(StringBuilder number, int countryCode, int digits)
+        {
+            if (number.Length < digits)
+                return false;
+
+            for (var i = digits - 1; i >= 0; i--)
+            {
+                if (number[i] != (char)('0' + countryCode % 10))
+                    return false;
+                countryCode /= 10;
+            }
+
+            return true;
+        }
+
         private int MaybeExtractCountryCode(StringBuilder fullNumber, PhoneMetadata defaultRegionMetadata,
             StringBuilder nationalNumber, bool keepRawInput, PhoneNumber phoneNumber)
         {
@@ -2422,11 +2454,14 @@ namespace PhoneNumbers
                 // so, we remove the country calling code, and do some checks on the validity of the number
                 // before and after.
                 var defaultCountryCode = defaultRegionMetadata.CountryCode;
-                var defaultCountryCodeString = defaultCountryCode.ToString(CultureInfo.InvariantCulture);
-                var normalizedNumber = fullNumber.ToString();
-                if (normalizedNumber.StartsWith(defaultCountryCodeString, StringComparison.Ordinal))
+                var countryCodeDigits = DecimalDigitCount(defaultCountryCode);
+                // Only a number that actually carries the country calling code needs either side
+                // rendered to a string; one already in national format does not, and both were
+                // being allocated just to be discarded by the test below.
+                if (StartsWithCountryCode(fullNumber, defaultCountryCode, countryCodeDigits))
                 {
-                    var potentialNationalNumberString = normalizedNumber.Substring(defaultCountryCodeString.Length);
+                    var normalizedNumber = fullNumber.ToString();
+                    var potentialNationalNumberString = normalizedNumber.Substring(countryCodeDigits);
                     // Use a separate buffer for the strip-CC trial so callers that share fullNumber as
                     // their workspace are not corrupted when this branch decides not to commit.
                     var potentialNationalNumber = new StringBuilder(potentialNationalNumberString);
