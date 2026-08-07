@@ -4,12 +4,12 @@ using Xunit;
 
 namespace PhoneNumbers.Demo.Tests.Pages;
 
-public class FindNumbersPageTests : TestContext
+public class FindNumbersPageTests : BunitContext
 {
     [Fact]
     public void shows_no_results_when_text_is_empty()
     {
-        var cut = RenderComponent<FindNumbers>();
+        var cut = Render<FindNumbers>();
 
         Assert.Empty(cut.FindAll(".match-list__item"));
         Assert.Empty(cut.FindAll(".empty-state__message"));
@@ -18,7 +18,7 @@ public class FindNumbersPageTests : TestContext
     [Fact]
     public void shows_empty_state_when_text_has_no_phone_numbers()
     {
-        var cut = RenderComponent<FindNumbers>();
+        var cut = Render<FindNumbers>();
 
         cut.Find("#find-text").Input("Hello world, no numbers here.");
 
@@ -29,7 +29,7 @@ public class FindNumbersPageTests : TestContext
     [Fact]
     public void finds_international_number_in_text()
     {
-        var cut = RenderComponent<FindNumbers>();
+        var cut = Render<FindNumbers>();
 
         cut.Find("#find-text").Input("Call us at +1 650 253 0000 for support.");
 
@@ -40,7 +40,7 @@ public class FindNumbersPageTests : TestContext
     [Fact]
     public void shows_raw_matched_string_for_each_found_number()
     {
-        var cut = RenderComponent<FindNumbers>();
+        var cut = Render<FindNumbers>();
 
         cut.Find("#find-text").Input("Call +1 650 253 0000 today.");
 
@@ -51,7 +51,7 @@ public class FindNumbersPageTests : TestContext
     [Fact]
     public void shows_correct_count_heading_for_single_match()
     {
-        var cut = RenderComponent<FindNumbers>();
+        var cut = Render<FindNumbers>();
 
         cut.Find("#find-text").Input("Call +1 650 253 0000.");
 
@@ -62,7 +62,7 @@ public class FindNumbersPageTests : TestContext
     [Fact]
     public void shows_plural_count_for_multiple_matches()
     {
-        var cut = RenderComponent<FindNumbers>();
+        var cut = Render<FindNumbers>();
 
         cut.Find("#find-text").Input("Call +1 650 253 0000 or +44 20 7946 0958.");
 
@@ -73,7 +73,7 @@ public class FindNumbersPageTests : TestContext
     [Fact]
     public void shows_valid_badge_for_valid_found_number()
     {
-        var cut = RenderComponent<FindNumbers>();
+        var cut = Render<FindNumbers>();
 
         cut.Find("#find-text").Input("Call +1 650 253 0000.");
 
@@ -83,7 +83,7 @@ public class FindNumbersPageTests : TestContext
     [Fact]
     public void shows_position_metadata_for_each_match()
     {
-        var cut = RenderComponent<FindNumbers>();
+        var cut = Render<FindNumbers>();
 
         cut.Find("#find-text").Input("Call +1 650 253 0000 today.");
 
@@ -94,7 +94,7 @@ public class FindNumbersPageTests : TestContext
     [Fact]
     public void load_sample_button_populates_text_and_finds_numbers()
     {
-        var cut = RenderComponent<FindNumbers>();
+        var cut = Render<FindNumbers>();
 
         cut.Find("button").Click();
 
@@ -105,7 +105,7 @@ public class FindNumbersPageTests : TestContext
     [Fact]
     public void clear_button_removes_text_and_results()
     {
-        var cut = RenderComponent<FindNumbers>();
+        var cut = Render<FindNumbers>();
 
         cut.Find("button").Click(); // Load sample
         var buttons = cut.FindAll("button");

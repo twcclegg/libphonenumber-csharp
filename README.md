@@ -154,7 +154,7 @@ For more information on metadata usage, please refer to the [main repository faq
 ## Running tests locally
 
 ```bash
-dotnet test csharp/PhoneNumbers.sln
+dotnet test csharp/PhoneNumbers.slnx
 ```
 
 ## Metadata updates

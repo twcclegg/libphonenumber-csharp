@@ -7,7 +7,7 @@ using Xunit;
 
 namespace PhoneNumbers.Demo.Tests.Pages;
 
-public class HomePageTests : TestContext
+public class HomePageTests : BunitContext
 {
     [Fact]
     public void prepopulates_number_and_region_from_url_query()
@@ -15,7 +15,7 @@ public class HomePageTests : TestContext
         var nav = Services.GetRequiredService<NavigationManager>();
         nav.NavigateTo("/?n=%2B44%2020%207946%200958&r=GB");
 
-        var cut = RenderComponent<Home>();
+        var cut = Render<Home>();
 
         var values = cut.FindAll(".result-grid__value--mono");
         Assert.Contains(values, v => v.TextContent.Contains("+442079460958"));
@@ -24,7 +24,7 @@ public class HomePageTests : TestContext
     [Fact]
     public void shows_valid_badge_for_prepopulated_us_number()
     {
-        var cut = RenderComponent<Home>();
+        var cut = Render<Home>();
 
         var badge = cut.Find(".badge--success");
         Assert.Equal("Valid", badge.TextContent.Trim());
@@ -33,7 +33,7 @@ public class HomePageTests : TestContext
     [Fact]
     public void shows_e164_format_for_prepopulated_us_number()
     {
-        var cut = RenderComponent<Home>();
+        var cut = Render<Home>();
 
         var values = cut.FindAll(".result-grid__value--mono");
         Assert.Contains(values, v => v.TextContent.Contains("+16502530000"));
@@ -42,7 +42,7 @@ public class HomePageTests : TestContext
     [Fact]
     public void shows_five_feature_cards()
     {
-        var cut = RenderComponent<Home>();
+        var cut = Render<Home>();
 
         var cards = cut.FindAll(".feature-grid__card");
         Assert.Equal(5, cards.Count);
@@ -51,7 +51,7 @@ public class HomePageTests : TestContext
     [Fact]
     public void shows_region_count_greater_than_zero()
     {
-        var cut = RenderComponent<Home>();
+        var cut = Render<Home>();
 
         var badge = cut.Find(".hero__badge:nth-child(2)");
         var text = badge.TextContent.Trim();
@@ -62,7 +62,7 @@ public class HomePageTests : TestContext
     [Fact]
     public void shows_error_message_for_unparseable_input()
     {
-        var cut = RenderComponent<Home>();
+        var cut = Render<Home>();
 
         cut.Find("#home-phone").Input("NOTAPHONE");
 
@@ -72,7 +72,7 @@ public class HomePageTests : TestContext
     [Fact]
     public void hides_results_when_input_is_cleared()
     {
-        var cut = RenderComponent<Home>();
+        var cut = Render<Home>();
 
         cut.Find("#home-phone").Input("");
 
@@ -83,7 +83,7 @@ public class HomePageTests : TestContext
     [Fact]
     public void shows_invalid_badge_for_structurally_wrong_number()
     {
-        var cut = RenderComponent<Home>();
+        var cut = Render<Home>();
 
         // A parseable but invalid number (too short)
         cut.Find("#home-phone").Input("+1 555");
@@ -95,7 +95,7 @@ public class HomePageTests : TestContext
     [Fact]
     public void shows_number_type_badge_for_valid_number()
     {
-        var cut = RenderComponent<Home>();
+        var cut = Render<Home>();
 
         cut.Find(".badge--info");
     }
@@ -103,7 +103,7 @@ public class HomePageTests : TestContext
     [Fact]
     public void changing_region_rerenders_results()
     {
-        var cut = RenderComponent<Home>();
+        var cut = Render<Home>();
 
         cut.Find("#home-phone").Input("0412 345 678");
         cut.Find("#home-region").Change("AU");
@@ -117,7 +117,7 @@ public class HomePageTests : TestContext
     public void commits_number_to_url_when_input_is_committed()
     {
         var nav = Services.GetRequiredService<NavigationManager>();
-        var cut = RenderComponent<Home>();
+        var cut = Render<Home>();
 
         // The change event represents a committed value (blur / Enter).
         cut.Find("#home-phone").Change("+44 20 7946 0958");
@@ -130,7 +130,7 @@ public class HomePageTests : TestContext
     public void typing_does_not_update_url_until_committed()
     {
         var nav = Services.GetRequiredService<NavigationManager>();
-        var cut = RenderComponent<Home>();
+        var cut = Render<Home>();
         var urlBeforeTyping = nav.Uri;
 
         // Raw keystrokes (input event) must not trigger navigation — only a commit does.
@@ -142,7 +142,7 @@ public class HomePageTests : TestContext
     [Fact]
     public void feature_card_titles_are_present()
     {
-        var cut = RenderComponent<Home>();
+        var cut = Render<Home>();
 
         var titles = cut.FindAll(".feature-grid__card-title").Select(t => t.TextContent.Trim()).ToList();
         Assert.Contains("Parse & Validate", titles);

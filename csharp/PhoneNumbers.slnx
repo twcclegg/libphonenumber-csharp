@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="PhoneNumbers/PhoneNumbers.csproj" />
+  <Project Path="PhoneNumbers.Test/PhoneNumbers.Test.csproj" />
+  <Project Path="PhoneNumbers.Extensions/PhoneNumbers.Extensions.csproj" />
+  <Project Path="PhoneNumbers.Extensions.Test/PhoneNumbers.Extensions.Test.csproj" />
+  <Project Path="PhoneNumbers.MetadataBuilder/PhoneNumbers.MetadataBuilder.csproj" />
+</Solution>
