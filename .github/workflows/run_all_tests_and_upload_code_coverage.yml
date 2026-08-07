@@ -37,7 +37,7 @@ jobs:
           restore-keys: |
             nuget-${{ runner.os }}-${{ runner.arch }}-
       - name: Run tests
-        run: dotnet test csharp/PhoneNumbers.sln --configuration Release --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
+        run: dotnet test csharp/PhoneNumbers.slnx --configuration Release --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         with:
