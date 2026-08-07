@@ -2553,9 +2553,13 @@ namespace PhoneNumbers
                 // prefixMatcher.group(numOfGroups) == null implies nothing was captured by the capturing
                 // groups in possibleNationalPrefix; therefore, no transformation is necessary, and we just
                 // remove the national prefix.
-                var numOfGroups = prefixMatch.Groups.Count;
                 var transformRule = metadata.NationalPrefixTransformRule;
-                if (string.IsNullOrEmpty(transformRule) ||
+                var hasTransformRule = !string.IsNullOrEmpty(transformRule);
+                // Reaching for Groups materialises a GroupCollection plus a Group per access, so
+                // only do it when the transform rule or a carrier code actually needs one. Both
+                // conditions below short-circuit before touching it otherwise.
+                var numOfGroups = hasTransformRule || getCarrier ? prefixMatch.Groups.Count : 0;
+                if (!hasTransformRule ||
                     !prefixMatch.Groups[numOfGroups - 1].Success)
                 {
                     // If the original number was viable, and the resultant number is not, we return.
@@ -2848,7 +2852,7 @@ namespace PhoneNumbers
                     "The string supplied is too short to be a phone number.");
 
             var normalizedNationalNumberString = normalizedNationalNumber.ToString();
-            if (regionMetadata != null && MaybeStripNationalPrefixAndCarrierCode(normalizedNationalNumber, normalizedNationalNumberString, regionMetadata, true, out var carrierCode))
+            if (regionMetadata != null && MaybeStripNationalPrefixAndCarrierCode(normalizedNationalNumber, normalizedNationalNumberString, regionMetadata, keepRawInput, out var carrierCode))
             {
                 // We require that the NSN remaining after stripping the national prefix and carrier code be
                 // long enough to be a possible length for the region. Otherwise, we don't do the stripping,
