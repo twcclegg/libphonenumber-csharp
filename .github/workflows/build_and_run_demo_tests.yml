@@ -34,8 +34,10 @@ jobs:
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v5
         with:
           dotnet-version: 10.x
+      # --locked-mode fails the restore rather than silently resolving a different transitive
+      # version than packages.lock.json records.
       - name: Restore dependencies
-        run: dotnet restore PhoneNumbers.Demo.Tests/PhoneNumbers.Demo.Tests.csproj
+        run: dotnet restore PhoneNumbers.Demo.Tests/PhoneNumbers.Demo.Tests.csproj --locked-mode
         working-directory: ./csharp
       - name: Build
         run: dotnet build PhoneNumbers.Demo.Tests/PhoneNumbers.Demo.Tests.csproj --no-restore
