@@ -4,13 +4,13 @@ using Xunit;
 
 namespace PhoneNumbers.Demo.Tests.Pages;
 
-public class GeoTimezonePageTests : TestContext
+public class GeoTimezonePageTests : BunitContext
 {
     // The component defers geocoder/timezone/carrier init via Task.Yield() so bUnit
     // needs to wait for the loading state to clear before asserting on results.
-    private static IRenderedComponent<GeoTimezone> RenderAndWaitForLoad(TestContext ctx)
+    private static IRenderedComponent<GeoTimezone> RenderAndWaitForLoad(BunitContext ctx)
     {
-        var cut = ctx.RenderComponent<GeoTimezone>();
+        var cut = ctx.Render<GeoTimezone>();
         cut.WaitForState(() => !cut.Markup.Contains("Loading geocoding data"), TimeSpan.FromSeconds(15));
         return cut;
     }
