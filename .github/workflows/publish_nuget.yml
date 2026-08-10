@@ -63,7 +63,7 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: nuget-packages
-          path: artifacts/*.nupkg
+          path: artifacts/*.*nupkg
           if-no-files-found: error
 
       - name: NuGet login
@@ -73,6 +73,7 @@ jobs:
           user: twcclegg
 
       # --skip-duplicate so a re-run after a partial failure pushes only what is missing.
+      # The matching .snupkg next to each .nupkg is pushed with it; --no-symbols would skip it.
       - name: Push to nuget.org
         env:
           NUGET_API_KEY: ${{ steps.nuget_login.outputs.NUGET_API_KEY }}

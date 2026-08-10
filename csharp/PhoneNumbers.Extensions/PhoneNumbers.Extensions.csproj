@@ -11,7 +11,6 @@
         <TargetFrameworks>netstandard2.0;net8.0;net10.0</TargetFrameworks>
         <PackageTags>phonenumber phone libphonenumber e164 e.164 international extensions</PackageTags>
         <PackageIcon>icon.png</PackageIcon>
-        <DebugType>embedded</DebugType>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <!-- Baseline deferred; see the note in PhoneNumbers.csproj. -->
         <EnablePackageValidation>true</EnablePackageValidation>
