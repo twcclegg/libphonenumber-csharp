@@ -15,6 +15,22 @@ Original Java code is Copyright (C) 2009-2022 Google Inc.
 `PhoneNumbers.Test/`
   Port of libphonenumber Java tests in xunit format.
 
+`PhoneNumbers.Extensions/`
+  C#-idiomatic helpers with no Java counterpart, shipped as a separate package.
+
+`PhoneNumbers.Extensions.Test/`
+  Tests for the above.
+
+`PhoneNumbers.MetadataBuilder/`
+  Build-time tool that converts the XML metadata and the geocoding, carrier and timezone
+  text files into the per-region binary files the library embeds.
+
+`PhoneNumbers.PerformanceTest/`
+  BenchmarkDotNet harness.
+
+`PhoneNumbers.Demo/` and `PhoneNumbers.Demo.Tests/`
+  Blazor WebAssembly demo deployed to GitHub Pages, and its bUnit tests.
+
 
 Known Issues
 ------------

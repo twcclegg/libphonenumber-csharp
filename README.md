@@ -26,6 +26,18 @@ dotnet add package libphonenumber-csharp
 
 Available on NuGet as package [`libphonenumber-csharp`](https://www.nuget.org/packages/libphonenumber-csharp).
 
+Targets `netstandard2.0`, `net8.0` and `net10.0`.
+
+[`libphonenumber-csharp.extensions`](https://www.nuget.org/packages/libphonenumber-csharp.extensions) is an optional companion package with helpers that suit C# better than the ported Java API — `PhoneNumber.TryParse` and `PhoneNumber.TryParseValid` return a `bool` instead of throwing, and `PhoneNumberConverter` is a `System.Text.Json` converter for `PhoneNumber`.
+
+### Trimming and Native AOT
+
+The library is annotated as trim- and AOT-compatible, and the trim/AOT analyzers run as part of its own build. All metadata — including the geocoding, carrier and time zone prefix maps — is compiled to a binary form at build time and embedded in the assembly as compressed resources, so no XML is parsed and no file is read from disk at run time. The [interactive demo](https://twcclegg.github.io/libphonenumber-csharp/) is a Blazor WebAssembly app that runs this library trimmed, in the browser.
+
+### Debugging and symbols
+
+Symbols are published to the NuGet.org symbol server as a `.snupkg` alongside each release, with [Source Link](https://learn.microsoft.com/dotnet/standard/library-guidance/sourcelink) wired up — enable symbol server support in your debugger to step into the library.
+
 ## Examples
 
 ### Parsing a phone number
@@ -89,6 +101,20 @@ var regionCode = phoneNumberUtil.GetRegionCodeForNumber(phoneNumber);
 Console.WriteLine(regionCode); // US
 ```
 
+### Get the location of a phone number
+```csharp
+using PhoneNumbers;
+
+var phoneNumberUtil = PhoneNumberUtil.GetInstance();
+var geocoder = PhoneNumberOfflineGeocoder.GetInstance();
+var phoneNumber = phoneNumberUtil.Parse("+12128120000", null);
+var description = geocoder.GetDescriptionForNumber(phoneNumber, Locale.English);
+
+Console.WriteLine(description); // New York, NY
+```
+
+The lookup is entirely offline. Detail varies by region — some yield a city, others only a state or the country name — and non-geographic or invalid numbers return the country name or an empty string. Pass a user region to omit it from the description for local numbers, or use `GetDescriptionForValidNumber` to skip the internal validity check.
+
 ### Get the time zones for a phone number
 ```csharp
 using PhoneNumbers;
@@ -129,6 +155,8 @@ Console.WriteLine(carrierName); // Aircel
 * AsYouTypeFormatter - formats phone numbers on-the-fly when users enter each digit.
 * FindNumbers - finds numbers in text input
 * PhoneNumberToCarrierMapper - looks up the carrier name originally assigned to a mobile or pager number, with locale-aware output and a safe-display mode for regions with mobile number portability.
+* PhoneNumberOfflineGeocoder - describes where a number is from, in a requested language, without a network call.
+* PhoneNumberToTimeZonesMapper - maps a number to its IANA time zone identifiers.
 
 See [PhoneNumberUtil.cs](csharp/PhoneNumbers/PhoneNumberUtil.cs) for the various methods and properties available.
 
@@ -154,8 +182,16 @@ For more information on metadata usage, please refer to the [main repository faq
 ## Running tests locally
 
 ```bash
+# Every project, every target framework.
 dotnet test csharp/PhoneNumbers.sln
+
+# Faster, and what the pull request check runs.
+dotnet test csharp/PhoneNumbers.sln -p:TargetFrameworks=net10.0
 ```
+
+The binary metadata the library reads at run time is generated during the build, so a plain
+`dotnet build` is all that is needed first — there is no separate generation step.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the build settings that will fail CI if missed.
 
 ## Metadata updates
 

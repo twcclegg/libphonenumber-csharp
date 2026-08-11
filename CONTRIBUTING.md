@@ -30,3 +30,21 @@ We use and recommend the following workflow:
     - The next official build will automatically include your change.
 
 Essentially, we are following trunk based development
+
+### Building and testing
+
+```bash
+dotnet restore csharp
+dotnet build csharp --no-restore
+dotnet test csharp/PhoneNumbers.sln -p:TargetFrameworks=net10.0   # what the PR check runs
+```
+
+A few things that will fail the build or CI if missed:
+
+* **Warnings are errors.** `TreatWarningsAsErrors` is on for every project, including the trim and AOT analyzers on the modern targets.
+* **Package versions live in one place.** Add or change versions in `csharp/Directory.Packages.props`, never in a `PackageReference` — Central Package Management rejects an inline `Version`.
+* **Lock files are committed.** After any dependency change run `dotnet restore csharp` and commit the updated `packages.lock.json` files; CI verifies they are current.
+* **The public API is validated.** Package validation compares the packable projects' surface across target frameworks, so a member added on only one target fails the build.
+* **Some files are generated.** `LocaleData.cs` and `CountryCodeToRegionCodeMap.cs` are produced by the metadata tooling, and everything under `resources/` is copied verbatim from upstream — metadata fixes belong in [google/libphonenumber](https://github.com/google/libphonenumber), since the next automated sync overwrites local edits.
+
+Changes under `csharp/PhoneNumbers/` also trigger a benchmark run that posts a before/after comparison to the pull request. If you are changing a hot path, look at that comment rather than guessing.
