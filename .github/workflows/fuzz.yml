@@ -1,0 +1,98 @@
+name: fuzz
+
+# Coverage-guided fuzzing of the parsing surface. Not a pull request check: a useful run takes
+# minutes, and the corpus it builds up is what makes later runs find anything. See
+# csharp/PhoneNumbers.Fuzz/README.md for running the same thing locally.
+
+on:
+  schedule:
+    # Sundays, offset from the other scheduled jobs in this repo.
+    - cron: '15 4 * * 0'
+  workflow_dispatch:
+    inputs:
+      duration:
+        description: 'Seconds to fuzz for'
+        required: false
+        default: '900'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  fuzz:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 60
+    env:
+      DURATION: ${{ github.event.inputs.duration || '900' }}
+      PUBLISH_DIR: fuzz-out
+      CORPUS_DIR: csharp/PhoneNumbers.Fuzz/corpus
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: 10.x
+
+      # The bridge that lets libFuzzer drive a managed target. Built from source rather than taken
+      # from the release page: the releases are x64 and these runners are arm64.
+      - name: Build libfuzzer-dotnet
+        run: |
+          if ! command -v clang > /dev/null
+          then
+            sudo apt-get update
+            sudo apt-get install -y clang
+          fi
+          git clone --no-checkout https://github.com/Metalnem/libfuzzer-dotnet libfuzzer-dotnet-src
+          git -C libfuzzer-dotnet-src checkout bd39d4e88d715ab460a929943645be2a186cde52
+          clang -fsanitize=fuzzer libfuzzer-dotnet-src/libfuzzer-dotnet.cc -o libfuzzer-dotnet
+
+      # Findings come from the corpus growing across runs, so carry it forward. The key is unique
+      # per run because a cache entry cannot be overwritten; restore-keys picks the newest prefix
+      # match on the way in.
+      - name: Restore corpus
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: corpus-cache
+          key: fuzz-corpus-${{ github.run_id }}
+          restore-keys: |
+            fuzz-corpus-
+
+      - name: Publish the fuzz target
+        run: dotnet publish csharp/PhoneNumbers.Fuzz -c Release -o "${PUBLISH_DIR}"
+
+      # Only the library under test is instrumented: coverage of the harness, SharpFuzz or dnlib
+      # would just be noise steering the fuzzer away from PhoneNumbers.
+      - name: Instrument PhoneNumbers.dll
+        run: |
+          dotnet tool restore
+          dotnet sharpfuzz "${PUBLISH_DIR}/PhoneNumbers.dll"
+
+      - name: Fuzz
+        run: |
+          mkdir -p corpus-cache artifacts
+          cp -n "${CORPUS_DIR}"/* corpus-cache/ || true
+          ./libfuzzer-dotnet \
+            -timeout=10 \
+            -max_total_time="${DURATION}" \
+            -print_final_stats=1 \
+            -artifact_prefix=artifacts/ \
+            --target_path=dotnet \
+            --target_arg="${PUBLISH_DIR}/PhoneNumbers.Fuzz.dll" \
+            corpus-cache
+
+      # A crash fails the step above, so this runs on failure to carry the input out. Reproduce it
+      # with: dotnet fuzz-out/PhoneNumbers.Fuzz.dll <artifact>
+      - name: Upload crashes
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: fuzz-crashes
+          path: artifacts/
+          if-no-files-found: ignore

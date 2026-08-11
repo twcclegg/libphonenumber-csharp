@@ -210,3 +210,11 @@ csharp/PhoneNumbers.PerformanceTest/BenchmarkDotNet.Artifacts/
 
 # Coverage reports
 coverage/
+
+# Fuzzing scratch: the bridge, the published target, the working corpus and any crashes.
+# See csharp/PhoneNumbers.Fuzz/README.md.
+/libfuzzer-dotnet
+/libfuzzer-dotnet-src/
+/fuzz-out/
+/corpus-cache/
+/artifacts/
