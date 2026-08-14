@@ -7717,7 +7717,7 @@ CG|aa|Congo - Brazzaville
 CG|ab|*aa
 CG|ae|*aa
 CG|af|Kongo - Brazzaville
-CG|ak|*nb
+CG|ak|Kongo
 CG|am|ኮንጎ ብራዛቪል
 CG|an|*aa
 CG|ar|الكونغو - برازافيل
@@ -7730,11 +7730,11 @@ CG|be|Конга - Бразавіль
 CG|bg|Конго (Бразавил)
 CG|bh|*aa
 CG|bi|*aa
-CG|bm|*nb
+CG|bm|*ak
 CG|bn|*as
 CG|bo|*aa
 CG|br|*af
-CG|bs|*nb
+CG|bs|*ak
 CG|ca|*aa
 CG|ce|Конго - Браззавиль
 CG|ch|*aa
@@ -7754,12 +7754,12 @@ CG|en|*aa
 CG|eo|Kongolo
 CG|es|Congo
 CG|et|Kongo Vabariik
-CG|eu|*nb
+CG|eu|*ak
 CG|fa|کنگو - برازویل
 CG|ff|Konngo
 CG|fi|Kongon tasavalta
 CG|fj|*aa
-CG|fo|*nb
+CG|fo|*ak
 CG|fr|*da
 CG|fy|*da
 CG|ga|an Congó
@@ -7768,7 +7768,7 @@ CG|gl|República do Congo
 CG|gn|*aa
 CG|gu|કોંગો - બ્રાઝાવિલે
 CG|gv|*aa
-CG|ha|*nb
+CG|ha|*ak
 CG|he|קונגו - ברזאויל
 CG|hi|कांगो – ब्राज़ाविल
 CG|ho|*aa
@@ -7794,7 +7794,7 @@ CG|ji|*aa
 CG|jv|Kongo - Brassaville
 CG|ka|კონგო - ბრაზავილი
 CG|kg|*aa
-CG|ki|*nb
+CG|ki|*ak
 CG|kj|*aa
 CG|kk|Конго-Браззавиль Республикасы
 CG|kl|*aa
@@ -7809,9 +7809,9 @@ CG|kw|*aa
 CG|ky|Конго-Браззавил
 CG|la|*aa
 CG|lb|*de
-CG|lg|*nb
+CG|lg|*ak
 CG|li|*aa
-CG|ln|*nb
+CG|ln|*ak
 CG|lo|ຄອງໂກ - ບຣາຊາວິວ
 CG|lt|Kongas-Brazavilis
 CG|lu|Kongu
@@ -7845,12 +7845,12 @@ CG|or|କଙ୍ଗୋ-ବ୍ରାଜିଭିଲ୍ଲେ
 CG|os|*aa
 CG|pa|ਕਾਂਗੋ - ਬ੍ਰਾਜ਼ਾਵਿਲੇ
 CG|pi|*aa
-CG|pl|*nb
+CG|pl|*ak
 CG|ps|کانګو - بروزوییل
 CG|pt|*gl
 CG|qu|*es
 CG|rm|*es
-CG|rn|*nb
+CG|rn|*ak
 CG|ro|*aa
 CG|ru|*ce
 CG|rw|*aa
@@ -7863,8 +7863,8 @@ CG|si|කොංගො - බ්‍රසාවිල්
 CG|sk|Konžská republika
 CG|sl|*af
 CG|sm|*aa
-CG|sn|*nb
-CG|so|*nb
+CG|sn|*ak
+CG|so|*ak
 CG|sq|Kongo-Brazavilë
 CG|sr|*mk
 CG|ss|*aa
