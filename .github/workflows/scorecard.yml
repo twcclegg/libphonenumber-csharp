@@ -41,6 +41,11 @@ jobs:
         with:
           results_file: results.sarif
           results_format: sarif
+          # The default GITHUB_TOKEN cannot read classic branch-protection rules, which
+          # leaves the Branch-Protection check inconclusive. A fine-grained PAT with
+          # Administration: read lifts that. Falls back to the default token when the
+          # secret is absent so the workflow still runs, just without that one check.
+          repo_token: ${{ secrets.SCORECARD_TOKEN || github.token }}
           # Publish results to the OpenSSF API so the README badge stays current.
           # Only runs on the default-branch push / schedule events above.
           publish_results: true
