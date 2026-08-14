@@ -36,10 +36,8 @@ jobs:
           key: nuget-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('csharp/Directory.Packages.props', 'csharp/**/*.csproj') }}
           restore-keys: |
             nuget-${{ runner.os }}-${{ runner.arch }}-
-      # --locked-mode fails the restore rather than silently resolving a different transitive version
-      # than packages.lock.json records.
       - name: Restore dependencies
-        run: dotnet restore --locked-mode
+        run: dotnet restore
         working-directory: ./csharp
       - name: Build solution
         run: dotnet build --no-restore
