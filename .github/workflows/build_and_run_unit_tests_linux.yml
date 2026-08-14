@@ -12,10 +12,14 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  # Stamped into the CI-only packages built below.
+  PACK_VERSION: 9.9.9
+
 jobs:
   build_and_run_unit_tests_linux:
     runs-on: ubuntu-24.04-arm
-    # Packs three times in total (release check plus the determinism rebuild).
+    # One compile of the library, then a second one for the determinism rebuild.
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -39,59 +43,63 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
         working-directory: ./csharp
+
+      # Release, and with the pack version, so the packaging steps below can reuse this build
+      # instead of compiling everything again in a different configuration.
       - name: Build solution
-        run: dotnet build --no-restore
+        run: dotnet build --no-restore -c Release -p:VersionPrefix="${PACK_VERSION}"
         working-directory: ./csharp
+
       - name: Test solution targeting dotnet10.0 only
-        run: dotnet test --no-build --verbosity normal -p:TargetFrameworks=net10.0
+        run: dotnet test --no-build -c Release --verbosity normal -p:TargetFrameworks=net10.0
         working-directory: ./csharp
 
       # Mirrors publish_nuget.yml so a broken pack fails here instead of during a release.
       # The dependency assertion matters most: the extensions package must pin the exact
       # same libphonenumber-csharp version, which only happens if VersionPrefix reaches
-      # the ProjectReference.
+      # the ProjectReference. --no-build reuses the build above; the nuspec, and so that
+      # assertion, still comes from a full MSBuild evaluation.
       - name: Verify release packaging
         run: |
-          version=9.9.9
-          dotnet pack csharp/PhoneNumbers -c Release --no-restore \
-            -p:VersionPrefix="${version}" -o packtest
-          dotnet pack csharp/PhoneNumbers.Extensions -c Release --no-restore \
-            -p:VersionPrefix="${version}" -o packtest
+          dotnet pack csharp/PhoneNumbers -c Release --no-build \
+            -p:VersionPrefix="${PACK_VERSION}" -o packtest
+          dotnet pack csharp/PhoneNumbers.Extensions -c Release --no-build \
+            -p:VersionPrefix="${PACK_VERSION}" -o packtest
           ls -l packtest
 
           for id in libphonenumber-csharp libphonenumber-csharp.extensions
           do
-            if [ ! -f "packtest/${id}.${version}.nupkg" ]
+            if [ ! -f "packtest/${id}.${PACK_VERSION}.nupkg" ]
             then
-              echo "error: expected packtest/${id}.${version}.nupkg" >&2
+              echo "error: expected packtest/${id}.${PACK_VERSION}.nupkg" >&2
               exit 1
             fi
           done
 
-          nuspec=$(unzip -p "packtest/libphonenumber-csharp.extensions.${version}.nupkg" '*.nuspec')
-          if ! grep -qE "id=\"libphonenumber-csharp\"[^>]*version=\"${version}\"" <<< "${nuspec}"
+          nuspec=$(unzip -p "packtest/libphonenumber-csharp.extensions.${PACK_VERSION}.nupkg" '*.nuspec')
+          if ! grep -qE "id=\"libphonenumber-csharp\"[^>]*version=\"${PACK_VERSION}\"" <<< "${nuspec}"
           then
-            echo "error: extensions package does not depend on libphonenumber-csharp ${version}" >&2
+            echo "error: extensions package does not depend on libphonenumber-csharp ${PACK_VERSION}" >&2
             printf '%s\n' "${nuspec}" >&2
             exit 1
           fi
-          echo "packaging ok: both packages at ${version}, extensions dependency pinned"
+          echo "packaging ok: both packages at ${PACK_VERSION}, extensions dependency pinned"
 
       # Determinism guard: recompiling the same commit must produce byte-identical assemblies.
-      # Cleaning first also drops the generated metadata bins, so this covers MetadataBuilder's
-      # output and how it gets embedded, not just the compiler's.
+      # Compares against the packages built above, so only one extra compile is needed. Cleaning
+      # first also drops the generated metadata bins, so this covers MetadataBuilder's output and
+      # how it gets embedded, not just the compiler's.
       - name: Verify build is reproducible
         run: |
-          version=9.9.9
           dotnet clean csharp/PhoneNumbers -c Release --verbosity quiet
           dotnet pack csharp/PhoneNumbers -c Release \
-            -p:VersionPrefix="${version}" -o packtest-repro
+            -p:VersionPrefix="${PACK_VERSION}" -o packtest-repro
 
           for tfm in netstandard2.0 net8.0 net10.0
           do
             asset="lib/${tfm}/PhoneNumbers.dll"
-            first=$(unzip -p "packtest/libphonenumber-csharp.${version}.nupkg" "${asset}" | sha256sum | cut -d' ' -f1)
-            second=$(unzip -p "packtest-repro/libphonenumber-csharp.${version}.nupkg" "${asset}" | sha256sum | cut -d' ' -f1)
+            first=$(unzip -p "packtest/libphonenumber-csharp.${PACK_VERSION}.nupkg" "${asset}" | sha256sum | cut -d' ' -f1)
+            second=$(unzip -p "packtest-repro/libphonenumber-csharp.${PACK_VERSION}.nupkg" "${asset}" | sha256sum | cut -d' ' -f1)
             if [ "${first}" != "${second}" ]
             then
               echo "error: ${asset} differs between two builds of the same commit" >&2
@@ -102,3 +110,4 @@ jobs:
             echo "${asset}: ${first}"
           done
           echo "reproducible: every assembly identical across a clean rebuild"
+
