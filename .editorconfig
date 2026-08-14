@@ -16,6 +16,10 @@ trim_trailing_whitespace = true
 [*{_AssemblyInfo.cs,.notsupported.cs,AsmOffsets.cs}]
 generated_code = true
 
+# Emitted by the metadata tooling; analyzers have nothing useful to say about a data table.
+[CountryCodeToRegionCodeMap.cs]
+generated_code = true
+
 # C# files
 [*.cs]
 # New line preferences

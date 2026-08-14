@@ -44,10 +44,10 @@ jobs:
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v5
         with:
           dotnet-version: 10.x
-      # DumpLocale.java regenerates csharp/PhoneNumbers/LocaleData.cs from java.util.Locale,
+      # DumpLocale.java regenerates resources/locale/country_names.txt from java.util.Locale,
       # so the jdk is an input to the generated file rather than an incidental tool. Pinned
-      # to temurin 17 to match the header of the committed LocaleData.cs - changing it would
-      # rewrite the locale data from a different CLDR version.
+      # to temurin 17 to match the header of the committed file - changing it would rewrite
+      # the locale data from a different CLDR version.
       - name: Setup Java
         uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
         with:

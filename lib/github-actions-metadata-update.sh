@@ -1,6 +1,6 @@
 #! /bin/bash
-# Syncs resources/ + LocaleData.cs from the latest google/libphonenumber release,
-# builds and tests, then commits, pushes and creates a GitHub release.
+# Syncs resources/ from the latest google/libphonenumber release, regenerates the
+# locale data, builds and tests, then commits, pushes and creates a GitHub release.
 #
 # Exit on any error, treat unset variables as errors, and fail a pipeline if any
 # stage fails. The pipefail matters here: every network read below is `curl | jq`,
@@ -409,7 +409,7 @@ then
     log ""
     log "dry run complete, a real run would now:"
     log "  - replace ${GITHUB_ACTION_WORKING_DIRECTORY}/resources with $(find "${UPSTREAM_RESOURCES}" -type f | wc -l | tr -d ' ') files from ${UPSTREAM_GITHUB_RELEASE_TAG}"
-    log "  - regenerate csharp/PhoneNumbers/LocaleData.cs with $(java -version 2>&1 | head -n 1 || echo 'the local jdk')"
+    log "  - regenerate resources/locale/country_names.txt with $(java -version 2>&1 | head -n 1 || echo 'the local jdk')"
     log "  - run dotnet restore, build and test (${TEST_TARGET_FRAMEWORK})"
     log "  - commit \"feat: automatic upgrade to ${UPSTREAM_GITHUB_RELEASE_TAG}\" and push to main"
     log "  - create release ${UPSTREAM_GITHUB_RELEASE_TAG} in ${GITHUB_REPOSITORY}"
@@ -422,18 +422,21 @@ mkdir -p "${GITHUB_ACTION_WORKING_DIRECTORY}/resources"
 cp -r "${UPSTREAM_RESOURCES}/." "${GITHUB_ACTION_WORKING_DIRECTORY}/resources/"
 
 # Generate into the temporary directory first, so a failure part way through can
-# never leave a truncated LocaleData.cs or a stray DumpLocale.class behind for
-# `git add -A` to pick up.
+# never leave a truncated country_names.txt or a stray DumpLocale.class behind for
+# `git add -A` to pick up. This has to run after the resources/ replacement above,
+# which wipes the directory this writes into: the locale data is generated from the
+# local jdk rather than copied from upstream.
 cd "${GITHUB_ACTION_WORKING_DIRECTORY}/lib"
 javac -d "${WORK_DIR}/classes" DumpLocale.java
-java -cp "${WORK_DIR}/classes" DumpLocale > "${WORK_DIR}/LocaleData.cs"
+java -cp "${WORK_DIR}/classes" DumpLocale > "${WORK_DIR}/country_names.txt"
 
-if [ ! -s "${WORK_DIR}/LocaleData.cs" ]
+if [ ! -s "${WORK_DIR}/country_names.txt" ]
 then
     fail 1 "DumpLocale produced no output"
 fi
 
-mv "${WORK_DIR}/LocaleData.cs" "${GITHUB_ACTION_WORKING_DIRECTORY}/csharp/PhoneNumbers/LocaleData.cs"
+mkdir -p "${GITHUB_ACTION_WORKING_DIRECTORY}/resources/locale"
+mv "${WORK_DIR}/country_names.txt" "${GITHUB_ACTION_WORKING_DIRECTORY}/resources/locale/country_names.txt"
 
 cd "${GITHUB_ACTION_WORKING_DIRECTORY}"
 if [ -z "$(git status --porcelain)" ]

@@ -44,6 +44,6 @@ A few things that will fail the build or CI if missed:
 * **Warnings are errors.** `TreatWarningsAsErrors` is on for every project, including the trim and AOT analyzers on the modern targets.
 * **Package versions live in one place.** Add or change versions in `csharp/Directory.Packages.props`, never in a `PackageReference` — Central Package Management rejects an inline `Version`.
 * **The public API is validated.** Package validation compares the packable projects' surface across target frameworks, so a member added on only one target fails the build.
-* **Some files are generated.** `LocaleData.cs` and `CountryCodeToRegionCodeMap.cs` are produced by the metadata tooling, and everything under `resources/` is copied verbatim from upstream — metadata fixes belong in [google/libphonenumber](https://github.com/google/libphonenumber), since the next automated sync overwrites local edits.
+* **Some files are generated.** `CountryCodeToRegionCodeMap.cs` and `resources/locale/country_names.txt` are produced by the metadata tooling, and the rest of `resources/` is copied verbatim from upstream — metadata fixes belong in [google/libphonenumber](https://github.com/google/libphonenumber), since the next automated sync overwrites local edits.
 
 Changes under `csharp/PhoneNumbers/` also trigger a benchmark run that posts a before/after comparison to the pull request. If you are changing a hot path, look at that comment rather than guessing.

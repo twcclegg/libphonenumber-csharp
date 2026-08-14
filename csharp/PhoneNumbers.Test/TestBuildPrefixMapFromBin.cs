@@ -139,5 +139,72 @@ namespace PhoneNumbers.Test
             var ex = Assert.Throws<InvalidDataException>(() => BuildPrefixMapFromBin.ReadTimezoneMap(memoryStream));
             Assert.Contains("Unsupported timezone-map version", ex.Message);
         }
+
+        [Fact]
+        public void TestLocaleNames_WriteAndRead_VerifiesIntegrity()
+        {
+            var testMap = new SortedDictionary<string, string>
+            {
+                { "aa", "United States" },
+                { "en", "*aa" },
+                { "zh", "美国" }
+            };
+
+            using var memoryStream = new MemoryStream();
+            BuildPrefixMapFromBin.WriteLocaleNames(memoryStream, testMap);
+
+            memoryStream.Position = 0;
+
+            var deserializedMap = BuildPrefixMapFromBin.ReadLocaleNames(memoryStream);
+
+            Assert.Equal(testMap.Count, deserializedMap.Count);
+            foreach (var kvp in testMap)
+            {
+                Assert.True(deserializedMap.TryGetValue(kvp.Key, out var deserializedValue));
+                Assert.Equal(kvp.Value, deserializedValue);
+            }
+        }
+
+        [Fact]
+        public void TestLocaleNames_EmptyMap_RoundTrips()
+        {
+            var testMap = new SortedDictionary<string, string>();
+
+            using var memoryStream = new MemoryStream();
+            BuildPrefixMapFromBin.WriteLocaleNames(memoryStream, testMap);
+
+            memoryStream.Position = 0;
+
+            Assert.Empty(BuildPrefixMapFromBin.ReadLocaleNames(memoryStream));
+        }
+
+        [Fact]
+        public void TestLocaleNames_InvalidMagic_ThrowsInvalidDataException()
+        {
+            using var memoryStream = new MemoryStream();
+            using (var writer = new BinaryWriter(memoryStream, Encoding.UTF8, leaveOpen: true))
+            {
+                writer.Write(0x12345678);
+            }
+
+            memoryStream.Position = 0;
+            var ex = Assert.Throws<InvalidDataException>(() => BuildPrefixMapFromBin.ReadLocaleNames(memoryStream));
+            Assert.Contains("Unexpected locale-names magic", ex.Message);
+        }
+
+        [Fact]
+        public void TestLocaleNames_WrongVersion_ThrowsInvalidDataException()
+        {
+            using var memoryStream = new MemoryStream();
+            using (var writer = new BinaryWriter(memoryStream, Encoding.UTF8, leaveOpen: true))
+            {
+                writer.Write(BuildPrefixMapFromBin.LocaleNamesMagic);
+                writer.Write((byte)(BuildPrefixMapFromBin.FormatVersion + 1));
+            }
+
+            memoryStream.Position = 0;
+            var ex = Assert.Throws<InvalidDataException>(() => BuildPrefixMapFromBin.ReadLocaleNames(memoryStream));
+            Assert.Contains("Unsupported locale-names version", ex.Message);
+        }
     }
 }
