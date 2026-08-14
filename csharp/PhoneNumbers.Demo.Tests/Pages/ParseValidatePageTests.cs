@@ -4,12 +4,12 @@ using Xunit;
 
 namespace PhoneNumbers.Demo.Tests.Pages;
 
-public class ParseValidatePageTests : TestContext
+public class ParseValidatePageTests : BunitContext
 {
     [Fact]
     public void shows_valid_badge_for_default_uk_number()
     {
-        var cut = RenderComponent<ParseValidate>();
+        var cut = Render<ParseValidate>();
 
         var badge = cut.Find(".badge--success");
         Assert.Equal("Valid", badge.TextContent.Trim());
@@ -18,7 +18,7 @@ public class ParseValidatePageTests : TestContext
     [Fact]
     public void shows_parsed_properties_for_valid_number()
     {
-        var cut = RenderComponent<ParseValidate>();
+        var cut = Render<ParseValidate>();
 
         var rows = cut.FindAll(".data-table__row");
         Assert.NotEmpty(rows);
@@ -32,7 +32,7 @@ public class ParseValidatePageTests : TestContext
     [Fact]
     public void shows_region_info_section_for_valid_number()
     {
-        var cut = RenderComponent<ParseValidate>();
+        var cut = Render<ParseValidate>();
 
         var cardTitles = cut.FindAll(".card__title").Select(t => t.TextContent.Trim()).ToList();
         Assert.Contains(cardTitles, t => t.StartsWith("Region Info:"));
@@ -41,7 +41,7 @@ public class ParseValidatePageTests : TestContext
     [Fact]
     public void shows_error_message_for_unparseable_input()
     {
-        var cut = RenderComponent<ParseValidate>();
+        var cut = Render<ParseValidate>();
 
         cut.Find("#parse-phone").Input("NOT_A_NUMBER");
 
@@ -52,7 +52,7 @@ public class ParseValidatePageTests : TestContext
     [Fact]
     public void shows_empty_state_when_input_is_blank()
     {
-        var cut = RenderComponent<ParseValidate>();
+        var cut = Render<ParseValidate>();
 
         cut.Find("#parse-phone").Input("");
 
@@ -63,7 +63,7 @@ public class ParseValidatePageTests : TestContext
     [Fact]
     public void shows_invalid_badge_for_invalid_number()
     {
-        var cut = RenderComponent<ParseValidate>();
+        var cut = Render<ParseValidate>();
 
         cut.Find("#parse-phone").Input("+1 555");
 
@@ -74,7 +74,7 @@ public class ParseValidatePageTests : TestContext
     [Fact]
     public void shows_number_type_in_info_badge()
     {
-        var cut = RenderComponent<ParseValidate>();
+        var cut = Render<ParseValidate>();
 
         var infoBadge = cut.Find(".badge--info");
         Assert.NotEmpty(infoBadge.TextContent.Trim());
@@ -83,7 +83,7 @@ public class ParseValidatePageTests : TestContext
     [Fact]
     public void clicking_us_example_button_shows_us_results()
     {
-        var cut = RenderComponent<ParseValidate>();
+        var cut = Render<ParseValidate>();
 
         cut.Find("button:first-child").Click();
 
@@ -96,7 +96,7 @@ public class ParseValidatePageTests : TestContext
     [Fact]
     public void shows_possible_reason_badge()
     {
-        var cut = RenderComponent<ParseValidate>();
+        var cut = Render<ParseValidate>();
 
         var neutralBadge = cut.Find(".badge--neutral");
         Assert.NotEmpty(neutralBadge.TextContent.Trim());
@@ -105,7 +105,7 @@ public class ParseValidatePageTests : TestContext
     [Fact]
     public void shows_validation_section_with_is_valid_and_is_possible()
     {
-        var cut = RenderComponent<ParseValidate>();
+        var cut = Render<ParseValidate>();
 
         var labels = cut.FindAll(".result-grid__label").Select(l => l.TextContent.Trim()).ToList();
         Assert.Contains("Is Valid", labels);

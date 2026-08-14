@@ -36,7 +36,7 @@ Essentially, we are following trunk based development
 ```bash
 dotnet restore csharp
 dotnet build csharp --no-restore
-dotnet test csharp/PhoneNumbers.sln -p:TargetFrameworks=net10.0   # what the PR check runs
+dotnet test csharp/PhoneNumbers.slnx -p:TargetFrameworks=net10.0   # what the PR check runs
 ```
 
 A few things that will fail the build or CI if missed:
