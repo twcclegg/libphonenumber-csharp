@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -188,7 +189,7 @@ internal static class Program
         var byCountry = ParseLocaleText(inputFile);
         foreach (var country in byCountry)
         {
-            var outPath = Path.Combine(outputDir, country.Key);
+            var outPath = Path.Join(outputDir, country.Key);
             using var gz = new GZipStream(File.Create(outPath), CompressionLevel.SmallestSize);
             BuildPrefixMapFromBin.WriteLocaleNames(gz, country.Value);
         }
@@ -234,10 +235,7 @@ internal static class Program
         var existing = Directory.GetFiles(outputDir);
         if (existing.Length == 0) return false;
         var inputMTime = File.GetLastWriteTimeUtc(inputFile);
-        foreach (var file in existing)
-        {
-            if (File.GetLastWriteTimeUtc(file) < inputMTime) return false;
-        }
+        if (existing.Any(file => File.GetLastWriteTimeUtc(file) < inputMTime)) return false;
         return true;
     }
 

@@ -20,6 +20,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO.Compression;
 using System.Reflection;
+using System.Linq;
 
 namespace PhoneNumbers
 {
@@ -73,10 +74,10 @@ namespace PhoneNumbers
         /// </summary>
         internal static IEnumerable<string> SupportedCountries()
         {
-            foreach (var name in Assembly.GetManifestResourceNames())
+            foreach (var name in Assembly.GetManifestResourceNames()
+                .Where(name => name.StartsWith(ResourcePrefix, StringComparison.Ordinal)))
             {
-                if (name.StartsWith(ResourcePrefix, StringComparison.Ordinal))
-                    yield return name.Substring(ResourcePrefix.Length);
+                yield return name.Substring(ResourcePrefix.Length);
             }
         }
     }

@@ -78,11 +78,8 @@ namespace PhoneNumbers.Test
             foreach (var country in LocaleNames.SupportedCountries())
             {
                 var names = LocaleNames.ForCountry(country);
-                foreach (var entry in names)
+                foreach (var entry in names.Where(entry => entry.Value.Length != 0 && entry.Value[0] == '*'))
                 {
-                    if (entry.Value.Length == 0 || entry.Value[0] != '*')
-                        continue;
-
                     var target = entry.Value.Substring(1);
                     if (!names.TryGetValue(target, out var resolved) || resolved.Length == 0 || resolved[0] == '*')
                         dangling.Add($"{country}/{entry.Key}");

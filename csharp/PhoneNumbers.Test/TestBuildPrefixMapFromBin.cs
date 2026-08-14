@@ -160,8 +160,8 @@ namespace PhoneNumbers.Test
             Assert.Equal(testMap.Count, deserializedMap.Count);
             foreach (var kvp in testMap)
             {
-                Assert.True(deserializedMap.ContainsKey(kvp.Key));
-                Assert.Equal(kvp.Value, deserializedMap[kvp.Key]);
+                Assert.True(deserializedMap.TryGetValue(kvp.Key, out var deserializedValue));
+                Assert.Equal(kvp.Value, deserializedValue);
             }
         }
 
