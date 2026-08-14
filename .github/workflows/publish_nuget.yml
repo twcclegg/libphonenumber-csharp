@@ -49,9 +49,10 @@ jobs:
           echo "VERSION=${tag#v}" >> "${GITHUB_ENV}"
           echo "publishing version ${tag#v}" >> "${GITHUB_STEP_SUMMARY}"
 
-      # --locked-mode matters most here: this is the restore whose output is published.
+      # Single explicit source, so the restore whose output is published cannot pick up a
+      # package from a feed the runner happens to have configured.
       - name: Restore dependencies
-        run: dotnet restore csharp --source https://api.nuget.org/v3/index.json --locked-mode
+        run: dotnet restore csharp --source https://api.nuget.org/v3/index.json
 
       - name: Pack
         run: |
