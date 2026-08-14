@@ -63,9 +63,11 @@ class DumpLocale {
     printProlog();
     String[] all_countries = Locale.getISOCountries();
     String[] all_langs = Locale.getISOLanguages();
-    // Name => first language code that maps to that name
-    HashMap<String, String> name_to_lang = new HashMap<String, String>();
     for (String country: all_countries) {
+      // Name => first language code that maps to that name, for this country only. Sharing one
+      // map across countries lets a name claimed by an earlier country alias a language the
+      // current one has no entry for, which resolves to nothing at lookup time.
+      HashMap<String, String> name_to_lang = new HashMap<String, String>();
       Locale country_locale = new Locale("", country);
       for (String lang: all_langs) {
         Locale lang_locale = new Locale(lang);

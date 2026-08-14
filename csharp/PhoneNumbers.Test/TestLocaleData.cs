@@ -60,18 +60,12 @@ namespace PhoneNumbers.Test
         }
 
         /// <summary>
-        /// An alias should point at a language present in the same country. Thirteen do not, all
-        /// of them Congo pointing at Norwegian Bokmal: DumpLocale shares one name-to-language map
-        /// across every country, so the first country to use a name owns it and a later country
-        /// with the same name aliases out of its own map. GetDisplayCountry falls back to English
-        /// when that happens, so the effect is a missing translation rather than a missing name.
-        ///
-        /// Pinned rather than fixed: this predates moving the data out of LocaleData.cs, and
-        /// correcting the generator would change the shipped names. The point here is that the
-        /// move preserved the data exactly, and that the set does not grow unnoticed.
+        /// An alias points at another language in the same country, so that language must have an
+        /// entry there. DumpLocale used to share one name-to-language map across every country,
+        /// which let a name claimed by an earlier country alias out of the current one's map.
         /// </summary>
         [Fact]
-        public void DanglingAliasesAreOnlyTheKnownOnes()
+        public void EveryAliasResolvesWithinItsCountry()
         {
             var dangling = new List<string>();
 
@@ -82,18 +76,11 @@ namespace PhoneNumbers.Test
                 {
                     var target = entry.Value.Substring(1);
                     if (!names.TryGetValue(target, out var resolved) || resolved.Length == 0 || resolved[0] == '*')
-                        dangling.Add($"{country}/{entry.Key}");
+                        dangling.Add($"{country}/{entry.Key} -> {entry.Value}");
                 }
             }
 
-            dangling.Sort(System.StringComparer.Ordinal);
-            Assert.Equal(
-                new[]
-                {
-                    "CG/ak", "CG/bm", "CG/bs", "CG/eu", "CG/fo", "CG/ha", "CG/ki",
-                    "CG/lg", "CG/ln", "CG/pl", "CG/rn", "CG/sn", "CG/so",
-                },
-                dangling);
+            Assert.Empty(dangling);
         }
 
         /// <summary>
