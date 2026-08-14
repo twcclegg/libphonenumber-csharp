@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>PhoneNumbers.Fuzz</AssemblyName>
+    <RootNamespace>PhoneNumbers.Fuzz</RootNamespace>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <!--
+      Deliberately not in PhoneNumbers.slnx: SharpFuzz drags in dnlib to rewrite IL, which nothing
+      else here needs, and no other build has a reason to restore it. Built directly by
+      .github/workflows/fuzz.yml, which is the only thing that needs it.
+    -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PhoneNumbers\PhoneNumbers.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SharpFuzz" />
+  </ItemGroup>
+
+</Project>

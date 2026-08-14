@@ -24,6 +24,10 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <!-- Property-based tests: see TestPhoneNumberProperties. FsCheck is referenced directly as
+         well as through FsCheck.Xunit because the generators are used explicitly. -->
+    <PackageReference Include="FsCheck" />
+    <PackageReference Include="FsCheck.Xunit" />
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio">
       <PrivateAssets>all</PrivateAssets>
