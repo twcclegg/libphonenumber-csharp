@@ -48,18 +48,8 @@ jobs:
 
       # Release, and with the pack version, so the packaging steps below can reuse this build
       # instead of compiling everything again in a different configuration.
-      #
-      # TEMPORARY (see PR description): -bl, -clp and ReportAnalyzer are here to find out where the
-      # build time goes - the previous run showed Csc dominating, and ReportAnalyzer separates
-      # analyzer time from the compiler's own. Remove all three, and the upload step, once the
-      # LocaleData question is settled.
       - name: Build solution
-        run: |
-          mkdir -p "${GITHUB_WORKSPACE}/binlogs"
-          dotnet build --no-restore -c Release -p:VersionPrefix="${PACK_VERSION}" \
-            -p:ReportAnalyzer=true \
-            -clp:"PerformanceSummary;Verbosity=normal" \
-            -bl:"${GITHUB_WORKSPACE}/binlogs/build-solution.binlog"
+        run: dotnet build --no-restore -c Release -p:VersionPrefix="${PACK_VERSION}"
         working-directory: ./csharp
 
       - name: Test solution targeting dotnet10.0 only
@@ -74,11 +64,9 @@ jobs:
       - name: Verify release packaging
         run: |
           dotnet pack csharp/PhoneNumbers -c Release --no-build \
-            -p:VersionPrefix="${PACK_VERSION}" -o packtest \
-            -bl:"${GITHUB_WORKSPACE}/binlogs/pack-phonenumbers.binlog"
+            -p:VersionPrefix="${PACK_VERSION}" -o packtest
           dotnet pack csharp/PhoneNumbers.Extensions -c Release --no-build \
-            -p:VersionPrefix="${PACK_VERSION}" -o packtest \
-            -bl:"${GITHUB_WORKSPACE}/binlogs/pack-extensions.binlog"
+            -p:VersionPrefix="${PACK_VERSION}" -o packtest
           ls -l packtest
 
           for id in libphonenumber-csharp libphonenumber-csharp.extensions
@@ -107,8 +95,7 @@ jobs:
         run: |
           dotnet clean csharp/PhoneNumbers -c Release --verbosity quiet
           dotnet pack csharp/PhoneNumbers -c Release \
-            -p:VersionPrefix="${PACK_VERSION}" -o packtest-repro \
-            -bl:"${GITHUB_WORKSPACE}/binlogs/pack-repro.binlog"
+            -p:VersionPrefix="${PACK_VERSION}" -o packtest-repro
 
           for tfm in netstandard2.0 net8.0 net10.0
           do
@@ -126,11 +113,3 @@ jobs:
           done
           echo "reproducible: every assembly identical across a clean rebuild"
 
-      # TEMPORARY: see the note on the build step.
-      - name: Upload build logs
-        if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
-        with:
-          name: binlogs
-          path: binlogs/
-          if-no-files-found: warn
