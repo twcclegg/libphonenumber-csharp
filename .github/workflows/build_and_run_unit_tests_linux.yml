@@ -12,10 +12,17 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  # Stamped into the CI-only packages. Both jobs must agree on it: the determinism job compares
+  # assemblies that were built with this version baked in.
+  PACK_VERSION: 9.9.9
+
 jobs:
+  # Builds once, in the configuration that ships, and both tests and packs from that same build:
+  # --no-build on the pack is what keeps this to a single compile of the library. Keeps its original
+  # name because branch protection requires this check.
   build_and_run_unit_tests_linux:
     runs-on: ubuntu-24.04-arm
-    # Packs three times in total (release check plus the determinism rebuild).
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -41,59 +48,110 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore --locked-mode
         working-directory: ./csharp
+
+      # TEMPORARY (see PR description): -bl and -clp:PerformanceSummary are here to find out where
+      # the build minutes actually go before optimising further. Remove both, and the binlog upload
+      # at the end of each job, once that question is answered.
       - name: Build solution
-        run: dotnet build --no-restore
+        run: |
+          mkdir -p "${GITHUB_WORKSPACE}/binlogs"
+          dotnet build --no-restore -c Release -p:VersionPrefix="${PACK_VERSION}" \
+            -clp:PerformanceSummary \
+            -bl:"${GITHUB_WORKSPACE}/binlogs/build-solution.binlog"
         working-directory: ./csharp
+
       - name: Test solution targeting dotnet10.0 only
-        run: dotnet test --no-build --verbosity normal -p:TargetFrameworks=net10.0
+        run: dotnet test --no-build -c Release --verbosity normal -p:TargetFrameworks=net10.0
         working-directory: ./csharp
 
       # Mirrors publish_nuget.yml so a broken pack fails here instead of during a release.
       # The dependency assertion matters most: the extensions package must pin the exact
       # same libphonenumber-csharp version, which only happens if VersionPrefix reaches
-      # the ProjectReference.
+      # the ProjectReference. --no-build reuses the Release build above; the nuspec, and so that
+      # assertion, is still generated from a full MSBuild evaluation.
       - name: Verify release packaging
         run: |
-          version=9.9.9
-          dotnet pack csharp/PhoneNumbers -c Release --no-restore \
-            -p:VersionPrefix="${version}" -o packtest
-          dotnet pack csharp/PhoneNumbers.Extensions -c Release --no-restore \
-            -p:VersionPrefix="${version}" -o packtest
+          dotnet pack csharp/PhoneNumbers -c Release --no-build \
+            -p:VersionPrefix="${PACK_VERSION}" -o packtest \
+            -clp:PerformanceSummary -bl:"${GITHUB_WORKSPACE}/binlogs/pack-phonenumbers.binlog"
+          dotnet pack csharp/PhoneNumbers.Extensions -c Release --no-build \
+            -p:VersionPrefix="${PACK_VERSION}" -o packtest \
+            -clp:PerformanceSummary -bl:"${GITHUB_WORKSPACE}/binlogs/pack-extensions.binlog"
           ls -l packtest
 
           for id in libphonenumber-csharp libphonenumber-csharp.extensions
           do
-            if [ ! -f "packtest/${id}.${version}.nupkg" ]
+            if [ ! -f "packtest/${id}.${PACK_VERSION}.nupkg" ]
             then
-              echo "error: expected packtest/${id}.${version}.nupkg" >&2
+              echo "error: expected packtest/${id}.${PACK_VERSION}.nupkg" >&2
               exit 1
             fi
           done
 
-          nuspec=$(unzip -p "packtest/libphonenumber-csharp.extensions.${version}.nupkg" '*.nuspec')
-          if ! grep -qE "id=\"libphonenumber-csharp\"[^>]*version=\"${version}\"" <<< "${nuspec}"
+          nuspec=$(unzip -p "packtest/libphonenumber-csharp.extensions.${PACK_VERSION}.nupkg" '*.nuspec')
+          if ! grep -qE "id=\"libphonenumber-csharp\"[^>]*version=\"${PACK_VERSION}\"" <<< "${nuspec}"
           then
-            echo "error: extensions package does not depend on libphonenumber-csharp ${version}" >&2
+            echo "error: extensions package does not depend on libphonenumber-csharp ${PACK_VERSION}" >&2
             printf '%s\n' "${nuspec}" >&2
             exit 1
           fi
-          echo "packaging ok: both packages at ${version}, extensions dependency pinned"
+          echo "packaging ok: both packages at ${PACK_VERSION}, extensions dependency pinned"
 
-      # Determinism guard: recompiling the same commit must produce byte-identical assemblies.
-      # Cleaning first also drops the generated metadata bins, so this covers MetadataBuilder's
-      # output and how it gets embedded, not just the compiler's.
+      # TEMPORARY: see the note on the build step.
+      - name: Upload build logs
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: binlogs-build
+          path: binlogs/
+          if-no-files-found: warn
+
+  # Determinism guard: recompiling the same commit must produce byte-identical assemblies. Runs as
+  # its own job because it needs two builds of its own regardless - taking the first from the job
+  # above would mean waiting for it, which costs more wall clock than just building twice here.
+  verify_reproducible_build:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Setup .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v5
+        with:
+          dotnet-version: 10.x
+
+      # Read-only: the other job writes this cache, and two jobs saving the same key just warns.
+      - name: Restore NuGet cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('csharp/Directory.Packages.props', 'csharp/**/*.csproj') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-${{ runner.arch }}-
+      - name: Restore dependencies
+        run: dotnet restore --locked-mode
+        working-directory: ./csharp
+
+      # Cleaning between the two packs also drops the generated metadata bins, so this covers
+      # MetadataBuilder's output and how it gets embedded, not just the compiler's.
       - name: Verify build is reproducible
         run: |
-          version=9.9.9
+          mkdir -p "${GITHUB_WORKSPACE}/binlogs"
+          dotnet pack csharp/PhoneNumbers -c Release --no-restore \
+            -p:VersionPrefix="${PACK_VERSION}" -o packtest-first \
+            -clp:PerformanceSummary -bl:"${GITHUB_WORKSPACE}/binlogs/repro-first.binlog"
+
           dotnet clean csharp/PhoneNumbers -c Release --verbosity quiet
-          dotnet pack csharp/PhoneNumbers -c Release \
-            -p:VersionPrefix="${version}" -o packtest-repro
+          dotnet pack csharp/PhoneNumbers -c Release --no-restore \
+            -p:VersionPrefix="${PACK_VERSION}" -o packtest-second \
+            -clp:PerformanceSummary -bl:"${GITHUB_WORKSPACE}/binlogs/repro-second.binlog"
 
           for tfm in netstandard2.0 net8.0 net10.0
           do
             asset="lib/${tfm}/PhoneNumbers.dll"
-            first=$(unzip -p "packtest/libphonenumber-csharp.${version}.nupkg" "${asset}" | sha256sum | cut -d' ' -f1)
-            second=$(unzip -p "packtest-repro/libphonenumber-csharp.${version}.nupkg" "${asset}" | sha256sum | cut -d' ' -f1)
+            first=$(unzip -p "packtest-first/libphonenumber-csharp.${PACK_VERSION}.nupkg" "${asset}" | sha256sum | cut -d' ' -f1)
+            second=$(unzip -p "packtest-second/libphonenumber-csharp.${PACK_VERSION}.nupkg" "${asset}" | sha256sum | cut -d' ' -f1)
             if [ "${first}" != "${second}" ]
             then
               echo "error: ${asset} differs between two builds of the same commit" >&2
@@ -104,3 +162,12 @@ jobs:
             echo "${asset}: ${first}"
           done
           echo "reproducible: every assembly identical across a clean rebuild"
+
+      # TEMPORARY: see the note on the build step in the other job.
+      - name: Upload build logs
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: binlogs-reproducible
+          path: binlogs/
+          if-no-files-found: warn
