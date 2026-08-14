@@ -1,3 +1,10 @@
+# Generated data tables, not code under test. LocaleData alone is ~48k lines of static
+# initializer that always runs, so counting it reported ~98% project coverage while the
+# hand-written library sat near 77%. See issue #389.
+ignore:
+  - "csharp/PhoneNumbers/LocaleData.cs"
+  - "csharp/PhoneNumbers/CountryCodeToRegionCodeMap.cs"
+
 coverage:
   status:
     project:
