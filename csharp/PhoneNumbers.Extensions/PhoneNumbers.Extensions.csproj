@@ -12,8 +12,9 @@
         <PackageTags>phonenumber phone libphonenumber e164 e.164 international extensions</PackageTags>
         <PackageIcon>icon.png</PackageIcon>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <!-- Baseline deferred; see the note in PhoneNumbers.csproj. -->
+        <!-- Baselined on the same release as PhoneNumbers.csproj; see the note there. -->
         <EnablePackageValidation>true</EnablePackageValidation>
+        <PackageValidationBaselineVersion>9.0.37</PackageValidationBaselineVersion>
         <NoWarn>$(NoWarn);CA1014;CA1031;CA1062</NoWarn>
         <EnableNETAnalyzers>true</EnableNETAnalyzers>
         <AnalysisMode>AllEnabledByDefault</AnalysisMode>

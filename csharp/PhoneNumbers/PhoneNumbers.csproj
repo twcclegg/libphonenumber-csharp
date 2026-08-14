@@ -13,10 +13,10 @@
     <PackageIcon>icon.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <!-- No PackageValidationBaselineVersion yet: 9.0.36 still ships a net9.0 asset this package no
-         longer produces. Set it to the first release without net9.0 to compare against a baseline;
-         until then only the cross-target surface within this package is checked. -->
+    <!-- Every pack is compared against the latest release, the surface consumers upgrade from.
+         Restore downloads that package, so the version must be one already on nuget.org. -->
     <EnablePackageValidation>true</EnablePackageValidation>
+    <PackageValidationBaselineVersion>9.0.37</PackageValidationBaselineVersion>
     <!-- Rules enforced on top of the default set are listed in .editorconfig, with the reasoning. -->
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <AnalysisLevel>latest</AnalysisLevel>
