@@ -92,6 +92,8 @@ internal static class Program
                 "        geocoding | carrier                      (<type>/ tree -> per-(lang,cc) bins)");
             Console.Error.WriteLine(
                 "        timezones                                (timezones/map_data.txt -> single bin)");
+            Console.Error.WriteLine(
+                "        locale                                   (locale/country_names.txt -> per-country bins)");
             return 2;
         }
 
@@ -112,6 +114,7 @@ internal static class Program
             "geocoding" => BuildGeocoding(input, output),
             "carrier" => BuildGeocoding(input, output),
             "timezones" => BuildTimezones(input, output),
+            "locale" => BuildLocaleNames(input, output),
             _ => UnknownKind(kind),
         };
     }
@@ -167,6 +170,75 @@ internal static class Program
         BuildPrefixMapFromBin.WriteTimezoneMap(gz, map);
         Console.Out.WriteLine($"PhoneNumbers.MetadataBuilder: wrote {map.Count} timezone entries to {outputFile}");
         return 0;
+    }
+
+    /// <summary>
+    /// Converts <c>resources/locale/country_names.txt</c> (lines of
+    /// <c>country|language|name</c>) into one binary file per country, named for the country so
+    /// the runtime can load a single country's names on demand instead of every country's.
+    /// </summary>
+    private static int BuildLocaleNames(string inputFile, string outputDir)
+    {
+        if (!File.Exists(inputFile))
+            throw new FileNotFoundException($"Input file not found: {inputFile}", inputFile);
+        if (IsLocaleOutputUpToDate(inputFile, outputDir))
+            return 0;
+        Directory.CreateDirectory(outputDir);
+
+        var byCountry = ParseLocaleText(inputFile);
+        foreach (var country in byCountry)
+        {
+            var outPath = Path.Combine(outputDir, country.Key);
+            using var gz = new GZipStream(File.Create(outPath), CompressionLevel.SmallestSize);
+            BuildPrefixMapFromBin.WriteLocaleNames(gz, country.Value);
+        }
+        Console.Out.WriteLine(
+            $"PhoneNumbers.MetadataBuilder: wrote {byCountry.Count} locale bin file(s) to {outputDir}");
+        return 0;
+    }
+
+    private static SortedDictionary<string, SortedDictionary<string, string>> ParseLocaleText(string path)
+    {
+        var byCountry = new SortedDictionary<string, SortedDictionary<string, string>>(StringComparer.Ordinal);
+        using var reader = new StreamReader(path, Encoding.UTF8);
+        string? line;
+        while ((line = reader.ReadLine()) != null)
+        {
+            line = line.Trim();
+            if (line.Length == 0 || line[0] == '#') continue;
+            var first = line.IndexOf('|');
+            if (first < 0) continue;
+            var second = line.IndexOf('|', first + 1);
+            if (second < 0) continue;
+
+            var country = line.Substring(0, first);
+            var language = line.Substring(first + 1, second - first - 1);
+            // Names never contain '|' (asserted when this file was first generated), so the
+            // remainder of the line is the name even though it is free text.
+            var name = line.Substring(second + 1);
+
+            if (!byCountry.TryGetValue(country, out var names))
+                byCountry[country] = names = new SortedDictionary<string, string>(StringComparer.Ordinal);
+            names[language] = name;
+        }
+        return byCountry;
+    }
+
+    /// <summary>
+    /// Returns true when the per-country locale bins are all at least as new as the text they are
+    /// generated from. Same short-circuit as the other kinds, for the same reason.
+    /// </summary>
+    private static bool IsLocaleOutputUpToDate(string inputFile, string outputDir)
+    {
+        if (!Directory.Exists(outputDir)) return false;
+        var existing = Directory.GetFiles(outputDir);
+        if (existing.Length == 0) return false;
+        var inputMTime = File.GetLastWriteTimeUtc(inputFile);
+        foreach (var file in existing)
+        {
+            if (File.GetLastWriteTimeUtc(file) < inputMTime) return false;
+        }
+        return true;
     }
 
     /// <summary>

@@ -9,6 +9,7 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -31,6 +32,7 @@ namespace PhoneNumbers
         // Magic + version layout matches BuildMetadataFromBin so future tooling can sniff a stream.
         internal const int AreaCodeMapMagic = 0x504E4143; // 'P','N','A','C'
         internal const int TimezoneMapMagic = 0x504E5454; // 'P','N','T','T'
+        internal const int LocaleNamesMagic = 0x504E4C4E; // 'P','N','L','N'
         internal const byte FormatVersion = 1;
 
         // --- Area code map (int → string) ---------------------------------------------
@@ -113,6 +115,45 @@ namespace PhoneNumbers
                 map[prefix] = zones;
             }
             return map;
+        }
+
+        // --- Locale country names (language → name), one file per country ----------------
+
+        public static void WriteLocaleNames(Stream stream, SortedDictionary<string, string> names)
+        {
+            using var writer = new BinaryWriter(stream, Encoding.UTF8, leaveOpen: true);
+            writer.Write(LocaleNamesMagic);
+            writer.Write(FormatVersion);
+            writer.Write(names.Count);
+            foreach (var entry in names)
+            {
+                writer.Write(entry.Key);
+                writer.Write(entry.Value ?? "");
+            }
+        }
+
+        public static Dictionary<string, string> ReadLocaleNames(Stream stream)
+        {
+            using var reader = new BinaryReader(stream, Encoding.UTF8, leaveOpen: true);
+            var magic = reader.ReadInt32();
+            if (magic != LocaleNamesMagic)
+                throw new InvalidDataException(
+                    $"Unexpected locale-names magic 0x{magic:X8} (expected 0x{LocaleNamesMagic:X8}).");
+            var version = reader.ReadByte();
+            if (version != FormatVersion)
+                throw new InvalidDataException(
+                    $"Unsupported locale-names version {version} (expected {FormatVersion}).");
+
+            var count = reader.ReadInt32();
+            // Ordinal comparison to match the lookups this feeds, which pass language codes
+            // through unchanged from the caller's Locale.
+            var names = new Dictionary<string, string>(count, StringComparer.Ordinal);
+            for (var i = 0; i < count; i++)
+            {
+                var language = reader.ReadString();
+                names[language] = reader.ReadString();
+            }
+            return names;
         }
     }
 }

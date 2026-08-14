@@ -4,7 +4,7 @@
     <DataCollectors>
       <DataCollector friendlyName="XPlat code coverage">
         <Configuration>
-          <Exclude>[PhoneNumbers]PhoneNumbers.LocaleData,[PhoneNumbers]PhoneNumbers.CountryCodeToRegionCodeMap</Exclude>
+          <Exclude>[PhoneNumbers]PhoneNumbers.CountryCodeToRegionCodeMap</Exclude>
         </Configuration>
       </DataCollector>
     </DataCollectors>

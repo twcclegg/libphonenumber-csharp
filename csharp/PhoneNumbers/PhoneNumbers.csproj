@@ -72,6 +72,7 @@
     <BinaryGeocodingDir>$(BaseIntermediateOutputPath)geocoding</BinaryGeocodingDir>
     <BinaryTimezonesDir>$(BaseIntermediateOutputPath)timezones</BinaryTimezonesDir>
     <BinaryCarrierDir>$(BaseIntermediateOutputPath)carrier</BinaryCarrierDir>
+    <BinaryLocaleDir>$(BaseIntermediateOutputPath)locale</BinaryLocaleDir>
     <ResourcesDir>$(MSBuildThisFileDirectory)..\..\resources/</ResourcesDir>
     <MetadataBuilderProject>$(MSBuildThisFileDirectory)..\PhoneNumbers.MetadataBuilder\PhoneNumbers.MetadataBuilder.csproj</MetadataBuilderProject>
     <MetadataBuilderDll>$(MSBuildThisFileDirectory)..\PhoneNumbers.MetadataBuilder\bin\$(Configuration)\net10.0\PhoneNumbers.MetadataBuilder.dll</MetadataBuilderDll>
@@ -151,6 +152,14 @@
     <Exec Command="dotnet &quot;$(MetadataBuilderDll)&quot; carrier &quot;$(ResourcesDir)carrier&quot; &quot;$(BinaryCarrierDir)&quot;" />
   </Target>
 
+  <Target Name="GenerateLocaleBins"
+          BeforeTargets="AssignTargetPaths"
+          Inputs="$(ResourcesDir)locale/country_names.txt"
+          Outputs="$(BinaryLocaleDir)/US">
+    <MakeDir Directories="$(BinaryLocaleDir)" />
+    <Exec Command="dotnet &quot;$(MetadataBuilderDll)&quot; locale &quot;$(ResourcesDir)locale/country_names.txt&quot; &quot;$(BinaryLocaleDir)&quot;" />
+  </Target>
+
   <Target Name="GenerateTimezoneBin"
           BeforeTargets="AssignTargetPaths"
           Inputs="$(ResourcesDir)timezones/map_data.txt"
@@ -169,7 +178,7 @@
   -->
   <Target Name="EmbedBinaryMetadata"
           BeforeTargets="AssignTargetPaths"
-          DependsOnTargets="GenerateBinaryMetadata;GenerateGeocodingBins;GenerateTimezoneBin;GenerateCarrierBins">
+          DependsOnTargets="GenerateBinaryMetadata;GenerateGeocodingBins;GenerateTimezoneBin;GenerateCarrierBins;GenerateLocaleBins">
     <!--
       Two-step add to avoid an MSBuild item-batching surprise:
       a single `<EmbeddedResource Include="path/*" LogicalName="...%(Filename)..." />` inside a
@@ -183,6 +192,7 @@
       <_BinMetadataFile Include="$(BinaryMetadataDir)/*" />
       <_BinGeocodingFile Include="$(BinaryGeocodingDir)/*" />
       <_BinCarrierFile Include="$(BinaryCarrierDir)/*" />
+      <_BinLocaleFile Include="$(BinaryLocaleDir)/*" />
     </ItemGroup>
     <ItemGroup>
       <EmbeddedResource Include="@(_BinMetadataFile)"
@@ -193,6 +203,8 @@
                         LogicalName="PhoneNumbers.timezones.map_data.bin" />
       <EmbeddedResource Include="@(_BinCarrierFile)"
                         LogicalName="PhoneNumbers.carrier.%(_BinCarrierFile.Filename)%(_BinCarrierFile.Extension)" />
+      <EmbeddedResource Include="@(_BinLocaleFile)"
+                        LogicalName="PhoneNumbers.locale.%(_BinLocaleFile.Filename)%(_BinLocaleFile.Extension)" />
     </ItemGroup>
   </Target>
 
@@ -208,6 +220,7 @@
     <RemoveDir Directories="$(BinaryGeocodingDir)" Condition="Exists('$(BinaryGeocodingDir)')" />
     <RemoveDir Directories="$(BinaryTimezonesDir)" Condition="Exists('$(BinaryTimezonesDir)')" />
     <RemoveDir Directories="$(BinaryCarrierDir)" Condition="Exists('$(BinaryCarrierDir)')" />
+    <RemoveDir Directories="$(BinaryLocaleDir)" Condition="Exists('$(BinaryLocaleDir)')" />
   </Target>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' ">

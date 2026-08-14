@@ -71,7 +71,8 @@ namespace PhoneNumbers
             // (calling code 247) and XK are both reachable here via GetRegionDisplayName. Returning
             // null lets the caller run its language fallback and end up with an empty description,
             // which is what GetDescriptionForNumber documents for a region it cannot name.
-            if (!LocaleData.Data.TryGetValue(country, out var names))
+            var names = LocaleNames.ForCountry(country);
+            if (names == null)
                 return null;
             if (!names.TryGetValue(language, out var name))
                 return null;
