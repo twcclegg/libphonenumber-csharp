@@ -1480,6 +1480,273 @@ namespace PhoneNumbers.Test
                 phoneUtil.IsPossibleNumberWithReason(adNumber));
         }
 
+        /// <summary>
+        /// Ported from PhoneNumberUtilTest.testIsPossibleNumberForType_DifferentTypeLengths.
+        /// Argentinian numbers, whose possible lengths differ per type.
+        /// </summary>
+        [Fact]
+        public void TestIsPossibleNumberForType_DifferentTypeLengths()
+        {
+            var number = new PhoneNumber.Builder().SetCountryCode(54).SetNationalNumber(12345L).Build();
+            // Too short for any Argentinian number, including fixed-line.
+            Assert.False(phoneUtil.IsPossibleNumberForType(number, PhoneNumberType.FIXED_LINE));
+            Assert.False(phoneUtil.IsPossibleNumberForType(number, PhoneNumberType.UNKNOWN));
+
+            // 6-digit numbers are okay for fixed-line.
+            number = Update(number).SetNationalNumber(123456L).Build();
+            Assert.True(phoneUtil.IsPossibleNumberForType(number, PhoneNumberType.UNKNOWN));
+            Assert.True(phoneUtil.IsPossibleNumberForType(number, PhoneNumberType.FIXED_LINE));
+            // But too short for mobile.
+            Assert.False(phoneUtil.IsPossibleNumberForType(number, PhoneNumberType.MOBILE));
+            // And too short for toll-free.
+            Assert.False(phoneUtil.IsPossibleNumberForType(number, PhoneNumberType.TOLL_FREE));
+
+            // The same applies to 9-digit numbers.
+            number = Update(number).SetNationalNumber(123456789L).Build();
+            Assert.True(phoneUtil.IsPossibleNumberForType(number, PhoneNumberType.UNKNOWN));
+            Assert.True(phoneUtil.IsPossibleNumberForType(number, PhoneNumberType.FIXED_LINE));
+            Assert.False(phoneUtil.IsPossibleNumberForType(number, PhoneNumberType.MOBILE));
+            Assert.False(phoneUtil.IsPossibleNumberForType(number, PhoneNumberType.TOLL_FREE));
+
+            // 10-digit numbers are universally possible.
+            number = Update(number).SetNationalNumber(1234567890L).Build();
+            Assert.True(phoneUtil.IsPossibleNumberForType(number, PhoneNumberType.UNKNOWN));
+            Assert.True(phoneUtil.IsPossibleNumberForType(number, PhoneNumberType.FIXED_LINE));
+            Assert.True(phoneUtil.IsPossibleNumberForType(number, PhoneNumberType.MOBILE));
+            Assert.True(phoneUtil.IsPossibleNumberForType(number, PhoneNumberType.TOLL_FREE));
+
+            // 11-digit numbers are only possible for mobile numbers. Note we don't require the
+            // leading 9, which all mobile numbers start with, and would be required for a valid
+            // mobile number.
+            number = Update(number).SetNationalNumber(12345678901L).Build();
+            Assert.True(phoneUtil.IsPossibleNumberForType(number, PhoneNumberType.UNKNOWN));
+            Assert.False(phoneUtil.IsPossibleNumberForType(number, PhoneNumberType.FIXED_LINE));
+            Assert.True(phoneUtil.IsPossibleNumberForType(number, PhoneNumberType.MOBILE));
+            Assert.False(phoneUtil.IsPossibleNumberForType(number, PhoneNumberType.TOLL_FREE));
+        }
+
+        [Fact]
+        public void TestIsPossibleNumberForType_LocalOnly()
+        {
+            // A number length which matches a local-only length.
+            var number = new PhoneNumber.Builder().SetCountryCode(49).SetNationalNumber(12L).Build();
+            Assert.True(phoneUtil.IsPossibleNumberForType(number, PhoneNumberType.UNKNOWN));
+            Assert.True(phoneUtil.IsPossibleNumberForType(number, PhoneNumberType.FIXED_LINE));
+            // Mobile numbers must be 10 or 11 digits, and there are no local-only lengths.
+            Assert.False(phoneUtil.IsPossibleNumberForType(number, PhoneNumberType.MOBILE));
+        }
+
+        /// <summary>
+        /// The possible lengths here match the country's as a whole, so they are absent from the
+        /// metadata for size reasons and have to be inherited.
+        /// </summary>
+        [Fact]
+        public void TestIsPossibleNumberForType_DataMissingForSizeReasons()
+        {
+            // Local-only number.
+            var number = new PhoneNumber.Builder().SetCountryCode(55).SetNationalNumber(12345678L).Build();
+            Assert.True(phoneUtil.IsPossibleNumberForType(number, PhoneNumberType.UNKNOWN));
+            Assert.True(phoneUtil.IsPossibleNumberForType(number, PhoneNumberType.FIXED_LINE));
+
+            number = Update(number).SetNationalNumber(1234567890L).Build();
+            Assert.True(phoneUtil.IsPossibleNumberForType(number, PhoneNumberType.UNKNOWN));
+            Assert.True(phoneUtil.IsPossibleNumberForType(number, PhoneNumberType.FIXED_LINE));
+        }
+
+        [Fact]
+        public void TestIsPossibleNumberForType_NumberTypeNotSupportedForRegion()
+        {
+            // There are *no* mobile numbers for this region at all, so we return false.
+            var number = new PhoneNumber.Builder().SetCountryCode(55).SetNationalNumber(12345678L).Build();
+            Assert.False(phoneUtil.IsPossibleNumberForType(number, PhoneNumberType.MOBILE));
+            // This matches a fixed-line length though.
+            Assert.True(phoneUtil.IsPossibleNumberForType(number, PhoneNumberType.FIXED_LINE));
+            Assert.True(phoneUtil.IsPossibleNumberForType(number, PhoneNumberType.FIXED_LINE_OR_MOBILE));
+
+            // There are *no* fixed-line OR mobile numbers for this country calling code at all, so
+            // we return false for these.
+            number = Update(number).SetCountryCode(979).SetNationalNumber(123456789L).Build();
+            Assert.False(phoneUtil.IsPossibleNumberForType(number, PhoneNumberType.MOBILE));
+            Assert.False(phoneUtil.IsPossibleNumberForType(number, PhoneNumberType.FIXED_LINE));
+            Assert.False(phoneUtil.IsPossibleNumberForType(number, PhoneNumberType.FIXED_LINE_OR_MOBILE));
+            Assert.True(phoneUtil.IsPossibleNumberForType(number, PhoneNumberType.PREMIUM_RATE));
+        }
+
+        [Fact]
+        public void TestIsPossibleNumberForTypeWithReason_DifferentTypeLengths()
+        {
+            var number = new PhoneNumber.Builder().SetCountryCode(54).SetNationalNumber(12345L).Build();
+            // Too short for any Argentinian number.
+            Assert.Equal(PhoneNumberUtil.ValidationResult.TOO_SHORT,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.UNKNOWN));
+            Assert.Equal(PhoneNumberUtil.ValidationResult.TOO_SHORT,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.FIXED_LINE));
+
+            // 6-digit numbers are okay for fixed-line.
+            number = Update(number).SetNationalNumber(123456L).Build();
+            Assert.Equal(PhoneNumberUtil.ValidationResult.IS_POSSIBLE,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.UNKNOWN));
+            Assert.Equal(PhoneNumberUtil.ValidationResult.IS_POSSIBLE,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.FIXED_LINE));
+            // But too short for mobile.
+            Assert.Equal(PhoneNumberUtil.ValidationResult.TOO_SHORT,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.MOBILE));
+            // And too short for toll-free.
+            Assert.Equal(PhoneNumberUtil.ValidationResult.TOO_SHORT,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.TOLL_FREE));
+
+            // The same applies to 9-digit numbers.
+            number = Update(number).SetNationalNumber(123456789L).Build();
+            Assert.Equal(PhoneNumberUtil.ValidationResult.IS_POSSIBLE,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.UNKNOWN));
+            Assert.Equal(PhoneNumberUtil.ValidationResult.IS_POSSIBLE,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.FIXED_LINE));
+            Assert.Equal(PhoneNumberUtil.ValidationResult.TOO_SHORT,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.MOBILE));
+            Assert.Equal(PhoneNumberUtil.ValidationResult.TOO_SHORT,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.TOLL_FREE));
+
+            // 10-digit numbers are universally possible.
+            number = Update(number).SetNationalNumber(1234567890L).Build();
+            Assert.Equal(PhoneNumberUtil.ValidationResult.IS_POSSIBLE,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.UNKNOWN));
+            Assert.Equal(PhoneNumberUtil.ValidationResult.IS_POSSIBLE,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.FIXED_LINE));
+            Assert.Equal(PhoneNumberUtil.ValidationResult.IS_POSSIBLE,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.MOBILE));
+            Assert.Equal(PhoneNumberUtil.ValidationResult.IS_POSSIBLE,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.TOLL_FREE));
+
+            // 11-digit numbers are only possible for mobile numbers.
+            number = Update(number).SetNationalNumber(12345678901L).Build();
+            Assert.Equal(PhoneNumberUtil.ValidationResult.IS_POSSIBLE,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.UNKNOWN));
+            Assert.Equal(PhoneNumberUtil.ValidationResult.TOO_LONG,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.FIXED_LINE));
+            Assert.Equal(PhoneNumberUtil.ValidationResult.IS_POSSIBLE,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.MOBILE));
+            Assert.Equal(PhoneNumberUtil.ValidationResult.TOO_LONG,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.TOLL_FREE));
+        }
+
+        [Fact]
+        public void TestIsPossibleNumberForTypeWithReason_LocalOnly()
+        {
+            var number = new PhoneNumber.Builder().SetCountryCode(49).SetNationalNumber(12L).Build();
+            Assert.Equal(PhoneNumberUtil.ValidationResult.IS_POSSIBLE_LOCAL_ONLY,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.UNKNOWN));
+            Assert.Equal(PhoneNumberUtil.ValidationResult.IS_POSSIBLE_LOCAL_ONLY,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.FIXED_LINE));
+            // Mobile numbers must be 10 or 11 digits, and there are no local-only lengths.
+            Assert.Equal(PhoneNumberUtil.ValidationResult.TOO_SHORT,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.MOBILE));
+        }
+
+        [Fact]
+        public void TestIsPossibleNumberForTypeWithReason_DataMissingForSizeReasons()
+        {
+            // Local-only number.
+            var number = new PhoneNumber.Builder().SetCountryCode(55).SetNationalNumber(12345678L).Build();
+            Assert.Equal(PhoneNumberUtil.ValidationResult.IS_POSSIBLE_LOCAL_ONLY,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.UNKNOWN));
+            Assert.Equal(PhoneNumberUtil.ValidationResult.IS_POSSIBLE_LOCAL_ONLY,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.FIXED_LINE));
+
+            // Normal-length number.
+            number = Update(number).SetNationalNumber(1234567890L).Build();
+            Assert.Equal(PhoneNumberUtil.ValidationResult.IS_POSSIBLE,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.UNKNOWN));
+            Assert.Equal(PhoneNumberUtil.ValidationResult.IS_POSSIBLE,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.FIXED_LINE));
+        }
+
+        [Fact]
+        public void TestIsPossibleNumberForTypeWithReason_NumberTypeNotSupportedForRegion()
+        {
+            // There are *no* mobile numbers for this region at all, so we return INVALID_LENGTH.
+            var number = new PhoneNumber.Builder().SetCountryCode(55).SetNationalNumber(12345678L).Build();
+            Assert.Equal(PhoneNumberUtil.ValidationResult.INVALID_LENGTH,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.MOBILE));
+            // This matches a fixed-line length though.
+            Assert.Equal(PhoneNumberUtil.ValidationResult.IS_POSSIBLE_LOCAL_ONLY,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.FIXED_LINE_OR_MOBILE));
+            // This is too short for fixed-line, and no mobile numbers exist.
+            number = Update(number).SetCountryCode(55).SetNationalNumber(1234567L).Build();
+            Assert.Equal(PhoneNumberUtil.ValidationResult.INVALID_LENGTH,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.MOBILE));
+            Assert.Equal(PhoneNumberUtil.ValidationResult.TOO_SHORT,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.FIXED_LINE_OR_MOBILE));
+            Assert.Equal(PhoneNumberUtil.ValidationResult.TOO_SHORT,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.FIXED_LINE));
+
+            // This is too short for mobile, and no fixed-line numbers exist.
+            number = Update(number).SetCountryCode(882).SetNationalNumber(1234567L).Build();
+            Assert.Equal(PhoneNumberUtil.ValidationResult.TOO_SHORT,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.MOBILE));
+            Assert.Equal(PhoneNumberUtil.ValidationResult.TOO_SHORT,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.FIXED_LINE_OR_MOBILE));
+            Assert.Equal(PhoneNumberUtil.ValidationResult.INVALID_LENGTH,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.FIXED_LINE));
+
+            // There are *no* fixed-line OR mobile numbers for this country calling code at all, so
+            // we return INVALID_LENGTH.
+            number = Update(number).SetCountryCode(979).SetNationalNumber(123456789L).Build();
+            Assert.Equal(PhoneNumberUtil.ValidationResult.INVALID_LENGTH,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.MOBILE));
+            Assert.Equal(PhoneNumberUtil.ValidationResult.INVALID_LENGTH,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.FIXED_LINE));
+            Assert.Equal(PhoneNumberUtil.ValidationResult.INVALID_LENGTH,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.FIXED_LINE_OR_MOBILE));
+            Assert.Equal(PhoneNumberUtil.ValidationResult.IS_POSSIBLE,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.PREMIUM_RATE));
+        }
+
+        /// <summary>
+        /// FIXED_LINE_OR_MOBILE is possible when the length matches either fixed-line or mobile.
+        /// </summary>
+        [Fact]
+        public void TestIsPossibleNumberForTypeWithReason_FixedLineOrMobile()
+        {
+            var number = new PhoneNumber.Builder().SetCountryCode(290).SetNationalNumber(1234L).Build();
+            Assert.Equal(PhoneNumberUtil.ValidationResult.TOO_SHORT,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.FIXED_LINE));
+            Assert.Equal(PhoneNumberUtil.ValidationResult.IS_POSSIBLE,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.MOBILE));
+            Assert.Equal(PhoneNumberUtil.ValidationResult.IS_POSSIBLE,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.FIXED_LINE_OR_MOBILE));
+
+            number = Update(number).SetNationalNumber(12345L).Build();
+            Assert.Equal(PhoneNumberUtil.ValidationResult.TOO_SHORT,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.FIXED_LINE));
+            Assert.Equal(PhoneNumberUtil.ValidationResult.TOO_LONG,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.MOBILE));
+            Assert.Equal(PhoneNumberUtil.ValidationResult.INVALID_LENGTH,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.FIXED_LINE_OR_MOBILE));
+
+            number = Update(number).SetNationalNumber(123456L).Build();
+            Assert.Equal(PhoneNumberUtil.ValidationResult.IS_POSSIBLE,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.FIXED_LINE));
+            Assert.Equal(PhoneNumberUtil.ValidationResult.TOO_LONG,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.MOBILE));
+            Assert.Equal(PhoneNumberUtil.ValidationResult.IS_POSSIBLE,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.FIXED_LINE_OR_MOBILE));
+
+            number = Update(number).SetNationalNumber(1234567L).Build();
+            Assert.Equal(PhoneNumberUtil.ValidationResult.TOO_LONG,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.FIXED_LINE));
+            Assert.Equal(PhoneNumberUtil.ValidationResult.TOO_LONG,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.MOBILE));
+            Assert.Equal(PhoneNumberUtil.ValidationResult.TOO_LONG,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.FIXED_LINE_OR_MOBILE));
+
+            // 8-digit numbers are possible for toll-free and premium-rate numbers only.
+            number = Update(number).SetNationalNumber(12345678L).Build();
+            Assert.Equal(PhoneNumberUtil.ValidationResult.IS_POSSIBLE,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.TOLL_FREE));
+            Assert.Equal(PhoneNumberUtil.ValidationResult.TOO_LONG,
+                phoneUtil.IsPossibleNumberForTypeWithReason(number, PhoneNumberType.FIXED_LINE_OR_MOBILE));
+        }
+
         [Fact]
         public void TestIsNotPossibleNumber()
         {
