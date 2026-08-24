@@ -112,9 +112,7 @@ namespace PhoneNumbers
                     // BuildGeocodingBins target in PhoneNumbers.csproj). The legacy ".txt" suffix
                     // was dropped when the runtime switched from text/zip parsing to direct
                     // binary reads.
-                    var fileName = new StringBuilder();
-                    fileName.Append(languageCode).Append('.').Append(countryCallingCode);
-                    return fileName.ToString();
+                    return $"{languageCode}.{countryCallingCode}";
                 }
             }
             return "";
@@ -125,10 +123,9 @@ namespace PhoneNumbers
         {
             var fullLocale = ConstructFullLocale(language, script, region);
             var fullLocaleStr = fullLocale.ToString();
-            string normalizedLocale;
-            if (LocaleNormalizationMap.TryGetValue(fullLocaleStr, out normalizedLocale))
-                if (setOfLangs.Contains(normalizedLocale))
-                    return normalizedLocale;
+            if (LocaleNormalizationMap.TryGetValue(fullLocaleStr, out var normalizedLocale) &&
+                setOfLangs.Contains(normalizedLocale))
+                return normalizedLocale;
             if (setOfLangs.Contains(fullLocaleStr))
                 return fullLocaleStr;
 
