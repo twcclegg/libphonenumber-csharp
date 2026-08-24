@@ -169,16 +169,6 @@ Therefore, we recommend you keep this nuget package as up to date as possible us
 
 For more information on metadata usage, please refer to the [main repository faq](https://github.com/google/libphonenumber/blob/master/FAQ.md#metadata)
 
-## ToDo
-
-* update / add / port new unit tests and logging from java source
-
-## How to unfold automatic generated files
-
-* Install Jetbrains - Resharper for Visual Studio
-* File by file, right click and "Cleanup code"
-* Check the unfolded file
-
 ## Running tests locally
 
 ```bash

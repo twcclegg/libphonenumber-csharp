@@ -44,9 +44,9 @@ Known Issues
   and embedded in the assembly. No zip files or text files are needed to run the library or its
   tests.
 
-
-Todo
-----
-
-- Restore the Java logging calls?
-- Find a suitable replace for Java CharSequence in phone numbers parsing API.
+- Java's public API accepts `CharSequence` in several entry points (e.g.
+  `PhoneNumberMatcher`'s constructor, `isViablePhoneNumber`), letting callers pass a `String`,
+  `StringBuilder`, or `StringBuffer` without copying. The C# port takes `string` in the
+  equivalent spots (`PhoneNumberMatcher(PhoneNumberUtil, string, ...)`,
+  `PhoneNumberUtil.IsViablePhoneNumber(string)`) instead of a comparable abstraction, so a
+  caller building up a number in a `StringBuilder` has to call `.ToString()` first.
