@@ -496,7 +496,7 @@ namespace PhoneNumbers
                     {
                         if (!util.IsValidNumber(number) ||
                            !PhoneNumberMatcher.ContainsOnlyValidXChars(number, candidate, util) ||
-                           PhoneNumberMatcher.ContainsMoreThanOneSlash(candidate) ||
+                           PhoneNumberMatcher.ContainsMoreThanOneSlash(number, candidate) ||
                            !PhoneNumberMatcher.IsNationalPrefixPresentIfRequired(number, util))
                         {
                             return false;
@@ -508,7 +508,7 @@ namespace PhoneNumbers
                     {
                         if (!util.IsValidNumber(number) ||
                                 !PhoneNumberMatcher.ContainsOnlyValidXChars(number, candidate, util) ||
-                                PhoneNumberMatcher.ContainsMoreThanOneSlash(candidate) ||
+                                PhoneNumberMatcher.ContainsMoreThanOneSlash(number, candidate) ||
                                 !PhoneNumberMatcher.IsNationalPrefixPresentIfRequired(number, util))
                         {
                             return false;

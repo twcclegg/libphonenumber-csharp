@@ -621,10 +621,32 @@ namespace PhoneNumbers
             return false;
         }
 
-        public static bool ContainsMoreThanOneSlash(string candidate)
+        public static bool ContainsMoreThanOneSlash(PhoneNumber number, string candidate)
         {
             var firstSlashIndex = candidate.IndexOf('/');
-            return firstSlashIndex > 0 && candidate.IndexOf('/', firstSlashIndex + 1) >= 0;
+            if (firstSlashIndex < 0)
+            {
+                // No slashes, this is okay.
+                return false;
+            }
+            var secondSlashIndex = candidate.IndexOf('/', firstSlashIndex + 1);
+            if (secondSlashIndex < 0)
+            {
+                // Only one slash, this is okay.
+                return false;
+            }
+            // If the first slash is after the country calling code, this is permitted.
+            var candidateHasCountryCode =
+                number.CountryCodeSource == PhoneNumber.Types.CountryCodeSource.FROM_NUMBER_WITH_PLUS_SIGN ||
+                number.CountryCodeSource == PhoneNumber.Types.CountryCodeSource.FROM_NUMBER_WITHOUT_PLUS_SIGN;
+            if (candidateHasCountryCode &&
+                PhoneNumberUtil.NormalizeDigitsOnly(candidate.Substring(0, firstSlashIndex)) ==
+                    number.CountryCode.ToString(CultureInfo.InvariantCulture))
+            {
+                // Any more slashes and this is illegal.
+                return candidate.Substring(secondSlashIndex + 1).Contains('/');
+            }
+            return true;
         }
 
         public static bool ContainsOnlyValidXChars(
