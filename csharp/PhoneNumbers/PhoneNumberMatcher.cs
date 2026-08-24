@@ -621,6 +621,18 @@ namespace PhoneNumbers
             return false;
         }
 
+        /// <summary>
+        /// Preserved for binary/source compatibility with the public API shipped before the
+        /// country-code-aware overload below was introduced. New callers should prefer
+        /// <see cref="ContainsMoreThanOneSlash(PhoneNumber, string)"/>, which matches upstream Java's
+        /// more precise handling of slashes that fall within the country calling code prefix.
+        /// </summary>
+        public static bool ContainsMoreThanOneSlash(string candidate)
+        {
+            var firstSlashIndex = candidate.IndexOf('/');
+            return firstSlashIndex > 0 && candidate.IndexOf('/', firstSlashIndex + 1) >= 0;
+        }
+
         public static bool ContainsMoreThanOneSlash(PhoneNumber number, string candidate)
         {
             var firstSlashIndex = candidate.IndexOf('/');
