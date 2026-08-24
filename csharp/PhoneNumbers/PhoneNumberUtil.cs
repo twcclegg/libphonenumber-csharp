@@ -367,7 +367,7 @@ namespace PhoneNumbers
         internal static Regex ValidPhoneNumber() => _validPhoneNumber;
 #endif
 
-        private static PhoneNumberUtil instance;
+        private static volatile PhoneNumberUtil instance;
 
         // Lazy, cached resolver for region metadata. Replaces the eager Dictionary that used to
         // be populated at construction by parsing the entire XML file: now we resolve a region's
