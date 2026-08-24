@@ -714,14 +714,7 @@ namespace PhoneNumbers
                     // present.
                     return true;
                 }
-                // Remove the first-group symbol.
-                var candidateNationalPrefixRule = formatRule.NationalPrefixFormattingRule;
-                // We assume that the first-group symbol will never be _before_ the national prefix.
-                candidateNationalPrefixRule =
-                    candidateNationalPrefixRule.Substring(0, candidateNationalPrefixRule.IndexOf("${1}", StringComparison.Ordinal));
-                candidateNationalPrefixRule =
-                    PhoneNumberUtil.NormalizeDigitsOnly(candidateNationalPrefixRule);
-                if (candidateNationalPrefixRule.Length == 0)
+                if (PhoneNumberUtil.FormattingRuleHasFirstGroupOnly(formatRule.NationalPrefixFormattingRule))
                 {
                     // National Prefix not needed for this number.
                     return true;

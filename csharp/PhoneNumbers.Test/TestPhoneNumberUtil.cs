@@ -2872,6 +2872,26 @@ namespace PhoneNumbers.Test
             Assert.False(phoneUtil.IsAlphaNumber("+800 1234-1234"));
         }
 
+        /// <summary>
+        /// Mirrors Java's FIRST_GROUP_ONLY_PREFIX_PATTERN test coverage: the rule must be nothing but
+        /// the first-group placeholder, optionally wrapped in one pair of parentheses. Real metadata
+        /// stores that placeholder as "${1}" (see BuildMetadataFromXml), not Java's literal "$1", so a
+        /// rule such as "0${1}" (digits before the placeholder) or "${1}-" (content after it) must not
+        /// match even though it contains "${1}".
+        /// </summary>
+        [Fact]
+        public void TestFormattingRuleHasFirstGroupOnly()
+        {
+            Assert.True(PhoneNumberUtil.FormattingRuleHasFirstGroupOnly(""));
+            Assert.True(PhoneNumberUtil.FormattingRuleHasFirstGroupOnly("${1}"));
+            Assert.True(PhoneNumberUtil.FormattingRuleHasFirstGroupOnly("(${1})"));
+            Assert.True(PhoneNumberUtil.FormattingRuleHasFirstGroupOnly("(${1}"));
+            Assert.True(PhoneNumberUtil.FormattingRuleHasFirstGroupOnly("${1})"));
+            Assert.False(PhoneNumberUtil.FormattingRuleHasFirstGroupOnly("0${1}"));
+            Assert.False(PhoneNumberUtil.FormattingRuleHasFirstGroupOnly("${1}-"));
+            Assert.False(PhoneNumberUtil.FormattingRuleHasFirstGroupOnly("$NP${1}"));
+        }
+
         [Fact]
         public void TestIsMobileNumberPortableRegion()
         {

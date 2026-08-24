@@ -160,12 +160,6 @@ namespace PhoneNumbers
             return false;
         }
 
-        /// <summary>
-        /// Helper function to check if the national prefix formatting rule has the first group only, i.e.,
-        /// does not start with the national prefix.
-        /// </summary>
-        private static bool FormattingRuleHasFirstGroupOnly(string rule) => rule is "" or "($1)" or "$1)" or "($1" or "$1";
-
         private void GetAvailableFormats(string leadingDigits)
         {
             // First decide whether we should use international or national number rules.
@@ -179,7 +173,7 @@ namespace PhoneNumbers
                 // Discard a few formats that we know are not relevant based on the presence of the national
                 // prefix.
                 if (extractedNationalPrefix.Length > 0
-                    && FormattingRuleHasFirstGroupOnly(format.NationalPrefixFormattingRule)
+                    && PhoneNumberUtil.FormattingRuleHasFirstGroupOnly(format.NationalPrefixFormattingRule)
                     && !format.NationalPrefixOptionalWhenFormatting
                     && !format.HasDomesticCarrierCodeFormattingRule)
                 {
@@ -191,7 +185,7 @@ namespace PhoneNumbers
                 }
                 else if (extractedNationalPrefix.Length == 0
                          && !isCompleteNumber
-                         && !FormattingRuleHasFirstGroupOnly(format.NationalPrefixFormattingRule)
+                         && !PhoneNumberUtil.FormattingRuleHasFirstGroupOnly(format.NationalPrefixFormattingRule)
                          && !format.NationalPrefixOptionalWhenFormatting)
                 {
                     // This number was entered without a national prefix, and this formatting rule requires one,
