@@ -443,6 +443,12 @@ namespace PhoneNumbers
         {
             var fromIndex = 0;
             var candidate = normalizedCandidate.ToString();
+            if (number.CountryCodeSource != PhoneNumber.Types.CountryCodeSource.FROM_DEFAULT_COUNTRY)
+            {
+                // First skip the country code if the normalized candidate contained it.
+                var countryCode = number.CountryCode.ToString(CultureInfo.InvariantCulture);
+                fromIndex = candidate.IndexOf(countryCode, StringComparison.Ordinal) + countryCode.Length;
+            }
             // Check each group of consecutive digits are not broken into separate groupings in the
             // normalizedCandidate string.
             for (var i = 0; i < formattedNumberGroups.Count; i++)
@@ -458,8 +464,12 @@ namespace PhoneNumbers
                 fromIndex += formattedNumberGroups[i].Length;
                 if (i == 0 && fromIndex < candidate.Length)
                 {
-                    // We are at the position right after the NDC.
-                    if (char.IsDigit(candidate[fromIndex]))
+                    // We are at the position right after the NDC. We get the region used for formatting
+                    // information based on the country code in the phone number, rather than the number
+                    // itself, as we do not need to distinguish between different countries with the same
+                    // country calling code and this is faster.
+                    var region = util.GetRegionCodeForCountryCode(number.CountryCode);
+                    if (util.GetNddPrefixForRegion(region, true) != null && char.IsDigit(candidate[fromIndex]))
                     {
                         // This means there is no formatting symbol after the NDC. In this case, we only
                         // accept the number if there is no formatting symbol at all in the number, except

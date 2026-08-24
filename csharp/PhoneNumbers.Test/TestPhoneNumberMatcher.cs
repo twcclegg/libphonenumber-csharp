@@ -367,6 +367,29 @@ namespace PhoneNumbers.Test
             FindMatchesInContexts(validContexts, true, true);
         }
 
+        /// <summary>
+        /// Regression test for the missing "skip past the country calling code before looking for the
+        /// first group" step (present in the upstream Java, ported here to match): without it, a decoy
+        /// occurrence of the NDC group earlier in the candidate (before the actual country code) is
+        /// matched instead of the real one, and the leftover digit run right after the decoy is wrongly
+        /// compared against the national significant number.
+        /// </summary>
+        [Fact]
+        public void TestAllNumberGroupsRemainGroupedSkipsCountryCode()
+        {
+            var number = new PhoneNumber.Builder()
+                .SetCountryCode(1)
+                .SetNationalNumber(6502530000L)
+                .SetCountryCodeSource(PhoneNumber.Types.CountryCodeSource.FROM_NUMBER_WITHOUT_PLUS_SIGN)
+                .Build();
+            // "6502" before the real "1-650-253-0000" is a decoy that starts with the NDC group "650"
+            // but is immediately followed by a digit rather than a separator.
+            var candidate = new StringBuilder("6502-1-650-253-0000");
+            var formattedNumberGroups = new List<string> { "650", "253", "0000" };
+            Assert.True(PhoneNumberMatcher.AllNumberGroupsRemainGrouped(
+                phoneUtil, number, candidate, formattedNumberGroups));
+        }
+
         [Fact]
         public void TestMatchesMultiplePhoneNumbersSeparatedByPhoneNumberPunctuation()
         {
