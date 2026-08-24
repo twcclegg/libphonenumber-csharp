@@ -2413,6 +2413,9 @@ namespace PhoneNumbers.Test
             VerifyFailure("tel:555-1234;phone-context=1-331", RegionCode.ZZ, ErrorType.NOT_A_NUMBER);
             // Only the phone-context symbol is present, but no data.
             VerifyFailure(";phone-context=", RegionCode.ZZ, ErrorType.NOT_A_NUMBER);
+            // The "tel:" prefix appears after the phone-context marker instead of before it, so there is no
+            // valid national-number substring between them.
+            VerifyFailure(";phone-context=example.com;tel:1234", RegionCode.ZZ, ErrorType.NOT_A_NUMBER);
         }
 
         [Fact]

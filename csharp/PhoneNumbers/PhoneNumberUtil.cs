@@ -3005,6 +3005,14 @@ namespace PhoneNumbers
                 var indexOfRfc3966Prefix = numberToParse.IndexOf(RFC3966_PREFIX, StringComparison.Ordinal);
                 var indexOfNationalNumber =
                     indexOfRfc3966Prefix >= 0 ? indexOfRfc3966Prefix + RFC3966_PREFIX.Length : 0;
+                if (indexOfNationalNumber > indexOfPhoneContext)
+                {
+                    // The "tel:" prefix (if any) is supposed to precede the phone-context marker; if it
+                    // doesn't, the input isn't well-formed RFC3966 and there's no sensible national-number
+                    // substring to extract, e.g. ";phone-context=example.com;tel:1234".
+                    throw new NumberParseException(ErrorType.NOT_A_NUMBER,
+                        "the phone-context value is invalid.");
+                }
                 nationalNumber.Append(numberToParse, indexOfNationalNumber, indexOfPhoneContext - indexOfNationalNumber);
             }
             else
