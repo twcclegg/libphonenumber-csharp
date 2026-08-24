@@ -644,7 +644,12 @@ namespace PhoneNumbers
                     number.CountryCode.ToString(CultureInfo.InvariantCulture))
             {
                 // Any more slashes and this is illegal.
+#if NETSTANDARD2_0
+                // netstandard2.0 only has string.Contains(string); net8.0+ prefers Contains(char) (CA1847).
+                return candidate.Substring(secondSlashIndex + 1).Contains("/");
+#else
                 return candidate.Substring(secondSlashIndex + 1).Contains('/');
+#endif
             }
             return true;
         }
