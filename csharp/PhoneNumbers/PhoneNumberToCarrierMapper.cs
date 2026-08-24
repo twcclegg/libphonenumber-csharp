@@ -105,8 +105,8 @@ namespace PhoneNumbers
         }
 
         private static bool IsMobile(PhoneNumberType numberType) =>
-            numberType == PhoneNumberType.MOBILE
-            || numberType == PhoneNumberType.FIXED_LINE_OR_MOBILE
-            || numberType == PhoneNumberType.PAGER;
+            numberType is PhoneNumberType.MOBILE
+                or PhoneNumberType.FIXED_LINE_OR_MOBILE
+                or PhoneNumberType.PAGER;
     }
 }

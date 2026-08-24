@@ -109,7 +109,7 @@ namespace PhoneNumbers
         }
 
         private static bool MayFallBackToEnglish(string lang) =>
-            !lang.Equals("zh") && !lang.Equals("ja") && !lang.Equals("ko");
+            lang is not "zh" and not "ja" and not "ko";
 
         private AreaCodeMap GetPhonePrefixDescriptions(int prefixMapKey, string language, string script, string region)
         {

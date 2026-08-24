@@ -31,10 +31,7 @@ namespace PhoneNumbers
 
         private AreaCodeMapStorageStrategy areaCodeMapStorage;
 
-        public AreaCodeMapStorageStrategy GetAreaCodeMapStorage()
-        {
-            return areaCodeMapStorage;
-        }
+        public AreaCodeMapStorageStrategy GetAreaCodeMapStorage() => areaCodeMapStorage;
 
         /// <summary>
         /// Gets the size of the provided area code map storage. The map storage passed-in will be filled
@@ -203,9 +200,6 @@ namespace PhoneNumbers
         /// Dumps the mappings contained in the area code map.
         /// </summary>
         /// <returns></returns>
-        public override string ToString()
-        {
-            return areaCodeMapStorage.ToString();
-        }
+        public override string ToString() => areaCodeMapStorage.ToString();
     }
 }
