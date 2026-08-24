@@ -11,7 +11,7 @@
                 number = PhoneNumberUtil.Parse(input, region);
                 return true;
             }
-            catch
+            catch (NumberParseException)
             {
                 number = null;
                 return false;
@@ -25,7 +25,7 @@
                 number = PhoneNumberUtil.Parse(input, region);
                 return PhoneNumberUtil.IsValidNumber(number);
             }
-            catch
+            catch (NumberParseException)
             {
                 number = null;
                 return false;
