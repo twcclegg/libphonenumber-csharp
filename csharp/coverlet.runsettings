@@ -5,18 +5,27 @@
       <DataCollector friendlyName="XPlat code coverage">
         <Configuration>
           <!-- CountryCodeToRegionCodeMap: generated data table, not code under test.
-               *Builder (matches the five nested PhoneMetadata/Builder, PhoneNumber/Builder,
-               NumberFormat/Builder, PhoneNumberDesc/Builder, PhoneMetadataCollection/Builder
-               types): hand-ported protobuf-style builders. Each is dozens of near-identical
-               Get/Set/Has/Clear blocks per field (over a thousand lines for
-               PhoneMetadata/Builder alone), so their line count swamps the project percentage
-               without the per-field wiring itself carrying verification value - nobody is going
-               to hand-test that a setter's value round-trips through its getter. The behavioral
-               part (MergeFrom/Build/BuildPartial) is exercised by TestBuildMetadataFromXml.cs,
-               which is the only place these builders run outside the build-time metadata
-               pipeline - the default load path reads pre-built binaries, not XML, so the rest of
-               the test suite never touches them at all. -->
-          <Exclude>[PhoneNumbers]PhoneNumbers.CountryCodeToRegionCodeMap,[PhoneNumbers]*Builder</Exclude>
+               The five PhoneMetadata/PhoneNumber/NumberFormat/PhoneNumberDesc/PhoneMetadataCollection
+               entries each target that type's nested Builder: hand-ported protobuf-style builders.
+               Each is dozens of near-identical Get/Set/Has/Clear blocks per field (over a
+               thousand lines for PhoneMetadata's Builder alone), so their line count swamps the
+               project percentage without the per-field wiring itself carrying verification
+               value - nobody is going to hand-test that a setter's value round-trips through its
+               getter. The behavioral part (MergeFrom/Build/BuildPartial) is exercised by
+               TestBuildMetadataFromXml.cs, which is the only place these builders run outside the
+               build-time metadata pipeline - the default load path reads pre-built binaries, not
+               XML, so the rest of the test suite never touches them at all.
+
+               Scoped to these five outer-type prefixes rather than a bare "*Builder" wildcard, so a
+               future, genuinely-tested class that happens to end in "Builder" doesn't get silently
+               swept into the same exclusion. Each entry is "Outer*Builder", not the CLR nested-type
+               name "Outer+Builder" or the cobertura-report name "Outer/Builder" - empirically, only
+               the wildcard form matches coverlet's XPlat data collector for a nested type; an exact
+               "+"- or "/"-qualified name matches nothing, silently leaving the type covered instead
+               of excluded (verified locally by collecting coverage and checking the resulting
+               coverage.cobertura.xml for the class, since a wrong filter here fails silently - no
+               build or test error, just a class quietly back in the coverage count). -->
+          <Exclude>[PhoneNumbers]PhoneNumbers.CountryCodeToRegionCodeMap,[PhoneNumbers]PhoneNumbers.PhoneMetadata*Builder,[PhoneNumbers]PhoneNumbers.PhoneNumber*Builder,[PhoneNumbers]PhoneNumbers.NumberFormat*Builder,[PhoneNumbers]PhoneNumbers.PhoneNumberDesc*Builder,[PhoneNumbers]PhoneNumbers.PhoneMetadataCollection*Builder</Exclude>
         </Configuration>
       </DataCollector>
     </DataCollectors>
