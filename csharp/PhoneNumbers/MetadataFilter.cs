@@ -107,14 +107,14 @@ namespace PhoneNumbers
         public override bool Equals(object obj)
 #endif
         {
-            if (obj == null)
+            if (obj is not MetadataFilter other)
             {
                 return false;
             }
 
-            return blacklist.Count == ((MetadataFilter)obj)?.blacklist?.Count &&
+            return blacklist.Count == other.blacklist.Count &&
                    blacklist.All(kvp =>
-                       ((MetadataFilter)obj).blacklist.TryGetValue(kvp.Key, out var value2) && kvp.Value.SetEquals(value2));
+                       other.blacklist.TryGetValue(kvp.Key, out var value2) && kvp.Value.SetEquals(value2));
         }
 
         public override int GetHashCode()
@@ -263,20 +263,20 @@ namespace PhoneNumbers
             }
 
             foreach (var wildcardChild in wildcardChildren)
-			{
-				foreach (var parent in ExcludableParentFields)
-				{
-					if (!fieldMap.TryGetValue(parent, out var children))
-					{
-						children = new SortedSet<string>();
-						fieldMap.Add(parent, children);
-					}
-					if (!children.Add(wildcardChild)
-						&& children.Count != ExcludableChildFields.Count)
-						throw new Exception(
-							wildcardChild + " is present by itself so remove it from " + parent + "'s group");
-				}
-			}
+            {
+                foreach (var parent in ExcludableParentFields)
+                {
+                    if (!fieldMap.TryGetValue(parent, out var children))
+                    {
+                        children = new SortedSet<string>();
+                        fieldMap.Add(parent, children);
+                    }
+                    if (!children.Add(wildcardChild)
+                        && children.Count != ExcludableChildFields.Count)
+                        throw new Exception(
+                            wildcardChild + " is present by itself so remove it from " + parent + "'s group");
+                }
+            }
 
             return fieldMap;
         }
