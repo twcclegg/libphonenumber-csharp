@@ -4,6 +4,9 @@
     {
         private static readonly PhoneNumberUtil PhoneNumberUtil = PhoneNumberUtil.GetInstance();
 
+        public static bool TryParse(string input, out PhoneNumbers.PhoneNumber number)
+            => TryParse(input, null, out number);
+
         public static bool TryParse(string input, string region, out PhoneNumbers.PhoneNumber number)
         {
             try
@@ -17,6 +20,9 @@
                 return false;
             }
         }
+
+        public static bool TryParseValid(string input, out PhoneNumbers.PhoneNumber number)
+            => TryParseValid(input, null, out number);
 
         public static bool TryParseValid(string input, string region, out PhoneNumbers.PhoneNumber number)
         {
