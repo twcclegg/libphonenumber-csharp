@@ -60,19 +60,26 @@ namespace PhoneNumbers
         // code, from the national number.
         private const char SeparatorBeforeNationalNumber = ' ';
 
-        // Real national significant numbers plus a parsed extension never approach this many characters,
-        // so this is only ever reached by pathological input. Every InputDigit call re-derives its
-        // return value from scratch off the accrued buffers - including a regex match against the whole
-        // accumulated nationalNumber in AttemptToFormatAccruedDigits, and accruedInput.ToString() itself
-        // on every bail-out path - so cost grows worse than quadratically with digits typed if the
-        // buffers are left to grow unbounded. Past this many characters we stop growing accruedInput and
-        // freeze the output into cappedOutput, so every further call is O(1) instead of re-copying an
-        // ever-longer buffer.
-        private const int MaxAccruedCharsForFormatting = 50;
+        // Matches PhoneNumberUtil.MAX_INPUT_STRING_LENGTH - Parse() itself refuses anything longer than
+        // this as not a phone number, so there is no legitimate as-you-type input (number, extension,
+        // and pause/wait characters included) that should ever reach this cap; only pathological input
+        // does. Every InputDigit call re-derives its return value from scratch off the accrued buffers -
+        // including a regex match against the whole accumulated nationalNumber in
+        // AttemptToFormatAccruedDigits, and accruedInput.ToString() itself on every bail-out path - so
+        // cost grows worse than quadratically with digits typed if the buffers are left to grow
+        // unbounded. Past this many characters we stop growing accruedInput and freeze the output into
+        // cappedOutput, so every further call is O(1) instead of re-copying an ever-longer buffer.
+        private const int MaxAccruedCharsForFormatting = PhoneNumberUtil.MAX_INPUT_STRING_LENGTH;
 
         // Set once accruedInput.Length reaches MaxAccruedCharsForFormatting; null until then. See
         // MaxAccruedCharsForFormatting for why this exists.
-        private string cappedOutput = null!;
+        //
+        // Scoped #nullable enable/restore rather than a file-level pragma: this file's nullable context
+        // is otherwise oblivious on netstandard2.0 (Nullable isn't set for that TFM), and enabling it
+        // for the whole file would surface a pile of never-checked nullable warnings elsewhere in it.
+#nullable enable
+        private string? cappedOutput;
+#nullable restore
         private static readonly PhoneMetadata EmptyMetadata = new() { InternationalPrefix = "NA" };
         private readonly PhoneMetadata defaultMetaData;
         private PhoneMetadata currentMetadata;
@@ -282,7 +289,7 @@ namespace PhoneNumbers
         public void Clear()
         {
             currentOutput = "";
-            cappedOutput = null!;
+            cappedOutput = null;
             accruedInput.Length = 0;
             accruedInputWithoutFormatting.Length = 0;
             formattingTemplate.Length = 0;

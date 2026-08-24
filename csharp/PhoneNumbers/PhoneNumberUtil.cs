@@ -62,7 +62,7 @@ namespace PhoneNumbers
 
         // We don't allow input strings for parsing to be longer than this. This prevents malicious
         // input from overflowing the regular-expression engine.
-        private const int MAX_INPUT_STRING_LENGTH = 250;
+        internal const int MAX_INPUT_STRING_LENGTH = 250;
 
         // Region-code for the unknown region.
         private const string UNKNOWN_REGION = "ZZ";
