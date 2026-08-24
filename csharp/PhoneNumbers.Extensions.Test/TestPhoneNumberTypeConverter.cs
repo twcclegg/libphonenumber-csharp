@@ -16,6 +16,18 @@ namespace PhoneNumbers.Extensions.Test
         }
 
         [Fact]
+        public void ConvertFrom_MatchesTryParse_ForEqualityAndHashing()
+        {
+            // Both entry points must produce equal/interchangeable PhoneNumber instances for the same
+            // input; RawInput divergence would otherwise break Equals()/GetHashCode() consistency.
+            var converted = Assert.IsType<PhoneNumbers.PhoneNumber>(Converter.ConvertFrom("+16192987704"));
+            Assert.True(PhoneNumber.TryParse("+16192987704", out var parsed));
+
+            Assert.Equal(parsed, converted);
+            Assert.Equal(parsed!.GetHashCode(), converted.GetHashCode());
+        }
+
+        [Fact]
         public void ConvertTo_FormatsE164()
         {
             var util = PhoneNumberUtil.GetInstance();

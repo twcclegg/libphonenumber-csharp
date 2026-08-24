@@ -18,7 +18,7 @@ namespace PhoneNumbers.Extensions
 
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
             => value is string stringValue
-                ? Util.ParseAndKeepRawInput(stringValue, null)
+                ? Util.Parse(stringValue, null)
                 : base.ConvertFrom(context, culture, value);
 
         public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)

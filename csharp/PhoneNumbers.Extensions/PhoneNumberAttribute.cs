@@ -10,6 +10,8 @@ namespace PhoneNumbers.Extensions
     /// </summary>
     public sealed class PhoneNumberAttribute : ValidationAttribute
     {
+        private static readonly PhoneNumberUtil PhoneNumberUtil = PhoneNumberUtil.GetInstance();
+
         public PhoneNumberAttribute() : base("The field {0} is not a valid phone number.")
         {
         }
@@ -26,7 +28,7 @@ namespace PhoneNumbers.Extensions
             {
                 null => true,
                 string stringValue => PhoneNumber.TryParseValid(stringValue, Region, out _),
-                PhoneNumbers.PhoneNumber phoneNumber => PhoneNumberUtil.GetInstance().IsValidNumber(phoneNumber),
+                PhoneNumbers.PhoneNumber phoneNumber => PhoneNumberUtil.IsValidNumber(phoneNumber),
                 _ => false,
             };
     }
