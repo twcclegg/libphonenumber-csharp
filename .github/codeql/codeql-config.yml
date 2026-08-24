@@ -1,8 +1,22 @@
 name: "CodeQL config"
 
-# obj/ is gitignored and rebuilt fresh by the manual `dotnet build` step in codeql.yml - it isn't
-# repo code, just the .NET regex source generator's own output (RegexGenerator.g.cs) picked up
-# by build-mode: manual. Without this, CodeQL reports cs/unused-label and
-# cs/useless-assignment-to-local against Microsoft's generated code, which nobody here can act on.
-paths-ignore:
-  - "**/obj/**"
+# paths-ignore doesn't work here: for build-mode: manual on a compiled language, CodeQL analyzes
+# everything that gets built during the workflow run, and GitHub's own docs say the config-file
+# paths/paths-ignore filter only applies to interpreted languages or build-mode: none - not
+# manual/autobuild. (Confirmed against
+# https://github.com/github/docs/blob/main/data/reusables/code-scanning/alerts-found-in-generated-code.md.)
+# So obj/**/RegexGenerator.g.cs - the .NET regex source generator's own output, picked up because
+# codeql.yml's csharp job runs a real `dotnet build` - keeps getting analyzed regardless of any
+# paths-ignore entry, and its cs/unused-label / cs/useless-assignment-to-local alerts keep
+# reappearing. It can't be excluded from the build either: those generated partial classes back
+# real [GeneratedRegex] declarations used throughout the library.
+#
+# The only mechanism that actually works for build-mode: manual is disabling the two offending
+# query rules outright, which is a real, repo-wide tradeoff: hand-written code that happens to
+# trip either rule stops being flagged too, not just the generated file. Accepted here because
+# both rules are low-severity style/cleanliness checks, not correctness or security queries.
+query-filters:
+  - exclude:
+      id: cs/unused-label
+  - exclude:
+      id: cs/useless-assignment-to-local
