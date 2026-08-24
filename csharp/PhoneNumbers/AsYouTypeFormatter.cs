@@ -59,6 +59,20 @@ namespace PhoneNumbers
         // Character used when appropriate to separate a prefix, such as a long NDD or a country calling
         // code, from the national number.
         private const char SeparatorBeforeNationalNumber = ' ';
+
+        // Real national significant numbers plus a parsed extension never approach this many characters,
+        // so this is only ever reached by pathological input. Every InputDigit call re-derives its
+        // return value from scratch off the accrued buffers - including a regex match against the whole
+        // accumulated nationalNumber in AttemptToFormatAccruedDigits, and accruedInput.ToString() itself
+        // on every bail-out path - so cost grows worse than quadratically with digits typed if the
+        // buffers are left to grow unbounded. Past this many characters we stop growing accruedInput and
+        // freeze the output into cappedOutput, so every further call is O(1) instead of re-copying an
+        // ever-longer buffer.
+        private const int MaxAccruedCharsForFormatting = 50;
+
+        // Set once accruedInput.Length reaches MaxAccruedCharsForFormatting; null until then. See
+        // MaxAccruedCharsForFormatting for why this exists.
+        private string cappedOutput = null!;
         private static readonly PhoneMetadata EmptyMetadata = new() { InternationalPrefix = "NA" };
         private readonly PhoneMetadata defaultMetaData;
         private PhoneMetadata currentMetadata;
@@ -268,6 +282,7 @@ namespace PhoneNumbers
         public void Clear()
         {
             currentOutput = "";
+            cappedOutput = null!;
             accruedInput.Length = 0;
             accruedInputWithoutFormatting.Length = 0;
             formattingTemplate.Length = 0;
@@ -320,6 +335,15 @@ namespace PhoneNumbers
 
         private string InputDigitWithOptionToRememberPosition(char nextChar, bool rememberPosition)
         {
+            if (cappedOutput != null)
+            {
+                return cappedOutput;
+            }
+            if (accruedInput.Length >= MaxAccruedCharsForFormatting)
+            {
+                cappedOutput = accruedInput.ToString();
+                return cappedOutput;
+            }
             accruedInput.Append(nextChar);
             if (rememberPosition)
             {
