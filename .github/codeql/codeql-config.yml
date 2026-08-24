@@ -1,0 +1,8 @@
+name: "CodeQL config"
+
+# obj/ is gitignored and rebuilt fresh by the manual `dotnet build` step in codeql.yml - it isn't
+# repo code, just the .NET regex source generator's own output (RegexGenerator.g.cs) picked up
+# by build-mode: manual. Without this, CodeQL reports cs/unused-label and
+# cs/useless-assignment-to-local against Microsoft's generated code, which nobody here can act on.
+paths-ignore:
+  - "**/obj/**"

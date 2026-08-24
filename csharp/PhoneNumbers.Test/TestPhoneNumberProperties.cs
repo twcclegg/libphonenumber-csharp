@@ -55,6 +55,7 @@ namespace PhoneNumbers.Test
             }
             catch (NumberParseException)
             {
+                // The documented failure for unparseable input.
             }
         }
 
