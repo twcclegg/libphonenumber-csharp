@@ -45,6 +45,14 @@ namespace PhoneNumbers.Extensions.Test
         }
 
         [Fact]
+        public void TestE164_TwoArgOverload()
+        {
+            Assert.True(PhoneNumber.TryParse("+16192987704", out var number));
+            Assert.True(PhoneNumber.TryParseValid("+16192987704", out number));
+            Assert.Equal("+16192987704", Util.Format(number, PhoneNumberFormat.E164));
+        }
+
+        [Fact]
         public void TestInvalidCountryCode()
         {
             Assert.False(PhoneNumber.TryParse("1235557704", "ZX", out var number));
