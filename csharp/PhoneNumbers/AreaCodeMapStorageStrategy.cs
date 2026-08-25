@@ -60,19 +60,13 @@ namespace PhoneNumbers
         /// The number of entries contained in the area code map.
         /// </summary>
         /// <returns>The number of entries contained in the area code map.</returns>
-        public int GetNumOfEntries()
-        {
-            return NumOfEntries;
-        }
+        public int GetNumOfEntries() => NumOfEntries;
 
         /// <summary>
         /// The set containing the possible lengths of prefixes.
         /// </summary>
         /// <returns>The set containing the possible lengths of prefixes.</returns>
-        public List<int> GetPossibleLengths()
-        {
-            return PossibleLengths;
-        }
+        public List<int> GetPossibleLengths() => PossibleLengths;
 
         public override string ToString()
         {

@@ -62,7 +62,7 @@ namespace PhoneNumbers
         private PhoneMetadata? Load(string key)
         {
             using var stream = loader.LoadMetadata($"{filePrefix}_{key}");
-            return stream == null ? null : BuildMetadataFromBin.ReadMetadata(stream);
+            return stream is null ? null : BuildMetadataFromBin.ReadMetadata(stream);
         }
     }
 }

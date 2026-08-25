@@ -1,5 +1,5 @@
-﻿using System;
-using Leniency=PhoneNumbers.PhoneNumberUtil.Leniency;
+﻿using Leniency = PhoneNumbers.PhoneNumberUtil.Leniency;
+
 namespace PhoneNumbers
 {
     public static class LeniencyExtensions
@@ -9,7 +9,7 @@ namespace PhoneNumbers
             PhoneNumber number,
             string candidate,
             PhoneNumberUtil util,
-            PhoneNumberMatcher matcher)=>
+            PhoneNumberMatcher matcher) =>
             util.Verify(leniency, number, candidate, util, matcher);
     }
 }
