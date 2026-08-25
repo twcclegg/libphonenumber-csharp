@@ -142,6 +142,8 @@ namespace PhoneNumbers
         /// <returns>The formatted phone number.</returns>
         public string Format(PhoneNumber number, PhoneNumberFormat numberFormat)
         {
+            if (number == null)
+                throw new ArgumentNullException(nameof(number));
             if (number.NationalNumber == 0)
             {
                 // Unparseable numbers that kept their raw input just use that, unless default country was

@@ -74,6 +74,8 @@ namespace PhoneNumbers
         /// <returns>The formatted phone number.</returns>
         public string Format(PhoneNumber number, PhoneNumberFormat numberFormat)
         {
+            if (number == null)
+                throw new ArgumentNullException(nameof(number));
             // Unparseable numbers that kept their raw input just use that, unless default country was
             // specified and the format is E164. In that case, we prepend the raw input with the country
             // code.

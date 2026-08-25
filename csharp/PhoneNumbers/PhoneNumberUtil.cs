@@ -62,7 +62,7 @@ namespace PhoneNumbers
 
         // We don't allow input strings for parsing to be longer than this. This prevents malicious
         // input from overflowing the regular-expression engine.
-        private const int MAX_INPUT_STRING_LENGTH = 250;
+        internal const int MAX_INPUT_STRING_LENGTH = 250;
 
         // Region-code for the unknown region.
         private const string UNKNOWN_REGION = "ZZ";
@@ -673,6 +673,8 @@ namespace PhoneNumbers
         /// <returns>True if the number could be a phone number of some sort, otherwise false.</returns>
         public static bool IsViablePhoneNumber(string number)
         {
+            if (number == null)
+                throw new ArgumentNullException(nameof(number));
             if (number.Length < MIN_LENGTH_FOR_NSN)
                 return false;
             return ValidPhoneNumber().IsMatch(number);
@@ -1828,6 +1830,8 @@ namespace PhoneNumbers
         /// <returns>A bool that indicates whether the number is of a valid pattern.</returns>
         public bool IsValidNumber(PhoneNumber number)
         {
+            if (number == null)
+                throw new ArgumentNullException(nameof(number));
             // Inlined to share the national significant number string between region lookup and
             // validation in the case where the country calling code maps to multiple regions
             // (e.g. NANPA). For single-region calling codes the NSN is only computed once anyway.
@@ -1898,6 +1902,8 @@ namespace PhoneNumbers
         /// code.</returns>
         public string GetRegionCodeForNumber(PhoneNumber number)
         {
+            if (number == null)
+                throw new ArgumentNullException(nameof(number));
             countryCallingCodeToRegionCodeMap.TryGetValue(number.CountryCode, out List<string> regions);
             if (regions == null)
             {
@@ -2063,6 +2069,8 @@ namespace PhoneNumbers
         /// <returns>True if the number is possible.</returns>
         public bool IsPossibleNumber(PhoneNumber number)
         {
+            if (number == null)
+                throw new ArgumentNullException(nameof(number));
             var result = IsPossibleNumberWithReason(number);
             return result == ValidationResult.IS_POSSIBLE || result == ValidationResult.IS_POSSIBLE_LOCAL_ONLY;
         }
@@ -3057,6 +3065,10 @@ namespace PhoneNumbers
         /// of the two numbers, described in the method definition.</returns>
         public MatchType IsNumberMatch(PhoneNumber firstNumberIn, PhoneNumber secondNumberIn)
         {
+            if (firstNumberIn == null)
+                throw new ArgumentNullException(nameof(firstNumberIn));
+            if (secondNumberIn == null)
+                throw new ArgumentNullException(nameof(secondNumberIn));
             // Early exit if both had extensions and these are different.
             if (firstNumberIn.HasExtension && secondNumberIn.HasExtension && firstNumberIn.Extension != secondNumberIn.Extension)
                 return MatchType.NO_MATCH;
