@@ -665,12 +665,12 @@ namespace PhoneNumbers.Test
                 var iterator =
                     FindNumbersForLeniency(test.RawString, test.Region, leniency);
                 var match = iterator.FirstOrDefault();
-                if (match == null)
+                if (match is null)
                 {
                     noMatchFoundCount++;
                     Console.WriteLine("No match found in " + test + " for leniency: " + leniency);
                 }
-                else if (!test.RawString.Equals(match.RawString))
+                else if (test.RawString != match.RawString)
                 {
                     wrongMatchFoundCount++;
                     Console.WriteLine("Found wrong match in test " + test +
@@ -691,7 +691,7 @@ namespace PhoneNumbers.Test
                 var iterator =
                     FindNumbersForLeniency(test.RawString, test.Region, leniency);
                 var match = iterator.FirstOrDefault();
-                if (match != null)
+                if (match is not null)
                 {
                     matchFoundCount++;
                     Console.WriteLine("Match found in " + test + " for leniency: " + leniency);
