@@ -118,7 +118,7 @@ namespace PhoneNumbers
         {
             lock (ThisLock)
             {
-                return instance ?? (instance = new PhoneNumberOfflineGeocoder(MAPPING_DATA_DIRECTORY));
+                return instance ??= new PhoneNumberOfflineGeocoder(MAPPING_DATA_DIRECTORY);
             }
         }
 
@@ -153,7 +153,7 @@ namespace PhoneNumbers
                 {
                     // If the number has already been found valid for one region, then we don't know
                     // which region it belongs to so we return nothing.
-                    if (!regionWhereNumberIsValid.Equals("ZZ"))
+                    if (regionWhereNumberIsValid != "ZZ")
                         return "";
                     regionWhereNumberIsValid = regionCode;
                 }
@@ -166,8 +166,7 @@ namespace PhoneNumbers
         /// </summary>
         private static string GetRegionDisplayName(string regionCode, Locale language)
         {
-            return regionCode == null || regionCode.Equals("ZZ") ||
-                   regionCode.Equals(PhoneNumberUtil.REGION_CODE_FOR_NON_GEO_ENTITY)
+            return regionCode is null or "ZZ" or PhoneNumberUtil.REGION_CODE_FOR_NON_GEO_ENTITY
                 ? ""
                 : new Locale("", regionCode).GetDisplayCountry(language.Language);
         }
@@ -248,7 +247,7 @@ namespace PhoneNumbers
             // description, if one exists - if no description exists, we will show the region(country) name
             // for the number.
             var regionCode = phoneUtil.GetRegionCodeForNumber(number);
-            if (userRegion.Equals(regionCode))
+            if (userRegion == regionCode)
             {
                 return GetDescriptionForValidNumber(number, languageCode);
             }

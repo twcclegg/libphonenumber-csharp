@@ -91,8 +91,8 @@ namespace PhoneNumbers
         /// </returns>
         public List<string> GetTimeZonesForNumber(PhoneNumber number)
         {
-            PhoneNumberType numberType = phoneUtil.GetNumberType(number);
-            if (PhoneNumberType.UNKNOWN == numberType)
+            var numberType = phoneUtil.GetNumberType(number);
+            if (numberType == PhoneNumberType.UNKNOWN)
                 return UNKNOWN_TIMEZONE.ToList();
             else if (!phoneUtil.IsNumberGeographical(numberType, number.CountryCode))
             {
@@ -141,12 +141,7 @@ namespace PhoneNumbers
         {
             lock (lockObj)
             {
-                if (null == instance)
-                {
-                    instance = Create(TZMAP_DATA_DIRECTORY);
-                }
-
-                return instance;
+                return instance ??= Create(TZMAP_DATA_DIRECTORY);
             }
         }
     }
