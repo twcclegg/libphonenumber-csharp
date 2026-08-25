@@ -16,6 +16,7 @@
  */
 
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -177,29 +178,22 @@ namespace PhoneNumbers
 
             public void PutShort(int offset, short value)
             {
-                bytes[offset] = (byte)value;
-                bytes[offset + 1] = (byte)(value >> 8);
+                BinaryPrimitives.WriteInt16LittleEndian(bytes.AsSpan(offset), value);
             }
 
             public void PutInt(int offset, int value)
             {
-                bytes[offset] = (byte)value;
-                bytes[offset + 1] = (byte)(value >> 8);
-                bytes[offset + 2] = (byte)(value >> 16);
-                bytes[offset + 3] = (byte)(value >> 24);
+                BinaryPrimitives.WriteInt32LittleEndian(bytes.AsSpan(offset), value);
             }
 
             public short GetShort(int offset)
             {
-                return (short)(bytes[offset] | (bytes[offset + 1] << 8));
+                return BinaryPrimitives.ReadInt16LittleEndian(bytes.AsSpan(offset));
             }
 
             public int GetInt(int offset)
             {
-                return bytes[offset]
-                    | (bytes[offset + 1] << 8)
-                    | (bytes[offset + 2] << 16)
-                    | (bytes[offset + 3] << 24);
+                return BinaryPrimitives.ReadInt32LittleEndian(bytes.AsSpan(offset));
             }
 
             public int GetCapacity()

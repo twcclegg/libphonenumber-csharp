@@ -41,6 +41,17 @@ jobs:
   run_performance_tests:
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 30
+    env:
+      # The "Build both benchmark trees" step below runs two `dotnet build` invocations
+      # concurrently, and this is the only workflow that does - everywhere else, an earlier
+      # sequential `dotnet restore`/`build` step already completes the SDK's one-time setup
+      # (NuGet migrations, telemetry sentinel) before anything runs in parallel. Here, both
+      # concurrent invocations can race to perform that setup at once, racing on the same
+      # mkdir/mutex and failing with "The system cannot open the device or file specified" /
+      # EEXIST. Skipping first-time setup entirely removes the race instead of reordering
+      # around it.
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_NOLOGO: true
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

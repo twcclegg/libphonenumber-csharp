@@ -62,7 +62,7 @@ namespace PhoneNumbers
 
         // We don't allow input strings for parsing to be longer than this. This prevents malicious
         // input from overflowing the regular-expression engine.
-        private const int MAX_INPUT_STRING_LENGTH = 250;
+        internal const int MAX_INPUT_STRING_LENGTH = 250;
 
         // Region-code for the unknown region.
         private const string UNKNOWN_REGION = "ZZ";
@@ -213,6 +213,14 @@ namespace PhoneNumbers
             }
             return false;
         }
+
+        // Mirrors Java's formattingRuleHasFirstGroupOnly(), which checks the rule is just the
+        // first-group symbol optionally wrapped in a single pair of parentheses. Java's placeholder is
+        // the literal "$1"; this port stores national-prefix formatting rules with "$FG" already
+        // expanded to the .NET replacement token "${1}" (see BuildMetadataFromXml), so the same check
+        // is done against "${1}" instead.
+        internal static bool FormattingRuleHasFirstGroupOnly(string nationalPrefixFormattingRule) =>
+            nationalPrefixFormattingRule is "" or "${1}" or "(${1})" or "(${1}" or "${1})";
 
         // Default extension prefix to use when formatting. This will be put in front of any extension
         // component of the number, after the main national number is formatted. For example, if you wish
@@ -367,7 +375,7 @@ namespace PhoneNumbers
         internal static Regex ValidPhoneNumber() => _validPhoneNumber;
 #endif
 
-        private static PhoneNumberUtil instance;
+        private static volatile PhoneNumberUtil instance;
 
         // Lazy, cached resolver for region metadata. Replaces the eager Dictionary that used to
         // be populated at construction by parsing the entire XML file: now we resolve a region's
@@ -496,7 +504,7 @@ namespace PhoneNumbers
                     {
                         if (!util.IsValidNumber(number) ||
                            !PhoneNumberMatcher.ContainsOnlyValidXChars(number, candidate, util) ||
-                           PhoneNumberMatcher.ContainsMoreThanOneSlash(candidate) ||
+                           PhoneNumberMatcher.ContainsMoreThanOneSlash(number, candidate) ||
                            !PhoneNumberMatcher.IsNationalPrefixPresentIfRequired(number, util))
                         {
                             return false;
@@ -508,7 +516,7 @@ namespace PhoneNumbers
                     {
                         if (!util.IsValidNumber(number) ||
                                 !PhoneNumberMatcher.ContainsOnlyValidXChars(number, candidate, util) ||
-                                PhoneNumberMatcher.ContainsMoreThanOneSlash(candidate) ||
+                                PhoneNumberMatcher.ContainsMoreThanOneSlash(number, candidate) ||
                                 !PhoneNumberMatcher.IsNationalPrefixPresentIfRequired(number, util))
                         {
                             return false;
@@ -673,6 +681,8 @@ namespace PhoneNumbers
         /// <returns>True if the number could be a phone number of some sort, otherwise false.</returns>
         public static bool IsViablePhoneNumber(string number)
         {
+            if (number == null)
+                throw new ArgumentNullException(nameof(number));
             if (number.Length < MIN_LENGTH_FOR_NSN)
                 return false;
             return ValidPhoneNumber().IsMatch(number);
@@ -1828,6 +1838,8 @@ namespace PhoneNumbers
         /// <returns>A bool that indicates whether the number is of a valid pattern.</returns>
         public bool IsValidNumber(PhoneNumber number)
         {
+            if (number == null)
+                throw new ArgumentNullException(nameof(number));
             // Inlined to share the national significant number string between region lookup and
             // validation in the case where the country calling code maps to multiple regions
             // (e.g. NANPA). For single-region calling codes the NSN is only computed once anyway.
@@ -1898,6 +1910,8 @@ namespace PhoneNumbers
         /// code.</returns>
         public string GetRegionCodeForNumber(PhoneNumber number)
         {
+            if (number == null)
+                throw new ArgumentNullException(nameof(number));
             countryCallingCodeToRegionCodeMap.TryGetValue(number.CountryCode, out List<string> regions);
             if (regions == null)
             {
@@ -2063,6 +2077,8 @@ namespace PhoneNumbers
         /// <returns>True if the number is possible.</returns>
         public bool IsPossibleNumber(PhoneNumber number)
         {
+            if (number == null)
+                throw new ArgumentNullException(nameof(number));
             var result = IsPossibleNumberWithReason(number);
             return result == ValidationResult.IS_POSSIBLE || result == ValidationResult.IS_POSSIBLE_LOCAL_ONLY;
         }
@@ -3005,6 +3021,14 @@ namespace PhoneNumbers
                 var indexOfRfc3966Prefix = numberToParse.IndexOf(RFC3966_PREFIX, StringComparison.Ordinal);
                 var indexOfNationalNumber =
                     indexOfRfc3966Prefix >= 0 ? indexOfRfc3966Prefix + RFC3966_PREFIX.Length : 0;
+                if (indexOfNationalNumber > indexOfPhoneContext)
+                {
+                    // The "tel:" prefix (if any) is supposed to precede the phone-context marker; if it
+                    // doesn't, the input isn't well-formed RFC3966 and there's no sensible national-number
+                    // substring to extract, e.g. ";phone-context=example.com;tel:1234".
+                    throw new NumberParseException(ErrorType.NOT_A_NUMBER,
+                        "the phone-context value is invalid.");
+                }
                 nationalNumber.Append(numberToParse, indexOfNationalNumber, indexOfPhoneContext - indexOfNationalNumber);
             }
             else
@@ -3049,6 +3073,10 @@ namespace PhoneNumbers
         /// of the two numbers, described in the method definition.</returns>
         public MatchType IsNumberMatch(PhoneNumber firstNumberIn, PhoneNumber secondNumberIn)
         {
+            if (firstNumberIn == null)
+                throw new ArgumentNullException(nameof(firstNumberIn));
+            if (secondNumberIn == null)
+                throw new ArgumentNullException(nameof(secondNumberIn));
             // Early exit if both had extensions and these are different.
             if (firstNumberIn.HasExtension && secondNumberIn.HasExtension && firstNumberIn.Extension != secondNumberIn.Extension)
                 return MatchType.NO_MATCH;

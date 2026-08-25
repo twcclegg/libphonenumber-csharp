@@ -953,5 +953,42 @@ namespace PhoneNumbers.Test
             Assert.Equal("777777 9876 789", formatter.InputDigit('9'));
             Assert.Equal("777777 9876 7890", formatter.InputDigit('0'));
         }
+
+        [Fact]
+        public void TestInputDigit_KeepsEchoingWithinMaxInputStringLength()
+        {
+            // A plausible, if unusually long, real-world entry (national number, verbose extension,
+            // several pause characters) must not be silently truncated/frozen. This regression would
+            // previously trip once accrued input passed 50 characters: every InputDigit call from then
+            // on returned the same frozen snapshot no matter what was typed next. 250 is
+            // PhoneNumberUtil.MAX_INPUT_STRING_LENGTH - the same bound Parse() itself uses for "is this
+            // even plausibly a phone number" - so nothing here should ever hit the formatter's cost cap.
+            var formatter = phoneUtil.GetAsYouTypeFormatter("US");
+            const string input = "12345678901 ext. 123456789,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,";
+            Assert.True(input.Length < 250, "test input should stay well under the cap for this test to be meaningful");
+            Assert.True(input.Length > 50, "test input should exceed the old, too-tight cap for this test to be meaningful");
+            string previous = "";
+            foreach (var c in input)
+            {
+                var result = formatter.InputDigit(c);
+                Assert.NotEqual(previous, result);
+                previous = result;
+            }
+        }
+
+        [Fact]
+        public void TestInputDigit_CapsPathologicallyLongInput()
+        {
+            // Once input exceeds PhoneNumberUtil.MAX_INPUT_STRING_LENGTH, Parse() itself would already
+            // refuse to treat it as a phone number, so the formatter is free to stop growing/formatting
+            // it - this is what actually bounds AsYouTypeFormatter's cost for pathological input.
+            var formatter = phoneUtil.GetAsYouTypeFormatter("US");
+            string result = "";
+            for (var i = 0; i < 300; i++)
+            {
+                result = formatter.InputDigit('1');
+            }
+            Assert.Equal(250, result.Length);
+        }
     }
 }

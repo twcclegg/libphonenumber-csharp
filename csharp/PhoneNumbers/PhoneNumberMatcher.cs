@@ -443,6 +443,12 @@ namespace PhoneNumbers
         {
             var fromIndex = 0;
             var candidate = normalizedCandidate.ToString();
+            if (number.CountryCodeSource != PhoneNumber.Types.CountryCodeSource.FROM_DEFAULT_COUNTRY)
+            {
+                // First skip the country code if the normalized candidate contained it.
+                var countryCode = number.CountryCode.ToString(CultureInfo.InvariantCulture);
+                fromIndex = candidate.IndexOf(countryCode, StringComparison.Ordinal) + countryCode.Length;
+            }
             // Check each group of consecutive digits are not broken into separate groupings in the
             // normalizedCandidate string.
             for (var i = 0; i < formattedNumberGroups.Count; i++)
@@ -458,8 +464,12 @@ namespace PhoneNumbers
                 fromIndex += formattedNumberGroups[i].Length;
                 if (i == 0 && fromIndex < candidate.Length)
                 {
-                    // We are at the position right after the NDC.
-                    if (char.IsDigit(candidate[fromIndex]))
+                    // We are at the position right after the NDC. We get the region used for formatting
+                    // information based on the country code in the phone number, rather than the number
+                    // itself, as we do not need to distinguish between different countries with the same
+                    // country calling code and this is faster.
+                    var region = util.GetRegionCodeForCountryCode(number.CountryCode);
+                    if (util.GetNddPrefixForRegion(region, true) != null && char.IsDigit(candidate[fromIndex]))
                     {
                         // This means there is no formatting symbol after the NDC. In this case, we only
                         // accept the number if there is no formatting symbol at all in the number, except
@@ -611,10 +621,49 @@ namespace PhoneNumbers
             return false;
         }
 
+        /// <summary>
+        /// Preserved for binary/source compatibility with the public API shipped before the
+        /// country-code-aware overload below was introduced. New callers should prefer
+        /// <see cref="ContainsMoreThanOneSlash(PhoneNumber, string)"/>, which matches upstream Java's
+        /// more precise handling of slashes that fall within the country calling code prefix.
+        /// </summary>
         public static bool ContainsMoreThanOneSlash(string candidate)
         {
             var firstSlashIndex = candidate.IndexOf('/');
             return firstSlashIndex > 0 && candidate.IndexOf('/', firstSlashIndex + 1) >= 0;
+        }
+
+        public static bool ContainsMoreThanOneSlash(PhoneNumber number, string candidate)
+        {
+            var firstSlashIndex = candidate.IndexOf('/');
+            if (firstSlashIndex < 0)
+            {
+                // No slashes, this is okay.
+                return false;
+            }
+            var secondSlashIndex = candidate.IndexOf('/', firstSlashIndex + 1);
+            if (secondSlashIndex < 0)
+            {
+                // Only one slash, this is okay.
+                return false;
+            }
+            // If the first slash is after the country calling code, this is permitted.
+            var candidateHasCountryCode =
+                number.CountryCodeSource == PhoneNumber.Types.CountryCodeSource.FROM_NUMBER_WITH_PLUS_SIGN ||
+                number.CountryCodeSource == PhoneNumber.Types.CountryCodeSource.FROM_NUMBER_WITHOUT_PLUS_SIGN;
+            if (candidateHasCountryCode &&
+                PhoneNumberUtil.NormalizeDigitsOnly(candidate.Substring(0, firstSlashIndex)) ==
+                    number.CountryCode.ToString(CultureInfo.InvariantCulture))
+            {
+                // Any more slashes and this is illegal.
+#if NETSTANDARD2_0
+                // netstandard2.0 only has string.Contains(string); net8.0+ prefers Contains(char) (CA1847).
+                return candidate.Substring(secondSlashIndex + 1).Contains("/");
+#else
+                return candidate.Substring(secondSlashIndex + 1).Contains('/');
+#endif
+            }
+            return true;
         }
 
         public static bool ContainsOnlyValidXChars(
@@ -682,14 +731,7 @@ namespace PhoneNumbers
                     // present.
                     return true;
                 }
-                // Remove the first-group symbol.
-                var candidateNationalPrefixRule = formatRule.NationalPrefixFormattingRule;
-                // We assume that the first-group symbol will never be _before_ the national prefix.
-                candidateNationalPrefixRule =
-                    candidateNationalPrefixRule.Substring(0, candidateNationalPrefixRule.IndexOf("${1}", StringComparison.Ordinal));
-                candidateNationalPrefixRule =
-                    PhoneNumberUtil.NormalizeDigitsOnly(candidateNationalPrefixRule);
-                if (candidateNationalPrefixRule.Length == 0)
+                if (PhoneNumberUtil.FormattingRuleHasFirstGroupOnly(formatRule.NationalPrefixFormattingRule))
                 {
                     // National Prefix not needed for this number.
                     return true;
