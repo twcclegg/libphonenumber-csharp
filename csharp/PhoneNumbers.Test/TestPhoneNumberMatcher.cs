@@ -367,6 +367,72 @@ namespace PhoneNumbers.Test
             FindMatchesInContexts(validContexts, true, true);
         }
 
+        /** See https://github.com/google/libphonenumber PhoneNumberMatcherTest#testContainsMoreThanOneSlashInNationalNumber(). */
+        [Fact]
+        public void TestContainsMoreThanOneSlash()
+        {
+            // A date should return true.
+            var number = new PhoneNumber.Builder()
+                .SetCountryCode(1)
+                .SetCountryCodeSource(PhoneNumber.Types.CountryCodeSource.FROM_DEFAULT_COUNTRY)
+                .Build();
+            Assert.True(PhoneNumberMatcher.ContainsMoreThanOneSlash(number, "1/05/2013"));
+
+            // Here, the country code source thinks it started with a country calling code, but this is
+            // not the same as the part before the slash, so it's still true.
+            number = new PhoneNumber.Builder()
+                .SetCountryCode(274)
+                .SetCountryCodeSource(PhoneNumber.Types.CountryCodeSource.FROM_NUMBER_WITHOUT_PLUS_SIGN)
+                .Build();
+            Assert.True(PhoneNumberMatcher.ContainsMoreThanOneSlash(number, "27/4/2013"));
+
+            // Now it should be false, because the first slash is after the country calling code.
+            number = new PhoneNumber.Builder()
+                .SetCountryCode(49)
+                .SetCountryCodeSource(PhoneNumber.Types.CountryCodeSource.FROM_NUMBER_WITH_PLUS_SIGN)
+                .Build();
+            Assert.False(PhoneNumberMatcher.ContainsMoreThanOneSlash(number, "49/69/2013"));
+
+            number = new PhoneNumber.Builder()
+                .SetCountryCode(49)
+                .SetCountryCodeSource(PhoneNumber.Types.CountryCodeSource.FROM_NUMBER_WITHOUT_PLUS_SIGN)
+                .Build();
+            Assert.False(PhoneNumberMatcher.ContainsMoreThanOneSlash(number, "+49/69/2013"));
+            Assert.False(PhoneNumberMatcher.ContainsMoreThanOneSlash(number, "+ 49/69/2013"));
+            Assert.True(PhoneNumberMatcher.ContainsMoreThanOneSlash(number, "+ 49/69/20/13"));
+
+            // Here, the first group is not assumed to be the country calling code, even though it is the
+            // same as it, so this should return true.
+            number = new PhoneNumber.Builder()
+                .SetCountryCode(49)
+                .SetCountryCodeSource(PhoneNumber.Types.CountryCodeSource.FROM_DEFAULT_COUNTRY)
+                .Build();
+            Assert.True(PhoneNumberMatcher.ContainsMoreThanOneSlash(number, "49/69/2013"));
+        }
+
+        /// <summary>
+        /// Regression test for the missing "skip past the country calling code before looking for the
+        /// first group" step (present in the upstream Java, ported here to match): without it, a decoy
+        /// occurrence of the NDC group earlier in the candidate (before the actual country code) is
+        /// matched instead of the real one, and the leftover digit run right after the decoy is wrongly
+        /// compared against the national significant number.
+        /// </summary>
+        [Fact]
+        public void TestAllNumberGroupsRemainGroupedSkipsCountryCode()
+        {
+            var number = new PhoneNumber.Builder()
+                .SetCountryCode(1)
+                .SetNationalNumber(6502530000L)
+                .SetCountryCodeSource(PhoneNumber.Types.CountryCodeSource.FROM_NUMBER_WITHOUT_PLUS_SIGN)
+                .Build();
+            // "6502" before the real "1-650-253-0000" is a decoy that starts with the NDC group "650"
+            // but is immediately followed by a digit rather than a separator.
+            var candidate = new StringBuilder("6502-1-650-253-0000");
+            var formattedNumberGroups = new List<string> { "650", "253", "0000" };
+            Assert.True(PhoneNumberMatcher.AllNumberGroupsRemainGrouped(
+                phoneUtil, number, candidate, formattedNumberGroups));
+        }
+
         [Fact]
         public void TestMatchesMultiplePhoneNumbersSeparatedByPhoneNumberPunctuation()
         {

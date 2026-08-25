@@ -214,6 +214,14 @@ namespace PhoneNumbers
             return false;
         }
 
+        // Mirrors Java's formattingRuleHasFirstGroupOnly(), which checks the rule is just the
+        // first-group symbol optionally wrapped in a single pair of parentheses. Java's placeholder is
+        // the literal "$1"; this port stores national-prefix formatting rules with "$FG" already
+        // expanded to the .NET replacement token "${1}" (see BuildMetadataFromXml), so the same check
+        // is done against "${1}" instead.
+        internal static bool FormattingRuleHasFirstGroupOnly(string nationalPrefixFormattingRule) =>
+            nationalPrefixFormattingRule is "" or "${1}" or "(${1})" or "(${1}" or "${1})";
+
         // Default extension prefix to use when formatting. This will be put in front of any extension
         // component of the number, after the main national number is formatted. For example, if you wish
         // the default extension formatting to be " extn: 3456", then you should specify " extn: " here
@@ -496,7 +504,7 @@ namespace PhoneNumbers
                     {
                         if (!util.IsValidNumber(number) ||
                            !PhoneNumberMatcher.ContainsOnlyValidXChars(number, candidate, util) ||
-                           PhoneNumberMatcher.ContainsMoreThanOneSlash(candidate) ||
+                           PhoneNumberMatcher.ContainsMoreThanOneSlash(number, candidate) ||
                            !PhoneNumberMatcher.IsNationalPrefixPresentIfRequired(number, util))
                         {
                             return false;
@@ -508,7 +516,7 @@ namespace PhoneNumbers
                     {
                         if (!util.IsValidNumber(number) ||
                                 !PhoneNumberMatcher.ContainsOnlyValidXChars(number, candidate, util) ||
-                                PhoneNumberMatcher.ContainsMoreThanOneSlash(candidate) ||
+                                PhoneNumberMatcher.ContainsMoreThanOneSlash(number, candidate) ||
                                 !PhoneNumberMatcher.IsNationalPrefixPresentIfRequired(number, util))
                         {
                             return false;
