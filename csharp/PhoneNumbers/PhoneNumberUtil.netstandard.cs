@@ -74,7 +74,7 @@ namespace PhoneNumbers
         /// <returns>The formatted phone number.</returns>
         public string Format(PhoneNumber number, PhoneNumberFormat numberFormat)
         {
-            if (number == null)
+            if (number is null)
                 throw new ArgumentNullException(nameof(number));
             // Unparseable numbers that kept their raw input just use that, unless default country was
             // specified and the format is E164. In that case, we prepend the raw input with the country
@@ -147,7 +147,7 @@ namespace PhoneNumbers
             PrefixNumberWithCountryCallingCode(countryCallingCode, numberFormat, formattedNumber);
             var formattingPattern =
                 ChooseFormattingPatternForNumber(userDefinedFormats, nationalSignificantNumber);
-            if (formattingPattern == null)
+            if (formattingPattern is null)
             {
                 // If no pattern above is matched, we format the number as a whole.
                 formattedNumber.Append(nationalSignificantNumber);
@@ -391,7 +391,7 @@ namespace PhoneNumbers
                 var formattingPattern =
                     ChooseFormattingPatternForNumber(metadataForRegionCallingFrom.numberFormat_,
                         nationalNumber);
-                if (formattingPattern == null)
+                if (formattingPattern is null)
                     // If no pattern above is matched, we format the original input.
                 {
                     return rawInput;
@@ -414,7 +414,7 @@ namespace PhoneNumbers
             // If an unsupported region-calling-from is entered, or a country with multiple international
             // prefixes, the international format of the number is returned, unless there is a preferred
             // international prefix.
-            if (metadataForRegionCallingFrom != null)
+            if (metadataForRegionCallingFrom is not null)
             {
                 var internationalPrefix = metadataForRegionCallingFrom.InternationalPrefix;
                 internationalPrefixForFormatting =

@@ -43,7 +43,7 @@ namespace PhoneNumbers
         /// <param name="number">A string of characters representing a phone number.</param>
         /// <returns>The normalized string version of the phone number.</returns>
         public static string Normalize(string? number) =>
-            number == null ? string.Empty : NormalizeToString(number, NormalizeMode.Full);
+            number is null ? string.Empty : NormalizeToString(number, NormalizeMode.Full);
 
         /// <summary>
         /// Normalizes a string of characters representing a phone number. This converts wide-ascii and
@@ -52,7 +52,7 @@ namespace PhoneNumbers
         /// <param name="number">A string of characters representing a phone number.</param>
         /// <returns>The normalized string version of the phone number.</returns>
         public static string NormalizeDigitsOnly(string? number) =>
-            number == null ? string.Empty : NormalizeToString(number, NormalizeMode.DigitsOnly);
+            number is null ? string.Empty : NormalizeToString(number, NormalizeMode.DigitsOnly);
 
         /// <summary>
         /// Normalizes a string of characters representing a phone number. This strips all characters which
@@ -61,7 +61,7 @@ namespace PhoneNumbers
         /// <param name="number"> a string of characters representing a phone number</param>
         /// <returns> the normalized string version of the phone number</returns>
         public static string NormalizeDiallableCharsOnly(string? number) =>
-            number == null ? string.Empty : NormalizeToString(number, NormalizeMode.DiallableCharsOnly);
+            number is null ? string.Empty : NormalizeToString(number, NormalizeMode.DiallableCharsOnly);
 
         /// <summary>
         /// Converts all alpha characters in a number to their respective digits on a keypad, but retains
@@ -70,7 +70,7 @@ namespace PhoneNumbers
         /// <param name="number"></param>
         /// <returns></returns>
         public static string ConvertAlphaCharactersInNumber(string? number) =>
-            number == null ? string.Empty : NormalizeToString(number, NormalizeMode.AlphaCharactersToDigits);
+            number is null ? string.Empty : NormalizeToString(number, NormalizeMode.AlphaCharactersToDigits);
 
         /// <summary>
         /// Runs one of the normalizers over <paramref name="number"/> into a scratch buffer and
@@ -120,7 +120,7 @@ namespace PhoneNumbers
             }
             finally
             {
-                if (rented != null)
+                if (rented is not null)
                 {
                     ArrayPool<char>.Shared.Return(rented);
                 }
@@ -142,8 +142,7 @@ namespace PhoneNumbers
         /// <returns>The formatted phone number.</returns>
         public string Format(PhoneNumber number, PhoneNumberFormat numberFormat)
         {
-            if (number == null)
-                throw new ArgumentNullException(nameof(number));
+            ArgumentNullException.ThrowIfNull(number);
             if (number.NationalNumber == 0)
             {
                 // Unparseable numbers that kept their raw input just use that, unless default country was
@@ -208,7 +207,7 @@ namespace PhoneNumbers
             var metadata = GetMetadataForRegionOrCallingCode(countryCallingCode, regionCode);
             var formattingPattern =
                 ChooseFormattingPatternForNumber(userDefinedFormats, nationalSignificantNumber);
-            if (formattingPattern == null)
+            if (formattingPattern is null)
             {
                 // If no pattern above is matched, we format the number as a whole.
                 AppendToSpan(ref result, ref resultLength, nationalSignificantNumber);
@@ -519,7 +518,7 @@ namespace PhoneNumbers
                 var formattingPattern =
                     ChooseFormattingPatternForNumber(metadataForRegionCallingFrom.numberFormat_,
                         nationalNumber);
-                if (formattingPattern == null)
+                if (formattingPattern is null)
                     // If no pattern above is matched, we format the original input.
                 {
                     return resultString;
@@ -542,7 +541,7 @@ namespace PhoneNumbers
             // If an unsupported region-calling-from is entered, or a country with multiple international
             // prefixes, the international format of the number is returned, unless there is a preferred
             // international prefix.
-            if (metadataForRegionCallingFrom != null)
+            if (metadataForRegionCallingFrom is not null)
             {
                 var internationalPrefix = metadataForRegionCallingFrom.InternationalPrefix;
                 internationalPrefixForFormatting =
