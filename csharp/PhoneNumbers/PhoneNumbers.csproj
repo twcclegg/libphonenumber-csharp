@@ -225,6 +225,9 @@
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' ">
     <PackageReference Include="System.Collections.Immutable" />
+    <!-- FlyweightMapStorage's ByteBuffer uses System.Buffers.Binary.BinaryPrimitives and
+         byte[].AsSpan(), neither of which netstandard2.0 has without this package. -->
+    <PackageReference Include="System.Memory" />
   </ItemGroup>
 
 </Project>
