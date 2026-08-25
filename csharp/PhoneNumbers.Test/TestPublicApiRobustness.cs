@@ -175,7 +175,7 @@ namespace PhoneNumbers.Test
             foreach (var regionCode in PhoneUtil.GetSupportedRegions())
             {
                 var example = PhoneUtil.GetExampleNumber(regionCode);
-                if (example == null)
+                if (example is null)
                     continue;
 
                 try
@@ -215,7 +215,7 @@ namespace PhoneNumbers.Test
             {
                 call();
             }
-            catch (Exception e) when (allowed == null || e.GetType() != allowed)
+            catch (Exception e) when (allowed is null || e.GetType() != allowed)
             {
                 failures.Add($"{what}({input}) threw {e.GetType().Name}: {e.Message}");
             }
