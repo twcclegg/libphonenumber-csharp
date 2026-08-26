@@ -343,7 +343,7 @@ namespace PhoneNumbers
                     }
                     var withoutLastGroup = candidate.Substring(0, lastGroupStart);
                     withoutLastGroup = TrimAfterUnwantedChars(withoutLastGroup);
-                    if (withoutLastGroup.Equals(firstGroupOnly))
+                    if (withoutLastGroup == firstGroupOnly)
                     {
                         // If there are only two groups, then the group "without the last group" is the same as
                         // the first group. In these cases, we don't want to re-check the number group, so we exit
@@ -513,8 +513,8 @@ namespace PhoneNumbers
                 formattedNumberGroupIndex > 0 && candidateNumberGroupIndex >= 0;
                 formattedNumberGroupIndex--, candidateNumberGroupIndex--)
             {
-                if (!candidateGroups[candidateNumberGroupIndex].Equals(
-                    formattedNumberGroups[formattedNumberGroupIndex]))
+                if (candidateGroups[candidateNumberGroupIndex] !=
+                    formattedNumberGroups[formattedNumberGroupIndex])
                 {
                     return false;
                 }
@@ -530,14 +530,16 @@ namespace PhoneNumbers
         /// prefix, and return it as a set of digit blocks that would be formatted together following
         /// standard formatting rules.
         /// </summary>
-        private static IList<string> GetNationalNumberGroups(PhoneNumberUtil util, PhoneNumber number) {
+        private static IList<string> GetNationalNumberGroups(PhoneNumberUtil util, PhoneNumber number)
+        {
             // This will be in the format +CC-DG1-DG2-DGX;ext=EXT where DG1..DGX represents groups of
             // digits.
             var rfc3966Format = util.Format(number, PhoneNumberFormat.RFC3966);
             // We remove the extension part from the formatted string before splitting it into different
             // groups.
             var endIndex = rfc3966Format.IndexOf(';');
-            if (endIndex < 0) {
+            if (endIndex < 0)
+            {
                 endIndex = rfc3966Format.Length;
             }
             // The country-code will have a '-' following it.
@@ -602,11 +604,13 @@ namespace PhoneNumbers
             {
                 foreach (var alternateFormat in alternateFormats.numberFormat_)
                 {
-                    if (alternateFormat.LeadingDigitsPatternCount > 0) {
+                    if (alternateFormat.LeadingDigitsPatternCount > 0)
+                    {
                         // There is only one leading digits pattern for alternate formats.
                         var pattern =
                             PhoneRegex.Get(alternateFormat.GetLeadingDigitsPattern(0));
-                        if (!pattern.IsMatchBeginning(nationalSignificantNumber)) {
+                        if (!pattern.IsMatchBeginning(nationalSignificantNumber))
+                        {
                             // Leading digits don't match; try another one.
                             continue;
                         }
@@ -692,8 +696,8 @@ namespace PhoneNumbers
                         // This is the extension sign case, in which the 'x' or 'X' should always precede the
                         // extension number.
                     }
-                    else if (!PhoneNumberUtil.NormalizeDigitsOnly(candidate.Substring(index)).Equals(
-                        number.Extension))
+                    else if (PhoneNumberUtil.NormalizeDigitsOnly(candidate.Substring(index)) !=
+                        number.Extension)
                     {
                         return false;
                     }

@@ -106,7 +106,7 @@ namespace PhoneNumbers
         // This is the minimum length of national number accrued that is required to trigger the
         // formatter. The first element of the leadingDigitsPattern of each numberFormat contains a
         // regular expression that matches up to this number of digits.
-        private static readonly int MinLeadingDigitsLength = 3;
+        private const int MinLeadingDigitsLength = 3;
 
         // The digits that have not been entered yet will be represented by a \u2008, the punctuation
         // space.
@@ -163,7 +163,7 @@ namespace PhoneNumbers
             {
                 var numberFormat = possibleFormats[0];
                 var pattern = numberFormat.Pattern;
-                if (currentFormattingPattern.Equals(pattern))
+                if (currentFormattingPattern == pattern)
                     return false;
                 if (CreateFormattingTemplate(numberFormat))
                 {
@@ -467,7 +467,7 @@ namespace PhoneNumbers
                 var indexOfPreviousNdd = prefixBeforeNationalNumber.ToString().LastIndexOf(extractedNationalPrefix, StringComparison.Ordinal);
                 prefixBeforeNationalNumber.Length = indexOfPreviousNdd;
             }
-            return !extractedNationalPrefix.Equals(RemoveNationalPrefixFromNationalNumber());
+            return extractedNationalPrefix != RemoveNationalPrefixFromNationalNumber();
         }
 
         private bool IsDigitOrLeadingPlusSign(char nextChar)
@@ -498,7 +498,7 @@ namespace PhoneNumbers
                     // in that way.
                     var fullOutput = AppendNationalNumber(formattedNumber);
                     var formattedNumberDigitsOnly = PhoneNumberUtil.NormalizeDiallableCharsOnly(fullOutput);
-                    if (formattedNumberDigitsOnly.Equals(accruedInputWithoutFormatting.ToString()))
+                    if (formattedNumberDigitsOnly == accruedInputWithoutFormatting.ToString())
                     {
                         // If it's the same (i.e entered number and format is same), then it's
                         // safe to return this in formatted number as nothing is lost / added.
@@ -532,7 +532,6 @@ namespace PhoneNumbers
             }
             return currentOutputIndex;
         }
-
 
         /// <summary>
         /// Combines the national number with any prefix (IDD/+ and country code or national prefix) that
@@ -697,11 +696,11 @@ namespace PhoneNumbers
             nationalNumber.Length = 0;
             nationalNumber.Append(numberWithoutCountryCallingCode);
             var newRegionCode = phoneUtil.GetRegionCodeForCountryCode(countryCode);
-            if (PhoneNumberUtil.REGION_CODE_FOR_NON_GEO_ENTITY.Equals(newRegionCode))
+            if (PhoneNumberUtil.REGION_CODE_FOR_NON_GEO_ENTITY == newRegionCode)
             {
                 currentMetadata = phoneUtil.GetMetadataForNonGeographicalRegion(countryCode);
             }
-            else if (!newRegionCode.Equals(defaultCountry))
+            else if (newRegionCode != defaultCountry)
             {
                 currentMetadata = GetMetadataForRegion(newRegionCode);
             }
