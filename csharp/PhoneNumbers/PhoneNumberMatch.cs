@@ -59,7 +59,7 @@ namespace PhoneNumbers
         public override int GetHashCode()
         {
             var hash = GetType().GetHashCode();
-            hash ^= Start.GetHashCode();
+            hash ^= Start;
             hash ^= RawString.GetHashCode();
             hash ^= Number.GetHashCode();
             return hash;
