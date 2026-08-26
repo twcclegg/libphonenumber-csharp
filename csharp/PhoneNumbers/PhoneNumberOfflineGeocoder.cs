@@ -92,7 +92,7 @@ namespace PhoneNumbers
     /// files generated at build time by <c>PhoneNumbers.MetadataBuilder</c>, via
     /// <see cref="PrefixFileReader"/>.
     /// </remarks>
-    public class PhoneNumberOfflineGeocoder
+    public sealed class PhoneNumberOfflineGeocoder
     {
         private static PhoneNumberOfflineGeocoder instance;
         private const string MAPPING_DATA_DIRECTORY = "geocoding.";

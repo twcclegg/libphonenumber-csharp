@@ -32,7 +32,7 @@ namespace PhoneNumbers
     /// @author Shaopeng Jia
     /// @author David Yonge-Mallo
     /// </summary>
-    public class ShortNumberInfo
+    public sealed class ShortNumberInfo
     {
         private static readonly ShortNumberInfo Instance = new();
 

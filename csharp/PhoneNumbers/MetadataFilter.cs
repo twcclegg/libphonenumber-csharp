@@ -29,7 +29,7 @@ namespace PhoneNumbers
     /// changes without notice. Any changes are not guaranteed to be reflected in the versioning scheme
     /// of the public API, nor in release notes.
     /// </summary>
-    public class MetadataFilter
+    public sealed class MetadataFilter
     {
         // The following 3 sets comprise all the PhoneMetadata fields as defined at phonemetadata.proto
         // which may be excluded from customized serializations of the binary metadata. Fields that are
