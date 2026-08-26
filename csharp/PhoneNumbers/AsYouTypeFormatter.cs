@@ -414,7 +414,7 @@ namespace PhoneNumbers
                         {
                             isExpectingCountryCallingCode = false;
                         }
-                        return prefixBeforeNationalNumber.ToString() + nationalNumber.ToString();
+                        return prefixBeforeNationalNumber + nationalNumber.ToString();
                     }
                     if (possibleFormats.Count > 0)
                     {  // The formatting pattern is already chosen.
@@ -553,7 +553,7 @@ namespace PhoneNumbers
                 return prefixBeforeNationalNumber.ToString() + SeparatorBeforeNationalNumber
                        + nationalNumberStr;
             }
-            return prefixBeforeNationalNumber.ToString() + nationalNumberStr;
+            return prefixBeforeNationalNumber + nationalNumberStr;
         }
 
         // Attempts to set the formatting template and returns a string which contains the formatted
