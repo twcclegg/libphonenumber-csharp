@@ -327,9 +327,8 @@ namespace PhoneNumbers
             }
 
             var cost = ShortNumberCost.TOLL_FREE;
-            foreach (var regionCode in regionCodes)
+            foreach (var costForRegion in regionCodes.Select(regionCode => GetExpectedCostForRegion(number, regionCode)))
             {
-                var costForRegion = GetExpectedCostForRegion(number, regionCode);
                 switch (costForRegion)
                 {
                     case ShortNumberCost.PREMIUM_RATE:
