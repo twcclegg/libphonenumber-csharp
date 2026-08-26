@@ -1,0 +1,206 @@
+name: Triage metadata issues
+
+# Uses the GitHub Copilot CLI to spot new issues that are actually reports
+# about upstream Google libphonenumber *metadata* (country dialing plans,
+# valid ranges, prefixes, formatting) rather than bugs in this C# port. Those
+# can't be fixed here - see CONTRIBUTING.md and the bug_report.md checklist -
+# so this closes them with a canned pointer to the upstream repo, and opens a
+# PR adding the issue to .github/triage/metadata_examples.md so future
+# classifications stay grounded in real history.
+#
+# Requires the repository (or the owner's personal account, since this repo
+# has no org) to have GitHub Copilot CLI usage enabled; see
+# https://docs.github.com/en/copilot/how-tos/copilot-cli/use-copilot-cli-in-actions
+# No extra secret is needed - the built-in GITHUB_TOKEN is used together with
+# the copilot-requests permission below.
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  copilot-requests: write
+
+concurrency:
+  group: triage-metadata-issue-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  triage:
+    # x64, not the arm runner used elsewhere in this repo: the Copilot CLI's
+    # npm package does not reliably ship arm64 Linux binaries.
+    runs-on: ubuntu-latest
+    # Don't second-guess the maintainers' own issues (e.g. tracking/planning
+    # issues like #375), only third-party bug reports.
+    if: github.event.issue.author_association != 'OWNER' && github.event.issue.author_association != 'MEMBER' && github.event.issue.author_association != 'COLLABORATOR'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Read issue
+        id: issue
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        with:
+          script: |
+            const truncate = (s, max) => (s && s.length > max ? `${s.slice(0, max)}\n[...truncated]` : (s || ''));
+            core.setOutput('title', truncate(context.payload.issue.title, 500));
+            core.setOutput('body', truncate(context.payload.issue.body, 6000));
+
+      - name: Build classifier system prompt
+        run: |
+          cat .github/triage/system_prompt.md \
+              .github/triage/metadata_examples.md \
+              .github/triage/system_prompt_footer.md \
+              > ${{ runner.temp }}/triage_system_prompt.md
+
+      - name: Install Copilot CLI
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 22
+      - run: npm install -g @github/copilot
+
+      - name: Classify issue
+        id: classify
+        continue-on-error: true
+        uses: actions/ai-inference@2c43c91ae16266ca159d311430343c67a5ffa222 # v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          system-prompt-file: ${{ runner.temp }}/triage_system_prompt.md
+          prompt: |
+            Issue title:
+            ${{ steps.issue.outputs.title }}
+
+            Issue body:
+            ${{ steps.issue.outputs.body }}
+
+      - name: Act on classification
+        id: act
+        if: steps.classify.outcome == 'success'
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        with:
+          script: |
+            const raw = ${{ toJSON(steps.classify.outputs.response) }} || '';
+            const match = raw.match(/\{[\s\S]*\}/);
+
+            let verdict;
+            try {
+              verdict = JSON.parse(match ? match[0] : raw);
+            } catch (err) {
+              core.warning(`Could not parse classifier response as JSON: ${err.message}`);
+              core.summary.addHeading('Metadata issue triage', 3).addRaw(`Skipped: unparseable response:\n\n${raw}`).write();
+              return;
+            }
+
+            core.summary
+              .addHeading('Metadata issue triage', 3)
+              .addRaw(`is_metadata_issue=${verdict.is_metadata_issue}, confidence=${verdict.confidence}\n\n${verdict.reason || ''}`)
+              .write();
+
+            const isMetadataIssue = verdict.is_metadata_issue === true && verdict.confidence !== 'low';
+            core.setOutput('is_metadata_issue', String(isMetadataIssue));
+            core.setOutput('reason', verdict.reason || '');
+            if (!isMetadataIssue) {
+              return;
+            }
+
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issue_number = context.payload.issue.number;
+
+            const label = 'metadata';
+            try {
+              await github.rest.issues.getLabel({ owner, repo, name: label });
+            } catch {
+              await github.rest.issues.createLabel({
+                owner, repo, name: label, color: 'c5def5',
+                description: 'Report about upstream Google libphonenumber data, not this port',
+              });
+            }
+            await github.rest.issues.addLabels({ owner, repo, issue_number, labels: [label] });
+
+            await github.rest.issues.createComment({
+              owner, repo, issue_number,
+              body: [
+                'Thanks for filing this! This looks like a phone number **metadata** issue',
+                '(country dialing plans, valid ranges, prefixes, or formatting for a specific',
+                'region) rather than a bug in the `libphonenumber-csharp` code itself.',
+                '',
+                "This library republishes Google's [libphonenumber](https://github.com/google/libphonenumber)",
+                'metadata automatically about every two weeks - it is not hand-edited here, so a',
+                'fix in this repo would just be overwritten by the next sync.',
+                '',
+                'Please check whether the same behavior reproduces on the',
+                '[Google demo](https://libphonenumber.appspot.com/), and if so, file it with the',
+                'upstream project instead: https://github.com/google/libphonenumber/issues',
+                '(see also the [bug report checklist](https://github.com/twcclegg/libphonenumber-csharp/blob/main/.github/ISSUE_TEMPLATE/bug_report.md)).',
+                '',
+                '---',
+                '_This issue was flagged and closed automatically. If this doesn\'t look right -',
+                "for example the behavior differs from Google's own demo, or this isn't actually",
+                'a metadata question - please reopen it and a maintainer will take another look._',
+              ].join('\n'),
+            });
+
+            await github.rest.issues.update({
+              owner, repo, issue_number,
+              state: 'closed',
+              state_reason: 'not_planned',
+            });
+
+      - name: Propose adding this issue to the examples list
+        if: steps.act.outputs.is_metadata_issue == 'true'
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issue_number = context.payload.issue.number;
+            const defaultBranch = context.payload.repository.default_branch;
+            const path = '.github/triage/metadata_examples.md';
+            const branch = `triage/metadata-example-issue-${issue_number}`;
+
+            const clean = (s, max) => (s || '').replace(/[\r\n"]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, max);
+            const title = clean(context.payload.issue.title, 150);
+            const reason = clean(${{ toJSON(steps.act.outputs.reason) }}, 200) || 'Flagged by automated triage as a metadata issue.';
+            const newLine = `- #${issue_number} "${title}" — ${reason}`;
+
+            try {
+              const existingPrs = await github.rest.pulls.list({ owner, repo, head: `${owner}:${branch}`, state: 'all' });
+              if (existingPrs.data.length > 0) {
+                core.info(`A PR for ${branch} already exists, skipping.`);
+                return;
+              }
+
+              const { data: file } = await github.rest.repos.getContent({ owner, repo, path, ref: defaultBranch });
+              const content = Buffer.from(file.content, 'base64').toString('utf8');
+              if (content.includes(`#${issue_number} "`)) {
+                core.info(`Issue #${issue_number} is already listed, skipping.`);
+                return;
+              }
+              const updatedContent = `${content.trimEnd()}\n${newLine}\n`;
+
+              const { data: ref } = await github.rest.git.getRef({ owner, repo, ref: `heads/${defaultBranch}` });
+              await github.rest.git.createRef({ owner, repo, ref: `refs/heads/${branch}`, sha: ref.object.sha });
+
+              await github.rest.repos.createOrUpdateFileContents({
+                owner, repo, path, branch,
+                message: `Add issue #${issue_number} to metadata-issue triage examples`,
+                content: Buffer.from(updatedContent).toString('base64'),
+                sha: file.sha,
+              });
+
+              await github.rest.pulls.create({
+                owner, repo, base: defaultBranch, head: branch,
+                title: `Add issue #${issue_number} to metadata-issue triage examples`,
+                body: [
+                  `Closed #${issue_number} as a metadata issue during automated triage.`,
+                  'Adding it to the examples list so future classifications stay grounded in real history.',
+                  '',
+                  '_Opened automatically by the triage_metadata_issues workflow - please review the summarized reason before merging._',
+                ].join('\n'),
+              });
+            } catch (err) {
+              core.warning(`Could not open examples-list PR for issue #${issue_number}: ${err.message}`);
+            }
