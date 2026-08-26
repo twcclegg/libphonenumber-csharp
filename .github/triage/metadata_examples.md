@@ -1,16 +1,10 @@
 ## Confirmed metadata issues
 
-Every issue from #1 through #422 falls into exactly one of three buckets:
-a pull request (this repo shares one number sequence between issues and
-PRs), a metadata issue, or a non-metadata issue. This list is the
-exhaustive set of the second bucket - every issue in that range confirmed,
-by reading its actual resolution, to be a report about upstream Google
-libphonenumber metadata (a prefix, numbering plan, or country code) rather
-than this port's code. **Any issue number in that range that does not
-appear below is a non-metadata issue** - build/packaging problems,
-performance, API/usage questions, feature requests, and real code bugs in
-this port. There is no separate "not metadata" list: absence from this
-file *is* the negative signal.
+This list is exhaustive: every issue confirmed, by reading its actual
+resolution, to be a report about upstream Google libphonenumber metadata
+(a prefix, numbering plan, or country code) rather than this port's code.
+There is no separate "not metadata" list — absence from this file *is*
+the negative signal.
 
 This list is kept up to date automatically: when the triage workflow
 closes a new issue as a metadata issue, it opens a PR appending it here.
