@@ -174,7 +174,7 @@ namespace PhoneNumbers
 
         public static string ValidateRE(string regex)
         {
-            if (ValidPatterns != null) ValidateRE(regex, false);
+            if (ValidPatterns is not null) ValidateRE(regex, false);
             return regex;
         }
 
@@ -182,21 +182,8 @@ namespace PhoneNumbers
         {
             // Removes all the whitespace and newline from the regexp. Not using pattern compile options to
             // make it work across programming languages.
-            if (removeWhitespace)
-            {
-                for (int i = 0; i < regex.Length; i++)
-                    if (char.IsWhiteSpace(regex[i]))
-                    {
-                        var sb = new StringBuilder(regex, 0, i, regex.Length);
-                        while (++i < regex.Length)
-                        {
-                            if (!char.IsWhiteSpace(regex[i]))
-                                sb.Append(regex[i]);
-                        }
-                        regex = sb.ToString();
-                        break;
-                    }
-            }
+            if (removeWhitespace && regex.Any(char.IsWhiteSpace))
+                regex = new string(regex.Where(c => !char.IsWhiteSpace(c)).ToArray());
 
             if (ValidPatterns is { } cache)
                 lock (cache)
@@ -246,8 +233,8 @@ namespace PhoneNumbers
             }
             if (element.Attribute(PREFERRED_EXTN_PREFIX) is { } a7)
                 metadata.PreferredExtnPrefix = a7.Value;
-            metadata.MainCountryForCode = element.Attribute(MAIN_COUNTRY_FOR_CODE) != null;
-            metadata.MobileNumberPortableRegion = element.Attribute(MOBILE_NUMBER_PORTABLE_REGION) != null;
+            metadata.MainCountryForCode = element.Attribute(MAIN_COUNTRY_FOR_CODE) is not null;
+            metadata.MobileNumberPortableRegion = element.Attribute(MOBILE_NUMBER_PORTABLE_REGION) is not null;
             return metadata;
         }
 
@@ -399,17 +386,8 @@ namespace PhoneNumbers
         private static bool ArePossibleLengthsEqual(SortedSet<int> possibleLengths,
             PhoneNumberDesc desc)
         {
-            if (possibleLengths.Count != desc.PossibleLengthCount)
-                return false;
-            // Note that both should be sorted already, and we know they are the same length.
-            var i = 0;
-            foreach (var length in possibleLengths)
-            {
-                if (length != desc.GetPossibleLength(i))
-                    return false;
-                i++;
-            }
-            return true;
+            // Note that both should be sorted already.
+            return possibleLengths.SequenceEqual(desc.PossibleLengthList);
         }
 
         /// <summary>
@@ -434,7 +412,7 @@ namespace PhoneNumbers
         {
             var element = countryElement.Element(numberType);
             var numberDesc = new PhoneNumberDesc();
-            if (element == null)
+            if (element is null)
             {
                 // -1 will never match a possible phone number length, so is safe to use to ensure this never
                 // matches. We don't leave it empty, since for compression reasons, we use the empty list to
@@ -450,11 +428,11 @@ namespace PhoneNumbers
             SetPossibleLengths(lengths, localOnlyLengths, parentDesc, numberDesc);
 
             var validPattern = element.Element(NATIONAL_NUMBER_PATTERN);
-            if (validPattern != null)
+            if (validPattern is not null)
                 numberDesc.NationalNumberPattern = ValidateRE(validPattern.Value, true);
 
             var exampleNumber = element.Element(EXAMPLE_NUMBER);
-            if (exampleNumber != null)
+            if (exampleNumber is not null)
                 numberDesc.ExampleNumber = exampleNumber.Value;
 
             return numberDesc;
@@ -592,7 +570,7 @@ namespace PhoneNumbers
             // (However, for e.g. formatting metadata in PhoneNumberAlternateFormats, no PhoneNumberDesc
             // elements are present).
             var generalDescNode = data.Element(GENERAL_DESC);
-            if (generalDescNode != null)
+            if (generalDescNode is not null)
             {
                 PopulatePossibleLengthSets(generalDescNode.Elements(POSSIBLE_LENGTHS), lengths, localOnlyLengths);
                 if (lengths.Count != 0 || localOnlyLengths.Count != 0)
@@ -611,7 +589,7 @@ namespace PhoneNumbers
                 // codes. The other lengths will be checked later to see that they are a sub-set of these
                 // possible lengths.
                 var shortCodeDesc = data.Element(SHORT_CODE);
-                if (shortCodeDesc != null)
+                if (shortCodeDesc is not null)
                 {
                     PopulatePossibleLengthSets(shortCodeDesc.Elements(POSSIBLE_LENGTHS), lengths, localOnlyLengths);
                 }
@@ -635,9 +613,9 @@ namespace PhoneNumbers
         {
             // Only add the lengths to this sub-type if they aren't exactly the same as the possible
             // lengths in the general desc (for metadata size reasons).
-            if (parentDesc == null || !ArePossibleLengthsEqual(lengths, parentDesc))
+            if (parentDesc is null || !ArePossibleLengthsEqual(lengths, parentDesc))
                 foreach (var length in lengths)
-                    if (parentDesc == null || parentDesc.possibleLength_.Contains(length))
+                    if (parentDesc is null || parentDesc.possibleLength_.Contains(length))
                         desc.possibleLength_.Add(length);
                     else
                         throw new Exception(
@@ -647,7 +625,7 @@ namespace PhoneNumbers
             // saw this) before adding it to the collection of possible local-only lengths.
             foreach (var length in localOnlyLengths)
                 if (!lengths.Contains(length))
-                    if (parentDesc == null || parentDesc.possibleLengthLocalOnly_.Contains(length)
+                    if (parentDesc is null || parentDesc.possibleLengthLocalOnly_.Contains(length)
                         || parentDesc.possibleLength_.Contains(length))
                         desc.possibleLengthLocalOnly_.Add(length);
                     else
@@ -702,7 +680,7 @@ namespace PhoneNumbers
             var nationalPrefix = GetNationalPrefix(element);
             var metadata = LoadTerritoryTag(regionCode, element, nationalPrefix);
             var nationalPrefixFormattingRule = GetNationalPrefixFormattingRuleFromElement(element, nationalPrefix);
-            LoadAvailableFormats(metadata, element, nationalPrefix, nationalPrefixFormattingRule, element.Attribute(NATIONAL_PREFIX_OPTIONAL_WHEN_FORMATTING) != null);
+            LoadAvailableFormats(metadata, element, nationalPrefix, nationalPrefixFormattingRule, element.Attribute(NATIONAL_PREFIX_OPTIONAL_WHEN_FORMATTING) is not null);
             LoadGeneralDesc(metadata, element);
             if (!isAlternateFormatsMetadata)
                 SetRelevantDescPatterns(metadata, element, isShortNumberMetadata);

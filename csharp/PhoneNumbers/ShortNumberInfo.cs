@@ -32,7 +32,7 @@ namespace PhoneNumbers
     /// @author Shaopeng Jia
     /// @author David Yonge-Mallo
     /// </summary>
-    public class ShortNumberInfo
+    public sealed class ShortNumberInfo
     {
         private static readonly ShortNumberInfo Instance = new();
 
@@ -62,10 +62,7 @@ namespace PhoneNumbers
         /// <summary>
         /// Returns the singleton instance of the ShortNumberInfo.
         /// </summary>
-        public static ShortNumberInfo GetInstance()
-        {
-            return Instance;
-        }
+        public static ShortNumberInfo GetInstance() => Instance;
 
         /// <summary>
         /// A mapping from a country calling code to the region codes which denote the region represented
@@ -105,11 +102,8 @@ namespace PhoneNumbers
         /// being dialed from.
         /// </summary>
         private bool RegionDialingFromMatchesNumber(PhoneNumber number,
-            string regionDialingFrom)
-        {
-            var regionCodes = GetRegionCodesForCountryCode(number.CountryCode);
-            return regionCodes.Contains(regionDialingFrom);
-        }
+            string regionDialingFrom) =>
+            GetRegionCodesForCountryCode(number.CountryCode).Contains(regionDialingFrom);
 
         /// <summary>
         /// Check whether a short number is a possible number when dialed from the given region. This
@@ -128,7 +122,7 @@ namespace PhoneNumbers
 
             var phoneMetadata =
                 MetadataManager.GetShortNumberMetadataForRegion(regionDialingFrom);
-            if (phoneMetadata == null)
+            if (phoneMetadata is null)
             {
                 return false;
             }
@@ -153,7 +147,7 @@ namespace PhoneNumbers
             foreach (var region in regionCodes)
             {
                 var phoneMetadata = MetadataManager.GetShortNumberMetadataForRegion(region);
-                if (phoneMetadata == null)
+                if (phoneMetadata is null)
                 {
                     continue;
                 }
@@ -183,7 +177,7 @@ namespace PhoneNumbers
 
             var phoneMetadata =
                 MetadataManager.GetShortNumberMetadataForRegion(regionDialingFrom);
-            if (phoneMetadata == null)
+            if (phoneMetadata is null)
             {
                 return false;
             }
@@ -212,7 +206,7 @@ namespace PhoneNumbers
         {
             var regionCodes = GetRegionCodesForCountryCode(number.CountryCode);
             var regionCode = GetRegionCodeForShortNumberFromRegionList(number, regionCodes);
-            if (regionCodes.Count > 1 && regionCode != null)
+            if (regionCodes.Count > 1 && regionCode is not null)
             {
                 // If a matching region had been found for the phone number from among two or more regions,
                 // then we have already implicitly verified its validity for that region.
@@ -255,7 +249,7 @@ namespace PhoneNumbers
             // Note that regionDialingFrom may be null, in which case phoneMetadata will also be null.
             var phoneMetadata = MetadataManager.GetShortNumberMetadataForRegion(
                 regionDialingFrom);
-            if (phoneMetadata == null)
+            if (phoneMetadata is null)
             {
                 return ShortNumberCost.UNKNOWN_COST;
             }
@@ -368,7 +362,8 @@ namespace PhoneNumbers
             {
                 return null;
             }
-            else if (regionCodes.Count == 1)
+
+            if (regionCodes.Count == 1)
             {
                 return regionCodes[0];
             }
@@ -377,7 +372,7 @@ namespace PhoneNumbers
             foreach (var regionCode in regionCodes)
             {
                 var phoneMetadata = MetadataManager.GetShortNumberMetadataForRegion(regionCode);
-                if (phoneMetadata != null
+                if (phoneMetadata is not null
                     && MatchesPossibleNumberAndNationalNumber(nationalNumber, phoneMetadata.ShortCode))
                 {
                     // The number is valid for this region.
@@ -396,7 +391,7 @@ namespace PhoneNumbers
         internal string GetExampleShortNumber(string regionCode)
         {
             var phoneMetadata = MetadataManager.GetShortNumberMetadataForRegion(regionCode);
-            if (phoneMetadata == null)
+            if (phoneMetadata is null)
             {
                 return "";
             }
@@ -416,7 +411,7 @@ namespace PhoneNumbers
         internal string GetExampleShortNumberForCost(string regionCode, ShortNumberCost cost)
         {
             var phoneMetadata = MetadataManager.GetShortNumberMetadataForRegion(regionCode);
-            if (phoneMetadata == null)
+            if (phoneMetadata is null)
             {
                 return "";
             }
@@ -447,10 +442,8 @@ namespace PhoneNumbers
         /// <param name="number">the phone number to test</param>
         /// <param name="regionCode">the region where the phone number is being dialed</param>
         /// <returns> whether the number might be used to connect to an emergency service in the given region</returns>
-        public bool ConnectsToEmergencyNumber(string number, string regionCode)
-        {
-            return MatchesEmergencyNumberHelper(number, regionCode, true /* allows prefix match */);
-        }
+        public bool ConnectsToEmergencyNumber(string number, string regionCode) =>
+            MatchesEmergencyNumberHelper(number, regionCode, true /* allows prefix match */);
 
         /// <summary>
         /// Returns true if the given number exactly matches an emergency service number in the given
@@ -464,10 +457,8 @@ namespace PhoneNumbers
         /// <param name="number">the phone number to test</param>
         /// <param name="regionCode">the region where the phone number is being dialed</param>
         /// <returns> whether the number exactly matches an emergency services number in the given region</returns>
-        public bool IsEmergencyNumber(string number, string regionCode)
-        {
-            return MatchesEmergencyNumberHelper(number, regionCode, false /* doesn't allow prefix match */);
-        }
+        public bool IsEmergencyNumber(string number, string regionCode) =>
+            MatchesEmergencyNumberHelper(number, regionCode, false /* doesn't allow prefix match */);
 
         private static bool MatchesEmergencyNumberHelper(string number, string regionCode,
             bool allowPrefixMatch)
@@ -482,7 +473,7 @@ namespace PhoneNumbers
             }
 
             var metadata = MetadataManager.GetShortNumberMetadataForRegion(regionCode);
-            if (metadata == null || !metadata.HasEmergency)
+            if (metadata is null || !metadata.HasEmergency)
             {
                 return false;
             }
@@ -510,7 +501,7 @@ namespace PhoneNumbers
             var regionCode = GetRegionCodeForShortNumberFromRegionList(number, regionCodes);
             var nationalNumber = PhoneNumberUtil.GetNationalSignificantNumberImpl(number);
             var phoneMetadata = MetadataManager.GetShortNumberMetadataForRegion(regionCode);
-            return phoneMetadata != null
+            return phoneMetadata is not null
                    && MatchesPossibleNumberAndNationalNumber(nationalNumber,
                        phoneMetadata.CarrierSpecific);
         }
@@ -538,7 +529,7 @@ namespace PhoneNumbers
             var nationalNumber = PhoneNumberUtil.GetNationalSignificantNumberImpl(number);
             var phoneMetadata =
                 MetadataManager.GetShortNumberMetadataForRegion(regionDialingFrom);
-            return phoneMetadata != null
+            return phoneMetadata is not null
                    && MatchesPossibleNumberAndNationalNumber(nationalNumber,
                        phoneMetadata.CarrierSpecific);
         }
@@ -565,7 +556,7 @@ namespace PhoneNumbers
 
             var phoneMetadata =
                 MetadataManager.GetShortNumberMetadataForRegion(regionDialingFrom);
-            return phoneMetadata != null
+            return phoneMetadata is not null
                    && MatchesPossibleNumberAndNationalNumber(PhoneNumberUtil.GetNationalSignificantNumberImpl(number),
                        phoneMetadata.SmsServices);
         }
@@ -588,7 +579,9 @@ namespace PhoneNumbers
             // We don't want to consider it a prefix match when matching non-empty input against an empty
             // pattern.
             if (!numberDesc.HasNationalNumberPattern)
+            {
                 return false;
+            }
 
             var pattern = numberDesc.GetNationalNumberPattern();
             return allowPrefixMatch ? pattern.IsMatchBeginning(number) : pattern.IsMatchAll(number);

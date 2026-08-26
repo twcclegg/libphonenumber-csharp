@@ -40,7 +40,7 @@ namespace PhoneNumbers
             foreach (var country in LocaleNames.SupportedCountries())
             {
                 var names = LocaleNames.ForCountry(country);
-                if (names != null)
+                if (names is not null)
                     builder[country] = names.ToImmutableDictionary();
             }
             return builder.ToImmutable();
