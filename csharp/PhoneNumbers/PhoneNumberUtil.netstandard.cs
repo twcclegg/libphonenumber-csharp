@@ -385,7 +385,8 @@ namespace PhoneNumbers
                     return countryCode + " " + rawInput;
                 }
             }
-            else if (IsValidRegionCode(regionCallingFrom) &&
+            else if (metadataForRegionCallingFrom is not null &&
+                     IsValidRegionCode(regionCallingFrom) &&
                      countryCode == GetCountryCodeForValidRegion(regionCallingFrom))
             {
                 var formattingPattern =

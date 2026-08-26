@@ -510,7 +510,8 @@ namespace PhoneNumbers
                         intermediateResult.Slice(0, intermediateResultLength));
                 }
             }
-            else if (IsValidRegionCode(regionCallingFrom) &&
+            else if (metadataForRegionCallingFrom is not null &&
+                     IsValidRegionCode(regionCallingFrom) &&
                      countryCode == GetCountryCodeForValidRegion(regionCallingFrom))
             {
                 var nationalNumber = new string(nationalNumberSpan.Slice(0, nationalNumberLength));
