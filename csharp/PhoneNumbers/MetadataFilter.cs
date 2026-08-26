@@ -299,16 +299,12 @@ namespace PhoneNumbers
                     // parent as a key.
                     if (otherChildren.Count != ExcludableChildFields.Count)
                     {
-                        var children = new SortedSet<string>();
-                        foreach (var child in ExcludableChildFields)
-                            if (!otherChildren.Contains(child))
-                                children.Add(child);
+                        var children = new SortedSet<string>(ExcludableChildFields.Where(child => !otherChildren.Contains(child)));
                         complement.Add(parent, children);
                     }
                 }
-            foreach (var childlessField in ExcludableChildlessFields)
-                if (!fieldMap.ContainsKey(childlessField))
-                    complement.Add(childlessField, new SortedSet<string>());
+            foreach (var childlessField in ExcludableChildlessFields.Where(f => !fieldMap.ContainsKey(f)))
+                complement.Add(childlessField, new SortedSet<string>());
             return complement;
         }
 
@@ -318,7 +314,7 @@ namespace PhoneNumbers
                 throw new Exception(parent + " is not an excludable parent field");
             if (!ExcludableChildFields.Contains(child))
                 throw new Exception(child + " is not an excludable child field");
-            return blacklist.ContainsKey(parent) && blacklist[parent].Contains(child);
+            return blacklist.TryGetValue(parent, out var children) && children.Contains(child);
         }
 
         internal bool ShouldDrop(string childlessField)
