@@ -556,11 +556,10 @@ namespace PhoneNumbers
             public Builder MergeGeneralDesc(PhoneNumberDesc value)
             {
                 if (value is null) throw new ArgumentNullException(nameof(value));
-                if (MessageBeingBuilt.HasGeneralDesc &&
-                    MessageBeingBuilt.GeneralDesc != PhoneNumberDesc.DefaultInstance)
-                    MessageBeingBuilt.GeneralDesc = PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.GeneralDesc)
-                        .MergeFrom(value).BuildPartial();
-                else MessageBeingBuilt.GeneralDesc = value;
+                MessageBeingBuilt.GeneralDesc = MessageBeingBuilt.HasGeneralDesc &&
+                    MessageBeingBuilt.GeneralDesc != PhoneNumberDesc.DefaultInstance
+                    ? PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.GeneralDesc).MergeFrom(value).BuildPartial()
+                    : value;
                 return this;
             }
 
@@ -587,11 +586,10 @@ namespace PhoneNumbers
             public Builder MergeFixedLine(PhoneNumberDesc value)
             {
                 if (value is null) throw new ArgumentNullException(nameof(value));
-                if (MessageBeingBuilt.HasFixedLine &&
-                    MessageBeingBuilt.FixedLine != PhoneNumberDesc.DefaultInstance)
-                    MessageBeingBuilt.FixedLine = PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.FixedLine)
-                        .MergeFrom(value).BuildPartial();
-                else MessageBeingBuilt.FixedLine = value;
+                MessageBeingBuilt.FixedLine = MessageBeingBuilt.HasFixedLine &&
+                    MessageBeingBuilt.FixedLine != PhoneNumberDesc.DefaultInstance
+                    ? PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.FixedLine).MergeFrom(value).BuildPartial()
+                    : value;
                 return this;
             }
 
@@ -618,11 +616,10 @@ namespace PhoneNumbers
             public Builder MergeMobile(PhoneNumberDesc value)
             {
                 if (value is null) throw new ArgumentNullException(nameof(value));
-                if (MessageBeingBuilt.HasMobile &&
-                    MessageBeingBuilt.Mobile != PhoneNumberDesc.DefaultInstance)
-                    MessageBeingBuilt.Mobile = PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.Mobile).MergeFrom(value)
-                        .BuildPartial();
-                else MessageBeingBuilt.Mobile = value;
+                MessageBeingBuilt.Mobile = MessageBeingBuilt.HasMobile &&
+                    MessageBeingBuilt.Mobile != PhoneNumberDesc.DefaultInstance
+                    ? PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.Mobile).MergeFrom(value).BuildPartial()
+                    : value;
                 return this;
             }
 
@@ -649,11 +646,10 @@ namespace PhoneNumbers
             public Builder MergeTollFree(PhoneNumberDesc value)
             {
                 if (value is null) throw new ArgumentNullException(nameof(value));
-                if (MessageBeingBuilt.HasTollFree &&
-                    MessageBeingBuilt.TollFree != PhoneNumberDesc.DefaultInstance)
-                    MessageBeingBuilt.TollFree = PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.TollFree)
-                        .MergeFrom(value).BuildPartial();
-                else MessageBeingBuilt.TollFree = value;
+                MessageBeingBuilt.TollFree = MessageBeingBuilt.HasTollFree &&
+                    MessageBeingBuilt.TollFree != PhoneNumberDesc.DefaultInstance
+                    ? PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.TollFree).MergeFrom(value).BuildPartial()
+                    : value;
                 return this;
             }
 
@@ -680,11 +676,10 @@ namespace PhoneNumbers
             public Builder MergePremiumRate(PhoneNumberDesc value)
             {
                 if (value is null) throw new ArgumentNullException(nameof(value));
-                if (MessageBeingBuilt.HasPremiumRate &&
-                    MessageBeingBuilt.PremiumRate != PhoneNumberDesc.DefaultInstance)
-                    MessageBeingBuilt.PremiumRate = PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.PremiumRate)
-                        .MergeFrom(value).BuildPartial();
-                else MessageBeingBuilt.PremiumRate = value;
+                MessageBeingBuilt.PremiumRate = MessageBeingBuilt.HasPremiumRate &&
+                    MessageBeingBuilt.PremiumRate != PhoneNumberDesc.DefaultInstance
+                    ? PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.PremiumRate).MergeFrom(value).BuildPartial()
+                    : value;
                 return this;
             }
 
@@ -711,11 +706,10 @@ namespace PhoneNumbers
             public Builder MergeSharedCost(PhoneNumberDesc value)
             {
                 if (value is null) throw new ArgumentNullException(nameof(value));
-                if (MessageBeingBuilt.HasSharedCost &&
-                    MessageBeingBuilt.SharedCost != PhoneNumberDesc.DefaultInstance)
-                    MessageBeingBuilt.SharedCost = PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.SharedCost)
-                        .MergeFrom(value).BuildPartial();
-                else MessageBeingBuilt.SharedCost = value;
+                MessageBeingBuilt.SharedCost = MessageBeingBuilt.HasSharedCost &&
+                    MessageBeingBuilt.SharedCost != PhoneNumberDesc.DefaultInstance
+                    ? PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.SharedCost).MergeFrom(value).BuildPartial()
+                    : value;
                 return this;
             }
 
@@ -742,11 +736,10 @@ namespace PhoneNumbers
             public Builder MergePersonalNumber(PhoneNumberDesc value)
             {
                 if (value is null) throw new ArgumentNullException(nameof(value));
-                if (MessageBeingBuilt.HasPersonalNumber &&
-                    MessageBeingBuilt.PersonalNumber != PhoneNumberDesc.DefaultInstance)
-                    MessageBeingBuilt.PersonalNumber = PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.PersonalNumber)
-                        .MergeFrom(value).BuildPartial();
-                else MessageBeingBuilt.PersonalNumber = value;
+                MessageBeingBuilt.PersonalNumber = MessageBeingBuilt.HasPersonalNumber &&
+                    MessageBeingBuilt.PersonalNumber != PhoneNumberDesc.DefaultInstance
+                    ? PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.PersonalNumber).MergeFrom(value).BuildPartial()
+                    : value;
                 return this;
             }
 
@@ -773,11 +766,10 @@ namespace PhoneNumbers
             public Builder MergeVoip(PhoneNumberDesc value)
             {
                 if (value is null) throw new ArgumentNullException(nameof(value));
-                if (MessageBeingBuilt.HasVoip &&
-                    MessageBeingBuilt.Voip != PhoneNumberDesc.DefaultInstance)
-                    MessageBeingBuilt.Voip = PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.Voip).MergeFrom(value)
-                        .BuildPartial();
-                else MessageBeingBuilt.Voip = value;
+                MessageBeingBuilt.Voip = MessageBeingBuilt.HasVoip &&
+                    MessageBeingBuilt.Voip != PhoneNumberDesc.DefaultInstance
+                    ? PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.Voip).MergeFrom(value).BuildPartial()
+                    : value;
                 return this;
             }
 
@@ -804,11 +796,10 @@ namespace PhoneNumbers
             public Builder MergePager(PhoneNumberDesc value)
             {
                 if (value is null) throw new ArgumentNullException(nameof(value));
-                if (MessageBeingBuilt.HasPager &&
-                    MessageBeingBuilt.Pager != PhoneNumberDesc.DefaultInstance)
-                    MessageBeingBuilt.Pager = PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.Pager).MergeFrom(value)
-                        .BuildPartial();
-                else MessageBeingBuilt.Pager = value;
+                MessageBeingBuilt.Pager = MessageBeingBuilt.HasPager &&
+                    MessageBeingBuilt.Pager != PhoneNumberDesc.DefaultInstance
+                    ? PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.Pager).MergeFrom(value).BuildPartial()
+                    : value;
                 return this;
             }
 
@@ -835,11 +826,10 @@ namespace PhoneNumbers
             public Builder MergeUan(PhoneNumberDesc value)
             {
                 if (value is null) throw new ArgumentNullException(nameof(value));
-                if (MessageBeingBuilt.HasUan &&
-                    MessageBeingBuilt.Uan != PhoneNumberDesc.DefaultInstance)
-                    MessageBeingBuilt.Uan = PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.Uan).MergeFrom(value)
-                        .BuildPartial();
-                else MessageBeingBuilt.Uan = value;
+                MessageBeingBuilt.Uan = MessageBeingBuilt.HasUan &&
+                    MessageBeingBuilt.Uan != PhoneNumberDesc.DefaultInstance
+                    ? PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.Uan).MergeFrom(value).BuildPartial()
+                    : value;
                 return this;
             }
 
@@ -866,11 +856,10 @@ namespace PhoneNumbers
             public Builder MergeEmergency(PhoneNumberDesc value)
             {
                 if (value is null) throw new ArgumentNullException(nameof(value));
-                if (MessageBeingBuilt.HasEmergency &&
-                    MessageBeingBuilt.Emergency != PhoneNumberDesc.DefaultInstance)
-                    MessageBeingBuilt.Emergency = PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.Emergency)
-                        .MergeFrom(value).BuildPartial();
-                else MessageBeingBuilt.Emergency = value;
+                MessageBeingBuilt.Emergency = MessageBeingBuilt.HasEmergency &&
+                    MessageBeingBuilt.Emergency != PhoneNumberDesc.DefaultInstance
+                    ? PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.Emergency).MergeFrom(value).BuildPartial()
+                    : value;
                 return this;
             }
 
@@ -897,11 +886,10 @@ namespace PhoneNumbers
             public Builder MergeVoicemail(PhoneNumberDesc value)
             {
                 if (value is null) throw new ArgumentNullException(nameof(value));
-                if (MessageBeingBuilt.HasVoicemail &&
-                    MessageBeingBuilt.Voicemail != PhoneNumberDesc.DefaultInstance)
-                    MessageBeingBuilt.Voicemail = PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.Voicemail)
-                        .MergeFrom(value).BuildPartial();
-                else MessageBeingBuilt.Voicemail = value;
+                MessageBeingBuilt.Voicemail = MessageBeingBuilt.HasVoicemail &&
+                    MessageBeingBuilt.Voicemail != PhoneNumberDesc.DefaultInstance
+                    ? PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.Voicemail).MergeFrom(value).BuildPartial()
+                    : value;
                 return this;
             }
 
@@ -928,11 +916,10 @@ namespace PhoneNumbers
             public Builder MergeShortCode(PhoneNumberDesc value)
             {
                 if (value is null) throw new ArgumentNullException(nameof(value));
-                if (MessageBeingBuilt.HasShortCode &&
-                    MessageBeingBuilt.ShortCode != PhoneNumberDesc.DefaultInstance)
-                    MessageBeingBuilt.ShortCode = PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.ShortCode)
-                        .MergeFrom(value).BuildPartial();
-                else MessageBeingBuilt.ShortCode = value;
+                MessageBeingBuilt.ShortCode = MessageBeingBuilt.HasShortCode &&
+                    MessageBeingBuilt.ShortCode != PhoneNumberDesc.DefaultInstance
+                    ? PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.ShortCode).MergeFrom(value).BuildPartial()
+                    : value;
                 return this;
             }
 
@@ -959,11 +946,10 @@ namespace PhoneNumbers
             public Builder MergeStandardRate(PhoneNumberDesc value)
             {
                 if (value is null) throw new ArgumentNullException(nameof(value));
-                if (MessageBeingBuilt.HasStandardRate &&
-                    MessageBeingBuilt.StandardRate != PhoneNumberDesc.DefaultInstance)
-                    MessageBeingBuilt.StandardRate = PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.StandardRate)
-                        .MergeFrom(value).BuildPartial();
-                else MessageBeingBuilt.StandardRate = value;
+                MessageBeingBuilt.StandardRate = MessageBeingBuilt.HasStandardRate &&
+                    MessageBeingBuilt.StandardRate != PhoneNumberDesc.DefaultInstance
+                    ? PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.StandardRate).MergeFrom(value).BuildPartial()
+                    : value;
                 return this;
             }
 
@@ -990,11 +976,10 @@ namespace PhoneNumbers
             public Builder MergeCarrierSpecific(PhoneNumberDesc value)
             {
                 if (value is null) throw new ArgumentNullException(nameof(value));
-                if (MessageBeingBuilt.HasCarrierSpecific &&
-                    MessageBeingBuilt.CarrierSpecific != PhoneNumberDesc.DefaultInstance)
-                    MessageBeingBuilt.CarrierSpecific = PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.CarrierSpecific)
-                        .MergeFrom(value).BuildPartial();
-                else MessageBeingBuilt.CarrierSpecific = value;
+                MessageBeingBuilt.CarrierSpecific = MessageBeingBuilt.HasCarrierSpecific &&
+                    MessageBeingBuilt.CarrierSpecific != PhoneNumberDesc.DefaultInstance
+                    ? PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.CarrierSpecific).MergeFrom(value).BuildPartial()
+                    : value;
                 return this;
             }
 
@@ -1021,11 +1006,10 @@ namespace PhoneNumbers
             public Builder MergeSmsServices(PhoneNumberDesc value)
             {
                 if (value is null) throw new ArgumentNullException(nameof(value));
-                if (MessageBeingBuilt.HasSmsServices &&
-                    MessageBeingBuilt.SmsServices != PhoneNumberDesc.DefaultInstance)
-                    MessageBeingBuilt.SmsServices = PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.SmsServices)
-                        .MergeFrom(value).BuildPartial();
-                else MessageBeingBuilt.SmsServices = value;
+                MessageBeingBuilt.SmsServices = MessageBeingBuilt.HasSmsServices &&
+                    MessageBeingBuilt.SmsServices != PhoneNumberDesc.DefaultInstance
+                    ? PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.SmsServices).MergeFrom(value).BuildPartial()
+                    : value;
                 return this;
             }
 
@@ -1052,11 +1036,10 @@ namespace PhoneNumbers
             public Builder MergeNoInternationalDialling(PhoneNumberDesc value)
             {
                 if (value is null) throw new ArgumentNullException(nameof(value));
-                if (MessageBeingBuilt.HasNoInternationalDialling &&
-                    MessageBeingBuilt.NoInternationalDialling != PhoneNumberDesc.DefaultInstance)
-                    MessageBeingBuilt.NoInternationalDialling = PhoneNumberDesc
-                        .CreateBuilder(MessageBeingBuilt.NoInternationalDialling).MergeFrom(value).BuildPartial();
-                else MessageBeingBuilt.NoInternationalDialling = value;
+                MessageBeingBuilt.NoInternationalDialling = MessageBeingBuilt.HasNoInternationalDialling &&
+                    MessageBeingBuilt.NoInternationalDialling != PhoneNumberDesc.DefaultInstance
+                    ? PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.NoInternationalDialling).MergeFrom(value).BuildPartial()
+                    : value;
                 return this;
             }
 
@@ -1333,7 +1316,7 @@ namespace PhoneNumbers
             if (HasSmsServices) hash ^= SmsServices.GetHashCode();
             if (HasNoInternationalDialling) hash ^= NoInternationalDialling.GetHashCode();
             if (HasId) hash ^= Id.GetHashCode();
-            if (HasCountryCode) hash ^= CountryCode.GetHashCode();
+            if (HasCountryCode) hash ^= CountryCode;
             if (HasInternationalPrefix) hash ^= InternationalPrefix.GetHashCode();
             if (HasPreferredInternationalPrefix) hash ^= PreferredInternationalPrefix.GetHashCode();
             if (HasNationalPrefix) hash ^= NationalPrefix.GetHashCode();
