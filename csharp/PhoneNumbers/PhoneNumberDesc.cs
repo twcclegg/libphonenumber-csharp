@@ -246,8 +246,8 @@ namespace PhoneNumbers
             var hash = GetType().GetHashCode();
             if (HasNationalNumberPattern) hash ^= NationalNumberPattern.GetHashCode();
 
-            hash = possibleLength_.Aggregate(hash, (current, i) => current ^ i.GetHashCode());
-            hash = possibleLengthLocalOnly_.Aggregate(hash, (current, i) => current ^ i.GetHashCode());
+            hash = possibleLength_.Aggregate(hash, (current, i) => current ^ i);
+            hash = possibleLengthLocalOnly_.Aggregate(hash, (current, i) => current ^ i);
 
             if (HasExampleNumber) hash ^= ExampleNumber.GetHashCode();
             return hash;
