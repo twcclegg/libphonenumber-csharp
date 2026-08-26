@@ -37,7 +37,7 @@ namespace PhoneNumbers.Test
             {
                 var exampleNumber =
                 phoneNumberUtil.GetExampleNumberForType(regionCode, exampleNumberRequestedType);
-                if (exampleNumber != null)
+                if (exampleNumber is not null)
                 {
                     if (!phoneNumberUtil.IsValidNumber(exampleNumber))
                     {

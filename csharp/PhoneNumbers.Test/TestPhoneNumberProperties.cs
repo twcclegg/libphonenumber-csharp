@@ -119,7 +119,7 @@ namespace PhoneNumbers.Test
         public void ReadOnlySurfaceNeverThrows(int regionSeed, int digitIndex, int digitValue)
         {
             var number = Candidate(regionSeed, digitIndex, digitValue);
-            if (number == null)
+            if (number is null)
                 return;
 
             PhoneUtil.IsValidNumber(number);
@@ -145,7 +145,7 @@ namespace PhoneNumbers.Test
         public void ValidNumbersRoundTripThroughE164(int regionSeed, int digitIndex, int digitValue)
         {
             var number = Candidate(regionSeed, digitIndex, digitValue);
-            if (number == null || !PhoneUtil.IsValidNumber(number))
+            if (number is null || !PhoneUtil.IsValidNumber(number))
                 return;
 
             var e164 = PhoneUtil.Format(number, PhoneNumberFormat.E164);
@@ -162,7 +162,7 @@ namespace PhoneNumbers.Test
         public void ValidNumbersAreAlsoPossible(int regionSeed, int digitIndex, int digitValue)
         {
             var number = Candidate(regionSeed, digitIndex, digitValue);
-            if (number == null || !PhoneUtil.IsValidNumber(number))
+            if (number is null || !PhoneUtil.IsValidNumber(number))
                 return;
 
             Assert.True(PhoneUtil.IsPossibleNumber(number),
@@ -175,7 +175,7 @@ namespace PhoneNumbers.Test
         {
             var first = Candidate(firstSeed, digitIndex, digitValue);
             var second = Candidate(secondSeed, digitIndex + 1, digitValue + 1);
-            if (first == null || second == null)
+            if (first is null || second is null)
                 return;
 
             Assert.Equal(PhoneUtil.IsNumberMatch(first, second), PhoneUtil.IsNumberMatch(second, first));
@@ -189,7 +189,7 @@ namespace PhoneNumbers.Test
         private static PhoneNumber? Candidate(int regionSeed, int digitIndex, int digitValue)
         {
             var example = PhoneUtil.GetExampleNumber(Regions[Mod(regionSeed, Regions.Length)]);
-            if (example == null)
+            if (example is null)
                 return null;
 
             var digits = example.NationalNumber.ToString(CultureInfo.InvariantCulture).ToCharArray();
