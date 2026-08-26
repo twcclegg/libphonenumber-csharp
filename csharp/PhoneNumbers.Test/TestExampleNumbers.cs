@@ -15,6 +15,7 @@
  */
 
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace PhoneNumbers.Test
@@ -162,10 +163,9 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestGlobalNetworkNumbers()
         {
-            foreach(var callingCode in phoneNumberUtil.GetSupportedGlobalNetworkCallingCodes())
+            foreach (var exampleNumber in phoneNumberUtil.GetSupportedGlobalNetworkCallingCodes()
+                         .Select(callingCode => phoneNumberUtil.GetExampleNumberForNonGeoEntity(callingCode)))
             {
-                var exampleNumber =
-                    phoneNumberUtil.GetExampleNumberForNonGeoEntity(callingCode);
                 Assert.NotNull(exampleNumber);
                 if (!phoneNumberUtil.IsValidNumber(exampleNumber))
                 {
