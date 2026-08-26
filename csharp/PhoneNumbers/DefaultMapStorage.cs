@@ -32,20 +32,11 @@ namespace PhoneNumbers
         private int[] phoneNumberPrefixes;
         private string[] descriptions;
 
-        public override int GetPrefix(int index)
-        {
-            return phoneNumberPrefixes[index];
-        }
+        public override int GetPrefix(int index) => phoneNumberPrefixes[index];
 
-        public override int GetStorageSize()
-        {
-            return phoneNumberPrefixes.Length * sizeof(int) + descriptions.Sum(d => d.Length);
-        }
+        public override int GetStorageSize() => phoneNumberPrefixes.Length * sizeof(int) + descriptions.Sum(d => d.Length);
 
-        public override string GetDescription(int index)
-        {
-            return descriptions[index];
-        }
+        public override string GetDescription(int index) => descriptions[index];
 
         public override void ReadFromSortedMap(SortedDictionary<int, string> sortedAreaCodeMap)
         {

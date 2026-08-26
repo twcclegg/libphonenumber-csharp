@@ -56,7 +56,7 @@ namespace PhoneNumbers
         /// <param name="loader">Loader to use for both supplementary metadata file types.</param>
         public static void SetMetadataLoader(IMetadataLoader loader)
         {
-            if (loader == null) throw new ArgumentNullException(nameof(loader));
+            if (loader is null) throw new ArgumentNullException(nameof(loader));
             alternateFormatsSource = new(loader, AlternateFormatsPrefix);
             shortNumberSource = new(loader, ShortNumberMetadataPrefix);
         }

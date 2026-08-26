@@ -13,10 +13,10 @@ namespace PhoneNumbers
         private static List<string> LineReader(StreamReader reader, char fieldDelimiter = '|')
         {
             string line;
-            while (null != (line = reader.ReadLine()))
+            while ((line = reader.ReadLine()) != null)
             {
                 line = line.Trim();
-                if (line.Length < 1 || '#' == line[0])
+                if (line.Length < 1 || line[0] == '#')
                     continue;
 
                 var indexOfDelimiter = line.IndexOf(fieldDelimiter);
@@ -38,18 +38,16 @@ namespace PhoneNumbers
         /// <returns></returns>
         internal static IDictionary<long, string[]> GetPrefixMap(Stream fp, char[] splitters)
         {
-            if (null == fp)
+            if (fp is null)
                 return ImmutableDictionary<long, string[]>.Empty;
 
             var tmpMap = new SortedDictionary<long, string[]>();
-            using (var lines = new StreamReader(fp, Encoding.UTF8))
+            using var lines = new StreamReader(fp, Encoding.UTF8);
+            List<string> line;
+            while ((line = LineReader(lines)) != null)
             {
-                List<string> line;
-                while (null != (line = LineReader(lines)))
-                {
-                    var pnPrefix = line[0];
-                    tmpMap[long.Parse(pnPrefix, CultureInfo.InvariantCulture)] = line[1].Split(splitters, StringSplitOptions.RemoveEmptyEntries);
-                }
+                var pnPrefix = line[0];
+                tmpMap[long.Parse(pnPrefix, CultureInfo.InvariantCulture)] = line[1].Split(splitters, StringSplitOptions.RemoveEmptyEntries);
             }
 
             return tmpMap;

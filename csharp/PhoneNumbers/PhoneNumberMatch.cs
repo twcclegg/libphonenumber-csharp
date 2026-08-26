@@ -33,9 +33,9 @@ namespace PhoneNumbers
         {
             if (start < 0)
                 throw new ArgumentException("Start index must be >= 0.", nameof(start));
-            if (rawString == null)
+            if (rawString is null)
                 throw new ArgumentNullException(nameof(rawString));
-            if (number == null)
+            if (number is null)
                 throw new ArgumentNullException(nameof(number));
             Start = start;
             RawString = rawString;
@@ -50,8 +50,10 @@ namespace PhoneNumbers
         {
             if (this == obj)
                 return true;
-            var p = (obj as PhoneNumberMatch);
-            return p != null && RawString == p.RawString && Start == p.Start && Number.Equals(p.Number);
+            if (obj is null || GetType() != obj.GetType())
+                return false;
+            var p = (PhoneNumberMatch)obj;
+            return RawString == p.RawString && Start == p.Start && Number.Equals(p.Number);
         }
 
         public override int GetHashCode()
@@ -63,9 +65,6 @@ namespace PhoneNumbers
             return hash;
         }
 
-        public override string ToString()
-        {
-            return "PhoneNumberMatch [" + Start + "," + Length + ") " + RawString;
-        }
+        public override string ToString() => $"PhoneNumberMatch [{Start},{Length}) {RawString}";
     }
 }

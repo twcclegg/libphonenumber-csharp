@@ -129,7 +129,7 @@ namespace PhoneNumbers
             // PhoneNumbers.MetadataBuilder). Decompress on the way out so callers see the plain
             // bin format they already expect.
             var raw = assembly.GetManifestResourceStream(resourcePrefix + fileName);
-            return raw == null ? null : new GZipStream(raw, CompressionMode.Decompress);
+            return raw is null ? null : new GZipStream(raw, CompressionMode.Decompress);
         }
     }
 }

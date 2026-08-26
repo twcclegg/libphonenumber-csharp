@@ -49,16 +49,10 @@ namespace PhoneNumbers
         // The number of bytes used to store a phone number prefix.
         private int prefixSizeInBytes;
 
-        public override int GetPrefix(int index)
-        {
-            return ReadWordFromBuffer(phoneNumberPrefixes, prefixSizeInBytes, index);
-        }
+        public override int GetPrefix(int index) => ReadWordFromBuffer(phoneNumberPrefixes, prefixSizeInBytes, index);
 
-        public override int GetStorageSize()
-        {
-            return phoneNumberPrefixes.GetCapacity() + descriptionIndexes.GetCapacity()
-                   + descriptionPool.Sum(d => d.Length);
-        }
+        public override int GetStorageSize() =>
+            phoneNumberPrefixes.GetCapacity() + descriptionIndexes.GetCapacity() + descriptionPool.Sum(d => d.Length);
 
         /// <summary>
         /// This implementation returns the same string (same identity) when called for multiple indexes
@@ -124,10 +118,8 @@ namespace PhoneNumbers
         /// <summary>
         /// Gets the minimum number of bytes that can be used to store the provided <c>value</c>.
         /// </summary>
-        private static int GetOptimalNumberOfBytesForValue(int value)
-        {
-            return value <= short.MaxValue ? ShortNumBytes : IntNumBytes;
-        }
+        private static int GetOptimalNumberOfBytesForValue(int value) =>
+            value <= short.MaxValue ? ShortNumBytes : IntNumBytes;
 
         /// <summary>
         /// Stores the provided <c>value</c> to the provided byte <c>buffer</c> at the specified <c>index</c> using the provided <c>wordSize</c> in bytes. Note that only integer and short sizes are
@@ -176,30 +168,15 @@ namespace PhoneNumbers
                 bytes = new byte[size];
             }
 
-            public void PutShort(int offset, short value)
-            {
-                BinaryPrimitives.WriteInt16LittleEndian(bytes.AsSpan(offset), value);
-            }
+            public void PutShort(int offset, short value) => BinaryPrimitives.WriteInt16LittleEndian(bytes.AsSpan(offset), value);
 
-            public void PutInt(int offset, int value)
-            {
-                BinaryPrimitives.WriteInt32LittleEndian(bytes.AsSpan(offset), value);
-            }
+            public void PutInt(int offset, int value) => BinaryPrimitives.WriteInt32LittleEndian(bytes.AsSpan(offset), value);
 
-            public short GetShort(int offset)
-            {
-                return BinaryPrimitives.ReadInt16LittleEndian(bytes.AsSpan(offset));
-            }
+            public short GetShort(int offset) => BinaryPrimitives.ReadInt16LittleEndian(bytes.AsSpan(offset));
 
-            public int GetInt(int offset)
-            {
-                return BinaryPrimitives.ReadInt32LittleEndian(bytes.AsSpan(offset));
-            }
+            public int GetInt(int offset) => BinaryPrimitives.ReadInt32LittleEndian(bytes.AsSpan(offset));
 
-            public int GetCapacity()
-            {
-                return bytes.Length;
-            }
+            public int GetCapacity() => bytes.Length;
         }
     }
 }

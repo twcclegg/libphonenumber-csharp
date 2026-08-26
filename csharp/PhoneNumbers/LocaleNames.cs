@@ -56,12 +56,12 @@ namespace PhoneNumbers
         /// the caller's job, as it was when this data was a single generated dictionary.
         /// </summary>
         internal static Dictionary<string, string> ForCountry(string country) =>
-            country == null ? null : Cache.GetOrAdd(country, LoadFactory);
+            country is null ? null : Cache.GetOrAdd(country, LoadFactory);
 
         private static Dictionary<string, string> Load(string country)
         {
             using var raw = Assembly.GetManifestResourceStream(ResourcePrefix + country);
-            if (raw == null)
+            if (raw is null)
                 return null;
 
             using var gz = new GZipStream(raw, CompressionMode.Decompress);
