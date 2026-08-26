@@ -24,12 +24,10 @@ report turns out to be user error / a non-issue once you read the whole
 thread.
 
 Below is the exhaustive, human-verified list of every metadata issue in this
-repository's history (issues #1 through #422). It is exhaustive by
-construction: an issue in that range that is NOT listed is a non-metadata
-issue - there is no separate "confirmed not metadata" list, absence from
-this list is itself the negative signal. Weigh a new issue against how
-closely it resembles the listed examples; the closer the resemblance, the
-higher your confidence should be. If a new issue doesn't clearly match the
-pattern of the examples below, say so and use "low" confidence rather than
-guessing.
+repository's history. There is no separate "confirmed not metadata" list —
+absence from this list is itself the negative signal. Weigh a new issue
+against how closely it resembles the listed examples; the closer the
+resemblance, the higher your confidence should be. If a new issue doesn't
+clearly match the pattern of the examples below, say so and use "low"
+confidence rather than guessing.
 
