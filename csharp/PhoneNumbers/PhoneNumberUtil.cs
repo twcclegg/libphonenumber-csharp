@@ -243,11 +243,11 @@ namespace PhoneNumbers
         private static Regex RFC3966_GLOBAL_NUMBER_DIGITS_OR_DOMAINNAME() => _RFC3966_GLOBAL_NUMBER_DIGITS_OR_DOMAINNAME;
 #endif
 
-        ///
+        /// <summary>
         /// Helper initialiser method to create the regular-expression pattern to match extensions.
         /// Note that there are currently six capturing groups for the extension itself. If this number is
         /// changed, MaybeStripExtension needs to be updated.
-        ///
+        /// </summary>
         // Regexp of all possible ways to write extensions, for use when parsing. This will be run as a
         // case-insensitive regexp match. Wide character versions are also provided after each ASCII
         // version.
