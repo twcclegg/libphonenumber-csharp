@@ -623,14 +623,13 @@ namespace PhoneNumbers
             // We check that the local-only length isn't also a normal possible length (only relevant for
             // the general-desc, since within elements such as fixed-line we would throw an exception if we
             // saw this) before adding it to the collection of possible local-only lengths.
-            foreach (var length in localOnlyLengths)
-                if (!lengths.Contains(length))
-                    if (parentDesc is null || parentDesc.possibleLengthLocalOnly_.Contains(length)
-                        || parentDesc.possibleLength_.Contains(length))
-                        desc.possibleLengthLocalOnly_.Add(length);
-                    else
-                        throw new Exception(
-                            $"Out-of-range local-only possible length found ({length}), parent length {string.Join(", ", parentDesc.PossibleLengthLocalOnlyList)}.");
+            foreach (var length in localOnlyLengths.Where(length => !lengths.Contains(length)))
+                if (parentDesc is null || parentDesc.possibleLengthLocalOnly_.Contains(length)
+                    || parentDesc.possibleLength_.Contains(length))
+                    desc.possibleLengthLocalOnly_.Add(length);
+                else
+                    throw new Exception(
+                        $"Out-of-range local-only possible length found ({length}), parent length {string.Join(", ", parentDesc.PossibleLengthLocalOnlyList)}.");
         }
 
 
