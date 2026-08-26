@@ -53,7 +53,7 @@ namespace PhoneNumbers
     /// @author Lara Rennie
     /// -->
     /// </summary>
-    public partial class PhoneNumberUtil
+    public sealed partial class PhoneNumberUtil
     {
         // The minimum and maximum length of the national significant number.
         private const int MIN_LENGTH_FOR_NSN = 2;

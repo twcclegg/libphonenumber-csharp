@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace PhoneNumbers
 {
-    public class PhoneNumberToTimeZonesMapper
+    public sealed class PhoneNumberToTimeZonesMapper
     {
         private static readonly string[] UNKNOWN_TIMEZONE = { "Etc/Unknown" };
 
