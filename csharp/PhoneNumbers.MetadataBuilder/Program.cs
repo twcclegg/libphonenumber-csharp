@@ -141,7 +141,7 @@ internal static class Program
             {
                 var countryCode = Path.GetFileNameWithoutExtension(txtPath);
                 var map = ParseAreaCodeText(txtPath);
-                var outPath = Path.Combine(outputDir, $"{lang}.{countryCode}");
+                var outPath = Path.Combine(outputDir, Path.GetFileName($"{lang}.{countryCode}"));
                 using var gz = new GZipStream(File.Create(outPath), CompressionLevel.SmallestSize);
                 BuildPrefixMapFromBin.WriteAreaCodeMap(gz, map);
                 written++;
@@ -251,11 +251,7 @@ internal static class Program
         var existing = Directory.GetFiles(outputDir, filePrefix + "_*");
         if (existing.Length == 0) return false;
         var inputMTime = File.GetLastWriteTimeUtc(inputXml);
-        foreach (var file in existing)
-        {
-            if (File.GetLastWriteTimeUtc(file) < inputMTime) return false;
-        }
-        return true;
+        return !existing.Any(file => File.GetLastWriteTimeUtc(file) < inputMTime);
     }
 
     /// <summary>
@@ -267,17 +263,9 @@ internal static class Program
         if (!Directory.Exists(outputDir)) return false;
         var existing = Directory.GetFiles(outputDir);
         if (existing.Length == 0) return false;
-        var newestInput = DateTime.MinValue;
-        foreach (var f in Directory.EnumerateFiles(inputDir, "*.txt", SearchOption.AllDirectories))
-        {
-            var t = File.GetLastWriteTimeUtc(f);
-            if (t > newestInput) newestInput = t;
-        }
-        foreach (var file in existing)
-        {
-            if (File.GetLastWriteTimeUtc(file) < newestInput) return false;
-        }
-        return true;
+        var newestInput = Directory.EnumerateFiles(inputDir, "*.txt", SearchOption.AllDirectories)
+            .Select(File.GetLastWriteTimeUtc).DefaultIfEmpty(DateTime.MinValue).Max();
+        return !existing.Any(file => File.GetLastWriteTimeUtc(file) < newestInput);
     }
 
     private static SortedDictionary<int, string> ParseAreaCodeText(string path)
@@ -348,7 +336,7 @@ internal static class Program
         foreach (var metadata in metadataList)
         {
             var key = MakeFileNameKey(metadata, isAlternateFormatsMetadata);
-            var path = Path.Combine(outputDir, $"{filePrefix}_{key}");
+            var path = Path.Combine(outputDir, Path.GetFileName($"{filePrefix}_{key}"));
             using var gz = new GZipStream(File.Create(path), CompressionLevel.SmallestSize);
             BuildMetadataFromBin.WriteMetadata(gz, metadata);
             written++;
