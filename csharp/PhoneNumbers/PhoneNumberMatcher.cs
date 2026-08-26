@@ -218,7 +218,7 @@ namespace PhoneNumbers
             if (!char.IsLetter(letter) && CharUnicodeInfo.GetUnicodeCategory(letter) != UnicodeCategory.NonSpacingMark)
                 return false;
             return
-                letter >= 0x0000 && letter <= 0x007F        // BASIC_LATIN
+                letter <= 0x007F                             // BASIC_LATIN
                 || letter >= 0x0080 && letter <= 0x00FF     // LATIN_1_SUPPLEMENT
                 || letter >= 0x0100 && letter <= 0x017F     // LATIN_EXTENDED_A
                 || letter >= 0x1E00 && letter <= 0x1EFF     // LATIN_EXTENDED_ADDITIONAL
