@@ -1,10 +1,11 @@
-using BenchmarkDotNet.Running;
-namespace PhoneNumbers.PerformanceTest;
-
-public static class Program
+﻿using BenchmarkDotNet.Running;
+namespace PhoneNumbers.PerformanceTest
 {
-    public static void Main(string[] args)
+    public static class Program
     {
-        BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
+        public static void Main(string[] args)
+        {
+            BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
+        }
     }
 }

@@ -1,14 +1,15 @@
-namespace PhoneNumbers.PerformanceTest.Benchmarks;
-
-internal struct PhoneNumberBenchmarkCase
+namespace PhoneNumbers.PerformanceTest.Benchmarks
 {
-    public PhoneNumberBenchmarkCase(string numberToParse, string defaultRegion)
+    internal struct PhoneNumberBenchmarkCase
     {
-        NumberToParse = numberToParse;
-        DefaultRegion = defaultRegion;
+        public PhoneNumberBenchmarkCase(string numberToParse, string defaultRegion)
+        {
+            NumberToParse = numberToParse;
+            DefaultRegion = defaultRegion;
+        }
+
+        public string NumberToParse { get; }
+
+        public string DefaultRegion { get; }
     }
-
-    public string NumberToParse { get; }
-
-    public string DefaultRegion { get; }
 }
