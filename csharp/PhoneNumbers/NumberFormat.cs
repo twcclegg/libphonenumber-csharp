@@ -138,7 +138,7 @@ namespace PhoneNumbers
 
             public NumberFormat BuildPartial()
             {
-                if (MessageBeingBuilt == null)
+                if (MessageBeingBuilt is null)
                     throw new InvalidOperationException("build() has already been called on this Builder");
 
                 var returnMe = MessageBeingBuilt;
@@ -165,7 +165,7 @@ namespace PhoneNumbers
 
             public Builder SetPattern(string value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.Pattern = value;
                 return this;
             }
@@ -178,7 +178,7 @@ namespace PhoneNumbers
 
             public Builder SetFormat(string value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.Format = value;
                 return this;
             }
@@ -196,14 +196,14 @@ namespace PhoneNumbers
 
             public Builder SetLeadingDigitsPattern(int index, string value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.leadingDigitsPattern_[index] = value;
                 return this;
             }
 
             public Builder AddLeadingDigitsPattern(string value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.leadingDigitsPattern_.Add(value);
                 return this;
             }
@@ -222,7 +222,7 @@ namespace PhoneNumbers
 
             public Builder SetNationalPrefixFormattingRule(string value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.NationalPrefixFormattingRule = value;
                 return this;
             }
@@ -247,7 +247,7 @@ namespace PhoneNumbers
 
             public Builder SetDomesticCarrierCodeFormattingRule(string value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.DomesticCarrierCodeFormattingRule = value;
                 return this;
             }
@@ -277,8 +277,7 @@ namespace PhoneNumbers
 
         public override bool Equals(object obj)
         {
-            var other = obj as NumberFormat;
-            if (other == null) return false;
+            if (obj is not NumberFormat other) return false;
             if (HasPattern != other.HasPattern || HasPattern && !Pattern.Equals(other.Pattern)) return false;
             if (HasFormat != other.HasFormat || HasFormat && !Format.Equals(other.Format)) return false;
             if (leadingDigitsPattern_.Count != other.leadingDigitsPattern_.Count) return false;

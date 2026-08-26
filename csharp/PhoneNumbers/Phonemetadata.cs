@@ -488,7 +488,7 @@ namespace PhoneNumbers
 
             public PhoneMetadata BuildPartial()
             {
-                if (MessageBeingBuilt == null)
+                if (MessageBeingBuilt is null)
                     throw new InvalidOperationException("build() has already been called on this Builder");
 
 
@@ -541,21 +541,21 @@ namespace PhoneNumbers
 
             public Builder SetGeneralDesc(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.GeneralDesc = value;
                 return this;
             }
 
             public Builder SetGeneralDesc(PhoneNumberDesc.Builder builderForValue)
             {
-                if (builderForValue == null) throw new ArgumentNullException(nameof(builderForValue));
+                if (builderForValue is null) throw new ArgumentNullException(nameof(builderForValue));
                 MessageBeingBuilt.GeneralDesc = builderForValue.Build();
                 return this;
             }
 
             public Builder MergeGeneralDesc(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 if (MessageBeingBuilt.HasGeneralDesc &&
                     MessageBeingBuilt.GeneralDesc != PhoneNumberDesc.DefaultInstance)
                     MessageBeingBuilt.GeneralDesc = PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.GeneralDesc)
@@ -572,21 +572,21 @@ namespace PhoneNumbers
 
             public Builder SetFixedLine(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.FixedLine = value;
                 return this;
             }
 
             public Builder SetFixedLine(PhoneNumberDesc.Builder builderForValue)
             {
-                if (builderForValue == null) throw new ArgumentNullException(nameof(builderForValue));
+                if (builderForValue is null) throw new ArgumentNullException(nameof(builderForValue));
                 MessageBeingBuilt.FixedLine = builderForValue.Build();
                 return this;
             }
 
             public Builder MergeFixedLine(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 if (MessageBeingBuilt.HasFixedLine &&
                     MessageBeingBuilt.FixedLine != PhoneNumberDesc.DefaultInstance)
                     MessageBeingBuilt.FixedLine = PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.FixedLine)
@@ -603,21 +603,21 @@ namespace PhoneNumbers
 
             public Builder SetMobile(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.Mobile = value;
                 return this;
             }
 
             public Builder SetMobile(PhoneNumberDesc.Builder builderForValue)
             {
-                if (builderForValue == null) throw new ArgumentNullException(nameof(builderForValue));
+                if (builderForValue is null) throw new ArgumentNullException(nameof(builderForValue));
                 MessageBeingBuilt.Mobile = builderForValue.Build();
                 return this;
             }
 
             public Builder MergeMobile(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 if (MessageBeingBuilt.HasMobile &&
                     MessageBeingBuilt.Mobile != PhoneNumberDesc.DefaultInstance)
                     MessageBeingBuilt.Mobile = PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.Mobile).MergeFrom(value)
@@ -634,21 +634,21 @@ namespace PhoneNumbers
 
             public Builder SetTollFree(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.TollFree = value;
                 return this;
             }
 
             public Builder SetTollFree(PhoneNumberDesc.Builder builderForValue)
             {
-                if (builderForValue == null) throw new ArgumentNullException(nameof(builderForValue));
+                if (builderForValue is null) throw new ArgumentNullException(nameof(builderForValue));
                 MessageBeingBuilt.TollFree = builderForValue.Build();
                 return this;
             }
 
             public Builder MergeTollFree(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 if (MessageBeingBuilt.HasTollFree &&
                     MessageBeingBuilt.TollFree != PhoneNumberDesc.DefaultInstance)
                     MessageBeingBuilt.TollFree = PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.TollFree)
@@ -665,21 +665,21 @@ namespace PhoneNumbers
 
             public Builder SetPremiumRate(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.PremiumRate = value;
                 return this;
             }
 
             public Builder SetPremiumRate(PhoneNumberDesc.Builder builderForValue)
             {
-                if (builderForValue == null) throw new ArgumentNullException(nameof(builderForValue));
+                if (builderForValue is null) throw new ArgumentNullException(nameof(builderForValue));
                 MessageBeingBuilt.PremiumRate = builderForValue.Build();
                 return this;
             }
 
             public Builder MergePremiumRate(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 if (MessageBeingBuilt.HasPremiumRate &&
                     MessageBeingBuilt.PremiumRate != PhoneNumberDesc.DefaultInstance)
                     MessageBeingBuilt.PremiumRate = PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.PremiumRate)
@@ -696,21 +696,21 @@ namespace PhoneNumbers
 
             public Builder SetSharedCost(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.SharedCost = value;
                 return this;
             }
 
             public Builder SetSharedCost(PhoneNumberDesc.Builder builderForValue)
             {
-                if (builderForValue == null) throw new ArgumentNullException(nameof(builderForValue));
+                if (builderForValue is null) throw new ArgumentNullException(nameof(builderForValue));
                 MessageBeingBuilt.SharedCost = builderForValue.Build();
                 return this;
             }
 
             public Builder MergeSharedCost(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 if (MessageBeingBuilt.HasSharedCost &&
                     MessageBeingBuilt.SharedCost != PhoneNumberDesc.DefaultInstance)
                     MessageBeingBuilt.SharedCost = PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.SharedCost)
@@ -727,21 +727,21 @@ namespace PhoneNumbers
 
             public Builder SetPersonalNumber(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.PersonalNumber = value;
                 return this;
             }
 
             public Builder SetPersonalNumber(PhoneNumberDesc.Builder builderForValue)
             {
-                if (builderForValue == null) throw new ArgumentNullException(nameof(builderForValue));
+                if (builderForValue is null) throw new ArgumentNullException(nameof(builderForValue));
                 MessageBeingBuilt.PersonalNumber = builderForValue.Build();
                 return this;
             }
 
             public Builder MergePersonalNumber(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 if (MessageBeingBuilt.HasPersonalNumber &&
                     MessageBeingBuilt.PersonalNumber != PhoneNumberDesc.DefaultInstance)
                     MessageBeingBuilt.PersonalNumber = PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.PersonalNumber)
@@ -758,21 +758,21 @@ namespace PhoneNumbers
 
             public Builder SetVoip(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.Voip = value;
                 return this;
             }
 
             public Builder SetVoip(PhoneNumberDesc.Builder builderForValue)
             {
-                if (builderForValue == null) throw new ArgumentNullException(nameof(builderForValue));
+                if (builderForValue is null) throw new ArgumentNullException(nameof(builderForValue));
                 MessageBeingBuilt.Voip = builderForValue.Build();
                 return this;
             }
 
             public Builder MergeVoip(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 if (MessageBeingBuilt.HasVoip &&
                     MessageBeingBuilt.Voip != PhoneNumberDesc.DefaultInstance)
                     MessageBeingBuilt.Voip = PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.Voip).MergeFrom(value)
@@ -789,21 +789,21 @@ namespace PhoneNumbers
 
             public Builder SetPager(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.Pager = value;
                 return this;
             }
 
             public Builder SetPager(PhoneNumberDesc.Builder builderForValue)
             {
-                if (builderForValue == null) throw new ArgumentNullException(nameof(builderForValue));
+                if (builderForValue is null) throw new ArgumentNullException(nameof(builderForValue));
                 MessageBeingBuilt.Pager = builderForValue.Build();
                 return this;
             }
 
             public Builder MergePager(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 if (MessageBeingBuilt.HasPager &&
                     MessageBeingBuilt.Pager != PhoneNumberDesc.DefaultInstance)
                     MessageBeingBuilt.Pager = PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.Pager).MergeFrom(value)
@@ -820,21 +820,21 @@ namespace PhoneNumbers
 
             public Builder SetUan(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.Uan = value;
                 return this;
             }
 
             public Builder SetUan(PhoneNumberDesc.Builder builderForValue)
             {
-                if (builderForValue == null) throw new ArgumentNullException(nameof(builderForValue));
+                if (builderForValue is null) throw new ArgumentNullException(nameof(builderForValue));
                 MessageBeingBuilt.Uan = builderForValue.Build();
                 return this;
             }
 
             public Builder MergeUan(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 if (MessageBeingBuilt.HasUan &&
                     MessageBeingBuilt.Uan != PhoneNumberDesc.DefaultInstance)
                     MessageBeingBuilt.Uan = PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.Uan).MergeFrom(value)
@@ -851,21 +851,21 @@ namespace PhoneNumbers
 
             public Builder SetEmergency(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.Emergency = value;
                 return this;
             }
 
             public Builder SetEmergency(PhoneNumberDesc.Builder builderForValue)
             {
-                if (builderForValue == null) throw new ArgumentNullException(nameof(builderForValue));
+                if (builderForValue is null) throw new ArgumentNullException(nameof(builderForValue));
                 MessageBeingBuilt.Emergency = builderForValue.Build();
                 return this;
             }
 
             public Builder MergeEmergency(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 if (MessageBeingBuilt.HasEmergency &&
                     MessageBeingBuilt.Emergency != PhoneNumberDesc.DefaultInstance)
                     MessageBeingBuilt.Emergency = PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.Emergency)
@@ -882,21 +882,21 @@ namespace PhoneNumbers
 
             public Builder SetVoicemail(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.Voicemail = value;
                 return this;
             }
 
             public Builder SetVoicemail(PhoneNumberDesc.Builder builderForValue)
             {
-                if (builderForValue == null) throw new ArgumentNullException(nameof(builderForValue));
+                if (builderForValue is null) throw new ArgumentNullException(nameof(builderForValue));
                 MessageBeingBuilt.Voicemail = builderForValue.Build();
                 return this;
             }
 
             public Builder MergeVoicemail(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 if (MessageBeingBuilt.HasVoicemail &&
                     MessageBeingBuilt.Voicemail != PhoneNumberDesc.DefaultInstance)
                     MessageBeingBuilt.Voicemail = PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.Voicemail)
@@ -913,21 +913,21 @@ namespace PhoneNumbers
 
             public Builder SetShortCode(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.ShortCode = value;
                 return this;
             }
 
             public Builder SetShortCode(PhoneNumberDesc.Builder builderForValue)
             {
-                if (builderForValue == null) throw new ArgumentNullException(nameof(builderForValue));
+                if (builderForValue is null) throw new ArgumentNullException(nameof(builderForValue));
                 MessageBeingBuilt.ShortCode = builderForValue.Build();
                 return this;
             }
 
             public Builder MergeShortCode(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 if (MessageBeingBuilt.HasShortCode &&
                     MessageBeingBuilt.ShortCode != PhoneNumberDesc.DefaultInstance)
                     MessageBeingBuilt.ShortCode = PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.ShortCode)
@@ -944,21 +944,21 @@ namespace PhoneNumbers
 
             public Builder SetStandardRate(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.StandardRate = value;
                 return this;
             }
 
             public Builder SetStandardRate(PhoneNumberDesc.Builder builderForValue)
             {
-                if (builderForValue == null) throw new ArgumentNullException(nameof(builderForValue));
+                if (builderForValue is null) throw new ArgumentNullException(nameof(builderForValue));
                 MessageBeingBuilt.StandardRate = builderForValue.Build();
                 return this;
             }
 
             public Builder MergeStandardRate(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 if (MessageBeingBuilt.HasStandardRate &&
                     MessageBeingBuilt.StandardRate != PhoneNumberDesc.DefaultInstance)
                     MessageBeingBuilt.StandardRate = PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.StandardRate)
@@ -975,21 +975,21 @@ namespace PhoneNumbers
 
             public Builder SetCarrierSpecific(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.CarrierSpecific = value;
                 return this;
             }
 
             public Builder SetCarrierSpecific(PhoneNumberDesc.Builder builderForValue)
             {
-                if (builderForValue == null) throw new ArgumentNullException(nameof(builderForValue));
+                if (builderForValue is null) throw new ArgumentNullException(nameof(builderForValue));
                 MessageBeingBuilt.CarrierSpecific = builderForValue.Build();
                 return this;
             }
 
             public Builder MergeCarrierSpecific(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 if (MessageBeingBuilt.HasCarrierSpecific &&
                     MessageBeingBuilt.CarrierSpecific != PhoneNumberDesc.DefaultInstance)
                     MessageBeingBuilt.CarrierSpecific = PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.CarrierSpecific)
@@ -1006,21 +1006,21 @@ namespace PhoneNumbers
 
             public Builder SetSmsServices(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.SmsServices = value;
                 return this;
             }
 
             public Builder SetSmsServices(PhoneNumberDesc.Builder builderForValue)
             {
-                if (builderForValue == null) throw new ArgumentNullException(nameof(builderForValue));
+                if (builderForValue is null) throw new ArgumentNullException(nameof(builderForValue));
                 MessageBeingBuilt.SmsServices = builderForValue.Build();
                 return this;
             }
 
             public Builder MergeSmsServices(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 if (MessageBeingBuilt.HasSmsServices &&
                     MessageBeingBuilt.SmsServices != PhoneNumberDesc.DefaultInstance)
                     MessageBeingBuilt.SmsServices = PhoneNumberDesc.CreateBuilder(MessageBeingBuilt.SmsServices)
@@ -1037,21 +1037,21 @@ namespace PhoneNumbers
 
             public Builder SetNoInternationalDialling(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.NoInternationalDialling = value;
                 return this;
             }
 
             public Builder SetNoInternationalDialling(PhoneNumberDesc.Builder builderForValue)
             {
-                if (builderForValue == null) throw new ArgumentNullException(nameof(builderForValue));
+                if (builderForValue is null) throw new ArgumentNullException(nameof(builderForValue));
                 MessageBeingBuilt.NoInternationalDialling = builderForValue.Build();
                 return this;
             }
 
             public Builder MergeNoInternationalDialling(PhoneNumberDesc value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 if (MessageBeingBuilt.HasNoInternationalDialling &&
                     MessageBeingBuilt.NoInternationalDialling != PhoneNumberDesc.DefaultInstance)
                     MessageBeingBuilt.NoInternationalDialling = PhoneNumberDesc
@@ -1068,7 +1068,7 @@ namespace PhoneNumbers
 
             public Builder SetId(string value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.Id = value;
                 return this;
             }
@@ -1093,7 +1093,7 @@ namespace PhoneNumbers
 
             public Builder SetInternationalPrefix(string value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.InternationalPrefix = value;
                 return this;
             }
@@ -1106,7 +1106,7 @@ namespace PhoneNumbers
 
             public Builder SetPreferredInternationalPrefix(string value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.PreferredInternationalPrefix = value;
                 return this;
             }
@@ -1119,7 +1119,7 @@ namespace PhoneNumbers
 
             public Builder SetNationalPrefix(string value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.NationalPrefix = value;
                 return this;
             }
@@ -1132,7 +1132,7 @@ namespace PhoneNumbers
 
             public Builder SetPreferredExtnPrefix(string value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.PreferredExtnPrefix = value;
                 return this;
             }
@@ -1145,7 +1145,7 @@ namespace PhoneNumbers
 
             public Builder SetNationalPrefixForParsing(string value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.NationalPrefixForParsing = value;
                 return this;
             }
@@ -1158,7 +1158,7 @@ namespace PhoneNumbers
 
             public Builder SetNationalPrefixTransformRule(string value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.NationalPrefixTransformRule = value;
                 return this;
             }
@@ -1188,28 +1188,28 @@ namespace PhoneNumbers
 
             public Builder SetNumberFormat(int index, NumberFormat value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.numberFormat_[index] = value;
                 return this;
             }
 
             public Builder SetNumberFormat(int index, NumberFormat.Builder builderForValue)
             {
-                if (builderForValue == null) throw new ArgumentNullException(nameof(builderForValue));
+                if (builderForValue is null) throw new ArgumentNullException(nameof(builderForValue));
                 MessageBeingBuilt.numberFormat_[index] = builderForValue.Build();
                 return this;
             }
 
             public Builder AddNumberFormat(NumberFormat value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.numberFormat_.Add(value);
                 return this;
             }
 
             public Builder AddNumberFormat(NumberFormat.Builder builderForValue)
             {
-                if (builderForValue == null) throw new ArgumentNullException(nameof(builderForValue));
+                if (builderForValue is null) throw new ArgumentNullException(nameof(builderForValue));
                 MessageBeingBuilt.numberFormat_.Add(builderForValue.Build());
                 return this;
             }
@@ -1233,28 +1233,28 @@ namespace PhoneNumbers
 
             public Builder SetIntlNumberFormat(int index, NumberFormat value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.intlNumberFormat_[index] = value;
                 return this;
             }
 
             public Builder SetIntlNumberFormat(int index, NumberFormat.Builder builderForValue)
             {
-                if (builderForValue == null) throw new ArgumentNullException(nameof(builderForValue));
+                if (builderForValue is null) throw new ArgumentNullException(nameof(builderForValue));
                 MessageBeingBuilt.intlNumberFormat_[index] = builderForValue.Build();
                 return this;
             }
 
             public Builder AddIntlNumberFormat(NumberFormat value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.intlNumberFormat_.Add(value);
                 return this;
             }
 
             public Builder AddIntlNumberFormat(NumberFormat.Builder builderForValue)
             {
-                if (builderForValue == null) throw new ArgumentNullException(nameof(builderForValue));
+                if (builderForValue is null) throw new ArgumentNullException(nameof(builderForValue));
                 MessageBeingBuilt.intlNumberFormat_.Add(builderForValue.Build());
                 return this;
             }
@@ -1285,7 +1285,7 @@ namespace PhoneNumbers
 
             public Builder SetLeadingDigits(string value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.LeadingDigits = value;
                 return this;
             }
@@ -1353,8 +1353,7 @@ namespace PhoneNumbers
 
         public override bool Equals(object obj)
         {
-            var other = obj as PhoneMetadata;
-            if (other == null) return false;
+            if (obj is not PhoneMetadata other) return false;
             if (HasGeneralDesc != other.HasGeneralDesc ||
                 HasGeneralDesc && !GeneralDesc.Equals(other.GeneralDesc)) return false;
             if (HasFixedLine != other.HasFixedLine || HasFixedLine && !FixedLine.Equals(other.FixedLine)) return false;

@@ -89,7 +89,7 @@ namespace PhoneNumbers
 
             public PhoneMetadataCollection BuildPartial()
             {
-                if (MessageBeingBuilt == null)
+                if (MessageBeingBuilt is null)
                     throw new InvalidOperationException("build() has already been called on this Builder");
 
                 var returnMe = MessageBeingBuilt;
@@ -112,28 +112,28 @@ namespace PhoneNumbers
 
             public Builder SetMetadata(int index, PhoneMetadata value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.metadata[index] = value;
                 return this;
             }
 
             public Builder SetMetadata(int index, PhoneMetadata.Builder builderForValue)
             {
-                if (builderForValue == null) throw new ArgumentNullException(nameof(builderForValue));
+                if (builderForValue is null) throw new ArgumentNullException(nameof(builderForValue));
                 MessageBeingBuilt.metadata[index] = builderForValue.Build();
                 return this;
             }
 
             public Builder AddMetadata(PhoneMetadata value)
             {
-                if (value == null) throw new ArgumentNullException(nameof(value));
+                if (value is null) throw new ArgumentNullException(nameof(value));
                 MessageBeingBuilt.metadata.Add(value);
                 return this;
             }
 
             public Builder AddMetadata(PhoneMetadata.Builder builderForValue)
             {
-                if (builderForValue == null) throw new ArgumentNullException(nameof(builderForValue));
+                if (builderForValue is null) throw new ArgumentNullException(nameof(builderForValue));
                 MessageBeingBuilt.metadata.Add(builderForValue.Build());
                 return this;
             }
@@ -162,8 +162,7 @@ namespace PhoneNumbers
 
         public override bool Equals(object obj)
         {
-            var other = obj as PhoneMetadataCollection;
-            if (metadata.Count != other?.metadata.Count) return false;
+            if (obj is not PhoneMetadataCollection other || metadata.Count != other.metadata.Count) return false;
             for (var ix = 0; ix < metadata.Count; ix++)
                 if (!metadata[ix].Equals(other.metadata[ix])) return false;
             return true;
