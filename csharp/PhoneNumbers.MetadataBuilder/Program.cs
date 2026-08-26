@@ -141,7 +141,7 @@ internal static class Program
             {
                 var countryCode = Path.GetFileNameWithoutExtension(txtPath);
                 var map = ParseAreaCodeText(txtPath);
-                var outPath = Path.Combine(outputDir, Path.GetFileName($"{lang}.{countryCode}"));
+                var outPath = Path.Join(outputDir, Path.GetFileName($"{lang}.{countryCode}"));
                 using var gz = new GZipStream(File.Create(outPath), CompressionLevel.SmallestSize);
                 BuildPrefixMapFromBin.WriteAreaCodeMap(gz, map);
                 written++;
@@ -336,7 +336,7 @@ internal static class Program
         foreach (var metadata in metadataList)
         {
             var key = MakeFileNameKey(metadata, isAlternateFormatsMetadata);
-            var path = Path.Combine(outputDir, Path.GetFileName($"{filePrefix}_{key}"));
+            var path = Path.Join(outputDir, Path.GetFileName($"{filePrefix}_{key}"));
             using var gz = new GZipStream(File.Create(path), CompressionLevel.SmallestSize);
             BuildMetadataFromBin.WriteMetadata(gz, metadata);
             written++;

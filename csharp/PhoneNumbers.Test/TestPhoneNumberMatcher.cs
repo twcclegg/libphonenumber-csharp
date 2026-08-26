@@ -1058,9 +1058,9 @@ namespace PhoneNumbers.Test
             for (var index = 0; index <= text.Length; index++)
             {
                 var sub = text.Substring(index);
-                // Iterates over all matches to ensure that doing so terminates.
                 foreach (var _ in phoneUtil.FindNumbers(sub, defaultCountry, leniency, long.MaxValue))
                 {
+                    // Iterates over all matches to ensure that doing so terminates.
                 }
             }
         }
