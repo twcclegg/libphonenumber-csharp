@@ -29,12 +29,16 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      # Only benchmarks that moved by more than plausible noise appear here at all - see
+      # lib/compare-benchmarks.js. A regression fails the run_performance_tests check directly
+      # (this workflow only triggers on a *successful* run, so a regression never reaches this
+      # step); an improvement gets a short comment. No change in either direction means no
+      # comment, and any stale one from an earlier push gets deleted instead of left to rot.
       - name: Post benchmark results to PR
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         with:
           script: |
             const fs = require('fs');
-            const path = require('path');
 
             const artifactRoot = `${process.env.GITHUB_WORKSPACE}/benchmark-artifact`;
             const prInfo = JSON.parse(fs.readFileSync(`${artifactRoot}/pr-info.json`, 'utf8'));
@@ -46,65 +50,47 @@ jobs:
               return;
             }
 
-            function readMarkdownReports(dir) {
-              if (!fs.existsSync(dir)) {
-                core.info(`Results directory not found: ${dir}`);
-                return '';
-              }
-              const files = fs.readdirSync(dir)
-                .filter(f => f.endsWith('-report-github.md'))
-                .sort();
-              if (files.length === 0) {
-                core.info(`No *-report-github.md files in ${dir}`);
-                return '';
-              }
-              return files
-                .map(f => fs.readFileSync(path.join(dir, f), 'utf8').trim())
-                .join('\n\n');
-            }
-
-            const prMarkdown   = readMarkdownReports(`${artifactRoot}/branch-results`);
-            const mainMarkdown = readMarkdownReports(`${artifactRoot}/main-results`);
-
-            if (!prMarkdown) {
-              core.warning('No PR benchmark markdown found — skipping comment');
-              return;
-            }
-
-            const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${context.payload.workflow_run.id}`;
-            const sha    = (headSha || '').slice(0, 7);
-
-            const body = [
-              '<!-- benchmark-results-marker -->',
-              '## 📊 Benchmark Results',
-              '',
-              `> Commit: \`${sha}\` · [Full run](${runUrl}) · Linux \`ubuntu-24.04-arm\``,
-              '>',
-              '> Both sides were measured on the same runner in the same job, so the numbers are',
-              '> comparable. Treat sub-percent differences as noise.',
-              '',
-              '<details open>',
-              '<summary><b>PR branch</b></summary>',
-              '',
-              prMarkdown,
-              '',
-              '</details>',
-              '',
-              '<details>',
-              '<summary><b>PR base</b></summary>',
-              '',
-              mainMarkdown || '_No base results available._',
-              '',
-              '</details>',
-            ].join('\n');
+            const { improvements } = JSON.parse(
+              fs.readFileSync(`${artifactRoot}/significant-changes.json`, 'utf8'),
+            );
 
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo:  context.repo.repo,
               issue_number: prNumber,
             });
-
             const existing = comments.find(c => c.body?.includes('<!-- benchmark-results-marker -->'));
+
+            if (improvements.length === 0) {
+              core.info('No statistically significant improvement - nothing to post.');
+              if (existing) {
+                await github.rest.issues.deleteComment({
+                  owner:      context.repo.owner,
+                  repo:       context.repo.repo,
+                  comment_id: existing.id,
+                });
+                core.info(`Deleted stale benchmark comment #${existing.id}`);
+              }
+              return;
+            }
+
+            const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${context.payload.workflow_run.id}`;
+            const sha    = (headSha || '').slice(0, 7);
+
+            const rows = improvements
+              .map(i => `| \`${i.fullName}\` | ${i.baseMeanDisplay} | ${i.branchMeanDisplay} | ${i.relativeDeltaPct.toFixed(1)}% |`)
+              .join('\n');
+
+            const body = [
+              '<!-- benchmark-results-marker -->',
+              '## 📊 Statistically significant benchmark improvement',
+              '',
+              `> Commit: \`${sha}\` · [Full run](${runUrl})`,
+              '',
+              '| Benchmark | Base | Branch | Δ |',
+              '|---|---|---|---|',
+              rows,
+            ].join('\n');
 
             if (existing) {
               await github.rest.issues.updateComment({
