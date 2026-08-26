@@ -50,7 +50,10 @@ namespace PhoneNumbers
         {
             if (this == obj)
                 return true;
-            return obj is PhoneNumberMatch p && RawString == p.RawString && Start == p.Start && Number.Equals(p.Number);
+            if (obj is null || GetType() != obj.GetType())
+                return false;
+            var p = (PhoneNumberMatch)obj;
+            return RawString == p.RawString && Start == p.Start && Number.Equals(p.Number);
         }
 
         public override int GetHashCode()
