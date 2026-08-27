@@ -181,15 +181,8 @@ namespace PhoneNumbers.Test
             var metadata = new PhoneMetadata.Builder();
 
             // Should throw an exception as multiple intlFormats are provided.
-            try
-            {
-                BuildMetadataFromXml.LoadInternationalFormat(metadata, numberFormatElement, "");
-                Assert.True(false);
-            }
-            catch (Exception)
-            {
-                // Test passed.
-            }
+            Assert.Throws<Exception>(() =>
+                BuildMetadataFromXml.LoadInternationalFormat(metadata, numberFormatElement, ""));
         }
 
         [Fact]
@@ -247,15 +240,8 @@ namespace PhoneNumbers.Test
             var metadata = new PhoneMetadata.Builder();
             var numberFormat = new NumberFormat.Builder();
 
-            try
-            {
-                BuildMetadataFromXml.LoadNationalFormat(metadata, numberFormatElement, numberFormat);
-                Assert.True(false);
-            }
-            catch (Exception)
-            {
-                // Test passed.
-            }
+            Assert.Throws<Exception>(() =>
+                BuildMetadataFromXml.LoadNationalFormat(metadata, numberFormatElement, numberFormat));
         }
 
         [Fact]
@@ -266,15 +252,8 @@ namespace PhoneNumbers.Test
             var metadata = new PhoneMetadata.Builder();
             var numberFormat = new NumberFormat.Builder();
 
-            try
-            {
-                BuildMetadataFromXml.LoadNationalFormat(metadata, numberFormatElement, numberFormat);
-                Assert.True(false);
-            }
-            catch (Exception)
-            {
-                // Test passed.
-            }
+            Assert.Throws<Exception>(() =>
+                BuildMetadataFromXml.LoadNationalFormat(metadata, numberFormatElement, numberFormat));
         }
 
         // Tests loadAvailableFormats().

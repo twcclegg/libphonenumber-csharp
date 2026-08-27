@@ -17,6 +17,7 @@
 
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 
 namespace PhoneNumbers
@@ -146,19 +147,15 @@ namespace PhoneNumbers
             {
                 return GetRegionDisplayName(regionCodes[0], language);
             }
-            var regionWhereNumberIsValid = "ZZ";
-            foreach (var regionCode in regionCodes)
-            {
-                if (phoneUtil.IsValidNumberForRegion(number, regionCode))
-                {
-                    // If the number has already been found valid for one region, then we don't know
-                    // which region it belongs to so we return nothing.
-                    if (regionWhereNumberIsValid != "ZZ")
-                        return "";
-                    regionWhereNumberIsValid = regionCode;
-                }
-            }
-            return GetRegionDisplayName(regionWhereNumberIsValid, language);
+            // Take(2): once a second valid region turns up we already know the answer (below), so
+            // there's no need to keep testing the rest.
+            var validRegions = regionCodes.Where(regionCode => phoneUtil.IsValidNumberForRegion(number, regionCode))
+                .Take(2).ToList();
+            // If the number is valid for more than one region, we don't know which region it belongs
+            // to so we return nothing.
+            if (validRegions.Count > 1)
+                return "";
+            return GetRegionDisplayName(validRegions.Count == 1 ? validRegions[0] : "ZZ", language);
         }
 
         /// <summary>

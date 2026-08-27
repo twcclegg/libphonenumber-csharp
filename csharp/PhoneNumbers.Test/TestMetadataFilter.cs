@@ -396,15 +396,7 @@ namespace PhoneNumbers.Test
             Assert.Throws<Exception>(() => MetadataFilter.ParseFieldMapFromString(""));
 
             // Whitespace input.
-            try
-            {
-                MetadataFilter.ParseFieldMapFromString(" ");
-                Assert.True(false);
-            }
-            catch (Exception)
-            {
-                // Test passed.
-            }
+            Assert.Throws<Exception>(() => MetadataFilter.ParseFieldMapFromString(" "));
 
             // Bad token given as only group.
             Assert.Throws<Exception>(() => MetadataFilter.ParseFieldMapFromString("something_else"));
@@ -413,16 +405,8 @@ namespace PhoneNumbers.Test
             Assert.Throws<Exception>(() => MetadataFilter.ParseFieldMapFromString("fixedLine:something_else"));
 
             // Bad token given as middle group.
-            try
-            {
-                MetadataFilter.ParseFieldMapFromString(
-                    "pager:nationalPrefix:something_else:nationalNumberPattern");
-                Assert.True(false);
-            }
-            catch (Exception)
-            {
-                // Test passed.
-            }
+            Assert.Throws<Exception>(() => MetadataFilter.ParseFieldMapFromString(
+                "pager:nationalPrefix:something_else:nationalNumberPattern"));
 
             // Childless field given as parent.
             Assert.Throws<Exception>(() => MetadataFilter.ParseFieldMapFromString("nationalPrefix(exampleNumber)"));
@@ -458,43 +442,19 @@ namespace PhoneNumbers.Test
             Assert.Throws<Exception>(() => MetadataFilter.ParseFieldMapFromString("(exampleNumber)"));
 
             // Whitespace parent.
-            try
-            {
-                MetadataFilter.ParseFieldMapFromString(" (exampleNumber)");
-                Assert.True(false);
-            }
-            catch (Exception)
-            {
-                // Test passed.
-            }
+            Assert.Throws<Exception>(() => MetadataFilter.ParseFieldMapFromString(" (exampleNumber)"));
 
             // Empty child.
             Assert.Throws<Exception>(() => MetadataFilter.ParseFieldMapFromString("fixedLine()"));
 
             // Whitespace child.
-            try
-            {
-                MetadataFilter.ParseFieldMapFromString("fixedLine( )");
-                Assert.True(false);
-            }
-            catch (Exception)
-            {
-                // Test passed.
-            }
+            Assert.Throws<Exception>(() => MetadataFilter.ParseFieldMapFromString("fixedLine( )"));
 
             // Empty parent and child.
             Assert.Throws<Exception>(() => MetadataFilter.ParseFieldMapFromString("()"));
 
             // Whitespace parent and empty child.
-            try
-            {
-                MetadataFilter.ParseFieldMapFromString(" ()");
-                Assert.True(false);
-            }
-            catch (Exception)
-            {
-                // Test passed.
-            }
+            Assert.Throws<Exception>(() => MetadataFilter.ParseFieldMapFromString(" ()"));
 
             // Parent field given as a group twice.
             Assert.Throws<Exception>(() => MetadataFilter.ParseFieldMapFromString("fixedLine:uan:fixedLine"));

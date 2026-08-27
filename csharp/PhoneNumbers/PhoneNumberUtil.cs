@@ -1312,16 +1312,11 @@ namespace PhoneNumbers
                     // internationally, since that always works, except for numbers which might potentially be
                     // short numbers, which are always dialled in national format.
                     var regionMetadata = GetMetadataForRegion(regionCallingFrom);
-                    if (CanBeInternationallyDialled(numberNoExt)
+                    formattedNumber = CanBeInternationallyDialled(numberNoExt)
                         && TestNumberLength(GetNationalSignificantNumberLength(numberNoExt), regionMetadata)
-                            != ValidationResult.TOO_SHORT)
-                    {
-                        formattedNumber = Format(numberNoExt, PhoneNumberFormat.INTERNATIONAL);
-                    }
-                    else
-                    {
-                        formattedNumber = Format(numberNoExt, PhoneNumberFormat.NATIONAL);
-                    }
+                            != ValidationResult.TOO_SHORT
+                        ? Format(numberNoExt, PhoneNumberFormat.INTERNATIONAL)
+                        : Format(numberNoExt, PhoneNumberFormat.NATIONAL);
                 }
                 else
                 {
@@ -1579,13 +1574,13 @@ namespace PhoneNumbers
             foreach (var numFormat in availableFormats)
             {
                 var size = numFormat.LeadingDigitsPatternCount;
-                if (size == 0 || PhoneRegex.Get(
+                if ((size == 0 || PhoneRegex.Get(
                     // We always use the last leading_digits_pattern, as it is the most detailed.
                     numFormat.GetLeadingDigitsPattern(size - 1))
                     .IsMatchBeginning(nationalNumber))
+                    && PhoneRegex.Get(numFormat.Pattern).IsMatchAll(nationalNumber))
                 {
-                    if (PhoneRegex.Get(numFormat.Pattern).IsMatchAll(nationalNumber))
-                        return numFormat;
+                    return numFormat;
                 }
             }
             return null;
@@ -1670,6 +1665,8 @@ namespace PhoneNumbers
             }
             catch (NumberParseException)
             {
+                // The example number in the metadata failed to parse; treat it the same as no example
+                // number being present rather than surfacing a metadata-quality issue to the caller.
             }
             return null;
         }
@@ -2568,7 +2565,9 @@ namespace PhoneNumbers
             }
             // Attempt to parse the first digits as an international prefix.
             Normalize(number);
-            if (possibleIddPrefix as object == "NonMatch" as object)
+            // Reference equality, not value equality: this only matches the specific sentinel object
+            // assigned above, not any region's real prefix that happens to equal the literal text.
+            if (ReferenceEquals(possibleIddPrefix, "NonMatch"))
                 return PhoneNumber.Types.CountryCodeSource.FROM_DEFAULT_COUNTRY;
 
             var iddPattern = PhoneRegex.Get(possibleIddPrefix);

@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace PhoneNumbers.Test
@@ -23,7 +24,7 @@ namespace PhoneNumbers.Test
     [Collection("TestMetadataTestCase")]
     public class TestPhoneNumberToTimeZonesMapper
     {
-        private static long[][] numbers =
+        private static readonly long[][] numbers =
         {
             new long[] { 45, 35353535L }, // denmark
             new long[] { 45, 53831292L },
@@ -101,8 +102,8 @@ namespace PhoneNumbers.Test
                 var map = TimezoneMapDataReader.GetPrefixMap(ms, ianaTZListDelimiter);
                 Assert.NotNull(map);
                 Assert.Equal(11, map.Count);
-                Assert.True(map.ContainsKey(1));
-                Assert.True(1 < map[1].Length);
+                Assert.True(map.TryGetValue(1, out var timezones));
+                Assert.True(1 < timezones.Length);
             }
         }
 
@@ -112,9 +113,8 @@ namespace PhoneNumbers.Test
             var mapper = PhoneNumberToTimeZonesMapper.GetInstance();
             Assert.Same(mapper, PhoneNumberToTimeZonesMapper.GetInstance());
             Assert.Equal("Etc/Unknown", mapper.GetUnknownTimeZone());
-            foreach (var pn in testNumbers)
+            foreach (var res0 in testNumbers.Select(pn => mapper.GetTimeZonesForNumber(pn)))
             {
-                var res0 = mapper.GetTimeZonesForNumber(pn);
                 Assert.NotEmpty(res0);
             }
         }
@@ -161,9 +161,8 @@ namespace PhoneNumbers.Test
         public void TestMapperWithNoData()
         {
             var emptyMapper = new PhoneNumberToTimeZonesMapper(new Dictionary<long, string[]>());
-            foreach (var pn in testNumbers)
+            foreach (var list in testNumbers.Select(pn => emptyMapper.GetTimeZonesForNumber(pn)))
             {
-                var list = emptyMapper.GetTimeZonesForNumber(pn);
                 Assert.NotNull(list);
                 Assert.Single(list);
                 Assert.Equal("Etc/Unknown", list[0]);
@@ -179,13 +178,12 @@ namespace PhoneNumbers.Test
                 var map = TimezoneMapDataReader.GetPrefixMap(ms, new char[] { '&' });
                 Assert.NotNull(map);
                 Assert.Equal(11, map.Count);
-                Assert.True(map.ContainsKey(1));
-                Assert.True(1 < map[1].Length);
+                Assert.True(map.TryGetValue(1, out var timezones));
+                Assert.True(1 < timezones.Length);
 
                 var wrongMapper = new PhoneNumberToTimeZonesMapper(map);
-                foreach (var pn in testNumbers)
+                foreach (var list in testNumbers.Select(pn => wrongMapper.GetTimeZonesForNumber(pn)))
                 {
-                    var list = wrongMapper.GetTimeZonesForNumber(pn);
                     Assert.NotNull(list);
                     Assert.NotEmpty(list);
                 }
@@ -258,7 +256,7 @@ namespace PhoneNumbers.Test
             }
         }
 
-        private static string MapTestData = @"# Copyright (C) 2012 The Libphonenumber Authors
+        private static readonly string MapTestData = @"# Copyright (C) 2012 The Libphonenumber Authors
 
 # Licensed under the Apache License, Version 2.0 (the ""License"");
 # you may not use this file except in compliance with the License.
