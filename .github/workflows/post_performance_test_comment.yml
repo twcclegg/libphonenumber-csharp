@@ -16,12 +16,20 @@ permissions:
 
 jobs:
   post_comment:
+    # Also runs on a *failing* run_performance_tests - a regression fails that workflow directly,
+    # and without this the stale-comment cleanup below would never fire for a PR that regressed:
+    # once an earlier push posted an improvement comment, it would sit there unchanged (and
+    # increasingly misleading) on every later push that instead regressed. The steps below treat
+    # a missing/incomplete artifact (e.g. the run failed before benchmarks even produced one) as
+    # nothing to do, rather than erroring.
     if: >
       github.event.workflow_run.event == 'pull_request' &&
-      github.event.workflow_run.conclusion == 'success'
+      (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure')
     runs-on: ubuntu-24.04-arm
     steps:
       - name: Download benchmark artifact
+        id: download
+        continue-on-error: true
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: benchmark-results
@@ -30,18 +38,25 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       # Only benchmarks that moved by more than plausible noise appear here at all - see
-      # lib/compare-benchmarks.js. A regression fails the run_performance_tests check directly
-      # (this workflow only triggers on a *successful* run, so a regression never reaches this
-      # step); an improvement gets a short comment. No change in either direction means no
-      # comment, and any stale one from an earlier push gets deleted instead of left to rot.
+      # lib/compare-benchmarks.js. A regression fails the run_performance_tests check directly;
+      # an improvement gets a short comment. No change in either direction means no comment, and
+      # any stale one from an earlier push gets deleted instead of left to rot.
       - name: Post benchmark results to PR
+        if: steps.download.outcome == 'success'
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         with:
           script: |
             const fs = require('fs');
 
             const artifactRoot = `${process.env.GITHUB_WORKSPACE}/benchmark-artifact`;
-            const prInfo = JSON.parse(fs.readFileSync(`${artifactRoot}/pr-info.json`, 'utf8'));
+            const prInfoPath = `${artifactRoot}/pr-info.json`;
+            const changesPath = `${artifactRoot}/significant-changes.json`;
+            if (!fs.existsSync(prInfoPath) || !fs.existsSync(changesPath)) {
+              core.info('Benchmark artifact incomplete (run likely failed before producing it) - nothing to do.');
+              return;
+            }
+
+            const prInfo = JSON.parse(fs.readFileSync(prInfoPath, 'utf8'));
             const prNumber = prInfo.pr_number;
             const headSha  = prInfo.head_sha;
 
@@ -50,9 +65,7 @@ jobs:
               return;
             }
 
-            const { improvements } = JSON.parse(
-              fs.readFileSync(`${artifactRoot}/significant-changes.json`, 'utf8'),
-            );
+            const { improvements } = JSON.parse(fs.readFileSync(changesPath, 'utf8'));
 
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
