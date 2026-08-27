@@ -58,7 +58,7 @@ jobs:
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: 22
-      - run: npm install -g @github/copilot
+      - run: npm install -g @github/copilot@1.0.80
 
       - name: Classify issue
         id: classify
@@ -81,12 +81,17 @@ jobs:
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         with:
           script: |
-            const raw = ${{ toJSON(steps.classify.outputs.response) }} || '';
-            const match = raw.match(/\{[\s\S]*\}/);
+            const raw = (${{ toJSON(steps.classify.outputs.response) }} || '').trim();
+            // The system prompt asks for a single-line JSON object with no surrounding text,
+            // but models don't always comply - take the last line that looks like a complete
+            // JSON object rather than greedily spanning from the first '{' to the last '}',
+            // which would swallow any brace that shows up in stray preamble text.
+            const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+            const jsonLine = lines.slice().reverse().find(l => l.startsWith('{') && l.endsWith('}')) || raw;
 
             let verdict;
             try {
-              verdict = JSON.parse(match ? match[0] : raw);
+              verdict = JSON.parse(jsonLine);
             } catch (err) {
               core.warning(`Could not parse classifier response as JSON: ${err.message}`);
               core.summary.addHeading('Metadata issue triage', 3).addRaw(`Skipped: unparseable response:\n\n${raw}`).write();
@@ -111,12 +116,17 @@ jobs:
 
             const label = 'metadata';
             try {
-              await github.rest.issues.getLabel({ owner, repo, name: label });
-            } catch {
               await github.rest.issues.createLabel({
                 owner, repo, name: label, color: 'c5def5',
                 description: 'Report about upstream Google libphonenumber data, not this port',
               });
+            } catch (err) {
+              // 422 just means the label already exists - nothing to do. Anything else is
+              // unexpected, but addLabels below still works whether or not creation succeeded,
+              // so don't let it abort labeling/commenting/closing.
+              if (err.status !== 422) {
+                core.warning(`Could not create label '${label}': ${err.message}`);
+              }
             }
             await github.rest.issues.addLabels({ owner, repo, issue_number, labels: [label] });
 
@@ -203,4 +213,8 @@ jobs:
               });
             } catch (err) {
               core.warning(`Could not open examples-list PR for issue #${issue_number}: ${err.message}`);
+              core.summary
+                .addHeading('Metadata issue triage', 3)
+                .addRaw(`Closed #${issue_number} as a metadata issue, but could not open the examples-list PR: ${err.message}`)
+                .write();
             }
