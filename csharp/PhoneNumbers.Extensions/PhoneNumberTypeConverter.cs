@@ -17,9 +17,21 @@ namespace PhoneNumbers.Extensions
             => sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
 
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
-            => value is string stringValue
-                ? Util.Parse(stringValue, null)
-                : base.ConvertFrom(context, culture, value);
+        {
+            if (value is not string stringValue)
+            {
+                return base.ConvertFrom(context, culture, value);
+            }
+
+            try
+            {
+                return Util.Parse(stringValue, null);
+            }
+            catch (NumberParseException ex)
+            {
+                throw new FormatException($"'{stringValue}' is not a valid phone number.", ex);
+            }
+        }
 
         public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
             => destinationType == typeof(string) || base.CanConvertTo(context, destinationType);

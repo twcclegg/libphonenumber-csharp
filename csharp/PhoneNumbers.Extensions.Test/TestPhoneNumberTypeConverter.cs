@@ -1,3 +1,4 @@
+using System;
 using Xunit;
 
 namespace PhoneNumbers.Extensions.Test
@@ -13,6 +14,14 @@ namespace PhoneNumbers.Extensions.Test
 
             var number = Assert.IsType<PhoneNumbers.PhoneNumber>(result);
             Assert.Equal(6192987704UL, number.NationalNumber);
+        }
+
+        [Fact]
+        public void ConvertFrom_InvalidString_ThrowsFormatException()
+        {
+            var ex = Assert.Throws<FormatException>(() => Converter.ConvertFrom("not-a-number"));
+
+            Assert.IsType<NumberParseException>(ex.InnerException);
         }
 
         [Fact]
