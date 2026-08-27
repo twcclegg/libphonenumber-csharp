@@ -189,7 +189,7 @@ internal static class Program
         var byCountry = ParseLocaleText(inputFile);
         foreach (var country in byCountry)
         {
-            var outPath = Path.Join(outputDir, country.Key);
+            var outPath = Path.Join(outputDir, Path.GetFileName(country.Key));
             using var gz = new GZipStream(File.Create(outPath), CompressionLevel.SmallestSize);
             BuildPrefixMapFromBin.WriteLocaleNames(gz, country.Value);
         }
