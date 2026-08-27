@@ -226,6 +226,10 @@ UPSTREAM_TAG=v9.0.33 DEPLOYED_VERSION=9.0.32 \
 
 Nothing about the target repository is hard-coded. The script commits and pushes through whatever checkout it runs in, and takes the repository to release from `GITHUB_REPOSITORY` — set automatically by GitHub Actions, and otherwise derived from the `origin` remote. So a fork releases to itself, and the dry-run summary names the repository it would publish to. `UPSTREAM_REPOSITORY` (default `google/libphonenumber`) and `NUGET_PACKAGE_ID` (default `libphonenumber-csharp`) are overridable the same way.
 
+### Automated triage of metadata issues
+
+A large share of the issues filed here turn out to be reports about Google's phone number metadata itself (an unrecognized prefix, an outdated numbering plan) rather than a bug in this port's code — see the checklist in [`bug_report.md`](.github/ISSUE_TEMPLATE/bug_report.md). The [`triage_metadata_issues`](.github/workflows/triage_metadata_issues.yml) workflow uses the GitHub Copilot CLI, grounded in [`.github/triage/metadata_examples.md`](.github/triage/metadata_examples.md), to spot these on issue creation, closes them with a comment pointing to [google/libphonenumber](https://github.com/google/libphonenumber), and labels them `metadata`. Every closure appends to that examples file, so the classifier keeps learning from real outcomes instead of drifting from a fixed prompt.
+
 ## Contributing
 See [CONTRIBUTING.md](CONTRIBUTING.md)
 
