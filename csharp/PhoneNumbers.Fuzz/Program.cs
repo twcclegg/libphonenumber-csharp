@@ -59,7 +59,7 @@ namespace PhoneNumbers.Fuzz
                 return;
             }
 
-            ExerciseReadOnlySurface(number);
+            ExerciseReadOnlySurface(number, region);
         }
 
         private static void FindNumbers(string input, string region)
@@ -80,7 +80,7 @@ namespace PhoneNumbers.Fuzz
                 formatter.InputDigit(input[i]);
         }
 
-        private static void ExerciseReadOnlySurface(PhoneNumber number)
+        private static void ExerciseReadOnlySurface(PhoneNumber number, string callingFromRegion)
         {
             PhoneUtil.IsValidNumber(number);
             PhoneUtil.IsPossibleNumber(number);
@@ -91,7 +91,10 @@ namespace PhoneNumbers.Fuzz
             PhoneUtil.Format(number, PhoneNumberFormat.INTERNATIONAL);
             PhoneUtil.Format(number, PhoneNumberFormat.NATIONAL);
             PhoneUtil.Format(number, PhoneNumberFormat.RFC3966);
-            PhoneUtil.FormatOutOfCountryCallingNumber(number, "US");
+            // Reuses the fuzzer-selected region (rather than a hardcoded "US") so this also covers
+            // the branches for calling from a region sharing the parsed number's country code, or
+            // one with unusual national-prefix/IDD rules.
+            PhoneUtil.FormatOutOfCountryCallingNumber(number, callingFromRegion);
 
             Geocoder.GetDescriptionForNumber(number, Locale.English);
             CarrierMapper.GetNameForNumber(number, Locale.English);

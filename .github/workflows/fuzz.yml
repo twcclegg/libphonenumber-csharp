@@ -27,7 +27,12 @@ jobs:
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 60
     env:
-      DURATION: ${{ github.event.inputs.duration || '900' }}
+      # Capped well under timeout-minutes: checkout/build/instrument above and crash-upload below
+      # need their own time inside that budget too. Without a cap, a large manual `duration` input
+      # doesn't make libFuzzer stop later - it makes the runner hard-cancel the job instead, which
+      # skips the "Upload crashes" step (it only runs `if: failure()`, not on a cancelled job) and
+      # loses whatever crash was found.
+      DURATION: ${{ min(fromJSON(github.event.inputs.duration || '900'), 3000) }}
       PUBLISH_DIR: fuzz-out
       CORPUS_DIR: csharp/PhoneNumbers.Fuzz/corpus
     steps:
