@@ -19,13 +19,14 @@ permissions:
 jobs:
   finalize_metadata_release:
     # user.login is checked, not just the branch name, so a human can't get a release cut by
-    # opening their own branch named metadata-update/*  - only github-actions[bot] (the
-    # identity github-actions-metadata-update.sh pushes and opens the PR as) can trigger this.
+    # opening their own branch named metadata-update/* - only libphonenumber-csharp-bot (the
+    # identity github-actions-metadata-update.sh pushes and opens the PR as, via
+    # BOT_ACCESS_TOKEN) can trigger this.
     if: >
       github.event.pull_request.merged == true &&
       github.event.pull_request.base.ref == 'main' &&
       startsWith(github.event.pull_request.head.ref, 'metadata-update/') &&
-      github.event.pull_request.user.login == 'github-actions[bot]'
+      github.event.pull_request.user.login == 'libphonenumber-csharp-bot'
     runs-on: ubuntu-latest
     permissions:
       contents: write
