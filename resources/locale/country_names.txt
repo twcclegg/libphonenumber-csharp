@@ -3,7 +3,7 @@
 # A name of *xx means 'the name for language xx in this country', stored once.
 #
 # Auto-generated file, do not edit by hand. Generation info:
-# java.version=25.0.4
+# java.version=25.0.4.1
 # java.vendor=Eclipse Adoptium
 AD|aa|Andorra
 AD|ab|*aa
