@@ -1,0 +1,41 @@
+# Second half of the metadata-update flow: github-actions-metadata-update.sh (see
+# create_new_release_on_new_metadata_update.yml) opens a metadata-update/* PR against main and
+# stops. Once that PR's required checks pass and it auto-merges, this workflow tags the merge
+# commit, creates the GitHub release, and dispatches the NuGet publish.
+
+name: "finalize_metadata_release"
+
+on:
+  pull_request:
+    types: [closed]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  finalize_metadata_release:
+    # user.login is checked, not just the branch name, so a human can't get a release cut by
+    # opening their own branch named metadata-update/*  - only github-actions[bot] (the
+    # identity github-actions-metadata-update.sh pushes and opens the PR as) can trigger this.
+    if: >
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == 'main' &&
+      startsWith(github.event.pull_request.head.ref, 'metadata-update/') &&
+      github.event.pull_request.user.login == 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Create release and dispatch publish
+        run: |
+          bash lib/finalize-metadata-release.sh \
+            "${{ github.event.pull_request.head.ref }}" \
+            "${{ github.event.pull_request.merge_commit_sha }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

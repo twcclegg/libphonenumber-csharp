@@ -1,6 +1,14 @@
 #! /bin/bash
-# Syncs resources/ from the latest google/libphonenumber release, regenerates the
-# locale data, builds and tests, then commits, pushes and creates a GitHub release.
+# Syncs resources/ from the latest google/libphonenumber release, regenerates the locale
+# data, and opens a PR with the result. Building and testing is left to that PR's own
+# required status checks rather than duplicated here - see finalize-metadata-release.sh for
+# the half that tags the merge commit, creates the GitHub release, and publishes to NuGet
+# once the PR merges.
+#
+# This used to commit and push straight to main. It switched to opening a PR because main
+# now requires status checks before any push lands, including from this automation's
+# GITHUB_TOKEN - a direct push can never satisfy that (the checks have nothing to run
+# against yet), so GitHub rejects it outright.
 #
 # Exit on any error, treat unset variables as errors, and fail a pipeline if any
 # stage fails. The pipefail matters here: every network read below is `curl | jq`,
@@ -36,10 +44,10 @@ Options:
   -h, --help           Show this help and exit.
 
 Environment variables:
-  GITHUB_TOKEN             GitHub token used for the api calls and the release.
-  GITHUB_REPOSITORY        owner/name of the repository to commit to and release
-                           from. Set automatically by GitHub Actions; falls back
-                           to the origin remote, so a fork releases to itself.
+  GITHUB_TOKEN             GitHub token used for the api calls and to push the branch.
+  GITHUB_REPOSITORY        owner/name of the repository to open the PR against. Set
+                           automatically by GitHub Actions; falls back to the origin
+                           remote, so a fork releases to itself.
   UPSTREAM_REPOSITORY      Repository the metadata comes from
                            (default google/libphonenumber).
   NUGET_PACKAGE_ID         Package whose published version is compared against
@@ -57,9 +65,6 @@ Environment variables:
                            asking nuget.org. Mainly for dry runs - together with
                            UPSTREAM_TAG it replays any historical release pair.
   EXPECTED_MAJOR_VERSION   Upstream major version this port tracks (default 9).
-  TEST_TARGET_FRAMEWORK    Framework used for the pre-commit test run (default net10.0).
-  PUBLISH_WORKFLOW         Workflow dispatched to publish the release to nuget.org
-                           (default publish_nuget.yml).
 
 Examples:
   # what would the nightly run do right now?
@@ -71,37 +76,9 @@ Examples:
 EOF
 }
 
-log() {
-    echo "$*"
-}
-
-warn() {
-    echo "warning: $*" >&2
-}
-
-# fail <exit-code> <message>
-fail() {
-    local code=$1
-    shift
-    echo "error: $*" >&2
-    if [ -n "${GITHUB_STEP_SUMMARY:-}" ]
-    then
-        echo "$*" >> "${GITHUB_STEP_SUMMARY}"
-    fi
-    exit "${code}"
-}
-
-# Lower casing without ${var,,}, which needs bash 4 - macOS still ships bash 3.2.
-toLower() {
-    printf '%s' "$1" | tr '[:upper:]' '[:lower:]'
-}
-
-isTrue() {
-    case "$(toLower "$1")" in
-        true|1|yes|y) return 0 ;;
-        *) return 1 ;;
-    esac
-}
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+# shellcheck source=./github-release-helpers.sh
+source "${SCRIPT_DIR}/github-release-helpers.sh"
 
 GITHUB_TOKEN="${GITHUB_TOKEN:-}"
 SKIP_JAVA_CHECK="${SKIP_JAVA_CHECK:-false}"
@@ -110,51 +87,46 @@ DRY_RUN="${DRY_RUN:-false}"
 UPSTREAM_TAG="${UPSTREAM_TAG:-}"
 DEPLOYED_VERSION="${DEPLOYED_VERSION:-}"
 EXPECTED_MAJOR_VERSION="${EXPECTED_MAJOR_VERSION:-9}"
-TEST_TARGET_FRAMEWORK="${TEST_TARGET_FRAMEWORK:-net10.0}"
-PUBLISH_WORKFLOW="${PUBLISH_WORKFLOW:-publish_nuget.yml}"
 
-while [ $# -gt 0 ]
-do
+while [ $# -gt 0 ]; do
     case "$1" in
         --skip-java-check) SKIP_JAVA_CHECK=true ;;
         --skip-proto-check) SKIP_PROTO_CHECK=true ;;
         --dry-run) DRY_RUN=true ;;
-        -h|--help) usage; exit 0 ;;
-        -*) usage >&2; fail ${EXIT_USAGE} "unknown option: $1" ;;
+        -h | --help)
+            usage
+            exit 0
+            ;;
+        -*)
+            usage >&2
+            fail ${EXIT_USAGE} "unknown option: $1"
+            ;;
         *) GITHUB_TOKEN="$1" ;;
     esac
     shift
 done
 
-if isTrue "${DRY_RUN}"
-then
+if isTrue "${DRY_RUN}"; then
     log "dry run: no files will be changed, nothing will be committed, pushed or released"
-    if [ -z "${GITHUB_TOKEN}" ]
-    then
+    if [ -z "${GITHUB_TOKEN}" ]; then
         warn "no github token, api calls will be unauthenticated and subject to a much lower rate limit"
     fi
-elif [ -z "${GITHUB_TOKEN}" ]
-then
+elif [ -z "${GITHUB_TOKEN}" ]; then
     usage >&2
     fail ${EXIT_USAGE} "GitHub token required"
 fi
 
-for tool in curl jq git
-do
-    if ! command -v "${tool}" &> /dev/null
-    then
+for tool in curl jq git; do
+    if ! command -v "${tool}" &>/dev/null; then
         fail ${EXIT_MISSING_PREREQUISITE} "${tool} required"
     fi
 done
 
-# Only needed once the script starts generating and building, which a dry run
-# never reaches - report them there rather than refusing to run.
-for tool in javac java dotnet
-do
-    if ! command -v "${tool}" &> /dev/null
-    then
-        if isTrue "${DRY_RUN}"
-        then
+# Only needed once the script starts generating, which a dry run never reaches - report
+# them there rather than refusing to run.
+for tool in javac java; do
+    if ! command -v "${tool}" &>/dev/null; then
+        if isTrue "${DRY_RUN}"; then
             warn "${tool} not found, a real run would stop here"
         else
             fail ${EXIT_MISSING_PREREQUISITE} "${tool} required"
@@ -162,9 +134,6 @@ do
     fi
 done
 
-UPSTREAM_REPOSITORY="${UPSTREAM_REPOSITORY:-google/libphonenumber}"
-NUGET_PACKAGE_ID="${NUGET_PACKAGE_ID:-libphonenumber-csharp}"
-NUGET_EXTENSIONS_PACKAGE_ID="${NUGET_EXTENSIONS_PACKAGE_ID:-${NUGET_PACKAGE_ID}.extensions}"
 GITHUB_ACTION_WORKING_DIRECTORY=$(pwd)
 
 # Which repository this run targets. Actions sets GITHUB_REPOSITORY for us; when
@@ -173,37 +142,20 @@ GITHUB_ACTION_WORKING_DIRECTORY=$(pwd)
 resolveRepository() {
     local url
 
-    if [ -n "${GITHUB_REPOSITORY:-}" ]
-    then
+    if [ -n "${GITHUB_REPOSITORY:-}" ]; then
         echo "${GITHUB_REPOSITORY}"
         return 0
     fi
 
-    url=$(git remote get-url origin 2> /dev/null || true)
+    url=$(git remote get-url origin 2>/dev/null || true)
     url="${url%.git}"
 
     case "${url}" in
-        *github.com[:/]*) echo "${url##*github.com}" | sed 's|^[:/]*||' ;;
+        *github.com[:/]*)
+            echo "${url##*github.com}" | sed 's|^[:/]*||'
+            ;;
         *) return 1 ;;
     esac
-}
-
-# Authenticated api calls, so the job is not subject to the unauthenticated rate
-# limit shared by every action runner on the same address. The header is built as
-# an array so the token stays a single argument, and is omitted entirely when
-# there is no token (dry runs only).
-GITHUB_AUTH_HEADER=()
-if [ -n "${GITHUB_TOKEN}" ]
-then
-    GITHUB_AUTH_HEADER=(-H "Authorization: Bearer ${GITHUB_TOKEN}")
-fi
-
-ghApi() {
-    curl --fail --silent --show-error --location --retry 3 --retry-delay 5 \
-        -H "Accept: application/vnd.github+json" \
-        -H "X-GitHub-Api-Version: 2022-11-28" \
-        ${GITHUB_AUTH_HEADER[@]+"${GITHUB_AUTH_HEADER[@]}"} \
-        "$@"
 }
 
 getLatestGitHubRelease() {
@@ -227,34 +179,7 @@ getReleaseDelta() {
     ghApi "https://api.github.com/repos/$1/compare/$2...$3"
 }
 
-# generate_release_notes appends the commit/PR changelog below the links.
-createRelease() {
-    jq -n --arg tag "$2" --arg version "${2#v}" --arg commit "$3" \
-        --arg pkg "${NUGET_PACKAGE_ID}" --arg ext "${NUGET_EXTENSIONS_PACKAGE_ID}" \
-        --arg upstream "${UPSTREAM_REPOSITORY}" '
-        {
-            tag_name: $tag,
-            name: $tag,
-            target_commitish: $commit,
-            generate_release_notes: true,
-            body: (
-                "[\($pkg) \($version)](https://www.nuget.org/packages/\($pkg)/\($version))"
-                + " · [\($ext) \($version)](https://www.nuget.org/packages/\($ext)/\($version))"
-                + " · [upstream \($tag)](https://github.com/\($upstream)/releases/tag/\($tag))"
-            )
-        }' \
-        | ghApi -X POST --data @- "https://api.github.com/repos/$1/releases" > /dev/null
-}
-
-# github suppresses push events from GITHUB_TOKEN, so ask for the publish run directly.
-dispatchPublish() {
-    jq -n --arg ref "$2" '{ref: $ref}' \
-        | ghApi -X POST --data @- \
-            "https://api.github.com/repos/$1/actions/workflows/${PUBLISH_WORKFLOW}/dispatches" > /dev/null
-}
-
-if [ -n "${UPSTREAM_TAG}" ]
-then
+if [ -n "${UPSTREAM_TAG}" ]; then
     UPSTREAM_GITHUB_RELEASE_TAG="${UPSTREAM_TAG}"
     log "${UPSTREAM_REPOSITORY} release overridden to ${UPSTREAM_GITHUB_RELEASE_TAG}"
 else
@@ -262,8 +187,7 @@ else
     log "${UPSTREAM_REPOSITORY} latest release is ${UPSTREAM_GITHUB_RELEASE_TAG}"
 fi
 
-if [ -n "${DEPLOYED_VERSION}" ]
-then
+if [ -n "${DEPLOYED_VERSION}" ]; then
     DEPLOYED_NUGET_TAG="${DEPLOYED_VERSION}"
     log "${NUGET_PACKAGE_ID} version overridden to ${DEPLOYED_NUGET_TAG}"
 else
@@ -271,27 +195,23 @@ else
     log "${NUGET_PACKAGE_ID} latest release is ${DEPLOYED_NUGET_TAG}"
 fi
 
-if [[ ! "${UPSTREAM_GITHUB_RELEASE_TAG}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
-then
+if [[ ! "${UPSTREAM_GITHUB_RELEASE_TAG}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     fail 1 "unexpected upstream release tag: ${UPSTREAM_GITHUB_RELEASE_TAG}"
 fi
 
-if [[ ! "${DEPLOYED_NUGET_TAG}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
-then
+if [[ ! "${DEPLOYED_NUGET_TAG}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     fail 1 "unexpected deployed nuget version: ${DEPLOYED_NUGET_TAG}"
 fi
 
 UPSTREAM_VERSION="${UPSTREAM_GITHUB_RELEASE_TAG#v}"
 UPSTREAM_MAJOR_VERSION="${UPSTREAM_VERSION%%.*}"
 
-if [ "${UPSTREAM_MAJOR_VERSION}" != "${EXPECTED_MAJOR_VERSION}" ]
-then
+if [ "${UPSTREAM_MAJOR_VERSION}" != "${EXPECTED_MAJOR_VERSION}" ]; then
     fail ${EXIT_NEEDS_ATTENTION} \
         "major version update: upstream is ${UPSTREAM_GITHUB_RELEASE_TAG}, this port tracks ${EXPECTED_MAJOR_VERSION}.x"
 fi
 
-if [ "${DEPLOYED_NUGET_TAG}" = "${UPSTREAM_VERSION}" ]
-then
+if [ "${DEPLOYED_NUGET_TAG}" = "${UPSTREAM_VERSION}" ]; then
     log "versions match, new release not required"
     exit 0
 fi
@@ -299,8 +219,7 @@ fi
 # Nothing to do when the published package is already ahead of upstream, which
 # happens after a C# only patch release.
 OLDEST_VERSION=$(printf '%s\n%s\n' "${UPSTREAM_VERSION}" "${DEPLOYED_NUGET_TAG}" | sort -V | head -n 1)
-if [ "${OLDEST_VERSION}" = "${UPSTREAM_VERSION}" ]
-then
+if [ "${OLDEST_VERSION}" = "${UPSTREAM_VERSION}" ]; then
     log "deployed version ${DEPLOYED_NUGET_TAG} is ahead of upstream ${UPSTREAM_VERSION}, new release not required"
     exit 0
 fi
@@ -309,39 +228,47 @@ fi
 # it is the one that has to be on a clean main.
 cd "${GITHUB_ACTION_WORKING_DIRECTORY}"
 
-if [ ! -d resources ] || [ ! -f lib/DumpLocale.java ]
-then
+if [ ! -d resources ] || [ ! -f lib/DumpLocale.java ]; then
     fail 1 "must be run from the root of the repository (no resources/ and lib/DumpLocale.java here)"
 fi
 
 GITHUB_REPOSITORY=$(resolveRepository) \
     || fail 1 "could not determine the target repository, set GITHUB_REPOSITORY to owner/name"
 
-if [[ ! "${GITHUB_REPOSITORY}" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]]
-then
+if [[ ! "${GITHUB_REPOSITORY}" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]]; then
     fail 1 "unexpected target repository: ${GITHUB_REPOSITORY}"
 fi
 
 log "target repository is ${GITHUB_REPOSITORY}"
 
+BRANCH="metadata-update/${UPSTREAM_GITHUB_RELEASE_TAG}"
+
+# A later scheduled run can fire before an earlier PR for the same tag has merged (checks
+# take a few minutes) - without this it would open a second, duplicate PR every time.
+if ! isTrue "${DRY_RUN}"; then
+    EXISTING_PR_COUNT=$(ghApi "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls?state=open&head=${GITHUB_REPOSITORY%%/*}:${BRANCH}" \
+        | jq -er 'length')
+    if [ "${EXISTING_PR_COUNT}" -gt 0 ]; then
+        log "a PR for ${UPSTREAM_GITHUB_RELEASE_TAG} is already open, nothing to do"
+        exit 0
+    fi
+fi
+
 # A dry run changes nothing, so neither of these is dangerous there - downgrade
 # them to warnings so the pipeline can be exercised from a feature branch.
 requireRepositoryState() {
-    if isTrue "${DRY_RUN}"
-    then
+    if isTrue "${DRY_RUN}"; then
         warn "$1 (ignored for the dry run)"
     else
         fail 1 "$1"
     fi
 }
 
-if [ "$(git branch --show-current)" != "main" ]
-then
+if [ "$(git branch --show-current)" != "main" ]; then
     requireRepositoryState "must be on main branch"
 fi
 
-if [ -n "$(git status --porcelain)" ]
-then
+if [ -n "$(git status --porcelain)" ]; then
     requireRepositoryState "working directory is not clean"
 fi
 
@@ -352,26 +279,22 @@ cleanup() {
 trap cleanup EXIT
 
 COMPARE_JSON=$(getReleaseDelta "${UPSTREAM_REPOSITORY}" "v${DEPLOYED_NUGET_TAG}" "${UPSTREAM_GITHUB_RELEASE_TAG}")
-FILES=$(jq -er '.files // error("compare response contains no file list") | .[].filename' <<< "${COMPARE_JSON}")
+FILES=$(jq -er '.files // error("compare response contains no file list") | .[].filename' <<<"${COMPARE_JSON}")
 
-if [ -z "${FILES}" ]
-then
+if [ -z "${FILES}" ]; then
     fail 1 "no changed files reported between v${DEPLOYED_NUGET_TAG} and ${UPSTREAM_GITHUB_RELEASE_TAG}"
 fi
 
 # The compare api returns at most 300 files, so the checks below can miss changes
 # in a very large release.
-if [ "$(jq -r '.files | length' <<< "${COMPARE_JSON}")" -ge 300 ]
-then
+if [ "$(jq -r '.files | length' <<<"${COMPARE_JSON}")" -ge 300 ]; then
     warn "the compare api returned the maximum of 300 files, the change list may be truncated"
 fi
 
-JAVA_FILES=$(grep -E '\.java$' <<< "${FILES}" || true)
-if [ -n "${JAVA_FILES}" ]
-then
+JAVA_FILES=$(grep -E '\.java$' <<<"${FILES}" || true)
+if [ -n "${JAVA_FILES}" ]; then
     printf 'upstream diff contains java files:\n%s\n' "${JAVA_FILES}"
-    if isTrue "${SKIP_JAVA_CHECK}"
-    then
+    if isTrue "${SKIP_JAVA_CHECK}"; then
         warn "continuing anyway because --skip-java-check / SKIP_JAVA_CHECK is set"
     else
         fail ${EXIT_NEEDS_ATTENTION} \
@@ -379,12 +302,10 @@ then
     fi
 fi
 
-PROTO_FILES=$(grep -E '\.proto$' <<< "${FILES}" || true)
-if [ -n "${PROTO_FILES}" ]
-then
+PROTO_FILES=$(grep -E '\.proto$' <<<"${FILES}" || true)
+if [ -n "${PROTO_FILES}" ]; then
     printf 'upstream diff contains proto files:\n%s\n' "${PROTO_FILES}"
-    if isTrue "${SKIP_PROTO_CHECK}"
-    then
+    if isTrue "${SKIP_PROTO_CHECK}"; then
         warn "continuing anyway because --skip-proto-check / SKIP_PROTO_CHECK is set"
     else
         fail ${EXIT_NEEDS_ATTENTION} \
@@ -398,22 +319,19 @@ git -c advice.detachedHead=false clone --quiet --depth 1 --branch "${UPSTREAM_GI
     "https://github.com/${UPSTREAM_REPOSITORY}.git" "${WORK_DIR}/libphonenumber"
 
 UPSTREAM_RESOURCES="${WORK_DIR}/libphonenumber/resources"
-if [ -z "$(ls -A "${UPSTREAM_RESOURCES}" 2> /dev/null)" ]
-then
+if [ -z "$(ls -A "${UPSTREAM_RESOURCES}" 2>/dev/null)" ]; then
     fail 1 "upstream resources directory is missing or empty"
 fi
 
 # Everything past this point writes to the working tree or to github.
-if isTrue "${DRY_RUN}"
-then
+if isTrue "${DRY_RUN}"; then
     log ""
     log "dry run complete, a real run would now:"
     log "  - replace ${GITHUB_ACTION_WORKING_DIRECTORY}/resources with $(find "${UPSTREAM_RESOURCES}" -type f | wc -l | tr -d ' ') files from ${UPSTREAM_GITHUB_RELEASE_TAG}"
     log "  - regenerate resources/locale/country_names.txt with $(java -version 2>&1 | head -n 1 || echo 'the local jdk')"
-    log "  - run dotnet restore, build and test (${TEST_TARGET_FRAMEWORK})"
-    log "  - commit \"feat: automatic upgrade to ${UPSTREAM_GITHUB_RELEASE_TAG}\" and push to main"
-    log "  - create release ${UPSTREAM_GITHUB_RELEASE_TAG} in ${GITHUB_REPOSITORY}"
-    log "  - dispatch ${PUBLISH_WORKFLOW} against ${UPSTREAM_GITHUB_RELEASE_TAG} to publish to nuget"
+    log "  - commit \"feat: automatic upgrade to ${UPSTREAM_GITHUB_RELEASE_TAG}\" on ${BRANCH} and push it"
+    log "  - open a PR from ${BRANCH} into main and enable auto-merge"
+    log "  - once that PR's required checks pass and it merges, finalize-metadata-release.sh creates release ${UPSTREAM_GITHUB_RELEASE_TAG} and dispatches ${PUBLISH_WORKFLOW}"
     exit 0
 fi
 
@@ -428,10 +346,9 @@ cp -r "${UPSTREAM_RESOURCES}/." "${GITHUB_ACTION_WORKING_DIRECTORY}/resources/"
 # local jdk rather than copied from upstream.
 cd "${GITHUB_ACTION_WORKING_DIRECTORY}/lib"
 javac -d "${WORK_DIR}/classes" DumpLocale.java
-java -cp "${WORK_DIR}/classes" DumpLocale > "${WORK_DIR}/country_names.txt"
+java -cp "${WORK_DIR}/classes" DumpLocale >"${WORK_DIR}/country_names.txt"
 
-if [ ! -s "${WORK_DIR}/country_names.txt" ]
-then
+if [ ! -s "${WORK_DIR}/country_names.txt" ]; then
     fail 1 "DumpLocale produced no output"
 fi
 
@@ -439,28 +356,48 @@ mkdir -p "${GITHUB_ACTION_WORKING_DIRECTORY}/resources/locale"
 mv "${WORK_DIR}/country_names.txt" "${GITHUB_ACTION_WORKING_DIRECTORY}/resources/locale/country_names.txt"
 
 cd "${GITHUB_ACTION_WORKING_DIRECTORY}"
-if [ -z "$(git status --porcelain)" ]
-then
+if [ -z "$(git status --porcelain)" ]; then
     log "no changes after metadata sync, new release not required"
     exit 0
 fi
 
-# Ensure project builds and passes tests before committing
-cd "${GITHUB_ACTION_WORKING_DIRECTORY}/csharp"
-dotnet restore
-dotnet build --no-restore
-dotnet test --no-build --verbosity normal "-p:TargetFrameworks=${TEST_TARGET_FRAMEWORK}"
-
-cd "${GITHUB_ACTION_WORKING_DIRECTORY}"
+git checkout -b "${BRANCH}"
 git add -A
 git -c user.email='<>' -c user.name='libphonenumber-csharp-bot' \
     commit -m "feat: automatic upgrade to ${UPSTREAM_GITHUB_RELEASE_TAG}"
-git push
 
-# Tag the commit just pushed, not whatever main's head is by the time github answers.
-RELEASE_COMMIT=$(git rev-parse HEAD)
-createRelease "${GITHUB_REPOSITORY}" "${UPSTREAM_GITHUB_RELEASE_TAG}" "${RELEASE_COMMIT}"
-log "created release ${UPSTREAM_GITHUB_RELEASE_TAG} at ${RELEASE_COMMIT}"
+# Force is safe: this branch exists only for this automation's own PRs, nothing else ever
+# develops on it, and a stale remote copy from an earlier failed/closed attempt (the duplicate
+# check above only rules out an *open* PR) should not block a fresh retry.
+git push --force origin "HEAD:refs/heads/${BRANCH}"
 
-dispatchPublish "${GITHUB_REPOSITORY}" "${UPSTREAM_GITHUB_RELEASE_TAG}"
-log "dispatched ${PUBLISH_WORKFLOW} for ${UPSTREAM_GITHUB_RELEASE_TAG}"
+PR_BODY=$(cat <<EOF
+Syncs \`resources/\` from [${UPSTREAM_REPOSITORY} ${UPSTREAM_GITHUB_RELEASE_TAG}](https://github.com/${UPSTREAM_REPOSITORY}/releases/tag/${UPSTREAM_GITHUB_RELEASE_TAG}) and regenerates \`resources/locale/country_names.txt\`.
+
+Auto-merges once the required checks pass. On merge, [finalize_metadata_release.yml](.github/workflows/finalize_metadata_release.yml) tags the merge commit, creates the GitHub release, and dispatches the NuGet publish.
+EOF
+)
+
+PR_RESPONSE=$(jq -n --arg title "feat: automatic upgrade to ${UPSTREAM_GITHUB_RELEASE_TAG}" \
+    --arg head "${BRANCH}" --arg base "main" --arg body "${PR_BODY}" \
+    '{title: $title, head: $head, base: $base, body: $body}' \
+    | ghApi -X POST --data @- "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls")
+
+PR_NUMBER=$(jq -er '.number' <<<"${PR_RESPONSE}")
+PR_NODE_ID=$(jq -er '.node_id' <<<"${PR_RESPONSE}")
+log "opened PR #${PR_NUMBER} for ${UPSTREAM_GITHUB_RELEASE_TAG}"
+
+# GraphQL errors come back as HTTP 200 with an "errors" field, so --fail above will not
+# catch this - check the body instead. Failing to enable auto-merge (e.g. the repository
+# setting for it is off) is not fatal: the PR is still valid, it just needs a manual merge
+# once checks pass.
+AUTOMERGE_RESPONSE=$(jq -n --arg id "${PR_NODE_ID}" \
+    '{query: "mutation($id: ID!) { enablePullRequestAutoMerge(input: {pullRequestId: $id, mergeMethod: MERGE}) { clientMutationId } }", variables: {id: $id}}' \
+    | ghApi -X POST --data @- "https://api.github.com/graphql")
+
+if jq -e '.errors' <<<"${AUTOMERGE_RESPONSE}" >/dev/null 2>&1; then
+    warn "could not enable auto-merge on PR #${PR_NUMBER}: $(jq -r '.errors[0].message' <<<"${AUTOMERGE_RESPONSE}")"
+    warn "the PR was opened but will need a manual merge once its checks pass"
+else
+    log "enabled auto-merge on PR #${PR_NUMBER}"
+fi
