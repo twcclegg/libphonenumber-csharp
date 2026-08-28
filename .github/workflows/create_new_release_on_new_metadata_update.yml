@@ -30,17 +30,22 @@ permissions:
 jobs:
   create_new_release_on_new_metadata_update:
     runs-on: ubuntu-latest
-    # Elevated above the read-only default at the job rather than the file level, so a
-    # workflow-wide write token is never minted. The update script pushes a commit to a
-    # metadata-update/* branch and opens a PR against main via GITHUB_TOKEN; pull-requests:
-    # write also covers enabling auto-merge on it. Tagging, releasing and dispatching the
-    # NuGet publish happen later, once that PR merges - see finalize_metadata_release.yml.
+    # No elevation needed here: the push and the PR (contents + pull-requests writes) both
+    # authenticate as BOT_ACCESS_TOKEN below, not as GITHUB_TOKEN. A PR opened with
+    # GITHUB_TOKEN needs a maintainer to click "Approve and run" before its checks execute
+    # (GitHub added this for bot-authored PRs in June 2026), which would break unattended
+    # auto-merge - a PAT from a dedicated bot account doesn't hit that gate. Tagging,
+    # releasing and dispatching the NuGet publish happen later, once that PR merges - see
+    # finalize_metadata_release.yml, which still uses GITHUB_TOKEN since it isn't opening a
+    # PR and so was never subject to the approval gate.
     permissions:
-      contents: write
-      pull-requests: write
+      contents: read
     steps:
-      # Credentials are persisted on purpose: the update script pushes through this checkout.
+      # token is the bot's PAT, not the default GITHUB_TOKEN, so the commit this pushes
+      # authenticates as the bot account - see the permissions comment above.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          token: ${{ secrets.BOT_ACCESS_TOKEN }}
       - name: Setup .NET
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v5
         with:
@@ -61,7 +66,7 @@ jobs:
         run: |
           bash lib/github-actions-metadata-update.sh
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.BOT_ACCESS_TOKEN }}
           SKIP_JAVA_CHECK: ${{ inputs.skip_java_check || false }}
           SKIP_PROTO_CHECK: ${{ inputs.skip_proto_check || false }}
           DRY_RUN: ${{ inputs.dry_run || false }}
