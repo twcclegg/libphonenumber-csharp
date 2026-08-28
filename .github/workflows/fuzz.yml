@@ -32,7 +32,12 @@ jobs:
       # doesn't make libFuzzer stop later - it makes the runner hard-cancel the job instead, which
       # skips the "Upload crashes" step (it only runs `if: failure()`, not on a cancelled job) and
       # loses whatever crash was found.
-      DURATION: ${{ min(fromJSON(github.event.inputs.duration || '900'), 3000) }}
+      #
+      # GitHub Actions expressions have no min()/max() - this is the documented ternary substitute
+      # (cond && then || else). A real min() call here fails every run at workflow-parse time with
+      # zero jobs created ("Unrecognized function: 'min'"), which is what happened from the commit
+      # that introduced it until this fix.
+      DURATION: ${{ (fromJSON(github.event.inputs.duration || '900') < 3000) && (github.event.inputs.duration || '900') || 3000 }}
       PUBLISH_DIR: fuzz-out
       CORPUS_DIR: csharp/PhoneNumbers.Fuzz/corpus
     steps:
