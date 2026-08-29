@@ -329,6 +329,7 @@ if isTrue "${DRY_RUN}"; then
     log "dry run complete, a real run would now:"
     log "  - replace ${GITHUB_ACTION_WORKING_DIRECTORY}/resources with $(find "${UPSTREAM_RESOURCES}" -type f | wc -l | tr -d ' ') files from ${UPSTREAM_GITHUB_RELEASE_TAG}"
     log "  - regenerate resources/locale/country_names.txt with $(java -version 2>&1 | head -n 1 || echo 'the local jdk')"
+    log "  - add a CHANGELOG.md entry for ${UPSTREAM_GITHUB_RELEASE_TAG}"
     log "  - commit \"feat: automatic upgrade to ${UPSTREAM_GITHUB_RELEASE_TAG}\" on ${BRANCH} and push it"
     log "  - open a PR from ${BRANCH} into main and enable auto-merge"
     log "  - once that PR's required checks pass and it merges, finalize-metadata-release.sh creates release ${UPSTREAM_GITHUB_RELEASE_TAG} and dispatches ${PUBLISH_WORKFLOW}"
@@ -361,6 +362,33 @@ if [ -z "$(git status --porcelain)" ]; then
     exit 0
 fi
 
+# Record this release in CHANGELOG.md in the same commit as the metadata sync, rather than as a
+# separate PR once the tag exists: the version number is already known here (it's
+# UPSTREAM_GITHUB_RELEASE_TAG itself - this port tracks upstream's version 1:1), so there is
+# nothing to guess. The finalize step (finalize-metadata-release.sh) only tags and releases an
+# existing commit; it can't push a follow-up commit of its own; main's branch-protection ruleset
+# requires a PR for every push, with no bypass for any actor, including this automation's own
+# bot account - the same reason this script opens a PR instead of pushing directly (see the
+# file-level comment above). Doing it here keeps everything in the one PR that already goes
+# through that ruleset.
+CHANGELOG_FILE="${GITHUB_ACTION_WORKING_DIRECTORY}/CHANGELOG.md"
+CHANGELOG_MARKER='<!-- next-entry -->'
+if [ -f "${CHANGELOG_FILE}" ] && grep -qF "${CHANGELOG_MARKER}" "${CHANGELOG_FILE}"; then
+    CHANGELOG_ENTRY_FILE="${WORK_DIR}/changelog-entry.md"
+    cat >"${CHANGELOG_ENTRY_FILE}" <<EOF
+
+## [${UPSTREAM_GITHUB_RELEASE_TAG}](https://github.com/${GITHUB_REPOSITORY}/compare/v${DEPLOYED_NUGET_TAG}...${UPSTREAM_GITHUB_RELEASE_TAG}) - $(date -u +%F)
+
+Metadata update to upstream [libphonenumber ${UPSTREAM_GITHUB_RELEASE_TAG}](https://github.com/${UPSTREAM_REPOSITORY}/releases/tag/${UPSTREAM_GITHUB_RELEASE_TAG}).
+EOF
+    # -i.bak rather than bare -i: BSD/macOS sed requires the (possibly empty) backup suffix
+    # argument that GNU sed treats as optional, so this is the one spelling both accept.
+    sed -i.bak -e "/${CHANGELOG_MARKER}/r ${CHANGELOG_ENTRY_FILE}" "${CHANGELOG_FILE}"
+    rm -f "${CHANGELOG_FILE}.bak"
+else
+    warn "CHANGELOG.md missing or missing the '${CHANGELOG_MARKER}' marker, skipping changelog update"
+fi
+
 git checkout -b "${BRANCH}"
 git add -A
 git -c user.email='<>' -c user.name='libphonenumber-csharp-bot' \
@@ -372,7 +400,7 @@ git -c user.email='<>' -c user.name='libphonenumber-csharp-bot' \
 git push --force origin "HEAD:refs/heads/${BRANCH}"
 
 PR_BODY=$(cat <<EOF
-Syncs \`resources/\` from [${UPSTREAM_REPOSITORY} ${UPSTREAM_GITHUB_RELEASE_TAG}](https://github.com/${UPSTREAM_REPOSITORY}/releases/tag/${UPSTREAM_GITHUB_RELEASE_TAG}) and regenerates \`resources/locale/country_names.txt\`.
+Syncs \`resources/\` from [${UPSTREAM_REPOSITORY} ${UPSTREAM_GITHUB_RELEASE_TAG}](https://github.com/${UPSTREAM_REPOSITORY}/releases/tag/${UPSTREAM_GITHUB_RELEASE_TAG}), regenerates \`resources/locale/country_names.txt\`, and records the release in \`CHANGELOG.md\`.
 
 Auto-merges once the required checks pass. On merge, [finalize_metadata_release.yml](.github/workflows/finalize_metadata_release.yml) tags the merge commit, creates the GitHub release, and dispatches the NuGet publish.
 EOF
