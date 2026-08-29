@@ -23,12 +23,37 @@ namespace PhoneNumbers.PerformanceTest.Benchmarks
         // payload size is representative of the average region rather than an outlier like US/CN.
         private const string TargetRegion = "CH";
 
+        // Fixed, hardcoded (region, E164 number) pairs for FirstUseValidateAndFormat -- deliberately
+        // NOT derived via GetExampleNumberForType/IsValidNumber/Format at setup time, because calling
+        // those would itself compile and cache that region's regex patterns before the timed run
+        // starts (PhoneRegex's pattern cache is a static, process-wide ConcurrentDictionary -- see
+        // PhoneRegex.cs -- so anything touched in GlobalSetup, or on an earlier iteration of this same
+        // benchmark, is no longer "cold" for the rest of the process). One region per iteration, 20
+        // iterations, 20 distinct regions: nothing here overlaps TargetRegion or anything Setup()
+        // touches, and each entry is used at most once per benchmark run.
+        private static readonly PhoneNumberBenchmarkCase[] FirstUseRegions =
+        {
+            new("+1 6502530000", "US"), new("+442079460958", "GB"), new("+493083050", "DE"),
+            new("+33142685300", "FR"), new("+81332245000", "JP"), new("+861065525566", "CN"),
+            new("+911123014000", "IN"), new("+551122222222", "BR"), new("+61261621111", "AU"),
+            new("+74951234567", "RU"), new("+525512345678", "MX"), new("+27111234567", "ZA"),
+            new("+82212345678", "KR"), new("+390612345678", "IT"), new("+34912345678", "ES"),
+            new("+31201234567", "NL"), new("+46812345678", "SE"), new("+41441234567", "CH"),
+            new("+639171234567", "PH"), new("+842812345678", "VN"),
+        };
+
+        // Advances once per FirstUseValidateAndFormat call, so BenchmarkDotNet's 20 iterations walk
+        // FirstUseRegions in order without repeats -- each iteration genuinely first-touches a region
+        // no earlier iteration in this process has seen.
+        private int _firstUseIndex;
+
         [GlobalSetup]
         public void Setup()
         {
             // Force JIT of the metadata-loading path so we measure steady-state cold-start cost
             // rather than first-ever-invocation JIT noise. We deliberately use a different region
-            // than TargetRegion so the per-region cache stays cold for that one in FirstRegionLookup.
+            // than TargetRegion (and never touch anything in FirstUseRegions) so those caches stay
+            // cold for the benchmarks that measure them.
             _warmInstance = PhoneNumberUtil.GetInstance();
             _supportedRegions = new string[_warmInstance.GetSupportedRegions().Count];
             _warmInstance.GetSupportedRegions().CopyTo(_supportedRegions);
@@ -79,6 +104,44 @@ namespace PhoneNumbers.PerformanceTest.Benchmarks
                 new EmbeddedResourceMetadataLoader(),
                 CountryCodeToRegionCodeMap.GetCountryCodeToRegionCodeMap());
             return util.GetMetadataForRegion(TargetRegion);
+        }
+
+        /// <summary>
+        /// The other three benchmarks in this class only measure metadata *loading*
+        /// (<see cref="PhoneNumberUtil.GetMetadataForRegion"/>) -- not Parse, IsValidNumber, or
+        /// Format. Metadata loading is not where a per-region cold cost actually lives: it's
+        /// consistently sub-millisecond after the first call in this class (see
+        /// <see cref="FirstRegionLookup"/>). The expensive part is each region's *first* use of the
+        /// validation and formatting regex patterns cached by <see cref="PhoneRegex"/> -- a
+        /// process-wide, pattern-keyed cache that a fresh <see cref="PhoneNumberUtil"/> instance does
+        /// not reset. A region visited for the first time anywhere in this process pays the regex
+        /// JIT-compile cost (dozens of ms, not microseconds, when
+        /// <see cref="InternalRegexOptions.Default"/> includes <c>RegexOptions.Compiled</c>); a
+        /// region visited again anywhere in the process, even years later against a brand-new
+        /// PhoneNumberUtil, is already warm.
+        ///
+        /// This is the specific shape of cost this class was missing: it only shows up across many
+        /// *distinct, never-before-touched* regions, which is why the existing benchmarks here
+        /// (single-region, metadata-only) and <see cref="PhoneNumberWorkflowBenchmark"/> (diverse
+        /// regions, but pre-warmed in GlobalSetup before the timed run) both miss it. See the "regex
+        /// cache" and "cold start" sections of README.md for the two real regressions this exact gap
+        /// let through unnoticed for years.
+        /// </summary>
+        [Benchmark]
+        public int FirstUseValidateAndFormat()
+        {
+            var region = FirstUseRegions[_firstUseIndex % FirstUseRegions.Length];
+            _firstUseIndex++;
+
+            var util = new PhoneNumberUtil(
+                new EmbeddedResourceMetadataLoader(),
+                CountryCodeToRegionCodeMap.GetCountryCodeToRegionCodeMap());
+
+            var number = util.Parse(region.NumberToParse, region.DefaultRegion);
+            var checksum = util.IsValidNumber(number) ? 1 : 0;
+            checksum += util.Format(number, PhoneNumberFormat.NATIONAL).Length;
+            checksum += util.Format(number, PhoneNumberFormat.E164).Length;
+            return checksum;
         }
     }
 }
