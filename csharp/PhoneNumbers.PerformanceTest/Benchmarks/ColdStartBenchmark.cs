@@ -42,10 +42,51 @@ namespace PhoneNumbers.PerformanceTest.Benchmarks
             new("+639171234567", "PH"), new("+842812345678", "VN"),
         };
 
-        // Advances once per FirstUseValidateAndFormat call, so BenchmarkDotNet's 20 iterations walk
-        // FirstUseRegions in order without repeats -- each iteration genuinely first-touches a region
-        // no earlier iteration in this process has seen.
+        // Same reasoning as FirstUseRegions, for AsYouTypeFormatter, PhoneNumberMatcher, and
+        // PhoneNumberOfflineGeocoder respectively -- each pool is disjoint from FirstUseRegions AND
+        // from every other pool below, since all benchmark classes in this project run inside one
+        // BenchmarkDotNet process: a region touched by one class's cold-start benchmark is no longer
+        // cold for another class's, if they overlap. Numbers generated via
+        // GetExampleNumberForType/Format(E164) against an ad hoc instance outside this project, then
+        // hardcoded here -- the same reason FirstUseRegions doesn't derive them at Setup time applies.
+        private static readonly PhoneNumberBenchmarkCase[] FirstUseAsYouTypeRegions =
+        {
+            new("+48123456789", "PL"), new("+902123456789", "TR"), new("+6621234567", "TH"),
+            new("+62218350123", "ID"), new("+60323856789", "MY"), new("+6561234567", "SG"),
+            new("+2342033123456", "NG"), new("+254202012345", "KE"), new("+20234567890", "EG"),
+            new("+966112345678", "SA"), new("+97122345678", "AE"), new("+922123456789", "PK"),
+            new("+88027111234", "BD"), new("+380311234567", "UA"), new("+302123456789", "GR"),
+        };
+
+        private static readonly PhoneNumberBenchmarkCase[] FirstUseMatcherRegions =
+        {
+            new("+15062345678", "CA"), new("+541123456789", "AR"), new("+576012345678", "CO"),
+            new("+5111234567", "PE"), new("+56600123456", "CL"), new("+582121234567", "VE"),
+            new("+59322123456", "EC"), new("+59821231234", "UY"), new("+595212345678", "PY"),
+            new("+59122123456", "BO"), new("+351212345678", "PT"), new("+3212345678", "BE"),
+            new("+431234567890", "AT"), new("+4532123456", "DK"), new("+4721234567", "NO"),
+        };
+
+        private static readonly PhoneNumberBenchmarkCase[] FirstUseGeocoderRegions =
+        {
+            new("+420212345678", "CZ"), new("+3612345678", "HU"), new("+40211234567", "RO"),
+            new("+358131234567", "FI"), new("+3532212345", "IE"), new("+6432345678", "NZ"),
+            new("+97221234567", "IL"), new("+85221234567", "HK"), new("+886221234567", "TW"),
+            new("+85328212345", "MO"), new("+97444123456", "QA"), new("+96522345678", "KW"),
+            new("+212520123456", "MA"), new("+21312345678", "DZ"), new("+21630010123", "TN"),
+        };
+
+        // The private constant PhoneNumberOfflineGeocoder.GetInstance() passes its own constructor --
+        // duplicated here since it's private, not internal, so InternalsVisibleTo doesn't reach it.
+        private const string GeocodingDataDirectory = "geocoding.";
+
+        // Advances once per call to the matching FirstUse* benchmark below, so BenchmarkDotNet's 20
+        // iterations walk each pool in order without repeats -- each iteration genuinely first-touches
+        // a region no earlier iteration, in any of these benchmarks, has seen in this process.
         private int _firstUseIndex;
+        private int _firstUseAsYouTypeIndex;
+        private int _firstUseMatcherIndex;
+        private int _firstUseGeocoderIndex;
 
         [GlobalSetup]
         public void Setup()
@@ -142,6 +183,79 @@ namespace PhoneNumbers.PerformanceTest.Benchmarks
             checksum += util.Format(number, PhoneNumberFormat.NATIONAL).Length;
             checksum += util.Format(number, PhoneNumberFormat.E164).Length;
             return checksum;
+        }
+
+        /// <summary>
+        /// Same gap as <see cref="FirstUseValidateAndFormat"/>, for <see cref="AsYouTypeFormatter"/>.
+        /// <see cref="AsYouTypeFormatterBenchmark"/> warms every region's formatter in GlobalSetup
+        /// before its timed loop starts, so it cannot see this cost either. A fresh formatter is
+        /// still built against the shared <see cref="_warmInstance"/> here (matching how a real
+        /// caller would use <see cref="PhoneNumberUtil.GetInstance"/>) -- what's cold is only the
+        /// region's pattern, on a region <see cref="FirstUseAsYouTypeRegions"/> guarantees no other
+        /// benchmark in this process has touched.
+        /// </summary>
+        [Benchmark]
+        public int FirstUseAsYouType()
+        {
+            var region = FirstUseAsYouTypeRegions[_firstUseAsYouTypeIndex % FirstUseAsYouTypeRegions.Length];
+            _firstUseAsYouTypeIndex++;
+
+            var formatter = _warmInstance.GetAsYouTypeFormatter(region.DefaultRegion);
+            var checksum = 0;
+            var input = region.NumberToParse;
+            for (var c = 0; c < input.Length; c++)
+                checksum += formatter.InputDigit(input[c]).Length;
+            return checksum;
+        }
+
+        /// <summary>
+        /// Same gap as <see cref="FirstUseValidateAndFormat"/>, for <see cref="PhoneNumberUtil.FindNumbers"/>
+        /// (backed by <see cref="PhoneNumberMatcher"/>). <see cref="PhoneNumberMatcherBenchmark"/> warms
+        /// its one fixed default region in GlobalSetup; here each invocation searches text for a number
+        /// from a region <see cref="FirstUseMatcherRegions"/> guarantees is still cold.
+        /// </summary>
+        [Benchmark]
+        public int FirstUseFindNumbers()
+        {
+            var region = FirstUseMatcherRegions[_firstUseMatcherIndex % FirstUseMatcherRegions.Length];
+            _firstUseMatcherIndex++;
+
+            var util = new PhoneNumberUtil(
+                new EmbeddedResourceMetadataLoader(),
+                CountryCodeToRegionCodeMap.GetCountryCodeToRegionCodeMap());
+
+            var text = $"Call me at {region.NumberToParse} tomorrow.";
+            var checksum = 0;
+            foreach (var match in util.FindNumbers(text, region.DefaultRegion))
+                checksum += match.RawString.Length;
+            return checksum;
+        }
+
+        /// <summary>
+        /// Same gap as <see cref="FirstUseValidateAndFormat"/>, for
+        /// <see cref="PhoneNumberOfflineGeocoder"/>. Architecturally distinct from the other
+        /// FirstUse* benchmarks -- the geocoder's per-region cost is a lazily-loaded prefix map
+        /// (<see cref="PrefixFileReader"/>'s <c>ConcurrentDictionary&lt;string, Lazy&lt;AreaCodeMap&gt;&gt;</c>),
+        /// not a <see cref="PhoneRegex"/> pattern compile -- but it shares the same structural blind
+        /// spot: <see cref="PhoneNumberOfflineGeocoderBenchmark"/> explicitly warms every prefix map
+        /// in GlobalSetup before its timed loop starts. Included for symmetry/completeness across the
+        /// library's other region-keyed subsystems, using the internal constructor (see
+        /// <c>InternalsVisibleTo</c> in Util.cs) so each invocation gets a geocoder whose prefix-map
+        /// cache has never seen <see cref="FirstUseGeocoderRegions"/>.
+        /// </summary>
+        [Benchmark]
+        public int FirstUseGeocode()
+        {
+            var region = FirstUseGeocoderRegions[_firstUseGeocoderIndex % FirstUseGeocoderRegions.Length];
+            _firstUseGeocoderIndex++;
+
+            var util = new PhoneNumberUtil(
+                new EmbeddedResourceMetadataLoader(),
+                CountryCodeToRegionCodeMap.GetCountryCodeToRegionCodeMap());
+            var geocoder = new PhoneNumberOfflineGeocoder(GeocodingDataDirectory);
+
+            var number = util.Parse(region.NumberToParse, region.DefaultRegion);
+            return geocoder.GetDescriptionForNumber(number, Locale.English).Length;
         }
     }
 }
