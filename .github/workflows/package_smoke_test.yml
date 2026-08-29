@@ -1,0 +1,138 @@
+name: package_smoke_test
+
+# End-to-end validation of the *published* NuGet packages, not the in-repo source: restores
+# libphonenumber-csharp and libphonenumber-csharp.extensions from nuget.org the way a real consumer
+# would (see csharp/PhoneNumbers.PackageSmokeTest/), then exercises both a normal managed run and a
+# Native AOT publish-and-execute. PhoneNumbers.csproj's own IsAotCompatible setting only catches
+# static trim/AOT analyzer warnings at library-build time - it never restores a packed .nupkg or
+# runs a published executable, so it cannot catch a problem in the packed output itself or one that
+# only surfaces once a consumer's own code is compiled/AOT-analyzed against the library's public
+# surface. See csharp/PhoneNumbers.PackageSmokeTest/README.md for what the checks cover and why.
+#
+# Runs automatically after a successful publish_nuget (tag-triggered release), and on demand via
+# workflow_dispatch against any version already on nuget.org - which is also how this workflow was
+# validated before being merged (see the PR description for the run that proved it against 9.0.38).
+
+on:
+  workflow_run:
+    workflows: [ "publish_nuget" ]
+    types: [ completed ]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Package version to test (must already be published on nuget.org), e.g. 9.0.38'
+        required: true
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.inputs.version || github.event.workflow_run.head_branch }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  package_smoke_test:
+    # workflow_run fires on every conclusion (success, failure, cancelled) - only act on success.
+    # A workflow_dispatch run has no `workflow_run` context at all, so it is unaffected by this.
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: 10.x
+
+      # Manual dispatch names the version directly. A workflow_run only gives us the triggering
+      # run's branch/tag: publish_nuget.yml is fired either by a vX.Y.Z tag push (the normal case)
+      # or by dispatching it directly against such a tag to retry a failed publish (see the comment
+      # in publish_nuget.yml) - in both cases head_branch is the tag name. Anything else (e.g. someone
+      # dispatches publish_nuget from a branch) has no version to derive, so skip rather than guess.
+      - name: Resolve version to test
+        id: resolve_version
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]
+          then
+            version="${{ github.event.inputs.version }}"
+          else
+            tag="${{ github.event.workflow_run.head_branch }}"
+            if [[ ! "${tag}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+            then
+              echo "publish_nuget run was not for a vX.Y.Z tag (head_branch='${tag}'); nothing to test." \
+                | tee -a "${GITHUB_STEP_SUMMARY}"
+              echo "skip=true" >> "${GITHUB_OUTPUT}"
+              exit 0
+            fi
+            version="${tag#v}"
+          fi
+          if [[ ! "${version}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          then
+            echo "error: expected a X.Y.Z version, got '${version}'" >&2
+            exit 1
+          fi
+          echo "skip=false" >> "${GITHUB_OUTPUT}"
+          echo "version=${version}" >> "${GITHUB_OUTPUT}"
+          echo "testing package version ${version}" | tee -a "${GITHUB_STEP_SUMMARY}"
+
+      # NuGet propagation can lag a few seconds to a few minutes behind `dotnet nuget push`
+      # returning, so restoring immediately after publish_nuget completes can 404. Poll the flat
+      # container endpoint (what restore itself uses) for both packages before touching dotnet.
+      - name: Wait for packages to become available on nuget.org
+        if: steps.resolve_version.outputs.skip != 'true'
+        env:
+          VERSION: ${{ steps.resolve_version.outputs.version }}
+        run: |
+          for pkg in libphonenumber-csharp libphonenumber-csharp.extensions
+          do
+            url="https://api.nuget.org/v3-flatcontainer/${pkg}/${VERSION}/${pkg}.nuspec"
+            echo "waiting for ${pkg} ${VERSION} (${url})"
+            for attempt in $(seq 1 20)
+            do
+              status=$(curl -s -o /dev/null -w '%{http_code}' "${url}")
+              if [[ "${status}" == "200" ]]
+              then
+                echo "  available after ${attempt} attempt(s)"
+                break
+              fi
+              if [[ "${attempt}" == "20" ]]
+              then
+                echo "error: ${pkg} ${VERSION} did not become available within 5 minutes (last HTTP status ${status})" >&2
+                exit 1
+              fi
+              echo "  attempt ${attempt}: HTTP ${status}, retrying in 15s"
+              sleep 15
+            done
+          done
+
+      # Single explicit source for the same reason as publish_nuget.yml: the restore whose output
+      # gets executed below must not be able to pick up a package from a feed the runner happens to
+      # have configured, on top of nuget.config already scoping the repo to nuget.org only.
+      - name: Managed smoke test (dotnet run)
+        if: steps.resolve_version.outputs.skip != 'true'
+        env:
+          PACKAGE_UNDER_TEST_VERSION: ${{ steps.resolve_version.outputs.version }}
+        run: |
+          dotnet run --project csharp/PhoneNumbers.PackageSmokeTest -c Release \
+            -p:PackageUnderTestVersion="${PACKAGE_UNDER_TEST_VERSION}" \
+            --source https://api.nuget.org/v3/index.json \
+            -- "${PACKAGE_UNDER_TEST_VERSION}"
+
+      - name: Native AOT smoke test (dotnet publish)
+        if: steps.resolve_version.outputs.skip != 'true'
+        env:
+          PACKAGE_UNDER_TEST_VERSION: ${{ steps.resolve_version.outputs.version }}
+        run: |
+          dotnet publish csharp/PhoneNumbers.PackageSmokeTest -c Release -p:PublishAot=true \
+            -p:PackageUnderTestVersion="${PACKAGE_UNDER_TEST_VERSION}" \
+            --source https://api.nuget.org/v3/index.json \
+            -o aot-smoke-test-publish
+
+      - name: Native AOT smoke test (execute)
+        if: steps.resolve_version.outputs.skip != 'true'
+        env:
+          PACKAGE_UNDER_TEST_VERSION: ${{ steps.resolve_version.outputs.version }}
+        run: ./aot-smoke-test-publish/PhoneNumbers.PackageSmokeTest "${PACKAGE_UNDER_TEST_VERSION}"

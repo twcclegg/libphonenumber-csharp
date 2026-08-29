@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>PhoneNumbers.PackageSmokeTest</AssemblyName>
+    <RootNamespace>PhoneNumbers.PackageSmokeTest</RootNamespace>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <!--
+      Deliberately not in PhoneNumbers.slnx: this project exists only to restore the *published*
+      libphonenumber-csharp / libphonenumber-csharp.extensions packages from nuget.org (never the
+      in-repo source - see the PackageReference below, and nuget.config at the repo root, which
+      already limits every restore in this repo to nuget.org) and exercise them both as a normal
+      managed app and as a Native AOT publish. Nothing else in the solution needs that, and letting
+      it sit in the normal build/test graph risks it silently resolving something local instead.
+      Built directly by .github/workflows/package_smoke_test.yml, which is the only thing that
+      needs it.
+    -->
+    <!--
+      Opt out of central package management. Every other project pins one version per package for
+      the whole repo in Directory.Packages.props (see the comment there); this project is the
+      opposite on purpose - the version under test is a parameter supplied per run (the newest
+      release today, an arbitrary past release on a manual re-run), never a value to freeze here.
+    -->
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+    <!--
+      The version of the two packages to restore and test. Overridable from the command line with
+      -p:PackageUnderTestVersion=X.Y.Z, or by setting the PACKAGE_UNDER_TEST_VERSION environment
+      variable (MSBuild imports environment variables as properties automatically, so the assignment
+      below only fires when the -p: form was not used). Left blank by default so a forgotten
+      override fails restore with a clear "invalid version" error instead of quietly resolving
+      whatever the SDK's package cache happens to already have.
+    -->
+    <PackageUnderTestVersion Condition="'$(PackageUnderTestVersion)' == ''">$(PACKAGE_UNDER_TEST_VERSION)</PackageUnderTestVersion>
+  </PropertyGroup>
+
+  <!-- Fail fast, before restore, with a message that says exactly what to pass. NuGet's own error
+       for an empty/invalid Version on a PackageReference does not make that obvious. -->
+  <Target Name="CheckPackageUnderTestVersion" BeforeTargets="Restore;CollectPackageReferences">
+    <Error Condition="'$(PackageUnderTestVersion)' == ''"
+           Text="PackageUnderTestVersion is not set. Pass -p:PackageUnderTestVersion=X.Y.Z (or set the PACKAGE_UNDER_TEST_VERSION environment variable) to the version of libphonenumber-csharp / libphonenumber-csharp.extensions on nuget.org to test." />
+  </Target>
+
+  <ItemGroup>
+    <PackageReference Include="libphonenumber-csharp" Version="$(PackageUnderTestVersion)" />
+    <PackageReference Include="libphonenumber-csharp.extensions" Version="$(PackageUnderTestVersion)" />
+  </ItemGroup>
+
+</Project>
