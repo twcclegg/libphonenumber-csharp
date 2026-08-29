@@ -199,6 +199,9 @@ FakesAssemblies/
 .DS_Store
 .idea
 
+# Claude Code local worktrees (background agent scratch state)
+.claude/
+
 # Zipped Geocoding Data
 geocoding.zip
 testgeocoding.zip
