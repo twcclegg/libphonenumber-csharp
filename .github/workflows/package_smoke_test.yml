@@ -22,13 +22,6 @@ on:
       version:
         description: 'Package version to test (must already be published on nuget.org), e.g. 9.0.38'
         required: true
-  # TEMPORARY, removed before merge: workflow_dispatch only recognizes a workflow once it exists on
-  # the default branch, so a brand-new workflow file can't be dispatched pre-merge. `push` has no
-  # such restriction - GitHub reads the workflow straight off the pushed ref - which makes it the
-  # only way to get a real run of this file on this branch before opening the PR. See the "Resolve
-  # version to test" step below for the matching temporary fallback.
-  push:
-    branches: [ feat/package-smoke-test ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.inputs.version || github.event.workflow_run.head_branch }}
@@ -40,9 +33,8 @@ permissions:
 jobs:
   package_smoke_test:
     # workflow_run fires on every conclusion (success, failure, cancelled) - only act on success.
-    # A workflow_dispatch/push run has no `workflow_run` context at all, so it is unaffected by this.
-    # TEMPORARY, removed before merge: the `push' arm goes with the temporary trigger above.
-    if: github.event_name == 'workflow_dispatch' || github.event_name == 'push' || github.event.workflow_run.conclusion == 'success'
+    # A workflow_dispatch run has no `workflow_run` context at all, so it is unaffected by this.
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 25
     steps:
@@ -66,10 +58,6 @@ jobs:
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]
           then
             version="${{ github.event.inputs.version }}"
-          elif [[ "${{ github.event_name }}" == "push" ]]
-          then
-            # TEMPORARY, removed before merge: see the `push` trigger above.
-            version="9.0.38"
           else
             tag="${{ github.event.workflow_run.head_branch }}"
             if [[ ! "${tag}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
