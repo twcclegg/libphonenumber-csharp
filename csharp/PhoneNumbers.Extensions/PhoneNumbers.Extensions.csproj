@@ -34,4 +34,10 @@
       <PackageReference Include="System.ComponentModel.Annotations" />
     </ItemGroup>
 
+    <PropertyGroup Condition="'$(TargetFramework)' != 'netstandard2.0'">
+      <!-- Mirrors PhoneNumbers.csproj: opt in to trim/AOT analysis on modern .NET TFMs now that
+           PhoneNumberJsonContext exists specifically to support Native AOT consumers. -->
+      <IsAotCompatible>true</IsAotCompatible>
+    </PropertyGroup>
+
 </Project>
