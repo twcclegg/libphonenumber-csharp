@@ -24,6 +24,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 #if NET8_0_OR_GREATER
 using System.Collections.Frozen;
 // Frozen on net8+: built once at construction, then probed on every parse. Aliased so the
@@ -1136,6 +1137,64 @@ namespace PhoneNumbers
                 return instance ??= new PhoneNumberUtil(
                     new EmbeddedResourceMetadataLoader(),
                     CountryCodeToRegionCodeMap.GetCountryCodeToRegionCodeMap());
+        }
+
+        /// <summary>
+        /// Best-effort warm-up hook, not part of the Java API. Off the calling thread, exercises
+        /// Parse/IsValidNumber/Format for an example number in each of <paramref name="regionCodes"/>
+        /// enough times to cross <see cref="PhoneRegex.PromotionThreshold"/> for the patterns those
+        /// regions touch -- see PhoneRegex.cs's promote-on-reuse scheme. Useful for a caller that knows
+        /// ahead of time which regions it's about to serve heavily and wants that region's regex
+        /// patterns compiled (RegexOptions.Compiled) before real traffic arrives, rather than paying
+        /// either the cold-start interpreted-regex cost or the background JIT-compile cost on its first
+        /// real requests.
+        /// <para>
+        /// This walks the normal Parse/IsValidNumber/Format code path -- it does not force-compile a
+        /// region's patterns directly, so a region with unusual metadata (no example number, or an
+        /// example number that fails to parse or validate) is silently skipped rather than throwing.
+        /// The returned <see cref="Task"/> completes once every region has been walked this way; the
+        /// background compiles that walk triggers may still be finishing shortly after, the same as any
+        /// other promotion.
+        /// </para>
+        /// </summary>
+        /// <param name="regionCodes">Region codes (e.g. "US", "GB") to warm up.</param>
+        public Task PrewarmRegionsAsync(IEnumerable<string> regionCodes)
+        {
+            if (regionCodes is null)
+                throw new ArgumentNullException(nameof(regionCodes));
+
+            // Materialize before hopping onto the background thread -- the caller's enumerable might
+            // not be safe to enumerate off-thread (e.g. a lazily-evaluated LINQ query over mutable
+            // state), and List<T> gives GetSupportedRegions()'s HashSet<string> a definite order too.
+            var codes = new List<string>(regionCodes);
+
+            return Task.Run(() =>
+            {
+                foreach (var regionCode in codes)
+                {
+                    try
+                    {
+                        var example = GetExampleNumber(regionCode);
+                        if (example is null)
+                            continue;
+
+                        // Touch each pattern PromotionThreshold times so the background compile this
+                        // triggers actually fires, instead of leaving the region's patterns interpreted
+                        // after only one or two uses.
+                        for (var i = 0; i < PhoneRegex.PromotionThreshold; i++)
+                        {
+                            _ = IsValidNumber(example);
+                            _ = Format(example, PhoneNumberFormat.NATIONAL);
+                            _ = Format(example, PhoneNumberFormat.E164);
+                        }
+                    }
+                    catch
+                    {
+                        // Advisory warm-up only -- one region's failure (unusual metadata, etc.) must
+                        // never abort warming the rest.
+                    }
+                }
+            });
         }
 
         /// <summary>
