@@ -24,6 +24,16 @@ log() {
 
 warn() {
     echo "warning: $*" >&2
+    # Also emit a GitHub Actions warning annotation, so a non-fatal problem shows up as a yellow
+    # banner on the workflow run summary instead of only a line buried in step output that nobody
+    # reads unless something else already prompted them to look - see the missing-CHANGELOG-marker
+    # warning in github-actions-metadata-update.sh for what this matters for. `%`, CR and LF have to
+    # be percent-escaped in the message: https://docs.github.com/actions/using-workflows/workflow-commands-for-github-actions
+    local message="$*"
+    message="${message//%/%25}"
+    message="${message//$'\r'/%0D}"
+    message="${message//$'\n'/%0A}"
+    echo "::warning::${message}"
 }
 
 # fail <exit-code> <message>

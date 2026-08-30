@@ -376,16 +376,18 @@ if [ -f "${CHANGELOG_FILE}" ] && grep -qF '<!-- next-entry -->' "${CHANGELOG_FIL
     # Every release always includes a metadata sync (that's the only thing that ever cuts a tag),
     # but some releases also bundle other work merged to `main` in between - a version number alone
     # doesn't say which. Diff this repo's own history since the last release (not the upstream diff
-    # checked above, which is google/libphonenumber's) against everything but resources/ and its
-    # own generated/mechanical companions, so update-changelog.js can tell whether this release is
-    # foldable into a prior metadata-only run or needs its own standalone entry. Fetching just the
-    # one tag works even from a shallow checkout: a tree-level `git diff` needs both commits' trees,
-    # not a connected history between them.
+    # checked above, which is google/libphonenumber's) against everything but resources/ itself and
+    # this bookkeeping file, so update-changelog.js can tell whether this release is foldable into a
+    # prior metadata-only run or needs its own standalone entry. Deliberately NOT excluded:
+    # CountryCodeToRegionCodeMap.cs - despite its name, it is hand-maintained (its own header still
+    # says "todo make this file automatically generated"), so a change to it is real, hand-relevant
+    # content, not a mechanical byproduct of this sync. Fetching just the one tag works even from a
+    # shallow checkout: a tree-level `git diff` needs both commits' trees, not a connected history
+    # between them.
     METADATA_ONLY=true
     if git fetch --quiet --depth=1 origin "refs/tags/v${DEPLOYED_NUGET_TAG}:refs/tags/v${DEPLOYED_NUGET_TAG}" 2>/dev/null \
         && git rev-parse -q --verify "v${DEPLOYED_NUGET_TAG}" >/dev/null; then
-        NON_METADATA_FILES=$(git diff --name-only "v${DEPLOYED_NUGET_TAG}" HEAD -- . \
-            ':!resources' ':!CHANGELOG.md' ':!csharp/PhoneNumbers/CountryCodeToRegionCodeMap.cs')
+        NON_METADATA_FILES=$(git diff --name-only "v${DEPLOYED_NUGET_TAG}" HEAD -- . ':!resources' ':!CHANGELOG.md')
         if [ -n "${NON_METADATA_FILES}" ]; then
             METADATA_ONLY=false
         fi
