@@ -197,5 +197,61 @@ namespace PhoneNumbers.Test
             Assert.True(regex.IsMatchAll(value));
             Assert.False(regex.IsMatch($"abc_{marker}_nope_entirely"));
         }
+
+        /// <summary>
+        /// Direct membership check against <see cref="PhoneRegex.KnownPatterns"/>, deliberately not a
+        /// before/after <see cref="PhoneRegex.FallbackCacheHits"/> delta -- that counter is a single
+        /// process-wide value shared with every other test in this assembly (many of which build their
+        /// own <see cref="PhoneNumberUtil"/> from <c>PhoneNumberMetadataForTesting.xml</c>, the one
+        /// metadata source deliberately excluded from <see cref="PhoneRegex.KnownPatterns"/>), so an
+        /// exact delta assertion would be flaky under xUnit's default parallel test collections.
+        /// Checking membership directly sidesteps that entirely.
+        /// </summary>
+        [Fact]
+        public void KnownPatternsCoversRealShippedMetadata()
+        {
+            var util = PhoneNumberUtil.GetInstance();
+            var checkedRegions = 0;
+
+            foreach (var region in util.GetSupportedRegions())
+            {
+                var meta = util.GetMetadataForRegion(region);
+                var pattern = meta?.GeneralDesc?.NationalNumberPattern;
+                if (string.IsNullOrEmpty(pattern))
+                    continue;
+
+                Assert.True(
+                    PhoneRegex.KnownPatterns.ContainsKey(pattern),
+                    $"expected region {region}'s GeneralDesc.NationalNumberPattern to be a known pattern");
+                checkedRegions++;
+            }
+
+            // Sanity floor so this test would actually fail if GetSupportedRegions() ever returned an
+            // empty/near-empty set instead of genuinely exercising coverage (e.g. a metadata-loading
+            // regression masking itself as "0 mismatches found because nothing was checked").
+            Assert.True(checkedRegions > 100,
+                $"expected to have checked more than 100 regions, only checked {checkedRegions}");
+        }
+
+        /// <summary>
+        /// A pattern nothing has ever seen -- guaranteed not in <see cref="PhoneRegex.KnownPatterns"/>
+        /// -- still round-trips correctly through <see cref="PhoneRegex.Get"/> via
+        /// <c>fallbackCache</c>, the same path <c>RegexCache.GetPatternForRegex</c> and
+        /// <c>PhoneNumberMetadataForTesting.xml</c>-derived patterns rely on.
+        /// </summary>
+        [Fact]
+        public void FallsBackCorrectlyForAPatternOutsideTheKnownSet()
+        {
+            var (_, marker, pattern) = UniqueCase("fallback");
+            Assert.False(PhoneRegex.KnownPatterns.ContainsKey(pattern));
+
+            var value = $"77_{marker}";
+            var regex = PhoneRegex.Get(pattern);
+
+            Assert.True(regex.IsMatch(value));
+            Assert.True(regex.IsMatchAll(value));
+            Assert.False(regex.IsMatch("nothing to see here"));
+            Assert.Same(regex, PhoneRegex.Get(pattern));
+        }
     }
 }

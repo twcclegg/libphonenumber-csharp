@@ -143,9 +143,12 @@ namespace PhoneNumbers
         /// here is still fully lazy: nothing constructs an actual <see cref="Regex"/> until a caller
         /// first touches <see cref="RegexHolder.Value"/>, exactly as for any pattern outside this set.
         /// This only changes how the <em>lookup</em> that finds the right <see cref="PhoneRegex"/>
-        /// works, not how (or when) each pattern's regexes get built.
+        /// works, not how (or when) each pattern's regexes get built. Internal rather than private
+        /// purely so tests can assert coverage directly (membership checks) instead of only indirectly
+        /// via <see cref="FallbackCacheHits"/>, which -- being a single process-wide counter -- can't
+        /// support an exact before/after assertion under parallel test execution.
         /// </summary>
-        private static readonly FrozenDictionary<string, PhoneRegex> KnownPatterns = BuildKnownPatterns();
+        internal static readonly FrozenDictionary<string, PhoneRegex> KnownPatterns = BuildKnownPatterns();
 
         /// <summary>
         /// Fallback for any pattern not in <see cref="KnownPatterns"/>. Two known, expected sources:
