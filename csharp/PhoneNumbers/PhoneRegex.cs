@@ -74,6 +74,13 @@ namespace PhoneNumbers
         /// </summary>
         internal const int PromotionThreshold = 2;
 
+        // Diagnostic-only, not read on any hot path: counts how many background compiles have
+        // actually been kicked off (i.e. how many times a RegexHolder's promotion guard was won),
+        // across every pattern in the process. Used to quantify "how much extra ThreadPool work does
+        // this design cause" when comparing promotion strategies -- see
+        // PhoneNumbers.PerformanceTest's PromoteCallCountBenchmark.
+        internal static int PromoteCallCount;
+
         private readonly string pattern;
         private readonly RegexHolder regex;
         private readonly RegexHolder allRegex;
@@ -213,6 +220,7 @@ namespace PhoneNumbers
                 if (Interlocked.CompareExchange(ref promotionStarted, 1, 0) != 0)
                     return;
 
+                Interlocked.Increment(ref PromoteCallCount);
                 Task.Run(() =>
                 {
                     var compiled = new Regex(pattern, fixedOptions ?? InternalRegexOptions.Default);
@@ -231,6 +239,7 @@ namespace PhoneNumbers
                 if (Interlocked.CompareExchange(ref promotionStarted, 1, 0) != 0)
                     return Task.CompletedTask;
 
+                Interlocked.Increment(ref PromoteCallCount);
                 return Task.Run(() =>
                 {
                     var compiled = new Regex(pattern, fixedOptions ?? InternalRegexOptions.Default);
