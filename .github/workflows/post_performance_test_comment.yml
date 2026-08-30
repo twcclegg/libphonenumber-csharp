@@ -38,7 +38,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       # Only benchmarks that moved by more than plausible noise appear here at all - see
-      # lib/compare-benchmarks.js. A regression fails the run_performance_tests check directly;
+      # PhoneNumbers.BenchmarkTools. A regression fails the run_performance_tests check directly;
       # an improvement gets a short comment. No change in either direction means no comment, and
       # any stale one from an earlier push gets deleted instead of left to rot.
       - name: Post benchmark results to PR
