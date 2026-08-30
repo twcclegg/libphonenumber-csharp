@@ -81,6 +81,28 @@ namespace PhoneNumbers
         // PhoneNumbers.PerformanceTest's PromoteCallCountBenchmark.
         internal static int PromoteCallCount;
 
+        // Diagnostic-only, same caveats as PromoteCallCount: how many background compiles are actually
+        // executing concurrently right now / at their peak, across every pattern in the process. This
+        // is the number that matters for "does this design flood the ThreadPool under a bursty
+        // first-touch" -- one Task.Run per promotion means this can spike to (number of patterns
+        // touched in a burst); a queue-backed design should keep it bounded to its worker count.
+        internal static int ActiveCompiles;
+        internal static int PeakConcurrentCompiles;
+
+        private static void RecordCompileStart()
+        {
+            var now = Interlocked.Increment(ref ActiveCompiles);
+            int peak;
+            do
+            {
+                peak = Volatile.Read(ref PeakConcurrentCompiles);
+                if (now <= peak)
+                    return;
+            } while (Interlocked.CompareExchange(ref PeakConcurrentCompiles, now, peak) != peak);
+        }
+
+        private static void RecordCompileEnd() => Interlocked.Decrement(ref ActiveCompiles);
+
         private readonly string pattern;
         private readonly RegexHolder regex;
         private readonly RegexHolder allRegex;
@@ -223,8 +245,16 @@ namespace PhoneNumbers
                 Interlocked.Increment(ref PromoteCallCount);
                 Task.Run(() =>
                 {
-                    var compiled = new Regex(pattern, fixedOptions ?? InternalRegexOptions.Default);
-                    Volatile.Write(ref current, compiled);
+                    RecordCompileStart();
+                    try
+                    {
+                        var compiled = new Regex(pattern, fixedOptions ?? InternalRegexOptions.Default);
+                        Volatile.Write(ref current, compiled);
+                    }
+                    finally
+                    {
+                        RecordCompileEnd();
+                    }
                 });
             }
 
@@ -242,8 +272,16 @@ namespace PhoneNumbers
                 Interlocked.Increment(ref PromoteCallCount);
                 return Task.Run(() =>
                 {
-                    var compiled = new Regex(pattern, fixedOptions ?? InternalRegexOptions.Default);
-                    Volatile.Write(ref current, compiled);
+                    RecordCompileStart();
+                    try
+                    {
+                        var compiled = new Regex(pattern, fixedOptions ?? InternalRegexOptions.Default);
+                        Volatile.Write(ref current, compiled);
+                    }
+                    finally
+                    {
+                        RecordCompileEnd();
+                    }
                 });
             }
         }
