@@ -28,17 +28,20 @@ namespace PhoneNumbers
     /// Wraps the three regexes ("raw", "anchored to the whole input", "anchored to the start") built
     /// from a single metadata-derived pattern string.
     /// <para>
-    /// <b>Hybrid promote-on-reuse, with off-thread promotion.</b> Each of the three regexes starts out
-    /// built with <see cref="InternalRegexOptions.Interpreted"/>: fast to construct (no
-    /// RegexOptions.Compiled IL-emit JIT), so a pattern touched once -- the common shape for a process
-    /// that only ever sees a handful of distinct regions -- never pays a JIT-compile cost it can't
-    /// amortise. <see cref="RegexHolder"/> counts how many times each of those three regexes is
-    /// actually used; once a given one crosses <see cref="PromotionThreshold"/> uses, it kicks off a
-    /// background <see cref="Task"/> that builds the same pattern with
-    /// <see cref="InternalRegexOptions.Default"/> (i.e. RegexOptions.Compiled) and atomically swaps it
-    /// in for subsequent callers once it's ready. A call already in flight keeps using whichever Regex
-    /// instance it fetched when it started -- the swap only affects calls that read
-    /// <see cref="RegexHolder.Value"/> after the swap has landed.
+    /// <b>Hybrid promote-on-reuse, with off-thread promotion (Lazy&lt;T&gt;-delegated build).</b> Each
+    /// of the three regexes starts out built with <see cref="InternalRegexOptions.Interpreted"/>: fast
+    /// to construct (no RegexOptions.Compiled IL-emit JIT), so a pattern touched once -- the common
+    /// shape for a process that only ever sees a handful of distinct regions -- never pays a
+    /// JIT-compile cost it can't amortise. Unlike the hand-rolled-CompareExchange sibling variant of
+    /// this file (see perf/coldstart-hybrid-promote), the "build exactly once, even under concurrent
+    /// first touches" guarantee for the interpreted build is delegated entirely to
+    /// <see cref="Lazy{T}"/> rather than hand-rolled -- see <see cref="RegexHolder"/>.
+    /// <see cref="RegexHolder"/> counts how many times each of those three regexes is actually used;
+    /// once a given one crosses <see cref="PromotionThreshold"/> uses, it kicks off a background
+    /// <see cref="Task"/> that builds the same pattern with <see cref="InternalRegexOptions.Default"/>
+    /// (i.e. RegexOptions.Compiled) and atomically swaps it in for subsequent callers once it's ready.
+    /// A call already in flight keeps using whichever Regex instance it fetched when it started -- the
+    /// swap only affects calls that read <see cref="RegexHolder.Value"/> after the swap has landed.
     /// </para>
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -193,11 +196,20 @@ namespace PhoneNumbers
             // for specific options and opts out of promotion entirely.
             private readonly RegexOptions? fixedOptions;
 
-            // Deliberately not `volatile`: all reads/writes go through Volatile.Read/Write or
-            // Interlocked explicitly below, so the field itself can stay plain and avoid the CS0420
-            // ("volatile field passed by ref won't be treated as volatile") warning that
-            // TreatWarningsAsErrors would turn into a build failure.
-            private Regex current;
+            // The interpreted build. Lazy<T>'s default thread-safety mode (ExecutionAndPublication)
+            // gives us "the factory runs at most once, and every concurrent caller gets the same
+            // instance" for free -- a concurrent caller that loses the race blocks on a monitor lock
+            // inside Lazy<T> until the winner's factory finishes, rather than the hand-rolled variant's
+            // "both may build, one is discarded" race. That trades a small amount of contention (only
+            // ever exercised by genuinely concurrent *first* touches of the same pattern) for not having
+            // to reason about a benign-build-race by hand.
+            private readonly Lazy<Regex> interpreted;
+
+            // Set at most once, by the background compile, once it lands. Deliberately not `volatile`:
+            // read/written via Volatile.Read/Write explicitly below, so the field itself can stay plain
+            // and avoid the CS0420 ("volatile field passed by ref won't be treated as volatile") warning
+            // that TreatWarningsAsErrors would turn into a build failure.
+            private Regex compiled;
 
             private int useCount;
             private int promotionStarted;
@@ -221,13 +233,18 @@ namespace PhoneNumbers
             {
                 this.pattern = pattern;
                 this.fixedOptions = fixedOptions;
+
+                var options = fixedOptions ?? InternalRegexOptions.Interpreted;
+                interpreted = new Lazy<Regex>(() => new Regex(pattern, options));
             }
 
             public Regex Value
             {
                 get
                 {
-                    var built = Volatile.Read(ref current) ?? Build();
+                    // Prefer the compiled build once it's landed; otherwise fall through to the
+                    // (possibly still-unbuilt) interpreted Lazy<T>, which builds it on demand.
+                    var built = Volatile.Read(ref compiled) ?? interpreted.Value;
 
                     // Fixed-options instances (the obsolete ctor) never promote -- they got exactly the
                     // options the caller asked for and there's nothing to upgrade.
@@ -236,17 +253,6 @@ namespace PhoneNumbers
 
                     return built;
                 }
-            }
-
-            private Regex Build()
-            {
-                var options = fixedOptions ?? InternalRegexOptions.Interpreted;
-                var candidate = new Regex(pattern, options);
-
-                // Benign race: if two threads both find `current` null, both may construct a Regex here.
-                // They are functionally identical (same pattern, same options), so we simply keep
-                // whichever one wins the compare-exchange and let the loser be collected.
-                return Interlocked.CompareExchange(ref current, candidate, null) ?? candidate;
             }
 
             private void Promote()
@@ -268,8 +274,8 @@ namespace PhoneNumbers
                     RecordCompileStart();
                     try
                     {
-                        var compiled = new Regex(pattern, fixedOptions ?? InternalRegexOptions.Default);
-                        Volatile.Write(ref current, compiled);
+                        var built = new Regex(pattern, fixedOptions ?? InternalRegexOptions.Default);
+                        Volatile.Write(ref compiled, built);
                     }
                     finally
                     {
@@ -300,8 +306,8 @@ namespace PhoneNumbers
                     RecordCompileStart();
                     try
                     {
-                        var compiled = new Regex(pattern, fixedOptions ?? InternalRegexOptions.Default);
-                        Volatile.Write(ref current, compiled);
+                        var built = new Regex(pattern, fixedOptions ?? InternalRegexOptions.Default);
+                        Volatile.Write(ref compiled, built);
                     }
                     finally
                     {
