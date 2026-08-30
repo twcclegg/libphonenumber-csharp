@@ -174,12 +174,15 @@ namespace PhoneNumbers
         /// <summary>
         /// Prewarm hook: forces all three regexes straight to <see cref="InternalRegexOptions.Default"/>
         /// (RegexOptions.Compiled) on a background thread, bypassing <see cref="PromotionThreshold"/>,
-        /// and returns a <see cref="Task"/> that completes once all three builds have landed. Intended
-        /// for callers who know ahead of time which patterns they're about to rely on heavily and want
-        /// to pay the compile cost before real traffic arrives -- see
-        /// <see cref="PhoneNumberUtil.PrewarmRegionsAsync"/>. Idempotent and safe to call concurrently
-        /// with normal use or with another prewarm call; whichever build (regular promotion or this one)
-        /// finishes first wins the swap, and the other is simply discarded.
+        /// and returns a <see cref="Task"/> that completes once all three builds have actually landed --
+        /// not merely once they've started. Intended for callers who know ahead of time which patterns
+        /// they're about to rely on heavily and want to pay the compile cost before real traffic arrives
+        /// -- see <see cref="PhoneNumberUtil.PrewarmRegionsAsync"/>. Idempotent and safe to call
+        /// concurrently with normal use or with another prewarm call: at most one compile is ever done
+        /// per regex (see <see cref="RegexHolder.StartCompile"/>), so whichever call -- ordinary use
+        /// crossing <see cref="PromotionThreshold"/>, or this one -- reserves that holder's compile
+        /// first, the other simply joins and awaits the same in-flight (or already finished) build
+        /// rather than starting a second one.
         /// </summary>
         internal Task PrewarmAsync() => Task.WhenAll(regex.ForcePromoteAsync(), allRegex.ForcePromoteAsync(), beginRegex.ForcePromoteAsync());
 
@@ -212,7 +215,12 @@ namespace PhoneNumbers
             private Regex? compiled;
 
             private int useCount;
-            private int promotionStarted;
+
+            // Non-null the moment a compile has been claimed by Promote() or ForcePromoteAsync(),
+            // whether or not it has finished yet; awaiting it (as ForcePromoteAsync's callers do) waits
+            // for the compile to actually land, not just for it to have started. Set via a single
+            // Interlocked.CompareExchange -- see StartCompile().
+            private Task? compileTask;
 
 #if NET7_0_OR_GREATER
             // RegexOptions.Compiled silently falls back to interpreted under NativeAOT (there's no
@@ -244,37 +252,58 @@ namespace PhoneNumbers
                 {
                     // Prefer the compiled build once it's landed; otherwise fall through to the
                     // (possibly still-unbuilt) interpreted Lazy<T>, which builds it on demand.
-                    var built = Volatile.Read(ref compiled) ?? interpreted.Value;
+                    var built = Volatile.Read(ref compiled);
+                    if (built is not null)
+                        return built; // already promoted -- skip the useCount bookkeeping below entirely
+
+                    built = interpreted.Value;
 
                     // Fixed-options instances (the obsolete ctor) never promote -- they got exactly the
                     // options the caller asked for and there's nothing to upgrade.
                     if (fixedOptions is null && Interlocked.Increment(ref useCount) == PromotionThreshold)
-                        Promote();
+                        StartCompile();
 
                     return built;
                 }
             }
 
-            private void Promote()
+            /// <summary>
+            /// Kicks off this holder's one-and-only background compile, or -- if one has already been
+            /// claimed, by a prior threshold-crossing <see cref="Value"/> access or an earlier
+            /// <see cref="ForcePromoteAsync"/> call -- returns that same in-flight (or already finished)
+            /// <see cref="Task"/> instead of starting a second one. Shared by both call sites so there is
+            /// only one place that knows how to build and swap in the compiled Regex.
+            /// <para>
+            /// A "cold" (unstarted) <see cref="Task"/> lets this holder's compile slot be reserved with a
+            /// single <see cref="Interlocked.CompareExchange{T}(ref T, T, T)"/>, then started only if
+            /// this call actually won that race -- collapsing "has a compile started" and "what's its
+            /// result" into the one <see cref="compileTask"/> field without a separate bool guard, and
+            /// without starting (and paying the CPU/ThreadPool cost of) a real duplicate compile whenever
+            /// two callers race here concurrently (only possible via a <see cref="ForcePromoteAsync"/> /
+            /// threshold-crossing cross-path race -- the threshold-crossing path here can't race itself,
+            /// since <see cref="Interlocked.Increment(ref int)"/> hands out distinct values to concurrent
+            /// callers, so only one of them ever sees <see cref="useCount"/> == <see cref="PromotionThreshold"/>).
+            /// </para>
+            /// </summary>
+            private Task StartCompile()
             {
                 // Under NativeAOT, RegexOptions.Compiled is a no-op (falls back to interpreted), so
                 // there is nothing to gain by promoting -- stay on the interpreted build permanently.
-                if (!CanPromote)
-                    return;
+                // Fixed-options instances (the obsolete ctor) never promote either -- they got exactly
+                // the options the caller asked for and there's nothing to upgrade.
+                if (!CanPromote || fixedOptions is not null)
+                    return Task.CompletedTask;
 
-                // Ensures exactly one background compile is ever kicked off for this holder, no matter
-                // how many callers cross the threshold concurrently (Interlocked.Increment hands out
-                // distinct values, but guard anyway since ForcePromoteAsync can race the same flag).
-                if (Interlocked.CompareExchange(ref promotionStarted, 1, 0) != 0)
-                    return;
+                var existing = Volatile.Read(ref compileTask);
+                if (existing is not null)
+                    return existing;
 
-                Interlocked.Increment(ref PromoteCallCount);
-                Task.Run(() =>
+                var candidate = new Task(() =>
                 {
                     RecordCompileStart();
                     try
                     {
-                        var built = new Regex(pattern, fixedOptions ?? InternalRegexOptions.Default);
+                        var built = new Regex(pattern, InternalRegexOptions.Default);
                         Volatile.Write(ref compiled, built);
                     }
                     finally
@@ -282,39 +311,25 @@ namespace PhoneNumbers
                         RecordCompileEnd();
                     }
                 });
+
+                var winner = Interlocked.CompareExchange(ref compileTask, candidate, null);
+                if (winner is not null)
+                    return winner; // lost the race -- await/return the winner's task instead
+
+                Interlocked.Increment(ref PromoteCallCount);
+                candidate.Start();
+                return candidate;
             }
 
             /// <summary>
             /// Used by <see cref="PhoneRegex.PrewarmAsync"/> to force promotion regardless of
-            /// <see cref="useCount"/>. Shares <see cref="promotionStarted"/> with <see cref="Promote"/>
-            /// so a pattern already promoted (or already being promoted) through normal use is not
-            /// compiled twice.
+            /// <see cref="useCount"/>, returning a <see cref="Task"/> that completes once the compile
+            /// this call either started or joined has actually landed -- not merely started. Delegates
+            /// entirely to <see cref="StartCompile"/>, which is also what a normal threshold-crossing
+            /// <see cref="Value"/> access uses, so a pattern already promoted (or already being promoted)
+            /// through ordinary use is joined rather than compiled twice.
             /// </summary>
-            public Task ForcePromoteAsync()
-            {
-                // Same NativeAOT no-op reasoning as Promote() -- nothing to gain by forcing a compile
-                // that will just fall back to interpreted anyway.
-                if (!CanPromote)
-                    return Task.CompletedTask;
-
-                if (Interlocked.CompareExchange(ref promotionStarted, 1, 0) != 0)
-                    return Task.CompletedTask;
-
-                Interlocked.Increment(ref PromoteCallCount);
-                return Task.Run(() =>
-                {
-                    RecordCompileStart();
-                    try
-                    {
-                        var built = new Regex(pattern, fixedOptions ?? InternalRegexOptions.Default);
-                        Volatile.Write(ref compiled, built);
-                    }
-                    finally
-                    {
-                        RecordCompileEnd();
-                    }
-                });
-            }
+            public Task ForcePromoteAsync() => StartCompile();
         }
     }
 }
