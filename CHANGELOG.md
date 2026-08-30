@@ -28,7 +28,7 @@ still has a matching entry, so no version number is skipped. One stretch of earl
 2019) briefly synced this repo's full upstream multi-language source tree (`cpp/`, `java/`,
 `debian/`) alongside the C# port; those files are called out but not itemized.
 
-**Folding is automatic going forward.** [`lib/update-changelog.js`](lib/update-changelog.js), called
+**Folding is automatic going forward.** [`lib/update-changelog.sh`](lib/update-changelog.sh), called
 from the same sync script, checks whether anything outside `resources/` changed on `main` since the
 last release. If not, it either starts a new one-release entry or, when the release immediately above
 it is *also* an automated metadata-only entry, extends that entry's range instead of adding another

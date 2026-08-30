@@ -123,8 +123,8 @@ for tool in curl jq git; do
 done
 
 # Only needed once the script starts generating, which a dry run never reaches - report
-# them there rather than refusing to run. node runs update-changelog.js below.
-for tool in javac java node; do
+# them there rather than refusing to run.
+for tool in javac java; do
     if ! command -v "${tool}" &>/dev/null; then
         if isTrue "${DRY_RUN}"; then
             warn "${tool} not found, a real run would stop here"
@@ -377,7 +377,7 @@ if [ -f "${CHANGELOG_FILE}" ] && grep -qF '<!-- next-entry -->' "${CHANGELOG_FIL
     # but some releases also bundle other work merged to `main` in between - a version number alone
     # doesn't say which. Diff this repo's own history since the last release (not the upstream diff
     # checked above, which is google/libphonenumber's) against everything but resources/ itself and
-    # this bookkeeping file, so update-changelog.js can tell whether this release is foldable into a
+    # this bookkeeping file, so update-changelog.sh can tell whether this release is foldable into a
     # prior metadata-only run or needs its own standalone entry. Deliberately NOT excluded:
     # CountryCodeToRegionCodeMap.cs - despite its name, it is hand-maintained (its own header still
     # says "todo make this file automatically generated"), so a change to it is real, hand-relevant
@@ -398,7 +398,7 @@ if [ -f "${CHANGELOG_FILE}" ] && grep -qF '<!-- next-entry -->' "${CHANGELOG_FIL
         METADATA_ONLY=false
     fi
 
-    node "${SCRIPT_DIR}/update-changelog.js" "${CHANGELOG_FILE}" "${GITHUB_REPOSITORY}" "${UPSTREAM_REPOSITORY}" \
+    bash "${SCRIPT_DIR}/update-changelog.sh" "${CHANGELOG_FILE}" "${GITHUB_REPOSITORY}" "${UPSTREAM_REPOSITORY}" \
         "v${DEPLOYED_NUGET_TAG}" "${UPSTREAM_GITHUB_RELEASE_TAG}" "${METADATA_ONLY}" "$(date -u +%F)"
 else
     warn "CHANGELOG.md missing or missing the '<!-- next-entry -->' marker, skipping changelog update"
