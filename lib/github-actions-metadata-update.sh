@@ -123,8 +123,8 @@ for tool in curl jq git; do
 done
 
 # Only needed once the script starts generating, which a dry run never reaches - report
-# them there rather than refusing to run.
-for tool in javac java; do
+# them there rather than refusing to run. node runs update-changelog.js below.
+for tool in javac java node; do
     if ! command -v "${tool}" &>/dev/null; then
         if isTrue "${DRY_RUN}"; then
             warn "${tool} not found, a real run would stop here"
@@ -372,21 +372,34 @@ fi
 # file-level comment above). Doing it here keeps everything in the one PR that already goes
 # through that ruleset.
 CHANGELOG_FILE="${GITHUB_ACTION_WORKING_DIRECTORY}/CHANGELOG.md"
-CHANGELOG_MARKER='<!-- next-entry -->'
-if [ -f "${CHANGELOG_FILE}" ] && grep -qF "${CHANGELOG_MARKER}" "${CHANGELOG_FILE}"; then
-    CHANGELOG_ENTRY_FILE="${WORK_DIR}/changelog-entry.md"
-    cat >"${CHANGELOG_ENTRY_FILE}" <<EOF
+if [ -f "${CHANGELOG_FILE}" ] && grep -qF '<!-- next-entry -->' "${CHANGELOG_FILE}"; then
+    # Every release always includes a metadata sync (that's the only thing that ever cuts a tag),
+    # but some releases also bundle other work merged to `main` in between - a version number alone
+    # doesn't say which. Diff this repo's own history since the last release (not the upstream diff
+    # checked above, which is google/libphonenumber's) against everything but resources/ and its
+    # own generated/mechanical companions, so update-changelog.js can tell whether this release is
+    # foldable into a prior metadata-only run or needs its own standalone entry. Fetching just the
+    # one tag works even from a shallow checkout: a tree-level `git diff` needs both commits' trees,
+    # not a connected history between them.
+    METADATA_ONLY=true
+    if git fetch --quiet --depth=1 origin "refs/tags/v${DEPLOYED_NUGET_TAG}:refs/tags/v${DEPLOYED_NUGET_TAG}" 2>/dev/null \
+        && git rev-parse -q --verify "v${DEPLOYED_NUGET_TAG}" >/dev/null; then
+        NON_METADATA_FILES=$(git diff --name-only "v${DEPLOYED_NUGET_TAG}" HEAD -- . \
+            ':!resources' ':!CHANGELOG.md' ':!csharp/PhoneNumbers/CountryCodeToRegionCodeMap.cs')
+        if [ -n "${NON_METADATA_FILES}" ]; then
+            METADATA_ONLY=false
+        fi
+    else
+        # Fail closed: better to give this release its own entry than to silently fold real changes
+        # away as if they never happened because the one tag needed to check couldn't be fetched.
+        warn "could not fetch v${DEPLOYED_NUGET_TAG} to check for non-metadata changes since the last release"
+        METADATA_ONLY=false
+    fi
 
-## [${UPSTREAM_GITHUB_RELEASE_TAG}](https://github.com/${GITHUB_REPOSITORY}/compare/v${DEPLOYED_NUGET_TAG}...${UPSTREAM_GITHUB_RELEASE_TAG}) - $(date -u +%F)
-
-Metadata update to upstream [libphonenumber ${UPSTREAM_GITHUB_RELEASE_TAG}](https://github.com/${UPSTREAM_REPOSITORY}/releases/tag/${UPSTREAM_GITHUB_RELEASE_TAG}).
-EOF
-    # -i.bak rather than bare -i: BSD/macOS sed requires the (possibly empty) backup suffix
-    # argument that GNU sed treats as optional, so this is the one spelling both accept.
-    sed -i.bak -e "/${CHANGELOG_MARKER}/r ${CHANGELOG_ENTRY_FILE}" "${CHANGELOG_FILE}"
-    rm -f "${CHANGELOG_FILE}.bak"
+    node "${SCRIPT_DIR}/update-changelog.js" "${CHANGELOG_FILE}" "${GITHUB_REPOSITORY}" "${UPSTREAM_REPOSITORY}" \
+        "v${DEPLOYED_NUGET_TAG}" "${UPSTREAM_GITHUB_RELEASE_TAG}" "${METADATA_ONLY}" "$(date -u +%F)"
 else
-    warn "CHANGELOG.md missing or missing the '${CHANGELOG_MARKER}' marker, skipping changelog update"
+    warn "CHANGELOG.md missing or missing the '<!-- next-entry -->' marker, skipping changelog update"
 fi
 
 git checkout -b "${BRANCH}"
