@@ -137,5 +137,65 @@ namespace PhoneNumbers.Test
             Assert.True(finalRegex.IsMatch(value));
             Assert.True(finalRegex.IsMatchAll(value));
         }
+
+        /// <summary>
+        /// <see cref="PhoneRegex.PrewarmAsync"/> is internal, not part of the obvious public call graph
+        /// (<see cref="PhoneNumberUtil.PrewarmRegionsAsync"/> warms up via ordinary Parse/IsValidNumber/
+        /// Format calls instead, not via this method), and had no direct test before this one -- exercise
+        /// it explicitly rather than leaving its "the returned Task completes once the compile has
+        /// actually landed" contract unverified.
+        /// </summary>
+        [Fact]
+        public async Task PrewarmAsyncCompletesOnlyOnceTheCompileHasActuallyLanded()
+        {
+            var (_, marker, pattern) = UniqueCase("prewarm");
+            var regex = new PhoneRegex(pattern);
+            var value = $"55_{marker}";
+
+            var before = PhoneRegex.PromoteCallCount;
+
+            // Bypasses PromotionThreshold entirely -- this pattern has never been touched via IsMatch/
+            // IsMatchAll/IsMatchBeginning at all, so if PrewarmAsync's Task completing didn't actually
+            // mean "the compile landed", nothing else here would have built the compiled Regex either.
+            await regex.PrewarmAsync();
+
+            Assert.True(regex.IsMatch(value));
+            Assert.True(regex.IsMatchAll(value));
+            Assert.True(regex.IsMatchBeginning(value));
+
+            // At least 3 -- one compile per sub-pattern (raw/anchored-all/anchored-start), and nothing
+            // else has ever touched this GUID-unique pattern -- see the process-wide-counter caveat on
+            // PhoneRegex.PromoteCallCount for why this is ">=" rather than "==".
+            Assert.True(PhoneRegex.PromoteCallCount - before >= 3);
+        }
+
+        /// <summary>
+        /// Races <see cref="PhoneRegex.PrewarmAsync"/> against ordinary use crossing
+        /// <see cref="PhoneRegex.PromotionThreshold"/> on the very same pattern, to exercise
+        /// <c>RegexHolder.StartCompile</c>'s cross-path dedup: whichever of the two reserves a given
+        /// sub-pattern's compile slot first, the other must join that same in-flight compile rather than
+        /// starting a second one.
+        /// </summary>
+        [Fact]
+        public async Task PrewarmRacingWithThresholdCrossingStillCompilesCorrectly()
+        {
+            var (_, marker, pattern) = UniqueCase("race");
+            var regex = new PhoneRegex(pattern);
+            var value = $"66_{marker}";
+
+            var prewarmTask = regex.PrewarmAsync();
+            for (var i = 0; i < PhoneRegex.PromotionThreshold; i++)
+            {
+                Assert.True(regex.IsMatch(value));
+                Assert.True(regex.IsMatchAll(value));
+                Assert.True(regex.IsMatchBeginning(value));
+            }
+
+            await prewarmTask;
+
+            Assert.True(regex.IsMatch(value));
+            Assert.True(regex.IsMatchAll(value));
+            Assert.False(regex.IsMatch($"abc_{marker}_nope_entirely"));
+        }
     }
 }
