@@ -95,6 +95,8 @@ internal static class Program
                 "        timezones                                (timezones/map_data.txt -> single bin)");
             Console.Error.WriteLine(
                 "        locale                                   (locale/country_names.txt -> per-country bins)");
+            Console.Error.WriteLine(
+                "        regexpatterns                            (resources/ dir -> single known-pattern-list bin)");
             return 2;
         }
 
@@ -116,6 +118,7 @@ internal static class Program
             "carrier" => BuildGeocoding(input, output),
             "timezones" => BuildTimezones(input, output),
             "locale" => BuildLocaleNames(input, output),
+            "regexpatterns" => RegexPatternCollector.BuildRegexPatternList(input, output),
             _ => UnknownKind(kind),
         };
     }

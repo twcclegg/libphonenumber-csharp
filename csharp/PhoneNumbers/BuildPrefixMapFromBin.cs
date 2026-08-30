@@ -33,6 +33,7 @@ namespace PhoneNumbers
         internal const int AreaCodeMapMagic = 0x504E4143; // 'P','N','A','C'
         internal const int TimezoneMapMagic = 0x504E5454; // 'P','N','T','T'
         internal const int LocaleNamesMagic = 0x504E4C4E; // 'P','N','L','N'
+        internal const int RegexPatternListMagic = 0x504E5250; // 'P','N','R','P'
         internal const byte FormatVersion = 1;
 
         // --- Area code map (int → string) ---------------------------------------------
@@ -154,6 +155,44 @@ namespace PhoneNumbers
                 names[language] = reader.ReadString();
             }
             return names;
+        }
+
+        // --- Regex pattern list (flat set of distinct metadata-derived pattern strings) --
+
+        /// <summary>
+        /// Writes the flat, order-independent set of distinct regex pattern strings enumerable at
+        /// build time from the shipped metadata -- see RegexPatternCollector in
+        /// PhoneNumbers.MetadataBuilder. Consumed at runtime by <see cref="PhoneRegex"/> to
+        /// pre-populate its pattern cache with known keys (see <see cref="ReadRegexPatternList"/>);
+        /// not itself a regex compile or match -- purely a list of strings.
+        /// </summary>
+        public static void WriteRegexPatternList(Stream stream, IReadOnlyCollection<string> patterns)
+        {
+            using var writer = new BinaryWriter(stream, Encoding.UTF8, leaveOpen: true);
+            writer.Write(RegexPatternListMagic);
+            writer.Write(FormatVersion);
+            writer.Write(patterns.Count);
+            foreach (var pattern in patterns)
+                writer.Write(pattern);
+        }
+
+        public static string[] ReadRegexPatternList(Stream stream)
+        {
+            using var reader = new BinaryReader(stream, Encoding.UTF8, leaveOpen: true);
+            var magic = reader.ReadInt32();
+            if (magic != RegexPatternListMagic)
+                throw new InvalidDataException(
+                    $"Unexpected regex-pattern-list magic 0x{magic:X8} (expected 0x{RegexPatternListMagic:X8}).");
+            var version = reader.ReadByte();
+            if (version != FormatVersion)
+                throw new InvalidDataException(
+                    $"Unsupported regex-pattern-list version {version} (expected {FormatVersion}).");
+
+            var count = reader.ReadInt32();
+            var patterns = new string[count];
+            for (var i = 0; i < count; i++)
+                patterns[i] = reader.ReadString();
+            return patterns;
         }
     }
 }
