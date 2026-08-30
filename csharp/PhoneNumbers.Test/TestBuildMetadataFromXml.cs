@@ -78,6 +78,86 @@ namespace PhoneNumbers.Test
             Assert.Equal(validPattern, BuildMetadataFromXml.ValidateRE(validPattern, false));
         }
 
+        // Tests NarrowDigitClassToAscii(): the character-class-aware \d -> [0-9] rewrite used for
+        // metadata patterns that are actually matched against (already ASCII-normalized) input --
+        // see ValidateAndNarrowPatternRE's doc comment for exactly which fields that is.
+        [Theory]
+        // Real nationalNumberPattern values, pulled verbatim from resources/PhoneNumberMetadata.xml.
+        [InlineData("6\\d{4}", "6[0-9]{4}")]
+        [InlineData("[2-47]\\d{4}", "[2-47][0-9]{4}")]
+        // Real internationalPrefix values.
+        [InlineData("(?:0|1(?:1[0-69]|2[02-5]|5[13-58]|69|7[0167]|8[018]))0",
+            "(?:0|1(?:1[0-69]|2[02-5]|5[13-58]|69|7[0167]|8[018]))0")]
+        [InlineData("0(?:0|1[3-9]\\d)", "0(?:0|1[3-9][0-9])")]
+        // Real nationalPrefixForParsing values (note the trailing "$" anchor and alternation).
+        [InlineData("(000[2569]\\d{4,6})$|(?:(?:003768)0?)|0",
+            "(000[2569][0-9]{4,6})$|(?:(?:003768)0?)|0")]
+        [InlineData("(5\\d{6})$|1", "(5[0-9]{6})$|1")]
+        // Real numberFormat "pattern" attribute values.
+        [InlineData("(\\d)(\\d{2,3})(\\d{2})(\\d{2})", "([0-9])([0-9]{2,3})([0-9]{2})([0-9]{2})")]
+        [InlineData("(\\d)(\\d{2})(\\d{3,4})", "([0-9])([0-9]{2})([0-9]{3,4})")]
+        // \d already inside a character class must substitute the bare "0-9" in place, not wrap a
+        // second, nested set of brackets around it.
+        [InlineData("[\\d-]", "[0-9-]")]
+        [InlineData("[a\\d-]", "[a0-9-]")]
+        [InlineData("[^\\d]", "[^0-9]")]
+        // A \d immediately after the class-opening bracket (no leading literal ']' or '^' first).
+        [InlineData("[\\d]", "[0-9]")]
+        // A literal ']' as the first class member (POSIX idiom) must not be mistaken for the class
+        // closing, so the \d later in the same class still narrows in place.
+        [InlineData("[]\\d]", "[]0-9]")]
+        [InlineData("[^]\\d]", "[^]0-9]")]
+        // An escaped backslash followed by a literal "d" is not \d and must be left alone.
+        [InlineData("\\\\d", "\\\\d")]
+        // No backslash at all: fast path, unchanged.
+        [InlineData("[0-9]{3}", "[0-9]{3}")]
+        // Escaped literal characters elsewhere in the pattern must survive untouched.
+        [InlineData("\\(\\d{3}\\)", "\\([0-9]{3}\\)")]
+        public void TestNarrowDigitClassToAscii(string input, string expected)
+        {
+            Assert.Equal(expected, BuildMetadataFromXml.NarrowDigitClassToAscii(input));
+            // The result must always be a well-formed regex (this also catches the classic
+            // nested-bracket bug the character-class-aware rewrite exists to avoid: naively wrapping
+            // an in-class \d as "[0-9]" instead of substituting "0-9" produces invalid syntax like
+            // "[[0-9]-]", which would fail to compile here).
+            _ = new System.Text.RegularExpressions.Regex(BuildMetadataFromXml.NarrowDigitClassToAscii(input));
+        }
+
+        [Fact]
+        public void TestNarrowDigitClassToAsciiPreservesMatchSemantics()
+        {
+            // The narrowed pattern must still match/reject exactly the ASCII input the original did --
+            // narrowing only removes the (out-of-scope, for already-normalized input) Unicode digit
+            // categories, it must not change ASCII-digit behavior.
+            const string original = "(000[2569]\\d{4,6})$|(?:(?:003768)0?)|0";
+            var narrowed = BuildMetadataFromXml.NarrowDigitClassToAscii(original);
+            var originalRegex = new System.Text.RegularExpressions.Regex("^(?:" + original + ")$");
+            var narrowedRegex = new System.Text.RegularExpressions.Regex("^(?:" + narrowed + ")$");
+            foreach (var candidate in new[] { "0", "0002569123", "00025691234", "003768", "0037680", "1" })
+                Assert.Equal(originalRegex.IsMatch(candidate), narrowedRegex.IsMatch(candidate));
+        }
+
+        [Fact]
+        public void TestNarrowDigitClassToAsciiThrowsOnDInsideCharacterClass()
+        {
+            // \D cannot in general be soundly unioned into an existing bracket expression's other
+            // members, and this shape does not occur anywhere in the shipped metadata today -- see
+            // NarrowDigitClassToAscii's doc comment. Surfacing it loudly is preferable to silently
+            // emitting an incorrect pattern.
+            Assert.Throws<NotSupportedException>(() => BuildMetadataFromXml.NarrowDigitClassToAscii("[\\D-]"));
+        }
+
+        [Fact]
+        public void TestValidateAndNarrowPatternRENarrowsAndValidates()
+        {
+            Assert.Equal("[0-9]{6}", BuildMetadataFromXml.ValidateAndNarrowPatternRE("\\d{6}"));
+            // removeWhitespace still applies, exactly as for ValidateRE.
+            Assert.Equal("[0-9]{6}", BuildMetadataFromXml.ValidateAndNarrowPatternRE("\t \\d { 6 } ", true));
+            // An invalid pattern still throws, same as ValidateRE (ArgumentException or the more
+            // specific RegexParseException the BCL derives it from).
+            Assert.ThrowsAny<ArgumentException>(() => BuildMetadataFromXml.ValidateAndNarrowPatternRE("["));
+        }
+
         // Tests NationalPrefix.
         [Fact]
         public void TestGetNationalPrefix()
@@ -410,7 +490,9 @@ namespace PhoneNumbers.Test
 
             var phoneNumberDesc = BuildMetadataFromXml.ProcessPhoneNumberDescElement(
                 generalDesc, territoryElement, "fixedLine");
-            Assert.Equal("\\d{6}", phoneNumberDesc.NationalNumberPattern);
+            // \d is narrowed to the ASCII-only [0-9] for patterns that are matched against input --
+            // see BuildMetadataFromXml.NarrowDigitClassToAscii.
+            Assert.Equal("[0-9]{6}", phoneNumberDesc.NationalNumberPattern);
         }
 
         [Fact]
@@ -438,7 +520,9 @@ namespace PhoneNumbers.Test
 
             var phoneNumberDesc = BuildMetadataFromXml.ProcessPhoneNumberDescElement(
                 null, countryElement, "fixedLine");
-            Assert.Equal("\\d{6}", phoneNumberDesc.NationalNumberPattern);
+            // \d is narrowed to the ASCII-only [0-9] for patterns that are matched against input --
+            // see BuildMetadataFromXml.NarrowDigitClassToAscii.
+            Assert.Equal("[0-9]{6}", phoneNumberDesc.NationalNumberPattern);
         }
 
         // Tests LoadGeneralDesc().
@@ -476,15 +560,17 @@ namespace PhoneNumbers.Test
             var territoryElement = ParseXmlString(xmlInput);
             var metadata = new PhoneMetadata.Builder();
             BuildMetadataFromXml.LoadGeneralDesc(metadata, territoryElement);
-            Assert.Equal("\\d{1}", metadata.FixedLine.NationalNumberPattern);
-            Assert.Equal("\\d{2}", metadata.Mobile.NationalNumberPattern);
-            Assert.Equal("\\d{3}", metadata.Pager.NationalNumberPattern);
-            Assert.Equal("\\d{4}", metadata.TollFree.NationalNumberPattern);
-            Assert.Equal("\\d{5}", metadata.PremiumRate.NationalNumberPattern);
-            Assert.Equal("\\d{6}", metadata.SharedCost.NationalNumberPattern);
-            Assert.Equal("\\d{7}", metadata.PersonalNumber.NationalNumberPattern);
-            Assert.Equal("\\d{8}", metadata.Voip.NationalNumberPattern);
-            Assert.Equal("\\d{9}", metadata.Uan.NationalNumberPattern);
+            // \d is narrowed to the ASCII-only [0-9] for patterns that are matched against input --
+            // see BuildMetadataFromXml.NarrowDigitClassToAscii.
+            Assert.Equal("[0-9]{1}", metadata.FixedLine.NationalNumberPattern);
+            Assert.Equal("[0-9]{2}", metadata.Mobile.NationalNumberPattern);
+            Assert.Equal("[0-9]{3}", metadata.Pager.NationalNumberPattern);
+            Assert.Equal("[0-9]{4}", metadata.TollFree.NationalNumberPattern);
+            Assert.Equal("[0-9]{5}", metadata.PremiumRate.NationalNumberPattern);
+            Assert.Equal("[0-9]{6}", metadata.SharedCost.NationalNumberPattern);
+            Assert.Equal("[0-9]{7}", metadata.PersonalNumber.NationalNumberPattern);
+            Assert.Equal("[0-9]{8}", metadata.Voip.NationalNumberPattern);
+            Assert.Equal("[0-9]{9}", metadata.Uan.NationalNumberPattern);
         }
     }
 }
