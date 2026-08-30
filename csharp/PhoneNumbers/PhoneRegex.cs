@@ -202,6 +202,21 @@ namespace PhoneNumbers
             private int useCount;
             private int promotionStarted;
 
+#if NET7_0_OR_GREATER
+            // RegexOptions.Compiled silently falls back to interpreted under NativeAOT (there's no
+            // runtime codegen available there), so a background compile would be pure waste on that
+            // runtime -- it would spin up a Task.Run to build a "compiled" Regex that behaves
+            // identically to the interpreted one already in hand, burning CPU and ThreadPool capacity
+            // for zero benefit. Checked once per process (static readonly), not per call.
+            private static readonly bool CanPromote = System.Runtime.CompilerServices.RuntimeFeature.IsDynamicCodeSupported;
+#else
+            // netstandard2.0 consumers can't be NativeAOT-published in the first place (AOT publishing
+            // requires net7.0+), so promotion is always worthwhile on that TFM. `static readonly`
+            // rather than `const` so the compiler doesn't constant-fold the `if (!CanPromote)` checks
+            // below into unreachable code (CS0162).
+            private static readonly bool CanPromote = true;
+#endif
+
             public RegexHolder(string pattern, RegexOptions? fixedOptions = null)
             {
                 this.pattern = pattern;
@@ -236,6 +251,11 @@ namespace PhoneNumbers
 
             private void Promote()
             {
+                // Under NativeAOT, RegexOptions.Compiled is a no-op (falls back to interpreted), so
+                // there is nothing to gain by promoting -- stay on the interpreted build permanently.
+                if (!CanPromote)
+                    return;
+
                 // Ensures exactly one background compile is ever kicked off for this holder, no matter
                 // how many callers cross the threshold concurrently (Interlocked.Increment hands out
                 // distinct values, but guard anyway since ForcePromoteAsync can race the same flag).
@@ -266,6 +286,11 @@ namespace PhoneNumbers
             /// </summary>
             public Task ForcePromoteAsync()
             {
+                // Same NativeAOT no-op reasoning as Promote() -- nothing to gain by forcing a compile
+                // that will just fall back to interpreted anyway.
+                if (!CanPromote)
+                    return Task.CompletedTask;
+
                 if (Interlocked.CompareExchange(ref promotionStarted, 1, 0) != 0)
                     return Task.CompletedTask;
 
