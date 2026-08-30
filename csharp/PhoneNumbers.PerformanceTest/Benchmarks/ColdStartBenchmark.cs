@@ -1,3 +1,4 @@
+using System;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Jobs;
@@ -56,6 +57,10 @@ namespace PhoneNumbers.PerformanceTest.Benchmarks
             new("+2342033123456", "NG"), new("+254202012345", "KE"), new("+20234567890", "EG"),
             new("+966112345678", "SA"), new("+97122345678", "AE"), new("+922123456789", "PK"),
             new("+88027111234", "BD"), new("+380311234567", "UA"), new("+302123456789", "GR"),
+            // Padding out to 20 entries -- see this file's class-level remarks on why every FirstUse*
+            // pool must have (at least) as many entries as ColdStartBenchmark's iterationCount.
+            new("+951234567", "MM"), new("+85523756789", "KH"), new("+85621212862", "LA"),
+            new("+97653123456", "MN"), new("+94112345678", "LK"),
         };
 
         private static readonly PhoneNumberBenchmarkCase[] FirstUseMatcherRegions =
@@ -65,6 +70,10 @@ namespace PhoneNumbers.PerformanceTest.Benchmarks
             new("+59322123456", "EC"), new("+59821231234", "UY"), new("+595212345678", "PY"),
             new("+59122123456", "BO"), new("+351212345678", "PT"), new("+3212345678", "BE"),
             new("+431234567890", "AT"), new("+4532123456", "DK"), new("+4721234567", "NO"),
+            // Padding out to 20 entries -- see this file's class-level remarks on why every FirstUse*
+            // pool must have (at least) as many entries as ColdStartBenchmark's iterationCount.
+            new("+50422123456", "HN"), new("+50222456789", "GT"), new("+50622123456", "CR"),
+            new("+5072001234", "PA"), new("+18092345678", "DO"),
         };
 
         private static readonly PhoneNumberBenchmarkCase[] FirstUseGeocoderRegions =
@@ -74,11 +83,36 @@ namespace PhoneNumbers.PerformanceTest.Benchmarks
             new("+97221234567", "IL"), new("+85221234567", "HK"), new("+886221234567", "TW"),
             new("+85328212345", "MO"), new("+97444123456", "QA"), new("+96522345678", "KW"),
             new("+212520123456", "MA"), new("+21312345678", "DZ"), new("+21630010123", "TN"),
+            // Padding out to 20 entries -- see this file's class-level remarks on why every FirstUse*
+            // pool must have (at least) as many entries as ColdStartBenchmark's iterationCount.
+            new("+96262001234", "JO"), new("+9611123456", "LB"), new("+96823123456", "OM"),
+            new("+97317001234", "BH"), new("+35722345678", "CY"),
         };
 
         // The private constant PhoneNumberOfflineGeocoder.GetInstance() passes its own constructor --
         // duplicated here since it's private, not internal, so InternalsVisibleTo doesn't reach it.
         private const string GeocodingDataDirectory = "geocoding.";
+
+        // Must match the `iterationCount` on this class's [SimpleJob] attribute above. BenchmarkDotNet's
+        // ColdStart strategy runs all IterationCount iterations inside one process (LaunchCount is 1,
+        // not increased for ColdStart), so PhoneRegex's static, process-wide pattern cache persists
+        // across every iteration of a given benchmark method within that run -- a FirstUse* pool with
+        // fewer than IterationCount entries wraps around via modulo and silently re-touches an
+        // already-warm region on the later iterations, contaminating the exact "first use" measurement
+        // this class exists to isolate (verified via CheckPoolSize below after this was found missing
+        // from three of the four pools -- FirstUseAsYouTypeRegions/FirstUseMatcherRegions/
+        // FirstUseGeocoderRegions each originally had only 15 entries against a 20-iteration job).
+        private const int IterationCount = 20;
+
+        private static void CheckPoolSize(PhoneNumberBenchmarkCase[] pool, string poolName)
+        {
+            if (pool.Length < IterationCount)
+                throw new InvalidOperationException(
+                    $"{poolName} has only {pool.Length} entries but ColdStartBenchmark's iterationCount " +
+                    $"is {IterationCount} -- the pool would wrap around and re-touch an already-warm " +
+                    "region partway through the run, silently contaminating the 'first use' measurement " +
+                    "this class exists to isolate. Add more entries rather than lowering iterationCount.");
+        }
 
         // Advances once per call to the matching FirstUse* benchmark below, so BenchmarkDotNet's 20
         // iterations walk each pool in order without repeats -- each iteration genuinely first-touches
@@ -91,6 +125,11 @@ namespace PhoneNumbers.PerformanceTest.Benchmarks
         [GlobalSetup]
         public void Setup()
         {
+            CheckPoolSize(FirstUseRegions, nameof(FirstUseRegions));
+            CheckPoolSize(FirstUseAsYouTypeRegions, nameof(FirstUseAsYouTypeRegions));
+            CheckPoolSize(FirstUseMatcherRegions, nameof(FirstUseMatcherRegions));
+            CheckPoolSize(FirstUseGeocoderRegions, nameof(FirstUseGeocoderRegions));
+
             // Force JIT of the metadata-loading path so we measure steady-state cold-start cost
             // rather than first-ever-invocation JIT noise. We deliberately use a different region
             // than TargetRegion (and never touch anything in FirstUseRegions) so those caches stay
