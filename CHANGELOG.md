@@ -514,11 +514,11 @@ files alongside a large upstream metadata sync.
 
 - Added GitHub issue templates. (#152)
 
-## [v8.12.44 – v8.12.46](https://github.com/twcclegg/libphonenumber-csharp/compare/v8.12.43...v8.12.46) - 2022-03-14 – 2022-04-01
+## [v8.12.44 – v8.12.46](https://github.com/twcclegg/libphonenumber-csharp/compare/v8.12.43...v8.12.46) - 2022-02-24 – 2022-04-01
 
 3 metadata-only releases. No source changes.
 
-## [v8.12.40 – v8.12.43](https://github.com/twcclegg/libphonenumber-csharp/compare/v8.12.39...v8.12.43) - 2022-02-14 – 2022-02-24
+## [v8.12.40 – v8.12.43](https://github.com/twcclegg/libphonenumber-csharp/compare/v8.12.39...v8.12.43) - 2022-02-14
 
 4 metadata-only patch releases shipped in quick succession right after v8.12.39, below. No source
 changes.
