@@ -21,6 +21,12 @@ using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+#if NET8_0_OR_GREATER
+using System.Collections.Frozen;
+using System.Collections.Generic;
+using System.IO.Compression;
+using System.Reflection;
+#endif
 
 namespace PhoneNumbers
 {
@@ -42,6 +48,18 @@ namespace PhoneNumbers
     /// (i.e. RegexOptions.Compiled) and atomically swaps it in for subsequent callers once it's ready.
     /// A call already in flight keeps using whichever Regex instance it fetched when it started -- the
     /// swap only affects calls that read <see cref="RegexHolder.Value"/> after the swap has landed.
+    /// </para>
+    /// <para>
+    /// <b>Lookup, separately from the above:</b> on net8.0/net10.0, finding the right
+    /// <see cref="PhoneRegex"/> for a pattern string is a <see cref="System.Collections.Frozen.FrozenDictionary{TKey,TValue}"/>
+    /// read rather than a <see cref="ConcurrentDictionary{TKey,TValue}"/> one, for the ~2,922 patterns
+    /// enumerable at build time from shipped metadata -- see <c>KnownPatterns</c> (net8.0/net10.0
+    /// only). This changes
+    /// only how <see cref="Get"/> finds the right <see cref="PhoneRegex"/> instance; it has nothing to
+    /// do with, and does not change, how or when that instance's own <see cref="Regex"/> objects get
+    /// built (still the promote-on-reuse scheme described above, for every pattern regardless of which
+    /// dictionary found it). netstandard2.0, which has no <c>System.Collections.Frozen</c>, keeps the
+    /// single <see cref="ConcurrentDictionary{TKey,TValue}"/> this class always used.
     /// </para>
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -111,12 +129,77 @@ namespace PhoneNumbers
         private readonly RegexHolder allRegex;
         private readonly RegexHolder beginRegex;
 
-        private static readonly ConcurrentDictionary<string, PhoneRegex> cache = new();
-
         // Cached factory delegate so cache-hit lookups never allocate a fresh closure.
         private static readonly Func<string, PhoneRegex> factory = k => new PhoneRegex(k);
 
+#if NET8_0_OR_GREATER
+        /// <summary>
+        /// One <see cref="PhoneRegex"/> per pattern string enumerable at build time from the shipped
+        /// metadata (~2,922 patterns as of this metadata snapshot -- see
+        /// PhoneNumbers.MetadataBuilder's <c>RegexPatternCollector</c>). Reading a
+        /// <see cref="FrozenDictionary{TKey,TValue}"/> is faster than a <see cref="ConcurrentDictionary{TKey,TValue}"/>
+        /// read (no interlocked bookkeeping, a perfect/near-perfect hash built once up front), which is
+        /// the entire point of splitting the cache this way -- every <see cref="PhoneRegex"/> instance
+        /// here is still fully lazy: nothing constructs an actual <see cref="Regex"/> until a caller
+        /// first touches <see cref="RegexHolder.Value"/>, exactly as for any pattern outside this set.
+        /// This only changes how the <em>lookup</em> that finds the right <see cref="PhoneRegex"/>
+        /// works, not how (or when) each pattern's regexes get built.
+        /// </summary>
+        private static readonly FrozenDictionary<string, PhoneRegex> KnownPatterns = BuildKnownPatterns();
+
+        /// <summary>
+        /// Fallback for any pattern not in <see cref="KnownPatterns"/>. Two known, expected sources:
+        /// the legacy public <c>RegexCache.GetPatternForRegex</c> / <see cref="PhoneRegex(string)"/>
+        /// surface accepts arbitrary caller-supplied text that cannot be known at build time; and
+        /// <c>PhoneNumberMetadataForTesting.xml</c> (test-only metadata, never shipped in the published
+        /// assembly) is deliberately excluded from <see cref="KnownPatterns"/> by
+        /// <c>RegexPatternCollector</c>, so test-only patterns always land here. Anything else landing
+        /// here would mean <see cref="KnownPatterns"/>' coverage has drifted from what
+        /// <c>PhoneRegex.Get</c>'s real call sites actually touch -- see <see cref="FallbackCacheHits"/>.
+        /// </summary>
+        private static readonly ConcurrentDictionary<string, PhoneRegex> fallbackCache = new();
+
+        // Diagnostic-only, not read on any hot path: counts how many PhoneRegex.Get calls missed
+        // KnownPatterns and fell back to fallbackCache. Same style as PromoteCallCount -- used to
+        // confirm KnownPatterns' coverage matches the known, expected exceptions (RegexCache's public
+        // surface, PhoneNumberMetadataForTesting.xml patterns during test runs) and nothing else is
+        // silently missing the fast path.
+        internal static int FallbackCacheHits;
+
+        private static FrozenDictionary<string, PhoneRegex> BuildKnownPatterns()
+        {
+            // Absent entirely for a custom-built assembly that stripped the resource (or an older
+            // MetadataBuilder that predates it) -- fall through to every lookup missing and landing in
+            // fallbackCache, functionally identical to (just slower than) the pre-FrozenDictionary
+            // cache this replaces, not a hard failure.
+            using var raw = typeof(PhoneRegex).Assembly.GetManifestResourceStream(
+                "PhoneNumbers.regexpatterns.known_patterns.bin");
+            if (raw is null)
+                return FrozenDictionary<string, PhoneRegex>.Empty;
+
+            // Same gzip-compressed-manifest-resource contract as EmbeddedResourceMetadataLoader.
+            using var gz = new GZipStream(raw, CompressionMode.Decompress);
+            var patterns = BuildPrefixMapFromBin.ReadRegexPatternList(gz);
+
+            var builder = new Dictionary<string, PhoneRegex>(patterns.Length, StringComparer.Ordinal);
+            foreach (var pattern in patterns)
+                builder[pattern] = new PhoneRegex(pattern);
+            return builder.ToFrozenDictionary(StringComparer.Ordinal);
+        }
+
+        internal static PhoneRegex Get(string regex)
+        {
+            if (KnownPatterns.TryGetValue(regex, out var known))
+                return known;
+
+            Interlocked.Increment(ref FallbackCacheHits);
+            return fallbackCache.GetOrAdd(regex, factory);
+        }
+#else
+        private static readonly ConcurrentDictionary<string, PhoneRegex> cache = new();
+
         internal static PhoneRegex Get(string regex) => cache.GetOrAdd(regex, factory);
+#endif
 
         public PhoneRegex(string pattern)
         {
