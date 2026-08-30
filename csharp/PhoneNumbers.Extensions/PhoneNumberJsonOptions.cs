@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 
 namespace PhoneNumbers.Extensions
 {
@@ -33,14 +34,19 @@ namespace PhoneNumbers.Extensions
         /// </summary>
         /// <param name="baseOptions">
         /// Optional options to copy other settings from (e.g. <see cref="JsonSerializerOptions.WriteIndented"/>).
-        /// The returned instance always gets its own <see cref="JsonSerializerOptions.TypeInfoResolver"/>
-        /// and a <see cref="PhoneNumberConverter"/> appended to <see cref="JsonSerializerOptions.Converters"/>,
-        /// overwriting/adding to whatever <paramref name="baseOptions"/> had for those two.
+        /// If <paramref name="baseOptions"/> already has a <see cref="JsonSerializerOptions.TypeInfoResolver"/>
+        /// set (e.g. your own <see cref="JsonSerializerContext"/>, or a resolver already combined via
+        /// <c>JsonTypeInfoResolver.Combine</c>), it is combined with
+        /// <see cref="PhoneNumberJsonContext.Default"/> rather than replaced, so a DTO type resolved by your
+        /// own context can still contain a <see cref="PhoneNumbers.PhoneNumber"/> property. A
+        /// <see cref="PhoneNumberConverter"/> is always appended to <see cref="JsonSerializerOptions.Converters"/>.
         /// </param>
         public static JsonSerializerOptions Create(JsonSerializerOptions baseOptions = null)
         {
             var options = baseOptions is null ? new JsonSerializerOptions() : new JsonSerializerOptions(baseOptions);
-            options.TypeInfoResolver = PhoneNumberJsonContext.Default;
+            options.TypeInfoResolver = options.TypeInfoResolver is { } existingResolver
+                ? JsonTypeInfoResolver.Combine(existingResolver, PhoneNumberJsonContext.Default)
+                : PhoneNumberJsonContext.Default;
             options.Converters.Add(new PhoneNumberConverter());
             return options;
         }

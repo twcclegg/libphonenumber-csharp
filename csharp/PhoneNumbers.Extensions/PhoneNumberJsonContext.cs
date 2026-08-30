@@ -14,10 +14,12 @@ namespace PhoneNumbers.Extensions
     /// member-based (reflection-free) serializer — it knows nothing about
     /// <see cref="PhoneNumberConverter"/>. Do not use it to actually serialize a
     /// <see cref="PhoneNumbers.PhoneNumber"/>: <see cref="PhoneNumbers.PhoneNumber"/>.DefaultInstanceForType is a
-    /// public get-only property that returns the instance itself, so member-based serialization walks
-    /// straight into infinite recursion (a <see cref="System.InvalidOperationException"/> for exceeding
-    /// the writer's max depth, or a real stack overflow at larger depth limits) instead of ever
-    /// producing JSON. This context exists only so <see cref="PhoneNumbers.PhoneNumber"/> can be *resolved*
+    /// public get-only property that returns the type's static default instance, which is itself a
+    /// <see cref="PhoneNumbers.PhoneNumber"/> exposing the same DefaultInstanceForType property, so
+    /// member-based serialization walks straight into infinite recursion (a
+    /// <see cref="System.InvalidOperationException"/> for exceeding the writer's max depth, or a real
+    /// stack overflow at larger depth limits) instead of ever producing JSON. This context exists only
+    /// so <see cref="PhoneNumbers.PhoneNumber"/> can be *resolved*
     /// (given a <see cref="System.Text.Json.Serialization.Metadata.JsonTypeInfo"/> to satisfy the type
     /// graph) when it appears as a member of another type covered by source generation — e.g. a
     /// consumer's own <see cref="JsonSerializerContext"/> combined with this one via

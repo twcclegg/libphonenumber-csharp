@@ -1,5 +1,6 @@
 using System;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Xunit;
 
 namespace PhoneNumbers.Extensions.Test
@@ -14,11 +15,7 @@ namespace PhoneNumbers.Extensions.Test
         [InlineData("+448443351801", "+448443351801", null)]
         [InlineData("+448443351801", "0844 335 1801", "GB")]
         [InlineData("+380445004973", "0445004973", "UA")]
-#if NET6_0_OR_GREATER
         public void DefaultOptions_RoundTripsThroughSourceGenContext(string expected, string input, string? region)
-#else
-        public void DefaultOptions_RoundTripsThroughSourceGenContext(string expected, string input, string region)
-#endif
         {
             var number = Util.Parse(input, region);
 
@@ -61,14 +58,44 @@ namespace PhoneNumbers.Extensions.Test
         public void RawContext_BypassesConverterAndRecursesForever()
         {
             // Documents the gotcha in PhoneNumberJsonContext's remarks. PhoneNumber.DefaultInstanceForType
-            // is a public get-only property that returns `this`; the source-generated member-based
-            // serializer for PhoneNumber (used when you go through the raw JsonTypeInfo<T> instead of
-            // through options wired with PhoneNumberConverter) walks it and recurses without end,
-            // rather than ever producing the E.164 string PhoneNumberConverter would.
+            // is a public get-only property that returns the type's own static default instance (itself a
+            // PhoneNumber exposing the same property); the source-generated member-based serializer for
+            // PhoneNumber (used when you go through the raw JsonTypeInfo<T> instead of through options wired
+            // with PhoneNumberConverter) walks it and recurses without end, rather than ever producing the
+            // E.164 string PhoneNumberConverter would.
             var number = Util.Parse("+16194002404", null);
 
             Assert.Throws<InvalidOperationException>(
                 () => JsonSerializer.Serialize(number, PhoneNumberJsonContext.Default.PhoneNumber));
         }
+
+        [Fact]
+        public void Create_CombinesAnExistingResolverInsteadOfReplacingIt()
+        {
+            // Regression test: Create() must combine baseOptions' own TypeInfoResolver with
+            // PhoneNumberJsonContext.Default rather than overwrite it, so a DTO type resolved by the
+            // caller's own JsonSerializerContext can still contain a PhoneNumber property. Overwriting
+            // (the original bug) made JsonSerializer throw NotSupportedException for DtoWithPhoneNumber
+            // because DtoContext alone has no metadata for it.
+            var baseOptions = new JsonSerializerOptions { TypeInfoResolver = DtoContext.Default };
+
+            var options = PhoneNumberJsonOptions.Create(baseOptions);
+            var dto = new DtoWithPhoneNumber { Number = Util.Parse("+16194002404", null) };
+
+            var json = JsonSerializer.Serialize(dto, options);
+            var roundTripped = JsonSerializer.Deserialize<DtoWithPhoneNumber>(json, options);
+
+            Assert.Equal("+16194002404", Util.Format(roundTripped!.Number, PhoneNumberFormat.E164));
+        }
+    }
+
+    internal class DtoWithPhoneNumber
+    {
+        public PhoneNumbers.PhoneNumber Number { get; set; } = null!;
+    }
+
+    [JsonSerializable(typeof(DtoWithPhoneNumber))]
+    internal partial class DtoContext : JsonSerializerContext
+    {
     }
 }
