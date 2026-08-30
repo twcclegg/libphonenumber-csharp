@@ -73,6 +73,7 @@
     <BinaryTimezonesDir>$(BaseIntermediateOutputPath)timezones</BinaryTimezonesDir>
     <BinaryCarrierDir>$(BaseIntermediateOutputPath)carrier</BinaryCarrierDir>
     <BinaryLocaleDir>$(BaseIntermediateOutputPath)locale</BinaryLocaleDir>
+    <BinaryRegexPatternsDir>$(BaseIntermediateOutputPath)regexpatterns</BinaryRegexPatternsDir>
     <ResourcesDir>$(MSBuildThisFileDirectory)..\..\resources/</ResourcesDir>
     <MetadataBuilderProject>$(MSBuildThisFileDirectory)..\PhoneNumbers.MetadataBuilder\PhoneNumbers.MetadataBuilder.csproj</MetadataBuilderProject>
     <MetadataBuilderDll>$(MSBuildThisFileDirectory)..\PhoneNumbers.MetadataBuilder\bin\$(Configuration)\net10.0\PhoneNumbers.MetadataBuilder.dll</MetadataBuilderDll>
@@ -169,6 +170,19 @@
   </Target>
 
   <!--
+    Single flat file, same shape as GenerateTimezoneBin. RegexPatternCollector enumerates the
+    known regex-pattern set from the same three XML inputs GenerateBinaryMetadata watches (it does
+    NOT read PhoneNumberMetadataForTesting.xml, so that file is deliberately not an Input here).
+  -->
+  <Target Name="GenerateRegexPatternList"
+          BeforeTargets="AssignTargetPaths"
+          Inputs="$(ResourcesDir)PhoneNumberMetadata.xml;$(ResourcesDir)ShortNumberMetadata.xml;$(ResourcesDir)PhoneNumberAlternateFormats.xml"
+          Outputs="$(BinaryRegexPatternsDir)/known_patterns.bin">
+    <MakeDir Directories="$(BinaryRegexPatternsDir)" />
+    <Exec Command="dotnet &quot;$(MetadataBuilderDll)&quot; regexpatterns &quot;$(ResourcesDir)&quot; &quot;$(BinaryRegexPatternsDir)/known_patterns.bin&quot;" />
+  </Target>
+
+  <!--
     Embedding runs on every inner per-TFM build (AssignTargetPaths only — there's no resource
     embedding on the cross-targeting outer). Items are added inside a Target rather than at
     top-level because top-level wildcard globs are evaluated at MSBuild parse time, before the
@@ -178,7 +192,7 @@
   -->
   <Target Name="EmbedBinaryMetadata"
           BeforeTargets="AssignTargetPaths"
-          DependsOnTargets="GenerateBinaryMetadata;GenerateGeocodingBins;GenerateTimezoneBin;GenerateCarrierBins;GenerateLocaleBins">
+          DependsOnTargets="GenerateBinaryMetadata;GenerateGeocodingBins;GenerateTimezoneBin;GenerateCarrierBins;GenerateLocaleBins;GenerateRegexPatternList">
     <!--
       Two-step add to avoid an MSBuild item-batching surprise:
       a single `<EmbeddedResource Include="path/*" LogicalName="...%(Filename)..." />` inside a
@@ -205,6 +219,15 @@
                         LogicalName="PhoneNumbers.carrier.%(_BinCarrierFile.Filename)%(_BinCarrierFile.Extension)" />
       <EmbeddedResource Include="@(_BinLocaleFile)"
                         LogicalName="PhoneNumbers.locale.%(_BinLocaleFile.Filename)%(_BinLocaleFile.Extension)" />
+      <!--
+        Only net8.0/net10.0 read this (PhoneRegex's FrozenDictionary fast path is
+        NET8_0_OR_GREATER-gated; see PhoneRegex.cs). Still embedded unconditionally on
+        netstandard2.0 too, same as every other bin here, since Inputs/Outputs gating means the
+        file exists regardless of which TFM is currently embedding, and a bin nobody reads costs
+        a few KB, not a behavior difference.
+      -->
+      <EmbeddedResource Include="$(BinaryRegexPatternsDir)/known_patterns.bin"
+                        LogicalName="PhoneNumbers.regexpatterns.known_patterns.bin" />
     </ItemGroup>
   </Target>
 
@@ -221,6 +244,7 @@
     <RemoveDir Directories="$(BinaryTimezonesDir)" Condition="Exists('$(BinaryTimezonesDir)')" />
     <RemoveDir Directories="$(BinaryCarrierDir)" Condition="Exists('$(BinaryCarrierDir)')" />
     <RemoveDir Directories="$(BinaryLocaleDir)" Condition="Exists('$(BinaryLocaleDir)')" />
+    <RemoveDir Directories="$(BinaryRegexPatternsDir)" Condition="Exists('$(BinaryRegexPatternsDir)')" />
   </Target>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' ">
