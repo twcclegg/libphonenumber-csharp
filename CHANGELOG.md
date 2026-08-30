@@ -246,7 +246,7 @@ misplaced `net10.0` here — it actually landed the release after (v9.0.32, abov
 
 ## [v9.0.10 – v9.0.29](https://github.com/twcclegg/libphonenumber-csharp/compare/v9.0.9...v9.0.29) - 2025-07-18 – 2026-04-25
 
-19 releases. Upstream metadata syncs, several bundled only a mechanical `LocaleData.cs` regeneration,
+20 releases. Upstream metadata syncs, several bundled only a mechanical `LocaleData.cs` regeneration,
 plus routine Dependabot CI bumps (`codecov-action`, `actions/checkout`, `actions/setup-dotnet`,
 `github/codeql-action`) and NuGet test-project dependency groups. No changes to the library's own
 source.
@@ -778,7 +778,7 @@ or commit message recorded to describe it further). No new features.
 
 ## [v8.8.10 – v8.9.2](https://github.com/twcclegg/libphonenumber-csharp/compare/v8.8.9...v8.9.2) - 2018-01-25 – 2018-03-19
 
-6 releases, mostly metadata syncs. Added `CONTRIBUTING.md`; de-duplicated the test metadata XML. No
+5 releases, mostly metadata syncs. Added `CONTRIBUTING.md`; de-duplicated the test metadata XML. No
 functional changes.
 
 ## [v8.8.7 – v8.8.9](https://github.com/twcclegg/libphonenumber-csharp/compare/v8.8.6...v8.8.9) - 2017-12-01 – 2018-01-10
