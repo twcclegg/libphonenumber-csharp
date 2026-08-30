@@ -1,4 +1,4 @@
-#nullable disable
+#nullable enable
 /*
  * Copyright (C) 2011 Patrick Mezard
  *
@@ -209,7 +209,7 @@ namespace PhoneNumbers
             // read/written via Volatile.Read/Write explicitly below, so the field itself can stay plain
             // and avoid the CS0420 ("volatile field passed by ref won't be treated as volatile") warning
             // that TreatWarningsAsErrors would turn into a build failure.
-            private Regex compiled;
+            private Regex? compiled;
 
             private int useCount;
             private int promotionStarted;
