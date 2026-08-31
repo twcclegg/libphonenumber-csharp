@@ -50,3 +50,9 @@ Known Issues
   equivalent spots (`PhoneNumberMatcher(PhoneNumberUtil, string, ...)`,
   `PhoneNumberUtil.IsViablePhoneNumber(string)`) instead of a comparable abstraction, so a
   caller building up a number in a `StringBuilder` has to call `.ToString()` first.
+
+See [`docs/api-differences-from-java.md`](../docs/api-differences-from-java.md) for a fuller,
+example-driven reference of API-shape differences from upstream Java — including gotchas like
+`PhoneNumberOfflineGeocoder`/`PhoneNumberToCarrierMapper` taking this library's own `Locale`
+type rather than `System.Globalization.CultureInfo`, and the `PhoneNumbers.Extensions.PhoneNumber`
+helper class sharing a simple name with `PhoneNumbers.PhoneNumber` (the data type).
