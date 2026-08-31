@@ -106,8 +106,7 @@ Extensions API additions, security/hardening fixes, and a large internal code-qu
 ## [v9.0.37](https://github.com/twcclegg/libphonenumber-csharp/compare/v9.0.36...v9.0.37) - 2026-08-14
 
 A dedicated performance-optimization release, alongside build-reproducibility and package-validation
-work and new benchmark coverage — not a metadata-only release, despite the version bump looking
-routine.
+work and new benchmark coverage.
 
 ### Performance
 - A long series of allocation- and regex-reduction changes on the parsing/formatting hot path:
@@ -173,8 +172,7 @@ next release, above).
 
 ## [v9.0.33](https://github.com/twcclegg/libphonenumber-csharp/compare/v9.0.32...v9.0.33) - 2026-06-22
 
-Security- and process-hardening release, alongside two metadata-parity fixes — one of the releases the
-previous CHANGELOG draft incorrectly called metadata-only.
+Security- and process-hardening release, alongside two metadata-parity fixes.
 
 ### Added
 - `SECURITY.md`, `CODE_OF_CONDUCT.md`, and `CODEOWNERS`.
@@ -192,8 +190,7 @@ previous CHANGELOG draft incorrectly called metadata-only.
 
 ## [v9.0.32](https://github.com/twcclegg/libphonenumber-csharp/compare/v9.0.31...v9.0.32) - 2026-06-05
 
-Another release the previous CHANGELOG draft called metadata-only that actually shipped a new target
-framework, AOT compatibility, and a redesigned demo site.
+This release shipped a new target framework, AOT compatibility, and a redesigned demo site.
 
 ### Added
 - `net10.0` target framework. (#328)
@@ -226,8 +223,7 @@ framework, AOT compatibility, and a redesigned demo site.
 
 The architectural turning point behind most of CLAUDE.md's "Singleton + metadata loading" notes: phone
 metadata moved from parsed XML to binary files generated at build time and embedded in the assembly.
-The previous CHANGELOG draft attributed this release's work to a vague "binary metadata" one-liner and
-misplaced `net10.0` here — it actually landed the release after (v9.0.32, above).
+(`net10.0` landed the release after this one — v9.0.32, above.)
 
 ### Added
 - `IMetadataLoader` + a lazy `MetadataSource`, with `EmbeddedResourceMetadataLoader` as the default
