@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- https://learn.microsoft.com/dotnet/fundamentals/package-validation/diagnostic-ids -->
+<!--
+  Intentional, accepted breaking change: IMetadataLoader, EmbeddedResourceMetadataLoader, and
+  MetadataManager.SetMetadataLoader were made public in PR #323 (v9.0.x, ~May 2026) on
+  "mirrors Java's MetadataLoader API" precedent reasoning, without the explicit sign-off a new
+  public member requires (see CLAUDE.md's note on new public members). No documented feature ever
+  referenced them (not in README/CHANGELOG/docs), and internally they were always just the
+  implementation detail behind MetadataSource/PhoneNumberUtil's internal constructors, so this
+  reverts them to internal rather than waiting for the next major version bump — which, since this
+  library's major version tracks upstream Google libphonenumber's, could be years away.
+-->
+<Suppressions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Suppression>
+    <DiagnosticId>CP0001</DiagnosticId>
+    <Target>T:PhoneNumbers.EmbeddedResourceMetadataLoader</Target>
+    <Left>lib/net10.0/PhoneNumbers.dll</Left>
+    <Right>lib/net10.0/PhoneNumbers.dll</Right>
+    <IsBaselineSuppression>true</IsBaselineSuppression>
+  </Suppression>
+  <Suppression>
+    <DiagnosticId>CP0001</DiagnosticId>
+    <Target>T:PhoneNumbers.IMetadataLoader</Target>
+    <Left>lib/net10.0/PhoneNumbers.dll</Left>
+    <Right>lib/net10.0/PhoneNumbers.dll</Right>
+    <IsBaselineSuppression>true</IsBaselineSuppression>
+  </Suppression>
+  <Suppression>
+    <DiagnosticId>CP0001</DiagnosticId>
+    <Target>T:PhoneNumbers.EmbeddedResourceMetadataLoader</Target>
+    <Left>lib/net8.0/PhoneNumbers.dll</Left>
+    <Right>lib/net8.0/PhoneNumbers.dll</Right>
+    <IsBaselineSuppression>true</IsBaselineSuppression>
+  </Suppression>
+  <Suppression>
+    <DiagnosticId>CP0001</DiagnosticId>
+    <Target>T:PhoneNumbers.IMetadataLoader</Target>
+    <Left>lib/net8.0/PhoneNumbers.dll</Left>
+    <Right>lib/net8.0/PhoneNumbers.dll</Right>
+    <IsBaselineSuppression>true</IsBaselineSuppression>
+  </Suppression>
+  <Suppression>
+    <DiagnosticId>CP0001</DiagnosticId>
+    <Target>T:PhoneNumbers.EmbeddedResourceMetadataLoader</Target>
+    <Left>lib/netstandard2.0/PhoneNumbers.dll</Left>
+    <Right>lib/netstandard2.0/PhoneNumbers.dll</Right>
+    <IsBaselineSuppression>true</IsBaselineSuppression>
+  </Suppression>
+  <Suppression>
+    <DiagnosticId>CP0001</DiagnosticId>
+    <Target>T:PhoneNumbers.IMetadataLoader</Target>
+    <Left>lib/netstandard2.0/PhoneNumbers.dll</Left>
+    <Right>lib/netstandard2.0/PhoneNumbers.dll</Right>
+    <IsBaselineSuppression>true</IsBaselineSuppression>
+  </Suppression>
+  <Suppression>
+    <DiagnosticId>CP0002</DiagnosticId>
+    <Target>M:PhoneNumbers.MetadataManager.SetMetadataLoader(PhoneNumbers.IMetadataLoader)</Target>
+    <Left>lib/net10.0/PhoneNumbers.dll</Left>
+    <Right>lib/net10.0/PhoneNumbers.dll</Right>
+    <IsBaselineSuppression>true</IsBaselineSuppression>
+  </Suppression>
+  <Suppression>
+    <DiagnosticId>CP0002</DiagnosticId>
+    <Target>M:PhoneNumbers.MetadataManager.SetMetadataLoader(PhoneNumbers.IMetadataLoader)</Target>
+    <Left>lib/net8.0/PhoneNumbers.dll</Left>
+    <Right>lib/net8.0/PhoneNumbers.dll</Right>
+    <IsBaselineSuppression>true</IsBaselineSuppression>
+  </Suppression>
+  <Suppression>
+    <DiagnosticId>CP0002</DiagnosticId>
+    <Target>M:PhoneNumbers.MetadataManager.SetMetadataLoader(PhoneNumbers.IMetadataLoader)</Target>
+    <Left>lib/netstandard2.0/PhoneNumbers.dll</Left>
+    <Right>lib/netstandard2.0/PhoneNumbers.dll</Right>
+    <IsBaselineSuppression>true</IsBaselineSuppression>
+  </Suppression>
+</Suppressions>

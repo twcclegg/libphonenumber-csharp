@@ -49,12 +49,11 @@ namespace PhoneNumbers
         /// constructor.
         /// </summary>
         /// <remarks>
-        /// Intended for callers shipping trimmed or remote metadata. Should be called once at
-        /// application startup, before any metadata is requested — already-cached metadata is not
-        /// invalidated when the loader is replaced.
+        /// Internal, not part of the public API — see the note on <see cref="IMetadataLoader"/>.
+        /// Exercised directly by this project's own tests via <c>InternalsVisibleTo</c>.
         /// </remarks>
         /// <param name="loader">Loader to use for both supplementary metadata file types.</param>
-        public static void SetMetadataLoader(IMetadataLoader loader)
+        internal static void SetMetadataLoader(IMetadataLoader loader)
         {
             if (loader is null) throw new ArgumentNullException(nameof(loader));
             alternateFormatsSource = new(loader, AlternateFormatsPrefix);

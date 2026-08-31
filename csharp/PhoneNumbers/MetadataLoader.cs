@@ -34,8 +34,12 @@ namespace PhoneNumbers
     /// the implementer is responsible for managing their lifetime; <see cref="MetadataSource"/>
     /// does not implement <see cref="IDisposable"/>.</para>
     /// <para>Mirrors <c>com.google.i18n.phonenumbers.MetadataLoader</c> in Java.</para>
+    /// <para>Internal, not part of the public API: this was briefly a public extension point
+    /// (added in PR #323 on the reasoning that it "mirrors Java's MetadataLoader API") without the
+    /// explicit sign-off a new public member requires — see the note on new public members in
+    /// CLAUDE.md — and is being pulled back before any real external dependency accrues on it.</para>
     /// </remarks>
-    public interface IMetadataLoader
+    internal interface IMetadataLoader
     {
         /// <summary>
         /// Returns an open stream for the given file, or <c>null</c> if it does not exist. The
@@ -83,7 +87,7 @@ namespace PhoneNumbers
     /// <see cref="IMetadataLoader"/> directly and skip this class — <see cref="MetadataSource"/>
     /// reads whatever stream the loader returns without further wrapping.</para>
     /// </remarks>
-    public sealed class EmbeddedResourceMetadataLoader : IMetadataLoader
+    internal sealed class EmbeddedResourceMetadataLoader : IMetadataLoader
     {
         /// <summary>
         /// Default resource-name prefix the build pipeline applies via the <c>LogicalName</c>
