@@ -329,6 +329,7 @@ if isTrue "${DRY_RUN}"; then
     log "dry run complete, a real run would now:"
     log "  - replace ${GITHUB_ACTION_WORKING_DIRECTORY}/resources with $(find "${UPSTREAM_RESOURCES}" -type f | wc -l | tr -d ' ') files from ${UPSTREAM_GITHUB_RELEASE_TAG}"
     log "  - regenerate resources/locale/country_names.txt with $(java -version 2>&1 | head -n 1 || echo 'the local jdk')"
+    log "  - add a CHANGELOG.md entry for ${UPSTREAM_GITHUB_RELEASE_TAG}"
     log "  - commit \"feat: automatic upgrade to ${UPSTREAM_GITHUB_RELEASE_TAG}\" on ${BRANCH} and push it"
     log "  - open a PR from ${BRANCH} into main and enable auto-merge"
     log "  - once that PR's required checks pass and it merges, finalize-metadata-release.sh creates release ${UPSTREAM_GITHUB_RELEASE_TAG} and dispatches ${PUBLISH_WORKFLOW}"
@@ -361,6 +362,48 @@ if [ -z "$(git status --porcelain)" ]; then
     exit 0
 fi
 
+# Record this release in CHANGELOG.md in the same commit as the metadata sync, rather than as a
+# separate PR once the tag exists: the version number is already known here (it's
+# UPSTREAM_GITHUB_RELEASE_TAG itself - this port tracks upstream's version 1:1), so there is
+# nothing to guess. The finalize step (finalize-metadata-release.sh) only tags and releases an
+# existing commit; it can't push a follow-up commit of its own; main's branch-protection ruleset
+# requires a PR for every push, with no bypass for any actor, including this automation's own
+# bot account - the same reason this script opens a PR instead of pushing directly (see the
+# file-level comment above). Doing it here keeps everything in the one PR that already goes
+# through that ruleset.
+CHANGELOG_FILE="${GITHUB_ACTION_WORKING_DIRECTORY}/CHANGELOG.md"
+if [ -f "${CHANGELOG_FILE}" ] && grep -qF '<!-- next-entry -->' "${CHANGELOG_FILE}"; then
+    # Every release always includes a metadata sync (that's the only thing that ever cuts a tag),
+    # but some releases also bundle other work merged to `main` in between - a version number alone
+    # doesn't say which. Diff this repo's own history since the last release (not the upstream diff
+    # checked above, which is google/libphonenumber's) against everything but resources/ itself and
+    # this bookkeeping file, so update-changelog.sh can tell whether this release is foldable into a
+    # prior metadata-only run or needs its own standalone entry. Deliberately NOT excluded:
+    # CountryCodeToRegionCodeMap.cs - despite its name, it is hand-maintained (its own header still
+    # says "todo make this file automatically generated"), so a change to it is real, hand-relevant
+    # content, not a mechanical byproduct of this sync. Fetching just the one tag works even from a
+    # shallow checkout: a tree-level `git diff` needs both commits' trees, not a connected history
+    # between them.
+    METADATA_ONLY=true
+    if git fetch --quiet --depth=1 origin "refs/tags/v${DEPLOYED_NUGET_TAG}:refs/tags/v${DEPLOYED_NUGET_TAG}" 2>/dev/null \
+        && git rev-parse -q --verify "v${DEPLOYED_NUGET_TAG}" >/dev/null; then
+        NON_METADATA_FILES=$(git diff --name-only "v${DEPLOYED_NUGET_TAG}" HEAD -- . ':!resources' ':!CHANGELOG.md')
+        if [ -n "${NON_METADATA_FILES}" ]; then
+            METADATA_ONLY=false
+        fi
+    else
+        # Fail closed: better to give this release its own entry than to silently fold real changes
+        # away as if they never happened because the one tag needed to check couldn't be fetched.
+        warn "could not fetch v${DEPLOYED_NUGET_TAG} to check for non-metadata changes since the last release"
+        METADATA_ONLY=false
+    fi
+
+    bash "${SCRIPT_DIR}/update-changelog.sh" "${CHANGELOG_FILE}" "${GITHUB_REPOSITORY}" "${UPSTREAM_REPOSITORY}" \
+        "v${DEPLOYED_NUGET_TAG}" "${UPSTREAM_GITHUB_RELEASE_TAG}" "${METADATA_ONLY}" "$(date -u +%F)"
+else
+    warn "CHANGELOG.md missing or missing the '<!-- next-entry -->' marker, skipping changelog update"
+fi
+
 git checkout -b "${BRANCH}"
 git add -A
 git -c user.email='<>' -c user.name='libphonenumber-csharp-bot' \
@@ -372,7 +415,7 @@ git -c user.email='<>' -c user.name='libphonenumber-csharp-bot' \
 git push --force origin "HEAD:refs/heads/${BRANCH}"
 
 PR_BODY=$(cat <<EOF
-Syncs \`resources/\` from [${UPSTREAM_REPOSITORY} ${UPSTREAM_GITHUB_RELEASE_TAG}](https://github.com/${UPSTREAM_REPOSITORY}/releases/tag/${UPSTREAM_GITHUB_RELEASE_TAG}) and regenerates \`resources/locale/country_names.txt\`.
+Syncs \`resources/\` from [${UPSTREAM_REPOSITORY} ${UPSTREAM_GITHUB_RELEASE_TAG}](https://github.com/${UPSTREAM_REPOSITORY}/releases/tag/${UPSTREAM_GITHUB_RELEASE_TAG}), regenerates \`resources/locale/country_names.txt\`, and records the release in \`CHANGELOG.md\`.
 
 Auto-merges once the required checks pass. On merge, [finalize_metadata_release.yml](.github/workflows/finalize_metadata_release.yml) tags the merge commit, creates the GitHub release, and dispatches the NuGet publish.
 EOF
