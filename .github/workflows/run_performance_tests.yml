@@ -15,8 +15,8 @@ on:
       - 'global.json'
       - 'nuget.config'
       - '.github/workflows/run_performance_tests.yml'
-      - 'lib/compare-benchmarks.js'
-      - 'lib/fail-on-benchmark-regression.js'
+      - 'csharp/PhoneNumbers.BenchmarkTools/**'
+      - 'lib/fail-on-benchmark-regression.sh'
   # Keeps a run against main in the Actions history; there is nothing to compare it to.
   # GitHub Actions does not support YAML anchors, so this list is duplicated rather than shared.
   push:
@@ -30,8 +30,8 @@ on:
       - 'global.json'
       - 'nuget.config'
       - '.github/workflows/run_performance_tests.yml'
-      - 'lib/compare-benchmarks.js'
-      - 'lib/fail-on-benchmark-regression.js'
+      - 'csharp/PhoneNumbers.BenchmarkTools/**'
+      - 'lib/fail-on-benchmark-regression.sh'
   workflow_dispatch:
 
 concurrency:
@@ -168,14 +168,14 @@ jobs:
 
           find "${stage}" -type f
 
-      # Writes benchmark-artifact/significant-changes.json - the small set of benchmarks that
-      # moved by more than plausible noise, in either direction. See lib/compare-benchmarks.js
+      # Writes benchmark-artifact/significant-changes.json - the small set of benchmarks that moved
+      # by more than plausible noise, in either direction. See PhoneNumbers.BenchmarkTools/Program.cs
       # for the method and why the threshold is as high as it is. This step itself never fails;
       # "Fail on statistically significant regression" below (after the artifact upload) does.
       - name: Compare benchmark results against base
         if: github.event_name == 'pull_request'
         run: |
-          node lib/compare-benchmarks.js \
+          dotnet run -c Release --project csharp/PhoneNumbers.BenchmarkTools -- \
             benchmark-artifact/branch-results \
             benchmark-artifact/main-results \
             benchmark-artifact/significant-changes.json
@@ -194,7 +194,7 @@ jobs:
       # check below, for a different check.
       - name: Fail on statistically significant regression
         if: github.event_name == 'pull_request'
-        run: node lib/fail-on-benchmark-regression.js benchmark-artifact/significant-changes.json
+        run: bash lib/fail-on-benchmark-regression.sh benchmark-artifact/significant-changes.json
 
       # BenchmarkDotNet exits 0 even when a benchmark throws — it reports that row as NA and carries
       # on. Without this the job stays green while measuring nothing. Runs after the upload so the
