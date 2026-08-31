@@ -198,6 +198,122 @@ namespace PhoneNumbers
         }
 
         /// <summary>
+        /// Same contract as <see cref="ValidateRE(string, bool)"/>, but first narrows every
+        /// regex-structural <c>\d</c> (and <c>\D</c>) in the pattern to an ASCII-only equivalent --
+        /// see <see cref="NarrowDigitClassToAscii"/>. Use this (instead of the plain
+        /// <see cref="ValidateRE(string, bool)"/> overloads) only for metadata fields that are
+        /// actually matched against phone-number input at run time (nationalNumberPattern,
+        /// leadingDigits, internationalPrefix, nationalPrefixForParsing, and a numberFormat's
+        /// pattern attribute) -- never for fields that only ever serve as a *replacement* template
+        /// (nationalPrefixTransformRule, nationalPrefixFormattingRule, carrierCodeFormattingRule,
+        /// the format/intlFormat text, preferredInternationalPrefix, preferredExtnPrefix), so those
+        /// keep validating (and echoing back) exactly the text the XML author wrote.
+        /// <para>
+        /// This narrowing is safe specifically because every one of those five matched-against
+        /// fields is only ever matched, at run time, against a string PhoneNumberUtil has already
+        /// normalized to ASCII 0-9 (see PhoneNumberUtil.Normalize/NormalizeDigits and its callers --
+        /// MaybeStripInternationalPrefixAndNormalize, ParseHelper, MaybeStripNationalPrefixAndCarrierCode)
+        /// or that was rebuilt from the numeric NationalNumber field of an already-parsed PhoneNumber
+        /// (GetNationalSignificantNumber*, always ASCII by construction), or -- for AsYouTypeFormatter --
+        /// a buffer fed exclusively through NormalizeAndAccrueDigitsAndPlusSign, which normalizes each
+        /// character as it is accrued. None of these call sites can hand a metadata pattern a raw,
+        /// non-normalized (and therefore potentially non-ASCII-digit) string. The free-text
+        /// candidate-scanning patterns in PhoneNumberMatcher are hand-written C# (not sourced from
+        /// this XML parser) and are deliberately left untouched -- they run against arbitrary raw text
+        /// before normalization and must stay Unicode-digit-aware.
+        /// </para>
+        /// </summary>
+        internal static string ValidateAndNarrowPatternRE(string regex, bool removeWhitespace = false)
+        {
+            if (removeWhitespace && regex.Any(char.IsWhiteSpace))
+                regex = new string(regex.Where(c => !char.IsWhiteSpace(c)).ToArray());
+            return ValidateRE(NarrowDigitClassToAscii(regex), false);
+        }
+
+        /// <summary>
+        /// Rewrites every regex-structural <c>\d</c> in <paramref name="regex"/> to the ASCII-only
+        /// <c>[0-9]</c> (or, for a <c>\d</c> already inside a <c>[...]</c> character class, the bare
+        /// <c>0-9</c> substituted in place of the escape -- e.g. <c>[\d-]</c> becomes <c>[0-9-]</c>,
+        /// never the broken/nested <c>[[0-9]-]</c>). A <c>\D</c> outside any character class narrows
+        /// symmetrically to <c>[^0-9]</c>; a <c>\D</c> found *inside* a character class throws, since
+        /// "not a decimal digit" cannot in general be soundly unioned into an existing bracket
+        /// expression's other members -- this shape does not occur anywhere in the shipped metadata
+        /// today (verified by inspection of PhoneNumberMetadata.xml, ShortNumberMetadata.xml,
+        /// PhoneNumberAlternateFormats.xml and PhoneNumberMetadataForTesting.xml), so surfacing it
+        /// loudly if a future upstream sync ever introduces one is preferable to silently emitting an
+        /// incorrect pattern.
+        /// <para>
+        /// This is structural, not a blind string replace: a backslash is only ever treated as
+        /// starting a fresh escape when it is not itself the second half of one (so <c>\\d</c> --
+        /// an escaped backslash followed by a literal "d" -- is left alone), and entry into/exit
+        /// from a character class tracks the POSIX idiom where a literal <c>]</c> immediately after
+        /// <c>[</c> or <c>[^</c> does not close the class.
+        /// </para>
+        /// </summary>
+        internal static string NarrowDigitClassToAscii(string regex)
+        {
+            if (regex.IndexOf('\\') < 0)
+                return regex;
+
+            var sb = new StringBuilder(regex.Length + 8);
+            var inClass = false;
+            var i = 0;
+            var n = regex.Length;
+            while (i < n)
+            {
+                var c = regex[i];
+                if (c == '\\' && i + 1 < n)
+                {
+                    var next = regex[i + 1];
+                    switch (next)
+                    {
+                        case 'd':
+                            sb.Append(inClass ? "0-9" : "[0-9]");
+                            break;
+                        case 'D' when inClass:
+                            throw new NotSupportedException(
+                                "Cannot narrow \\D to ASCII inside a character class: " + regex);
+                        case 'D':
+                            sb.Append("[^0-9]");
+                            break;
+                        default:
+                            sb.Append(c).Append(next);
+                            break;
+                    }
+                    i += 2;
+                    continue;
+                }
+                if (!inClass && c == '[')
+                {
+                    inClass = true;
+                    sb.Append(c);
+                    i++;
+                    // A leading '^' (negation) and/or an immediately-following ']' are literal
+                    // members of the class, not its close -- the regular ']' handling below only
+                    // applies once we're past this leading special-case position.
+                    if (i < n && regex[i] == '^')
+                    {
+                        sb.Append(regex[i]);
+                        i++;
+                    }
+                    if (i < n && regex[i] == ']')
+                    {
+                        sb.Append(regex[i]);
+                        i++;
+                    }
+                    continue;
+                }
+                if (inClass && c == ']')
+                {
+                    inClass = false;
+                }
+                sb.Append(c);
+                i++;
+            }
+            return sb.ToString();
+        }
+
+        /// <summary>
         /// Returns the national prefix of the provided country element.
         /// </summary>
         public static string GetNationalPrefix(XElement element)
@@ -214,14 +330,14 @@ namespace PhoneNumbers
             if (element.Attribute(COUNTRY_CODE) is { } a1)
                 metadata.CountryCode = int.Parse(a1.Value, CultureInfo.InvariantCulture);
             if (element.Attribute(LEADING_DIGITS) is { } a2)
-                metadata.LeadingDigits = ValidateRE(a2.Value);
+                metadata.LeadingDigits = ValidateAndNarrowPatternRE(a2.Value);
             if (element.Attribute(INTERNATIONAL_PREFIX) is { } a3)
-                metadata.InternationalPrefix = ValidateRE(a3.Value);
+                metadata.InternationalPrefix = ValidateAndNarrowPatternRE(a3.Value);
             if (element.Attribute(PREFERRED_INTERNATIONAL_PREFIX) is { } a4)
                 metadata.PreferredInternationalPrefix = a4.Value;
             if (element.Attribute(NATIONAL_PREFIX_FOR_PARSING) is { } a5)
             {
-                metadata.NationalPrefixForParsing = ValidateRE(a5.Value, true);
+                metadata.NationalPrefixForParsing = ValidateAndNarrowPatternRE(a5.Value, true);
                 if (element.Attribute(NATIONAL_PREFIX_TRANSFORM_RULE) is { } a6)
                     metadata.NationalPrefixTransformRule = ValidateRE(a6.Value);
             }
@@ -251,7 +367,12 @@ namespace PhoneNumbers
         {
             var intlFormat = new NumberFormat();
             SetLeadingDigitsPatterns(numberFormatElement, intlFormat);
-            intlFormat.Pattern = numberFormatElement.Attribute(PATTERN)?.Value ?? "";
+            // Not run through ValidateRE here (same as before this narrowing was added) -- the same
+            // "pattern" attribute on this numberFormatElement is validated by the sibling
+            // LoadNationalFormat call in the normal LoadAvailableFormats flow. It IS matched against
+            // normalized (ASCII-only) national numbers at run time (ChooseFormattingPatternForNumber,
+            // when metadata.intlNumberFormat_ is in use), so it still needs narrowing.
+            intlFormat.Pattern = NarrowDigitClassToAscii(numberFormatElement.Attribute(PATTERN)?.Value ?? "");
             var intlFormatPattern = numberFormatElement.Elements(INTL_FORMAT).ToList();
             var hasExplicitIntlFormatDefined = false;
 
@@ -287,7 +408,7 @@ namespace PhoneNumbers
         internal static string LoadNationalFormat(PhoneMetadata metadata, XElement numberFormatElement, NumberFormat format)
         {
             SetLeadingDigitsPatterns(numberFormatElement, format);
-            format.Pattern = ValidateRE(numberFormatElement.Attribute(PATTERN)?.Value ?? "");
+            format.Pattern = ValidateAndNarrowPatternRE(numberFormatElement.Attribute(PATTERN)?.Value ?? "");
 
             var formatPattern = numberFormatElement.Elements(FORMAT).ToList();
             if (formatPattern.Count != 1)
@@ -353,7 +474,7 @@ namespace PhoneNumbers
         internal static void SetLeadingDigitsPatterns(XElement numberFormatElement, NumberFormat format)
         {
             foreach (var e in numberFormatElement.Elements(LEADING_DIGITS))
-                format.leadingDigitsPattern_.Add(ValidateRE(e.Value, true));
+                format.leadingDigitsPattern_.Add(ValidateAndNarrowPatternRE(e.Value, true));
         }
 
         public static string GetNationalPrefixFormattingRuleFromElement(XElement element, string nationalPrefix)
@@ -429,7 +550,7 @@ namespace PhoneNumbers
 
             var validPattern = element.Element(NATIONAL_NUMBER_PATTERN);
             if (validPattern is not null)
-                numberDesc.NationalNumberPattern = ValidateRE(validPattern.Value, true);
+                numberDesc.NationalNumberPattern = ValidateAndNarrowPatternRE(validPattern.Value, true);
 
             var exampleNumber = element.Element(EXAMPLE_NUMBER);
             if (exampleNumber is not null)

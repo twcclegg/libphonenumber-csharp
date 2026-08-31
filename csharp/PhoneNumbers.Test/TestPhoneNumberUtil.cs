@@ -200,19 +200,21 @@ namespace PhoneNumbers.Test
             Assert.Equal("011", metadata.InternationalPrefix);
             Assert.True(metadata.HasNationalPrefix);
             Assert.Equal(2, metadata.NumberFormatCount);
-            Assert.Equal("(\\d{3})(\\d{3})(\\d{4})",
+            // \d is narrowed to the ASCII-only [0-9] for metadata patterns matched against input --
+            // see BuildMetadataFromXml.NarrowDigitClassToAscii.
+            Assert.Equal("([0-9]{3})([0-9]{3})([0-9]{4})",
                 metadata.NumberFormatList[1].Pattern);
             Assert.Equal("$1 $2 $3", metadata.NumberFormatList[1].Format);
-            Assert.Equal("[13-689]\\d{9}|2[0-35-9]\\d{8}",
+            Assert.Equal("[13-689][0-9]{9}|2[0-35-9][0-9]{8}",
                 metadata.GeneralDesc.NationalNumberPattern);
-            Assert.Equal("[13-689]\\d{9}|2[0-35-9]\\d{8}",
+            Assert.Equal("[13-689][0-9]{9}|2[0-35-9][0-9]{8}",
                 metadata.FixedLine.NationalNumberPattern);
             Assert.Equal(1, metadata.GeneralDesc.PossibleLengthCount);
             Assert.Equal(10, metadata.GeneralDesc.PossibleLengthList[0]);
             // Possible lengths are the same as the general description, so aren't stored separately in the
             // toll free element as well.
             Assert.Equal(0, metadata.TollFree.PossibleLengthCount);
-            Assert.Equal("900\\d{7}", metadata.PremiumRate.NationalNumberPattern);
+            Assert.Equal("900[0-9]{7}", metadata.PremiumRate.NationalNumberPattern);
             // No shared-cost data is available, so its national number data should not be set.
             Assert.False(metadata.SharedCost.HasNationalNumberPattern);
         }
@@ -228,7 +230,9 @@ namespace PhoneNumbers.Test
             Assert.Equal(6, metadata.NumberFormatCount);
             Assert.Equal(1, metadata.NumberFormatList[5].LeadingDigitsPatternCount);
             Assert.Equal("900", metadata.NumberFormatList[5].LeadingDigitsPatternList[0]);
-            Assert.Equal("(\\d{3})(\\d{3,4})(\\d{4})",
+            // \d is narrowed to the ASCII-only [0-9] for metadata patterns matched against input --
+            // see BuildMetadataFromXml.NarrowDigitClassToAscii.
+            Assert.Equal("([0-9]{3})([0-9]{3,4})([0-9]{4})",
                 metadata.NumberFormatList[5].Pattern);
             Assert.Equal("$1 $2 $3", metadata.NumberFormatList[5].Format);
             Assert.Equal(2, metadata.GeneralDesc.PossibleLengthLocalOnlyCount);
@@ -237,11 +241,11 @@ namespace PhoneNumbers.Test
             // efficiency reasons we don't store an extra value.
             Assert.Equal(0, metadata.FixedLine.PossibleLengthCount);
             Assert.Equal(2, metadata.Mobile.PossibleLengthCount);
-            Assert.Equal("(?:[24-6]\\d{2}|3[03-9]\\d|[789](?:0[2-9]|[1-9]\\d))\\d{1,8}",
+            Assert.Equal("(?:[24-6][0-9]{2}|3[03-9][0-9]|[789](?:0[2-9]|[1-9][0-9]))[0-9]{1,8}",
                 metadata.FixedLine.NationalNumberPattern);
             Assert.Equal("30123456", metadata.FixedLine.ExampleNumber);
             Assert.Equal(10, metadata.TollFree.PossibleLengthList[0]);
-            Assert.Equal("900([135]\\d{6}|9\\d{7})", metadata.PremiumRate.NationalNumberPattern);
+            Assert.Equal("900([135][0-9]{6}|9[0-9]{7})", metadata.PremiumRate.NationalNumberPattern);
         }
 
         [Fact]
@@ -255,9 +259,11 @@ namespace PhoneNumbers.Test
             Assert.Equal("0(?:(11|343|3715)15)?", metadata.NationalPrefixForParsing);
             Assert.Equal("9$1", metadata.NationalPrefixTransformRule);
             Assert.Equal("$2 15 $3-$4", metadata.NumberFormatList[2].Format);
-            Assert.Equal("(\\d)(\\d{4})(\\d{2})(\\d{4})",
+            // \d is narrowed to the ASCII-only [0-9] for metadata patterns matched against input --
+            // see BuildMetadataFromXml.NarrowDigitClassToAscii.
+            Assert.Equal("([0-9])([0-9]{4})([0-9]{2})([0-9]{4})",
                      metadata.NumberFormatList[3].Pattern);
-            Assert.Equal("(\\d)(\\d{4})(\\d{2})(\\d{4})",
+            Assert.Equal("([0-9])([0-9]{4})([0-9]{2})([0-9]{4})",
                      metadata.IntlNumberFormatList[3].Pattern);
             Assert.Equal("$1 $2 $3 $4", metadata.IntlNumberFormatList[3].Format);
         }
@@ -269,7 +275,9 @@ namespace PhoneNumbers.Test
             Assert.Equal("001", metadata.Id);
             Assert.Equal(800, metadata.CountryCode);
             Assert.Equal("$1 $2", metadata.NumberFormatList[0].Format);
-            Assert.Equal("(\\d{4})(\\d{4})", metadata.NumberFormatList[0].Pattern);
+            // \d is narrowed to the ASCII-only [0-9] for metadata patterns matched against input --
+            // see BuildMetadataFromXml.NarrowDigitClassToAscii.
+            Assert.Equal("([0-9]{4})([0-9]{4})", metadata.NumberFormatList[0].Pattern);
             Assert.Equal("12345678", metadata.TollFree.ExampleNumber);
         }
 
