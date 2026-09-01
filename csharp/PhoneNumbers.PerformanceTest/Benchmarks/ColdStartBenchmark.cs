@@ -11,6 +11,10 @@ namespace PhoneNumbers.PerformanceTest.Benchmarks
     /// </summary>
     [MemoryDiagnoser]
     [SimpleJob(RunStrategy.ColdStart, RuntimeMoniker.Net10_0, launchCount: 1, warmupCount: 1, iterationCount: 20, invocationCount: 1)]
+    // EmbeddedResourceMetadataLoader's Obsolete attribute is aimed at external callers; this
+    // benchmark constructs it directly (rather than via PhoneNumberUtil.GetInstance()'s cached
+    // singleton) specifically to measure an uncached first use, which is the whole point here.
+#pragma warning disable CS0618
     public class ColdStartBenchmark
     {
         // The country-code-to-region map and one fresh PhoneNumberUtil are kept around so the
@@ -258,4 +262,5 @@ namespace PhoneNumbers.PerformanceTest.Benchmarks
             return geocoder.GetDescriptionForNumber(number, Locale.English).Length;
         }
     }
+#pragma warning restore CS0618
 }
