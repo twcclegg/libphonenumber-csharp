@@ -28,7 +28,11 @@ namespace PhoneNumbers
     /// </remarks>
     internal sealed class MetadataSource
     {
+        // IMetadataLoader is obsolete for external callers only; this internal type is exactly the
+        // plumbing the Obsolete note on IMetadataLoader says still uses it.
+#pragma warning disable CS0618
         private readonly IMetadataLoader loader;
+#pragma warning restore CS0618
         private readonly string filePrefix;
         private readonly ConcurrentDictionary<string, PhoneMetadata?> regionCache = new();
         private readonly ConcurrentDictionary<int, PhoneMetadata?> nonGeoCache = new();
@@ -37,7 +41,9 @@ namespace PhoneNumbers
         private readonly Func<string, PhoneMetadata?> regionLoader;
         private readonly Func<int, PhoneMetadata?> nonGeoLoader;
 
+#pragma warning disable CS0618
         public MetadataSource(IMetadataLoader loader, string filePrefix)
+#pragma warning restore CS0618
         {
             this.loader = loader;
             this.filePrefix = filePrefix;

@@ -19,6 +19,9 @@ namespace PhoneNumbers.Test
     /// Unit tests for <see cref="MetadataSource"/>. Uses a fake <see cref="IMetadataLoader"/> so
     /// the tests don't depend on the production embedded resources or assembly layout.
     /// </summary>
+    // IMetadataLoader/EmbeddedResourceMetadataLoader are Obsolete for external callers only; this
+    // test exercises them directly as this project's own internal API.
+#pragma warning disable CS0618
     public class TestMetadataSource
     {
         private sealed class FakeLoader : IMetadataLoader
@@ -118,4 +121,5 @@ namespace PhoneNumbers.Test
             Assert.Equal(2, loader.RequestedFiles.Count); // independent loads
         }
     }
+#pragma warning restore CS0618
 }

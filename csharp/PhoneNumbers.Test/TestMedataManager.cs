@@ -34,6 +34,9 @@ namespace PhoneNumbers.Test
     /// <para/>Author: Lara Rennie
     /// </remarks>
     [Collection("TestMetadataTestCase")]
+    // IMetadataLoader/EmbeddedResourceMetadataLoader/SetMetadataLoader are Obsolete for external
+    // callers only; this test exercises them directly as this project's own internal API.
+#pragma warning disable CS0618
     public class TestMedataManager
     {
         [Fact]
@@ -95,4 +98,5 @@ namespace PhoneNumbers.Test
             }
         }
     }
+#pragma warning restore CS0618
 }
