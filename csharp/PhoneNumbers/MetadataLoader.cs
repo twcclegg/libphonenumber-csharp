@@ -11,6 +11,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
@@ -41,7 +42,8 @@ namespace PhoneNumbers
     /// deprecation window, rather than removed outright.</para>
     /// </remarks>
     [Obsolete("Not intended for external use and will become internal in a future release. " +
-        "This library does not currently offer a supported metadata-loading extension point.")]
+        "This library does not currently offer a supported metadata-loading extension point."),
+     EditorBrowsable(EditorBrowsableState.Never)]
     public interface IMetadataLoader
     {
         /// <summary>
@@ -92,7 +94,8 @@ namespace PhoneNumbers
     /// <see cref="IMetadataLoader"/> directly and skip this class — <see cref="MetadataSource"/>
     /// reads whatever stream the loader returns without further wrapping.</para>
     /// </remarks>
-    [Obsolete("Not intended for external use and will become internal in a future release.")]
+    [Obsolete("Not intended for external use and will become internal in a future release."),
+     EditorBrowsable(EditorBrowsableState.Never)]
     public sealed class EmbeddedResourceMetadataLoader : IMetadataLoader
     {
         /// <summary>

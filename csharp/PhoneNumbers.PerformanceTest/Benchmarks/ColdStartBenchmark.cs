@@ -11,10 +11,6 @@ namespace PhoneNumbers.PerformanceTest.Benchmarks
     /// </summary>
     [MemoryDiagnoser]
     [SimpleJob(RunStrategy.ColdStart, RuntimeMoniker.Net10_0, launchCount: 1, warmupCount: 1, iterationCount: 20, invocationCount: 1)]
-    // EmbeddedResourceMetadataLoader's Obsolete attribute is aimed at external callers; this
-    // benchmark constructs it directly (rather than via PhoneNumberUtil.GetInstance()'s cached
-    // singleton) specifically to measure an uncached first use, which is the whole point here.
-#pragma warning disable CS0618
     public class ColdStartBenchmark
     {
         // The country-code-to-region map and one fresh PhoneNumberUtil are kept around so the
@@ -111,9 +107,15 @@ namespace PhoneNumbers.PerformanceTest.Benchmarks
         [Benchmark]
         public PhoneNumberUtil CreateInstance()
         {
+            // EmbeddedResourceMetadataLoader's Obsolete attribute is aimed at external callers;
+            // this benchmark constructs it directly (rather than via PhoneNumberUtil.GetInstance()'s
+            // cached singleton) specifically to measure an uncached first use, which is the whole
+            // point here.
+#pragma warning disable CS0618
             return new PhoneNumberUtil(
                 new EmbeddedResourceMetadataLoader(),
                 CountryCodeToRegionCodeMap.GetCountryCodeToRegionCodeMap());
+#pragma warning restore CS0618
         }
 
         /// <summary>
@@ -123,9 +125,12 @@ namespace PhoneNumbers.PerformanceTest.Benchmarks
         [Benchmark]
         public int CreateInstanceAndLoadAllRegions()
         {
+            // See CreateInstance's comment on why this loader is constructed directly.
+#pragma warning disable CS0618
             var util = new PhoneNumberUtil(
                 new EmbeddedResourceMetadataLoader(),
                 CountryCodeToRegionCodeMap.GetCountryCodeToRegionCodeMap());
+#pragma warning restore CS0618
 
             var checksum = 0;
             for (var i = 0; i < _supportedRegions.Length; i++)
@@ -145,9 +150,12 @@ namespace PhoneNumbers.PerformanceTest.Benchmarks
         [Benchmark]
         public PhoneMetadata FirstRegionLookup()
         {
+            // See CreateInstance's comment on why this loader is constructed directly.
+#pragma warning disable CS0618
             var util = new PhoneNumberUtil(
                 new EmbeddedResourceMetadataLoader(),
                 CountryCodeToRegionCodeMap.GetCountryCodeToRegionCodeMap());
+#pragma warning restore CS0618
             return util.GetMetadataForRegion(TargetRegion);
         }
 
@@ -178,9 +186,12 @@ namespace PhoneNumbers.PerformanceTest.Benchmarks
             var region = FirstUseRegions[_firstUseIndex % FirstUseRegions.Length];
             _firstUseIndex++;
 
+            // See CreateInstance's comment on why this loader is constructed directly.
+#pragma warning disable CS0618
             var util = new PhoneNumberUtil(
                 new EmbeddedResourceMetadataLoader(),
                 CountryCodeToRegionCodeMap.GetCountryCodeToRegionCodeMap());
+#pragma warning restore CS0618
 
             var number = util.Parse(region.NumberToParse, region.DefaultRegion);
             var checksum = util.IsValidNumber(number) ? 1 : 0;
@@ -224,9 +235,12 @@ namespace PhoneNumbers.PerformanceTest.Benchmarks
             var region = FirstUseMatcherRegions[_firstUseMatcherIndex % FirstUseMatcherRegions.Length];
             _firstUseMatcherIndex++;
 
+            // See CreateInstance's comment on why this loader is constructed directly.
+#pragma warning disable CS0618
             var util = new PhoneNumberUtil(
                 new EmbeddedResourceMetadataLoader(),
                 CountryCodeToRegionCodeMap.GetCountryCodeToRegionCodeMap());
+#pragma warning restore CS0618
 
             var text = $"Call me at {region.NumberToParse} tomorrow.";
             var checksum = 0;
@@ -253,14 +267,16 @@ namespace PhoneNumbers.PerformanceTest.Benchmarks
             var region = FirstUseGeocoderRegions[_firstUseGeocoderIndex % FirstUseGeocoderRegions.Length];
             _firstUseGeocoderIndex++;
 
+            // See CreateInstance's comment on why this loader is constructed directly.
+#pragma warning disable CS0618
             var util = new PhoneNumberUtil(
                 new EmbeddedResourceMetadataLoader(),
                 CountryCodeToRegionCodeMap.GetCountryCodeToRegionCodeMap());
+#pragma warning restore CS0618
             var geocoder = new PhoneNumberOfflineGeocoder(GeocodingDataDirectory);
 
             var number = util.Parse(region.NumberToParse, region.DefaultRegion);
             return geocoder.GetDescriptionForNumber(number, Locale.English).Length;
         }
     }
-#pragma warning restore CS0618
 }

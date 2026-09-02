@@ -34,9 +34,6 @@ namespace PhoneNumbers.Test
     /// <para/>Author: Lara Rennie
     /// </remarks>
     [Collection("TestMetadataTestCase")]
-    // IMetadataLoader/EmbeddedResourceMetadataLoader/SetMetadataLoader are Obsolete for external
-    // callers only; this test exercises them directly as this project's own internal API.
-#pragma warning disable CS0618
     public class TestMedataManager
     {
         [Fact]
@@ -61,6 +58,9 @@ namespace PhoneNumbers.Test
         /// it. Verifies the static config knob is wired up; restores the default loader on exit so
         /// other tests in this assembly continue to see real metadata.
         /// </summary>
+        // IMetadataLoader/EmbeddedResourceMetadataLoader/SetMetadataLoader are Obsolete for external
+        // callers only; this test exercises them directly as this project's own internal API.
+#pragma warning disable CS0618
         [Fact]
         public void SetMetadataLoader_RoutesLookupsThroughCustomLoader()
         {
@@ -97,6 +97,6 @@ namespace PhoneNumbers.Test
                 return null;
             }
         }
-    }
 #pragma warning restore CS0618
+    }
 }

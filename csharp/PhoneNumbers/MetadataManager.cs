@@ -15,6 +15,7 @@
  */
 
 using System;
+using System.ComponentModel;
 
 namespace PhoneNumbers
 {
@@ -57,7 +58,8 @@ namespace PhoneNumbers
         /// directly by this project's own tests.
         /// </remarks>
         /// <param name="loader">Loader to use for both supplementary metadata file types.</param>
-        [Obsolete("Not intended for external use and will become internal in a future release.")]
+        [Obsolete("Not intended for external use and will become internal in a future release."),
+         EditorBrowsable(EditorBrowsableState.Never)]
         public static void SetMetadataLoader(IMetadataLoader loader)
         {
             if (loader is null) throw new ArgumentNullException(nameof(loader));
