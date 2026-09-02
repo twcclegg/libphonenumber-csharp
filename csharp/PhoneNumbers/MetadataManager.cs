@@ -15,6 +15,7 @@
  */
 
 using System;
+using System.ComponentModel;
 
 namespace PhoneNumbers
 {
@@ -38,8 +39,12 @@ namespace PhoneNumbers
         private static MetadataSource alternateFormatsSource = CreateDefault(AlternateFormatsPrefix);
         private static MetadataSource shortNumberSource = CreateDefault(ShortNumberMetadataPrefix);
 
+        // The obsolete-and-public EmbeddedResourceMetadataLoader is still this library's own
+        // production default; the Obsolete attribute is aimed at external callers, not this.
+#pragma warning disable CS0618
         private static MetadataSource CreateDefault(string filePrefix)
             => new MetadataSource(new EmbeddedResourceMetadataLoader(), filePrefix);
+#pragma warning restore CS0618
 
         /// <summary>
         /// Replaces the <see cref="IMetadataLoader"/> used to fetch the supplementary metadata
@@ -49,11 +54,12 @@ namespace PhoneNumbers
         /// constructor.
         /// </summary>
         /// <remarks>
-        /// Intended for callers shipping trimmed or remote metadata. Should be called once at
-        /// application startup, before any metadata is requested — already-cached metadata is not
-        /// invalidated when the loader is replaced.
+        /// Not intended for external use — see the note on <see cref="IMetadataLoader"/>. Exercised
+        /// directly by this project's own tests.
         /// </remarks>
         /// <param name="loader">Loader to use for both supplementary metadata file types.</param>
+        [Obsolete("Not intended for external use and will become internal in a future release."),
+         EditorBrowsable(EditorBrowsableState.Never)]
         public static void SetMetadataLoader(IMetadataLoader loader)
         {
             if (loader is null) throw new ArgumentNullException(nameof(loader));

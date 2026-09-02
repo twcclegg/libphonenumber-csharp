@@ -11,6 +11,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
@@ -34,7 +35,15 @@ namespace PhoneNumbers
     /// the implementer is responsible for managing their lifetime; <see cref="MetadataSource"/>
     /// does not implement <see cref="IDisposable"/>.</para>
     /// <para>Mirrors <c>com.google.i18n.phonenumbers.MetadataLoader</c> in Java.</para>
+    /// <para>This was made public in PR #323 on "mirrors Java's MetadataLoader API" reasoning,
+    /// without the explicit sign-off a new public member requires — see the note on new public
+    /// members in CLAUDE.md. Nothing documented ever depended on it being an extension point, so it
+    /// is being walked back to internal; marked <see cref="ObsoleteAttribute"/> first, as a
+    /// deprecation window, rather than removed outright.</para>
     /// </remarks>
+    [Obsolete("Not intended for external use and will become internal in a future release. " +
+        "This library does not currently offer a supported metadata-loading extension point."),
+     EditorBrowsable(EditorBrowsableState.Never)]
     public interface IMetadataLoader
     {
         /// <summary>
@@ -50,7 +59,9 @@ namespace PhoneNumbers
     /// is round-tripped through <see cref="BuildMetadataFromBin"/> once at construction so the
     /// rest of the library can use the same lazy <c>MetadataSource</c> path as production code.
     /// </summary>
+#pragma warning disable CS0618 // Internal implementer of the equally-obsolete IMetadataLoader.
     internal sealed class InMemoryMetadataLoader : IMetadataLoader
+#pragma warning restore CS0618
     {
         private readonly Dictionary<string, byte[]> data;
 
@@ -83,6 +94,8 @@ namespace PhoneNumbers
     /// <see cref="IMetadataLoader"/> directly and skip this class — <see cref="MetadataSource"/>
     /// reads whatever stream the loader returns without further wrapping.</para>
     /// </remarks>
+    [Obsolete("Not intended for external use and will become internal in a future release."),
+     EditorBrowsable(EditorBrowsableState.Never)]
     public sealed class EmbeddedResourceMetadataLoader : IMetadataLoader
     {
         /// <summary>

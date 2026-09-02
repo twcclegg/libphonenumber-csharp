@@ -21,7 +21,11 @@ namespace PhoneNumbers.Test
     /// </summary>
     public class TestMetadataSource
     {
+        // IMetadataLoader is Obsolete for external callers only; this test exercises it directly
+        // as this project's own internal API.
+#pragma warning disable CS0618
         private sealed class FakeLoader : IMetadataLoader
+#pragma warning restore CS0618
         {
             public Dictionary<string, byte[]> Files { get; } = new();
             public List<string> RequestedFiles { get; } = new();
@@ -86,6 +90,9 @@ namespace PhoneNumbers.Test
             Assert.Equal(800, metadata!.CountryCode);
         }
 
+        // EmbeddedResourceMetadataLoader is Obsolete for external callers only; this test
+        // exercises it directly as this project's own internal API.
+#pragma warning disable CS0618
         [Fact]
         public void DefaultLoaderResolvesEmbeddedBinaryMetadata()
         {
@@ -100,6 +107,7 @@ namespace PhoneNumbers.Test
             Assert.Equal("US", us!.Id);
             Assert.Equal(1, us.CountryCode);
         }
+#pragma warning restore CS0618
 
         [Fact]
         public void RegionAndNonGeoCachesAreIndependent()
@@ -118,4 +126,5 @@ namespace PhoneNumbers.Test
             Assert.Equal(2, loader.RequestedFiles.Count); // independent loads
         }
     }
+#pragma warning restore CS0618
 }

@@ -561,8 +561,12 @@ namespace PhoneNumbers
         // Production constructor: lazy per-region loading via the supplied IMetadataLoader. The
         // country-calling-code-to-region map is required up front since we no longer load every
         // region's metadata eagerly to compute it.
+        // IMetadataLoader's Obsolete attribute is aimed at external callers; this internal
+        // constructor is exactly the plumbing it says still uses it.
+#pragma warning disable CS0618
         internal PhoneNumberUtil(IMetadataLoader metadataLoader,
             Dictionary<int, List<string>> countryCallingCodeToRegionCodeMap)
+#pragma warning restore CS0618
         {
             if (metadataLoader is null) throw new ArgumentNullException(nameof(metadataLoader));
             if (countryCallingCodeToRegionCodeMap is null)
@@ -590,6 +594,7 @@ namespace PhoneNumbers
             set;
 #endif
 
+#pragma warning disable CS0618 // Internal plumbing; see the constructor above.
         private static void Initialize(
             IMetadataLoader loader,
             Dictionary<int, List<string>> ccToRegions,
@@ -598,6 +603,7 @@ namespace PhoneNumbers
             out RegionCodeSet outNanpaRegions,
             out Dictionary<int, PhoneMetadata> outNonGeoMap,
             out MetadataSource outSource)
+#pragma warning restore CS0618
         {
             outMap = FreezeRegionCodeMap(ccToRegions);
             outSource = new MetadataSource(loader, "PhoneNumberMetadata");
@@ -1133,9 +1139,13 @@ namespace PhoneNumbers
         {
             if (instance is not null) return instance;
             lock (ThisLock)
+                // EmbeddedResourceMetadataLoader's Obsolete attribute is aimed at external callers;
+                // this is still the library's own production default.
+#pragma warning disable CS0618
                 return instance ??= new PhoneNumberUtil(
                     new EmbeddedResourceMetadataLoader(),
                     CountryCodeToRegionCodeMap.GetCountryCodeToRegionCodeMap());
+#pragma warning restore CS0618
         }
 
         /// <summary>
