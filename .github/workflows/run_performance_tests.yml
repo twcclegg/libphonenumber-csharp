@@ -132,6 +132,14 @@ jobs:
         run: dotnet run -c Release --framework net10.0 --no-build -- --filter "*" --exporters JSON
         working-directory: ./csharp/PhoneNumbers.PerformanceTest
 
+      # Not a benchmark, and not comparable against the base tree: it asserts an absolute budget and
+      # exits non-zero on its own. BenchmarkDotNet cannot cover this -- MemoryDiagnoser measures an
+      # extra run of the method, after static initializers have already completed. See
+      # PhoneNumbers.PerformanceTest/RetainedMemoryAudit.cs.
+      - name: Check retained memory against its budget
+        run: dotnet run -c Release --framework net10.0 --no-build -- --retained-memory
+        working-directory: ./csharp/PhoneNumbers.PerformanceTest
+
       # Bundle both sets of results so the follow-up workflow can post the comparison.
       - name: Stage benchmark artifact
         if: github.event_name == 'pull_request'

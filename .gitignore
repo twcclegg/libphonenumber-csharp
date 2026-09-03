@@ -208,8 +208,10 @@ testgeocoding.zip
 /resources/carrier.zip
 /resources/test/testcarrier.zip
 
-# Performance tests artifacts
-csharp/PhoneNumbers.PerformanceTest/BenchmarkDotNet.Artifacts/
+# Performance tests artifacts. BenchmarkDotNet writes these relative to the working directory, not
+# to the project directory, so running the benchmarks from anywhere other than the project folder
+# (e.g. `dotnet run --project PhoneNumbers.PerformanceTest/...` from csharp/) drops them elsewhere.
+**/BenchmarkDotNet.Artifacts/
 
 # Coverage reports
 coverage/

@@ -36,6 +36,16 @@ Targets `netstandard2.0`, `net8.0` and `net10.0`.
 
 The library is annotated as trim- and AOT-compatible, and the trim/AOT analyzers run as part of its own build. All metadata — including the geocoding, carrier and time zone prefix maps — is compiled to a binary form at build time and embedded in the assembly as compressed resources, so no XML is parsed and no file is read from disk at run time. The [interactive demo](https://twcclegg.github.io/libphonenumber-csharp/) is a Blazor WebAssembly app that runs this library trimmed, in the browser.
 
+### Regex compilation and startup cost
+
+Validation and formatting are driven by regexes built from the bundled metadata. There are thousands of them, and each is built the first time some caller touches that region.
+
+Those metadata regexes are deliberately **not** built with `RegexOptions.Compiled`. Compiling one costs around 1.5 ms of IL-emit and saves roughly 0.044 µs per match, so a pattern has to be matched on the order of 30,000 times before compiling it breaks even — which metadata patterns rarely are, because a workload spread across regions matches each one comparatively few times. Measured end-to-end on net8.0 (total wall time including startup, parse + validate + format), compiling them is 34x slower for 1,000 operations across 245 regions, 3.7x slower for 100,000, and still 1.7x slower at 1,000,000. It wins only for a process concentrating very high volume on one or two regions, and then by 6–20%.
+
+The library's own fixed regexes are a different case and are still compiled: there is a small, fixed number of them, each built once per process and hot for its whole life.
+
+If you have measured your own workload and know you want a compiled build of a specific pattern, construct a `PhoneRegex` with explicit options — caller-supplied options are honoured exactly.
+
 ### Debugging and symbols
 
 Symbols are published to the NuGet.org symbol server as a `.snupkg` alongside each release, with [Source Link](https://learn.microsoft.com/dotnet/standard/library-guidance/sourcelink) wired up — enable symbol server support in your debugger to step into the library.
