@@ -44,7 +44,7 @@ Those metadata regexes are deliberately **not** built with `RegexOptions.Compile
 
 The library's own fixed regexes are a different case and are still compiled: there is a small, fixed number of them, each built once per process and hot for its whole life.
 
-If you have measured your own workload and know you want a compiled build of a specific pattern, construct a `PhoneRegex` with explicit options — caller-supplied options are honoured exactly.
+There is no per-call knob for this. If you have measured a workload where compiling the metadata patterns wins — a long-running process concentrating very high volume on one or two regions is the shape where it can — please open an issue with the numbers rather than reaching for internal types.
 
 ### Debugging and symbols
 

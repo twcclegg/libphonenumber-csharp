@@ -91,8 +91,8 @@ namespace PhoneNumbers.Test
 
 #pragma warning disable CS0618 // intentionally exercising the obsolete ctor
         /// <summary>
-        /// Caller-supplied options are honoured exactly, including RegexOptions.Compiled -- the opt-out
-        /// for anyone who genuinely wants a compiled build of a specific pattern.
+        /// Caller-supplied options are still honoured exactly. This is back-compat for a constructor
+        /// that should never have been public, not a supported way to opt into compiled patterns.
         /// </summary>
         [Fact]
         public void ObsoleteOptionsConstructorStillHonorsCallerSuppliedOptions()
