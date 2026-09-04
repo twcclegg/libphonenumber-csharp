@@ -7,6 +7,12 @@
       "commands": [
         "sharpfuzz"
       ]
+    },
+    "docfx": {
+      "version": "2.78.5",
+      "commands": [
+        "docfx"
+      ]
     }
   }
 }

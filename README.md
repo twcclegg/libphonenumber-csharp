@@ -5,12 +5,14 @@
 
 C# port of Google's [libphonenumber library](https://github.com/google/libphonenumber).
 
-The code was rewritten from the Java source mostly unchanged, please refer to the original documentation for sample code and API documentation.
+The code was rewritten from the Java source mostly unchanged, please refer to the original documentation for sample code, and see the [API reference](https://twcclegg.github.io/libphonenumber-csharp/docs/) for this port's own types and members.
 
 The original Apache License 2.0 was preserved.
 
 > [!TIP]
 > **[Try the interactive demo →](https://twcclegg.github.io/libphonenumber-csharp/)** — parse, format, validate, and find phone numbers in your browser. No install required; runs entirely via WebAssembly.
+>
+> **[Browse the API reference →](https://twcclegg.github.io/libphonenumber-csharp/docs/)** — generated from this library's XML doc comments.
 
 See [this](csharp/README.md) for details about the port.
 

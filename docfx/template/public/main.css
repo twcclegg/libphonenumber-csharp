@@ -1,0 +1,126 @@
+/* ============================================================
+   libphonenumber-csharp docs theme
+   Ports the demo site's design tokens (csharp/PhoneNumbers.Demo/
+   wwwroot/css/app.css) onto DocFX's "modern" template so the two
+   sites read as one product. Same warm-neutral surfaces, orange
+   accent, font stack, and radii in both light and dark mode.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root,
+[data-bs-theme="light"] {
+  --bs-body-bg: #faf7f2;
+  --bs-body-color: #211d18;
+  --bs-emphasis-color: #211d18;
+  --bs-emphasis-color-rgb: 33, 29, 24;
+  --bs-secondary-color: #5c554b;
+  --bs-secondary-bg: #f6f2eb;
+  --bs-tertiary-bg: #efe9df;
+  --bs-border-color: #e7e0d4;
+  --bs-border-color-translucent: #e7e0d4;
+  --bs-link-color: #b8410b;
+  --bs-link-color-rgb: 184, 65, 11;
+  --bs-link-hover-color: #9a3412;
+  --bs-link-hover-color-rgb: 154, 52, 18;
+  --bs-primary: #c2410c;
+  --bs-primary-rgb: 194, 65, 12;
+  --bs-code-color: #b8410b;
+  --code-bg: #2c271f;
+  --code-text: #f3ede2;
+}
+
+[data-bs-theme="dark"] {
+  --bs-body-bg: #16130e;
+  --bs-body-color: #f6f1e8;
+  --bs-emphasis-color: #f6f1e8;
+  --bs-emphasis-color-rgb: 246, 241, 232;
+  --bs-secondary-color: #c5bcac;
+  --bs-secondary-bg: #211d16;
+  --bs-tertiary-bg: #2a251d;
+  --bs-border-color: #38322a;
+  --bs-border-color-translucent: #38322a;
+  --bs-link-color: #fdb874;
+  --bs-link-color-rgb: 253, 184, 116;
+  --bs-link-hover-color: #f97316;
+  --bs-link-hover-color-rgb: 249, 115, 22;
+  --bs-primary: #fb923c;
+  --bs-primary-rgb: 251, 146, 60;
+  --bs-code-color: #fdb874;
+  --code-bg: #0f0c08;
+  --code-text: #f0e9dc;
+}
+
+:root {
+  --bs-body-font-family: 'Manrope', system-ui, -apple-system, sans-serif;
+  --bs-font-monospace: 'JetBrains Mono', ui-monospace, 'SF Mono', Consolas, monospace;
+  --bs-border-radius: 14px;
+  --bs-border-radius-sm: 9px;
+  --bs-border-radius-lg: 20px;
+  --bs-border-radius-pill: 999px;
+}
+
+body {
+  font-family: var(--bs-body-font-family);
+}
+
+h1, h2, h3, h4, h5, h6,
+.article h1, .article h2, .article h3 {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+code, pre, kbd, samp, .lang-csharp {
+  font-family: var(--bs-font-monospace);
+}
+
+pre code, pre.code, .article pre {
+  background-color: var(--code-bg);
+  color: var(--code-text);
+  border-radius: var(--bs-border-radius-sm);
+}
+
+/* Nav / sidebar: dark rail in both themes, matching the demo's sidebar.css */
+.navbar {
+  --bs-navbar-brand-color: #ffffff;
+  background: #211d18;
+  border-bottom: 1px solid #3a342a;
+}
+
+[data-bs-theme="dark"] .navbar {
+  background: #110e0a;
+  border-bottom-color: #2e281f;
+}
+
+.navbar .navbar-brand,
+.navbar a {
+  color: #d8d0c2;
+}
+
+.navbar .navbar-brand:hover,
+.navbar .nav-link:hover {
+  color: #ffffff;
+}
+
+.sidenav,
+.sidenavhide,
+.sidefilter {
+  background: var(--bs-body-bg);
+}
+
+.sidenav .toc .nav > li > a.active {
+  color: var(--bs-primary);
+  font-weight: 600;
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--bs-primary);
+  --bs-btn-border-color: var(--bs-primary);
+  --bs-btn-hover-bg: var(--bs-link-hover-color);
+  --bs-btn-hover-border-color: var(--bs-link-hover-color);
+}
+
+.border, .card, .alert {
+  border-radius: var(--bs-border-radius) !important;
+}
