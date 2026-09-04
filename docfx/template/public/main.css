@@ -198,7 +198,14 @@ header {
   main.container-xxl {
     margin-left: var(--rail-width) !important;
     max-width: none !important;
-    width: auto !important;
+    /* body is display:flex/column, making this a flex item; "width:auto"
+       under stretch alignment was resolving against this element's own
+       min-content size (it's a flex container in its own right, holding
+       toc-offcanvas+content+affix) rather than the space actually left
+       after the fixed-position rail, overflowing the viewport. An
+       explicit calc() sidesteps that flex-stretch ambiguity entirely. */
+    width: calc(100% - var(--rail-width)) !important;
+    min-width: 0 !important;
   }
 }
 
@@ -347,8 +354,25 @@ header {
 /* ============================================================
    Content polish
    ============================================================ */
+/* main.container-xxl (toc-offcanvas + .content + .affix) is a flex row;
+   flex items default to min-width:auto (won't shrink below their content's
+   natural min-content width), which is what let a long code line/URL in
+   .content force the whole row — and the page — wider than the viewport
+   at narrower desktop widths. */
+@media (min-width: 768px) {
+  .content {
+    min-width: 0;
+  }
+}
+
 .content article {
   max-width: 860px;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+pre {
+  overflow-x: auto;
 }
 
 .alert, .card {
