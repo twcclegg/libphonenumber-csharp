@@ -330,10 +330,32 @@ header {
   border-right: 1px solid var(--bs-border-color);
 }
 
+@media (min-width: 768px) {
+  .toc-offcanvas {
+    min-width: 220px;
+  }
+}
+
+/* Long class names (PhoneNumberMatcher.CheckGroups, ...) were wrapping to
+   4-5 lines each once this panel got squeezed below ~260px at tablet/small-
+   laptop widths — unreadable. Truncate to one line with an ellipsis
+   instead; the filter box above covers finding a name that's cut off. */
 .toc-offcanvas .toc .nav-link {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   border-left: 3px solid transparent;
   border-radius: 0 var(--bs-border-radius-sm) var(--bs-border-radius-sm) 0;
   padding: 0.35rem 0.6rem 0.35rem calc(0.6rem - 3px);
+}
+
+/* DocFX inserts <wbr> inside long CamelCase names (Missing<wbr>Metadata...)
+   as break opportunities for when this panel is wide enough to wrap onto a
+   second line; Chrome still honors them as break points even under
+   white-space:nowrap above, defeating the single-line ellipsis. */
+.toc-offcanvas .toc .nav-link wbr {
+  display: none;
 }
 
 .toc-offcanvas .toc .nav-link:hover {
