@@ -37,7 +37,7 @@ namespace PhoneNumbers
     /// <para>Mirrors <c>com.google.i18n.phonenumbers.MetadataLoader</c> in Java.</para>
     /// <para>This was made public in PR #323 on "mirrors Java's MetadataLoader API" reasoning,
     /// without the explicit sign-off a new public member requires — see the note on new public
-    /// members in CLAUDE.md. Nothing documented ever depended on it being an extension point, so it
+    /// members in AGENTS.md. Nothing documented ever depended on it being an extension point, so it
     /// is being walked back to internal; marked <see cref="ObsoleteAttribute"/> first, as a
     /// deprecation window, rather than removed outright.</para>
     /// </remarks>
