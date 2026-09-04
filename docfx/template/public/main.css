@@ -28,6 +28,13 @@
   --bs-code-color: #b8410b;
   --code-bg: #2c271f;
   --code-text: #f3ede2;
+
+  --surface: #ffffff;
+  --accent-soft: #fae6d6;
+  --accent-soft-fg: #9a3412;
+  --accent-soft-border: #f1c6a3;
+  --shadow-sm: 0 1px 2px rgba(45, 35, 20, 0.06);
+  --shadow-md: 0 6px 18px -6px rgba(45, 35, 20, 0.14), 0 2px 6px rgba(45, 35, 20, 0.06);
 }
 
 [data-bs-theme="dark"] {
@@ -49,6 +56,13 @@
   --bs-code-color: #fdb874;
   --code-bg: #0f0c08;
   --code-text: #f0e9dc;
+
+  --surface: #211d16;
+  --accent-soft: #3a2412;
+  --accent-soft-fg: #fdba74;
+  --accent-soft-border: #5a3a1c;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px -8px rgba(0, 0, 0, 0.6);
 }
 
 :root {
@@ -208,6 +222,14 @@ header {
   flex-shrink: 0;
 }
 
+/* The demo's logo badge gradient itself shifts between themes (sidebar.css's
+   --accent-2/--accent-solid differ light vs dark); an <img>-referenced SVG
+   can't see the page's CSS variables, so ship two files and swap via
+   content:url() instead, keeping the same per-theme gradient stops. */
+[data-bs-theme="dark"] #logo {
+  content: url("../images/logo-dark.svg");
+}
+
 .navbar-nav .nav-link {
   display: flex;
   align-items: center;
@@ -237,7 +259,7 @@ header {
 
 .navbar-nav .nav-link[href$="index.html"]::before { content: "\f425"; }
 .navbar-nav .nav-link[href*="/api/"]::before { content: "\f194"; }
-.navbar-nav .nav-link.dropdown-toggle::before { content: "\f444"; }
+.navbar-nav .nav-link[href*="/articles/"]::before { content: "\f444"; }
 
 .navbar-nav .nav-link:hover {
   color: var(--rail-active-text);
@@ -424,7 +446,7 @@ table thead th {
 
 .docs-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
   gap: 1rem;
   margin: 1.5rem 0 2rem;
   list-style: none !important;
@@ -432,34 +454,41 @@ table thead th {
 }
 
 .docs-card {
-  display: block;
-  padding: 1.1rem 1.2rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
   border: 1px solid var(--bs-border-color);
   border-radius: var(--bs-border-radius);
-  background: var(--bs-secondary-bg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
   text-decoration: none !important;
   color: inherit !important;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  overflow: hidden;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
 .docs-card:hover {
+  border-color: var(--bs-primary);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.18);
+  box-shadow: var(--shadow-md);
 }
 
-.docs-card__title {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  font-weight: 600;
-  color: var(--bs-primary);
-  margin-bottom: 0.35rem;
+.docs-card__icon {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--bs-border-radius-sm);
+  background: var(--accent-soft);
+  color: var(--accent-soft-fg);
+  border: 1px solid var(--accent-soft-border);
+  margin-bottom: 0.75rem;
 }
 
-.docs-card__title svg {
-  width: 18px;
-  height: 18px;
+.docs-card__icon svg {
+  width: 22px;
+  height: 22px;
   stroke: currentColor;
   fill: none;
   stroke-width: 2;
@@ -467,8 +496,42 @@ table thead th {
   stroke-linejoin: round;
 }
 
+.docs-card__title {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
 .docs-card p {
   margin: 0;
   font-size: 0.9rem;
   color: var(--bs-secondary-color);
+  line-height: 1.55;
+  flex: 1;
+}
+
+.docs-card__go {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  color: var(--bs-secondary-color);
+  transform: translateX(-4px);
+  opacity: 0;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.docs-card__go svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.docs-card:hover .docs-card__go {
+  opacity: 1;
+  transform: translateX(0);
+  color: var(--bs-primary);
 }

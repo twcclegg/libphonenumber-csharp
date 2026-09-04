@@ -3,4 +3,4 @@
 - name: API Reference
   href: api/
 - name: Articles
-  href: articles/toc.yml
+  href: articles/api-differences-from-java.md
