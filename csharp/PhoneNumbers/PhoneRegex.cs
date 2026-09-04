@@ -32,6 +32,13 @@ namespace PhoneNumbers
     /// touch that region, and RegexOptions.Compiled costs roughly 1.5 ms of IL-emit per pattern that
     /// only repays after tens of thousands of matches of that same pattern.
     /// </para>
+    /// <para>
+    /// This type is public, and both constructors are <see cref="ObsoleteAttribute"/>, only because the
+    /// obsolete <see cref="RegexCache"/> shim returns <see cref="PhoneRegex"/> instances. Neither the
+    /// type nor either constructor was ever meant to be called by consumers; both were only ever meant
+    /// to be internal, and will become so at the next opportunity for a breaking change -- see issue
+    /// #375.
+    /// </para>
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public sealed class PhoneRegex
@@ -44,10 +51,18 @@ namespace PhoneNumbers
         private static readonly ConcurrentDictionary<string, PhoneRegex> cache = new();
 
         // Cached factory delegate so cache-hit lookups never allocate a fresh closure.
+#pragma warning disable CS0618 // the ctor is obsolete for external callers, not for the cache that owns it
         private static readonly Func<string, PhoneRegex> factory = k => new PhoneRegex(k);
+#pragma warning restore CS0618
 
         internal static PhoneRegex Get(string regex) => cache.GetOrAdd(regex, factory);
 
+        /// <summary>
+        /// This constructor, like the type it belongs to, is public only because the obsolete
+        /// <see cref="RegexCache"/> shim returns <see cref="PhoneRegex"/> instances -- see the class
+        /// remarks. It was never meant to be called directly.
+        /// </summary>
+        [Obsolete("This is an internal implementation detail not meant for public use")]
         public PhoneRegex(string pattern)
         {
             this.pattern = pattern;

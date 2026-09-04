@@ -24,7 +24,9 @@ namespace PhoneNumbers.Test
         public void PublicApiSurfaceStillWorks()
         {
             var (groupName, marker, pattern) = UniqueCase("basic");
+#pragma warning disable CS0618 // intentionally exercising the obsolete ctor
             var regex = new PhoneRegex(pattern);
+#pragma warning restore CS0618
             var value = $"12345_{marker}";
 
             Assert.True(regex.IsMatch(value));
