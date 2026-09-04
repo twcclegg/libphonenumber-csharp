@@ -91,18 +91,20 @@ pre code, pre.code, .article pre {
 :root {
   --rail-width: 280px;
   --rail-bg: #211d18;
+  --rail-surface: #2c271f;
   --rail-border: #3a342a;
   --rail-text: #d8d0c2;
   --rail-text-dim: #9c9385;
-  --rail-active-bg: rgba(255, 255, 255, 0.08);
+  --rail-active-text: #ffffff;
 }
 
 [data-bs-theme="dark"] {
   --rail-bg: #110e0a;
+  --rail-surface: #1c1812;
   --rail-border: #2e281f;
   --rail-text: #c5bcac;
   --rail-text-dim: #837a6c;
-  --rail-active-bg: rgba(255, 255, 255, 0.06);
+  --rail-active-text: #ffffff;
 }
 
 header {
@@ -132,7 +134,8 @@ header {
 
   .navbar.navbar-expand-md {
     flex: 1;
-    display: flex;
+    display: flex !important;
+    align-items: stretch !important;
     min-height: 0;
   }
 
@@ -141,6 +144,7 @@ header {
     display: flex !important;
     flex-direction: column !important;
     align-items: stretch !important;
+    justify-content: flex-start !important;
     min-height: 0;
     max-width: none;
     padding: 0;
@@ -152,17 +156,19 @@ header {
   }
 
   .navbar-collapse#navpanel {
-    flex: 1;
     display: flex !important;
+    flex: 0 0 auto !important;
     flex-direction: column;
     align-items: stretch !important;
-    min-height: 0;
+    max-height: 100%;
     overflow-y: auto;
   }
 
   #navbar {
     display: flex;
+    flex: 0 0 auto !important;
     flex-direction: column;
+    justify-content: flex-start !important;
     order: 2;
   }
 
@@ -205,22 +211,58 @@ header {
 .navbar-nav .nav-link {
   display: flex;
   align-items: center;
-  color: var(--rail-text-dim);
-  padding: 0.55rem 0.85rem;
-  border-radius: var(--bs-border-radius-sm);
+  gap: 0.7rem;
+  position: relative;
+  color: var(--rail-text);
+  padding: 0.6rem 0.65rem 0.6rem calc(0.65rem + 3px);
+  border-left: 3px solid transparent;
+  border-radius: 0 var(--bs-border-radius-sm) var(--bs-border-radius-sm) 0;
   font-size: 0.9rem;
-  transition: color 0.15s ease, background-color 0.15s ease;
+  font-weight: 500;
+  min-height: 40px;
+  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
 }
 
+.navbar-nav .nav-link::before {
+  content: "";
+  width: 19px;
+  height: 19px;
+  flex-shrink: 0;
+  font: 19px bootstrap-icons;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.85;
+}
+
+.navbar-nav .nav-link[href$="index.html"]::before { content: "\f425"; }
+.navbar-nav .nav-link[href*="/api/"]::before { content: "\f194"; }
+.navbar-nav .nav-link.dropdown-toggle::before { content: "\f444"; }
+
 .navbar-nav .nav-link:hover {
-  color: #ffffff;
-  background: var(--rail-active-bg);
+  color: var(--rail-active-text);
+  background: var(--rail-surface);
 }
 
 .navbar-nav .nav-link.active {
-  color: #ffffff;
-  background: var(--rail-active-bg);
+  color: var(--rail-active-text);
+  background: var(--rail-surface);
+  border-left-color: var(--bs-primary);
   font-weight: 600;
+}
+
+.navbar-nav .nav-link.active::before,
+.navbar-nav .nav-link:hover::before {
+  opacity: 1;
+  color: var(--bs-primary);
+}
+
+.dropdown-menu {
+  --bs-dropdown-bg: var(--rail-surface);
+  --bs-dropdown-link-color: var(--rail-text);
+  --bs-dropdown-link-hover-color: var(--rail-active-text);
+  --bs-dropdown-link-hover-bg: var(--rail-bg);
+  --bs-dropdown-border-color: var(--rail-border);
 }
 
 .search {
@@ -228,7 +270,7 @@ header {
 }
 
 .search .form-control {
-  background: var(--rail-active-bg);
+  background: var(--rail-bg);
   border: 1px solid var(--rail-border);
   color: var(--rail-text);
   border-radius: var(--bs-border-radius-pill);
@@ -243,15 +285,26 @@ header {
 }
 
 /* Class-tree TOC on API pages: a lighter panel to the right of the rail,
-   in the same spirit as the demo's active-link accent highlighting. */
+   in the same spirit as the demo's active-link accent highlighting. DocFX's
+   own CSS sticks this at top:calc(60px + 1.6rem), a leftover offset that
+   assumed an in-flow horizontal navbar above it; the rail is fixed instead,
+   so that offset is now dead space — zero it out. */
+@media (min-width: 768px) {
+  .toc-offcanvas,
+  .affix {
+    top: 1.5rem !important;
+  }
+}
+
 .toc-offcanvas {
   background: var(--bs-body-bg);
   border-right: 1px solid var(--bs-border-color);
 }
 
 .toc-offcanvas .toc .nav-link {
-  border-radius: var(--bs-border-radius-sm);
-  padding: 0.35rem 0.6rem;
+  border-left: 3px solid transparent;
+  border-radius: 0 var(--bs-border-radius-sm) var(--bs-border-radius-sm) 0;
+  padding: 0.35rem 0.6rem 0.35rem calc(0.6rem - 3px);
 }
 
 .toc-offcanvas .toc .nav-link:hover {
@@ -260,6 +313,7 @@ header {
 
 .toc-offcanvas .toc .nav-link.active {
   background: var(--bs-tertiary-bg);
+  border-left-color: var(--bs-primary);
   color: var(--bs-primary) !important;
   font-weight: 600;
 }
