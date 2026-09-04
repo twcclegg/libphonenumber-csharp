@@ -81,37 +81,227 @@ pre code, pre.code, .article pre {
   border-radius: var(--bs-border-radius-sm);
 }
 
-/* Nav / sidebar: dark rail in both themes, matching the demo's sidebar.css */
+/* ============================================================
+   Rail: the demo's persistent dark sidebar (sidebar.css), rebuilt
+   from DocFX's horizontal navbar. Fixed full-height on the left at
+   >=768px (the same breakpoint DocFX's own toc-offcanvas already
+   switches to a static column at); left alone below that so the
+   stock mobile collapse behavior keeps working.
+   ============================================================ */
+:root {
+  --rail-width: 280px;
+  --rail-bg: #211d18;
+  --rail-border: #3a342a;
+  --rail-text: #d8d0c2;
+  --rail-text-dim: #9c9385;
+  --rail-active-bg: rgba(255, 255, 255, 0.08);
+}
+
+[data-bs-theme="dark"] {
+  --rail-bg: #110e0a;
+  --rail-border: #2e281f;
+  --rail-text: #c5bcac;
+  --rail-text-dim: #837a6c;
+  --rail-active-bg: rgba(255, 255, 255, 0.06);
+}
+
+header {
+  border-bottom: 0 !important;
+  background: var(--rail-bg);
+}
+
 .navbar {
-  --bs-navbar-brand-color: #ffffff;
-  background: #211d18;
-  border-bottom: 1px solid #3a342a;
+  background: var(--rail-bg);
 }
 
-[data-bs-theme="dark"] .navbar {
-  background: #110e0a;
-  border-bottom-color: #2e281f;
+@media (min-width: 768px) {
+  /* Every level below is flex:1 + min-height:0 (not height:100%) so the fill
+     propagates through the whole nested-flex chain without a percentage-
+     height/align-items:center trap silently collapsing a level to auto. */
+  header {
+    position: fixed !important;
+    inset: 0 auto 0 0 !important;
+    width: var(--rail-width) !important;
+    height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow-y: auto !important;
+    border-right: 1px solid var(--rail-border);
+    z-index: 1030;
+  }
+
+  .navbar.navbar-expand-md {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+  }
+
+  .navbar .container-xxl {
+    flex: 1;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    min-height: 0;
+    max-width: none;
+    padding: 0;
+    gap: 0;
+  }
+
+  .navbar-brand {
+    flex-shrink: 0;
+  }
+
+  .navbar-collapse#navpanel {
+    flex: 1;
+    display: flex !important;
+    flex-direction: column;
+    align-items: stretch !important;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  #navbar {
+    display: flex;
+    flex-direction: column;
+    order: 2;
+  }
+
+  .navbar-nav,
+  .navbar-expand-md .navbar-nav {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    order: 1;
+    padding: 0.5rem 0.9rem;
+    gap: 0.1rem;
+  }
+
+  main.container-xxl {
+    margin-left: var(--rail-width) !important;
+    max-width: none !important;
+    width: auto !important;
+  }
 }
 
-.navbar .navbar-brand,
-.navbar a {
-  color: #d8d0c2;
-}
-
-.navbar .navbar-brand:hover,
-.navbar .nav-link:hover {
-  color: #ffffff;
-}
-
-.sidenav,
-.sidenavhide,
-.sidefilter {
-  background: var(--bs-body-bg);
-}
-
-.sidenav .toc .nav > li > a.active {
-  color: var(--bs-primary);
+.navbar-brand {
+  display: flex !important;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 1.35rem 1.25rem 1.05rem !important;
+  margin: 0 !important;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
   font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1.3;
+  color: #ffffff !important;
+}
+
+#logo {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+}
+
+.navbar-nav .nav-link {
+  display: flex;
+  align-items: center;
+  color: var(--rail-text-dim);
+  padding: 0.55rem 0.85rem;
+  border-radius: var(--bs-border-radius-sm);
+  font-size: 0.9rem;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #ffffff;
+  background: var(--rail-active-bg);
+}
+
+.navbar-nav .nav-link.active {
+  color: #ffffff;
+  background: var(--rail-active-bg);
+  font-weight: 600;
+}
+
+.search {
+  margin: 0.4rem 0.9rem 1rem;
+}
+
+.search .form-control {
+  background: var(--rail-active-bg);
+  border: 1px solid var(--rail-border);
+  color: var(--rail-text);
+  border-radius: var(--bs-border-radius-pill);
+}
+
+.search .form-control::placeholder {
+  color: var(--rail-text-dim);
+}
+
+.search .bi-search {
+  color: var(--rail-text-dim);
+}
+
+/* Class-tree TOC on API pages: a lighter panel to the right of the rail,
+   in the same spirit as the demo's active-link accent highlighting. */
+.toc-offcanvas {
+  background: var(--bs-body-bg);
+  border-right: 1px solid var(--bs-border-color);
+}
+
+.toc-offcanvas .toc .nav-link {
+  border-radius: var(--bs-border-radius-sm);
+  padding: 0.35rem 0.6rem;
+}
+
+.toc-offcanvas .toc .nav-link:hover {
+  background: var(--bs-tertiary-bg);
+}
+
+.toc-offcanvas .toc .nav-link.active {
+  background: var(--bs-tertiary-bg);
+  color: var(--bs-primary) !important;
+  font-weight: 600;
+}
+
+.toc-offcanvas .filter .form-control {
+  border-radius: var(--bs-border-radius-pill);
+}
+
+/* ============================================================
+   Content polish
+   ============================================================ */
+.content article {
+  max-width: 860px;
+}
+
+.alert, .card {
+  border-radius: var(--bs-border-radius) !important;
+  border-color: var(--bs-border-color) !important;
+}
+
+table {
+  border-radius: var(--bs-border-radius-sm);
+  overflow: hidden;
+}
+
+table thead th {
+  background: var(--bs-tertiary-bg);
+}
+
+.article :is(h1, h2, h3):not(:first-child) {
+  margin-top: 2.2rem;
+}
+
+.article h1 {
+  border-bottom: 1px solid var(--bs-border-color);
+  padding-bottom: 0.6rem;
+}
+
+.contribution .edit-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .btn-primary {
@@ -119,8 +309,112 @@ pre code, pre.code, .article pre {
   --bs-btn-border-color: var(--bs-primary);
   --bs-btn-hover-bg: var(--bs-link-hover-color);
   --bs-btn-hover-border-color: var(--bs-link-hover-color);
+  border-radius: var(--bs-border-radius-pill);
 }
 
-.border, .card, .alert {
-  border-radius: var(--bs-border-radius) !important;
+/* ============================================================
+   Hero + feature cards, used by the raw HTML in docfx/index.md
+   ============================================================ */
+.docs-hero {
+  padding: 2.5rem 0 1.5rem;
+}
+
+.docs-hero__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.85rem;
+  border-radius: var(--bs-border-radius-pill);
+  background: var(--bs-tertiary-bg);
+  color: var(--bs-secondary-color);
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 1.1rem;
+}
+
+.docs-hero__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #34d27f;
+}
+
+.docs-hero h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.docs-hero p {
+  font-size: 1.1rem;
+  color: var(--bs-secondary-color);
+  max-width: 640px;
+}
+
+.docs-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.3rem;
+  border-radius: var(--bs-border-radius-pill);
+  background: linear-gradient(145deg, #f97316, #c2410c);
+  color: #ffffff !important;
+  font-weight: 600;
+  text-decoration: none !important;
+  box-shadow: 0 6px 16px -4px rgba(234, 88, 12, 0.35);
+  margin-top: 0.5rem;
+}
+
+.docs-btn:hover {
+  box-shadow: 0 8px 20px -4px rgba(234, 88, 12, 0.45);
+}
+
+.docs-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0 2rem;
+  list-style: none !important;
+  padding: 0 !important;
+}
+
+.docs-card {
+  display: block;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  background: var(--bs-secondary-bg);
+  text-decoration: none !important;
+  color: inherit !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.docs-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.18);
+}
+
+.docs-card__title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 600;
+  color: var(--bs-primary);
+  margin-bottom: 0.35rem;
+}
+
+.docs-card__title svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.docs-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--bs-secondary-color);
 }
