@@ -1,0 +1,4 @@
+apiRules:
+  - exclude:
+      hasAttribute:
+        uid: System.Runtime.CompilerServices.CompilerGeneratedAttribute

@@ -1,0 +1,62 @@
+{
+  "metadata": [
+    {
+      "src": [
+        {
+          "src": "../csharp/PhoneNumbers",
+          "files": [ "PhoneNumbers.csproj" ]
+        },
+        {
+          "src": "../csharp/PhoneNumbers.Extensions",
+          "files": [ "PhoneNumbers.Extensions.csproj" ]
+        }
+      ],
+      "properties": {
+        "TargetFramework": "net10.0"
+      },
+      "dest": "api",
+      "includePrivateMembers": false,
+      "disableGitFeatures": false,
+      "disableDefaultFilter": false,
+      "filter": "filterConfig.yml"
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        "files": [ "api/**.yml", "api/index.md" ]
+      },
+      {
+        "files": [ "*.md", "toc.yml" ]
+      },
+      {
+        "files": [ "articles/**.md", "articles/toc.yml" ]
+      }
+    ],
+    "resource": [
+      {
+        "files": [ "images/**" ]
+      }
+    ],
+    "output": "_site",
+    "template": [ "default", "modern", "template" ],
+    "globalMetadata": {
+      "_appName": "libphonenumber-csharp",
+      "_appTitle": "libphonenumber-csharp API Reference",
+      "_appLogoPath": "images/logo.svg",
+      "_appFaviconPath": "images/logo.svg",
+      "_enableSearch": true,
+      "_disableContribution": false,
+      "_gitContribute": {
+        "repo": "https://github.com/twcclegg/libphonenumber-csharp",
+        "branch": "main",
+        "path": "docfx"
+      }
+    },
+    "markdownEngineName": "markdig",
+    "noLangKeyword": false,
+    "keepFileLink": false,
+    "cleanupCacheHistory": false,
+    "disableGitFeatures": false
+  }
+}
