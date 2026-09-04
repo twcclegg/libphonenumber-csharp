@@ -21,6 +21,25 @@ using System.Text.RegularExpressions;
 
 namespace PhoneNumbers
 {
+    /// <summary>
+    /// Wraps the three regexes ("raw", "anchored to the whole input", "anchored to the start") built
+    /// from a single metadata-derived pattern string.
+    /// <para>
+    /// These are built with <see cref="InternalRegexOptions.Interpreted"/>, deliberately, and must stay
+    /// that way -- see <see cref="InternalRegexOptions.Interpreted"/> for the measurements. Unlike the
+    /// library's fixed regexes, which are compile-time-known and built once per process, these are
+    /// metadata-derived: there are thousands of them, each built the first time some caller happens to
+    /// touch that region, and RegexOptions.Compiled costs roughly 1.5 ms of IL-emit per pattern that
+    /// only repays after tens of thousands of matches of that same pattern.
+    /// </para>
+    /// <para>
+    /// This type is public, and both constructors are <see cref="ObsoleteAttribute"/>, only because the
+    /// obsolete <see cref="RegexCache"/> shim returns <see cref="PhoneRegex"/> instances. Neither the
+    /// type nor either constructor was ever meant to be called by consumers; both were only ever meant
+    /// to be internal, and will become so at the next opportunity for a breaking change -- see issue
+    /// #375.
+    /// </para>
+    /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public sealed class PhoneRegex
     {
@@ -32,17 +51,25 @@ namespace PhoneNumbers
         private static readonly ConcurrentDictionary<string, PhoneRegex> cache = new();
 
         // Cached factory delegate so cache-hit lookups never allocate a fresh closure.
+#pragma warning disable CS0618 // the ctor is obsolete for external callers, not for the cache that owns it
         private static readonly Func<string, PhoneRegex> factory = k => new PhoneRegex(k);
+#pragma warning restore CS0618
 
         internal static PhoneRegex Get(string regex) => cache.GetOrAdd(regex, factory);
 
+        /// <summary>
+        /// This constructor, like the type it belongs to, is public only because the obsolete
+        /// <see cref="RegexCache"/> shim returns <see cref="PhoneRegex"/> instances -- see the class
+        /// remarks. It was never meant to be called directly.
+        /// </summary>
+        [Obsolete("This is an internal implementation detail not meant for public use")]
         public PhoneRegex(string pattern)
         {
             this.pattern = pattern;
 
-            regex = new Lazy<Regex>(() => new Regex(this.pattern, InternalRegexOptions.Default), true);
-            allRegex = new Lazy<Regex>(() => new Regex($"^(?:{this.pattern})$", InternalRegexOptions.Default), true);
-            beginRegex = new Lazy<Regex>(() => new Regex($"^(?:{this.pattern})", InternalRegexOptions.Default), true);
+            regex = new Lazy<Regex>(() => new Regex(this.pattern, InternalRegexOptions.Interpreted), true);
+            allRegex = new Lazy<Regex>(() => new Regex($"^(?:{this.pattern})$", InternalRegexOptions.Interpreted), true);
+            beginRegex = new Lazy<Regex>(() => new Regex($"^(?:{this.pattern})", InternalRegexOptions.Interpreted), true);
         }
 
         [Obsolete("This is an internal implementation detail not meant for public use")]
@@ -86,5 +113,13 @@ namespace PhoneNumbers
         }
 #endif
         public Match MatchBeginning(string value) => beginRegex.Value.Match(value);
+
+        /// <summary>
+        /// Options the three regexes were actually built with. Exists so a test can fail if
+        /// metadata-derived patterns are ever switched back to RegexOptions.Compiled -- the regression
+        /// this library has shipped three times, and which no test has ever caught.
+        /// </summary>
+        internal RegexOptions[] BuiltOptions =>
+            new[] { regex.Value.Options, allRegex.Value.Options, beginRegex.Value.Options };
     }
 }

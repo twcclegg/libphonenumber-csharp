@@ -51,6 +51,58 @@ Other available benchmarks:
   not a steady-state loop. See "Why there's a first-use-per-region benchmark" below before
   changing or removing any `FirstUse*` benchmark — they exist specifically to catch a class of
   regression the other benchmarks here structurally cannot see.
+- `*ProcessStartBenchmark*` — cold start measured from *process* start, with no warmup iteration in
+  front of the measured call (`launchCount: 20, warmupCount: 0, iterationCount: 1`). Every other
+  benchmark here runs its warmup and all measured iterations in one process, and a static
+  initializer runs at most once per process, so the warmup absorbs any static-initialization cost
+  and no measured iteration can ever see it. Read its Mean, not its Allocated or Ratio — see the
+  class remarks for why both of those mislead here.
+
+### Retained memory is not a benchmark
+
+`dotnet run -c Release -- --retained-memory` measures how much managed memory the library still
+holds after parsing, validating and formatting 40 numbers across 20 regions, and exits non-zero if
+it exceeds its budget. The `run_performance_tests` workflow runs it, so a regression fails CI rather
+than printing a number nobody reads.
+
+This deliberately is not a BenchmarkDotNet benchmark, because BenchmarkDotNet cannot measure it.
+`MemoryDiagnoser` measures allocations during an *additional* run of the benchmark method, by which
+point every static initializer has already completed and allocates nothing — so it reports the
+steady-state cost of a warm call. That is not a theoretical gap: across a change that added 3.4 MB
+of permanently retained static state, `ProcessStartBenchmark`'s Allocated column — a job shaped as
+cold as BenchmarkDotNet allows — moved only 129 KB to 144 KB. A reviewer reading Allocated would
+have concluded the change was free.
+
+Retained, not allocated, is the distinction that matters: do the work, force a full collection, and
+measure what survived. It covers 20 regions rather than one because retention that grows per pattern
+is invisible at a single region.
+
+Know what it does **not** cover: it measures the GC heap, and `RegexOptions.Compiled` emits code that
+does not live there, so it under-reports that cost. Compiling the metadata patterns is guarded by
+`TestPhoneRegex.MetadataPatternsAreNeverCompiled` instead. Read a pass here as "nothing is retaining
+managed objects it should not", not as "memory is fine".
+
+### Why metadata regexes are not compiled
+
+`RegexOptions.Compiled` costs roughly 1.5 ms of IL-emit per distinct pattern and saves about
+0.044 µs per match, so a pattern must be matched on the order of 30,000 times before it breaks even.
+Measured end-to-end on net8.0 — total wall time including startup, parse + validate + format, best
+of 3 — compiled versus interpreted:
+
+| regions | ops | compiled | interpreted |
+|--------:|----:|---------:|------------:|
+| 1 | 1,000 | 35 ms | 29 ms |
+| 1 | 1,000,000 | 970 ms | 1153 ms |
+| 20 | 1,000 | 522 ms | 39 ms |
+| 20 | 100,000 | 877 ms | 529 ms |
+| 245 | 1,000 | 2284 ms | 61 ms |
+| 245 | 1,000,000 | 5231 ms | 2967 ms |
+
+Compiling wins only where a process concentrates very high volume on one or two regions, and then by
+6–20%; it loses by up to 34x everywhere else. Note that `PhoneNumberWorkflowBenchmark` pre-warms
+every pattern in `GlobalSetup` and then hammers a handful, which is exactly the shape where
+compiling wins — it is the wrong instrument for this decision, and trusting it alone is how the
+regression shipped three times.
 
 The benchmark data is generated from valid example numbers in the bundled metadata and expanded
 deterministically to the configured `PhoneNumberCount` value. Each benchmark
