@@ -951,6 +951,15 @@ namespace PhoneNumbers.Test
             Assert.Equal("+800 1234 5678",
                 phoneUtil.FormatNumberForMobileDialing(InternationalTollFree, RegionCode.JP, true));
 
+            // Dialling a non-geographical number from the non-geographical pseudo-region takes the
+            // "calling from the number's own region" path, which the cases above skip because JP is
+            // not 001. International format either way, since non-geographical numbers are always
+            // internationally diallable.
+            Assert.Equal("+80012345678",
+                phoneUtil.FormatNumberForMobileDialing(InternationalTollFree, RegionCode.UN001, false));
+            Assert.Equal("+800 1234 5678",
+                phoneUtil.FormatNumberForMobileDialing(InternationalTollFree, RegionCode.UN001, true));
+
             // Test that the Australian emergency number 000 is formatted correctly.
             var auNumber = new PhoneNumber.Builder()
                 .SetCountryCode(61)
