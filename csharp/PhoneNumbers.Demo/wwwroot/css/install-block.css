@@ -10,7 +10,11 @@
     border-radius: var(--radius-sm);
     padding: 0.8rem 1rem;
     display: flex;
-    align-items: center;
+    /* flex-start, not center: with align-items:center a wrapped multi-line
+       command centers the "$" against the whole block's height instead of
+       sitting next to the first line, which doesn't read like a real
+       shell prompt. */
+    align-items: flex-start;
     gap: 0.6rem;
     overflow-x: auto;
 }
