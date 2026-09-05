@@ -1,11 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <!-- Plural, despite the single TFM, so that -p:TargetFrameworks=net10.0 (which the
-         repo's documented test commands pass) overrides a property that actually exists.
-         With the singular form that switch turns this into a cross-targeting outer build,
-         which discovers no tests and still exits 0. -->
-    <TargetFrameworks>net10.0</TargetFrameworks>
+    <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>false</IsPackable>
