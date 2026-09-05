@@ -1,22 +1,26 @@
 name: "CodeQL config"
 
-# paths-ignore doesn't work here: for build-mode: manual on a compiled language, CodeQL analyzes
-# everything that gets built during the workflow run, and GitHub's own docs say the config-file
-# paths/paths-ignore filter only applies to interpreted languages or build-mode: none - not
-# manual/autobuild. (Confirmed against
-# https://github.com/github/docs/blob/main/data/reusables/code-scanning/alerts-found-in-generated-code.md.)
-# So obj/**/RegexGenerator.g.cs - the .NET regex source generator's own output, picked up because
-# codeql.yml's csharp job runs a real `dotnet build` - keeps getting analyzed regardless of any
-# paths-ignore entry, and its cs/unused-label / cs/useless-assignment-to-local alerts keep
-# reappearing. It can't be excluded from the build either: those generated partial classes back
-# real [GeneratedRegex] declarations used throughout the library.
+# Nothing is filtered here, deliberately.
 #
-# The only mechanism that actually works for build-mode: manual is disabling the two offending
-# query rules outright, which is a real, repo-wide tradeoff: hand-written code that happens to
-# trip either rule stops being flagged too, not just the generated file. Accepted here because
-# both rules are low-severity style/cleanliness checks, not correctness or security queries.
-query-filters:
-  - exclude:
-      id: cs/unused-label
-  - exclude:
-      id: cs/useless-assignment-to-local
+# The csharp job in codeql.yml uses build-mode: manual, so CodeQL extracts everything the real
+# `dotnet build` compiles. That includes source-generator output - RegexGenerator.g.cs from
+# System.Text.RegularExpressions.Generator and the System.Text.Json.SourceGeneration *.g.cs files -
+# which produced 156 style alerts under obj/**/generated/**. Those files cannot be excluded from
+# the build, because the partial classes they emit back real [GeneratedRegex] and
+# JsonSerializerContext declarations used throughout the library.
+#
+# A config-file paths-ignore of "**/obj/**" does NOT suppress them: this was tested empirically on
+# 2026-09-05 (actions run 33946304824) and CodeQL still emitted all 170 results, the same count as
+# a run without it. That matches GitHub's documented behaviour - the config-file paths/paths-ignore
+# filter applies to interpreted languages and build-mode: none, not to manual/autobuild. See
+# https://github.com/github/docs/blob/main/data/reusables/code-scanning/alerts-found-in-generated-code.md
+#
+# Generated-code results are therefore stripped from the SARIF instead, in between the analyze and
+# upload steps of codeql.yml - see .github/codeql/filter-sarif.py. That removes them by path
+# without disabling any query, so cs/useless-cast-to-self, cs/nested-if-statements,
+# cs/coupled-types and friends all still report normally against hand-written code.
+#
+# This file previously carried query-filters excluding cs/unused-label and
+# cs/useless-assignment-to-local, because at the time suppressing the whole rule was the only
+# lever available. The SARIF filter made that unnecessary, so those exclusions were removed and
+# both rules are enabled again.
