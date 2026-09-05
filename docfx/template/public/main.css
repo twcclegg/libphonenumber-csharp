@@ -1,0 +1,714 @@
+/* ============================================================
+   libphonenumber-csharp docs theme
+   Ports the demo site's design tokens (csharp/PhoneNumbers.Demo/
+   wwwroot/css/app.css) onto DocFX's "modern" template so the two
+   sites read as one product. Same warm-neutral surfaces, orange
+   accent, font stack, and radii in both light and dark mode.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root,
+[data-bs-theme="light"] {
+  --bs-body-bg: #faf7f2;
+  --bs-body-color: #211d18;
+  --bs-emphasis-color: #211d18;
+  --bs-emphasis-color-rgb: 33, 29, 24;
+  --bs-secondary-color: #5c554b;
+  --bs-secondary-bg: #f6f2eb;
+  --bs-tertiary-bg: #efe9df;
+  --bs-border-color: #e7e0d4;
+  --bs-border-color-translucent: #e7e0d4;
+  --bs-link-color: #b8410b;
+  --bs-link-color-rgb: 184, 65, 11;
+  --bs-link-hover-color: #9a3412;
+  --bs-link-hover-color-rgb: 154, 52, 18;
+  --bs-primary: #c2410c;
+  --bs-primary-rgb: 194, 65, 12;
+  --bs-code-color: #b8410b;
+  --code-bg: #ffffff;
+  --code-text: #211d18;
+  --install-bg: #2c271f;
+  --install-text: #f3ede2;
+
+  --surface: #ffffff;
+  --accent-soft: #fae6d6;
+  --accent-soft-fg: #9a3412;
+  --accent-soft-border: #f1c6a3;
+  --shadow-sm: 0 1px 2px rgba(45, 35, 20, 0.06);
+  --shadow-md: 0 6px 18px -6px rgba(45, 35, 20, 0.14), 0 2px 6px rgba(45, 35, 20, 0.06);
+}
+
+[data-bs-theme="dark"] {
+  --bs-body-bg: #16130e;
+  --bs-body-color: #f6f1e8;
+  --bs-emphasis-color: #f6f1e8;
+  --bs-emphasis-color-rgb: 246, 241, 232;
+  --bs-secondary-color: #c5bcac;
+  --bs-secondary-bg: #211d16;
+  --bs-tertiary-bg: #2a251d;
+  --bs-border-color: #38322a;
+  --bs-border-color-translucent: #38322a;
+  --bs-link-color: #fdb874;
+  --bs-link-color-rgb: 253, 184, 116;
+  --bs-link-hover-color: #f97316;
+  --bs-link-hover-color-rgb: 249, 115, 22;
+  --bs-primary: #fb923c;
+  --bs-primary-rgb: 251, 146, 60;
+  --bs-code-color: #fdb874;
+  --code-bg: #0f0c08;
+  --code-text: #f0e9dc;
+  --install-bg: #0f0c08;
+  --install-text: #f0e9dc;
+
+  --surface: #211d16;
+  --accent-soft: #3a2412;
+  --accent-soft-fg: #fdba74;
+  --accent-soft-border: #5a3a1c;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px -8px rgba(0, 0, 0, 0.6);
+}
+
+:root {
+  --bs-body-font-family: 'Manrope', system-ui, -apple-system, sans-serif;
+  --bs-font-monospace: 'JetBrains Mono', ui-monospace, 'SF Mono', Consolas, monospace;
+  --bs-border-radius: 14px;
+  --bs-border-radius-sm: 9px;
+  --bs-border-radius-lg: 20px;
+  --bs-border-radius-pill: 999px;
+}
+
+body {
+  font-family: var(--bs-body-font-family);
+}
+
+h1, h2, h3, h4, h5, h6,
+.article h1, .article h2, .article h3 {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+code, pre, kbd, samp, .lang-csharp {
+  font-family: var(--bs-font-monospace);
+}
+
+/* DocFX bundles its own minimal highlight.js theme (.hljs{background:#fff;
+   color:#000}, plus a #1e1e1e/#dcdcdc dark variant under [data-bs-theme=
+   dark]) directly on the .hljs class highlight.js adds to every code
+   block. A single class selector outranks any number of type selectors
+   regardless of how many are chained, so "pre code, .article pre" here
+   never actually beat it — every --code-bg/--code-text below was silently
+   inert, and the real background was always DocFX's stub. Match its own
+   selector target (.hljs) so specificity is at least equal, and settle
+   the remaining tie (dark theme's is itself scoped under [data-bs-theme=
+   dark], equal specificity to this) with !important. */
+pre code, pre.code, .article pre, .hljs {
+  background-color: var(--code-bg) !important;
+  color: var(--code-text) !important;
+  border-radius: var(--bs-border-radius-sm);
+}
+
+.article pre {
+  border: 1px solid var(--bs-border-color);
+}
+
+/* Syntax highlighting ("Ember"): the docs site's default highlight.js
+   theme (VS-style blues/teals/greens) clashed with the orange accent, so
+   every token here sits on the same warm wheel instead — from rust-red
+   keywords to golden strings. Code blocks are a real per-theme surface
+   (--code-bg above: white in light theme, near-black in dark theme, same
+   as any other panel), so the two token sets below are opposites, not
+   variations: dark, saturated tones for light theme's white ground; pale,
+   vivid tones for dark theme's near-black one. Every light-theme color is
+   independently verified at >=4.5:1 contrast against #ffffff (WCAG AA);
+   dark-theme's against #0f0c08. */
+.hljs-keyword  { color: #c23616; }
+.hljs-built_in { color: #986508; }
+.hljs-title    { color: #a8451f; }
+.hljs-string   { color: #7a6b12; }
+.hljs-comment  { color: #7d7266; font-style: italic; }
+.hljs-number   { color: #b1600f; }
+
+[data-bs-theme="dark"] .hljs-keyword  { color: #ff5522; }
+[data-bs-theme="dark"] .hljs-built_in { color: #ffa726; }
+[data-bs-theme="dark"] .hljs-title    { color: #ff7a52; }
+[data-bs-theme="dark"] .hljs-string   { color: #ffc233; }
+[data-bs-theme="dark"] .hljs-comment  { color: #a88f78; font-style: italic; }
+[data-bs-theme="dark"] .hljs-number   { color: #ff9159; }
+
+/* ============================================================
+   Rail: the demo's persistent dark sidebar (sidebar.css), rebuilt
+   from DocFX's horizontal navbar. Fixed full-height on the left at
+   >=768px (the same breakpoint DocFX's own toc-offcanvas already
+   switches to a static column at); left alone below that so the
+   stock mobile collapse behavior keeps working.
+   ============================================================ */
+:root {
+  --rail-width: 280px;
+  --rail-bg: #211d18;
+  --rail-surface: #2c271f;
+  --rail-border: #3a342a;
+  --rail-text: #d8d0c2;
+  --rail-text-dim: #9c9385;
+  --rail-active-text: #ffffff;
+}
+
+[data-bs-theme="dark"] {
+  --rail-bg: #110e0a;
+  --rail-surface: #1c1812;
+  --rail-border: #2e281f;
+  --rail-text: #c5bcac;
+  --rail-text-dim: #837a6c;
+  --rail-active-text: #ffffff;
+}
+
+header {
+  border-bottom: 0 !important;
+  background: var(--rail-bg);
+}
+
+.navbar {
+  background: var(--rail-bg);
+}
+
+@media (min-width: 768px) {
+  /* Every level below is flex:1 + min-height:0 (not height:100%) so the fill
+     propagates through the whole nested-flex chain without a percentage-
+     height/align-items:center trap silently collapsing a level to auto. */
+  header {
+    position: fixed !important;
+    inset: 0 auto 0 0 !important;
+    width: var(--rail-width) !important;
+    height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow-y: auto !important;
+    border-right: 1px solid var(--rail-border);
+    z-index: 1030;
+  }
+
+  .navbar.navbar-expand-md {
+    flex: 1;
+    display: flex !important;
+    align-items: stretch !important;
+    min-height: 0;
+  }
+
+  .navbar .container-xxl {
+    flex: 1;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    min-height: 0;
+    max-width: none;
+    padding: 0;
+    gap: 0;
+  }
+
+  .navbar-brand {
+    flex-shrink: 0;
+  }
+
+  .navbar-collapse#navpanel {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    flex-direction: column;
+    align-items: stretch !important;
+    max-height: 100%;
+    overflow-y: auto;
+  }
+
+  #navbar {
+    display: flex;
+    flex: 0 0 auto !important;
+    flex-direction: column;
+    justify-content: flex-start !important;
+    order: 2;
+  }
+
+  .navbar-nav,
+  .navbar-expand-md .navbar-nav {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    order: 1;
+    padding: 0.5rem 0.9rem;
+    gap: 0.1rem;
+  }
+
+  main.container-xxl {
+    margin-left: var(--rail-width) !important;
+    max-width: none !important;
+    /* body is display:flex/column, making this a flex item; "width:auto"
+       under stretch alignment was resolving against this element's own
+       min-content size (it's a flex container in its own right, holding
+       toc-offcanvas+content+affix) rather than the space actually left
+       after the fixed-position rail, overflowing the viewport. An
+       explicit calc() sidesteps that flex-stretch ambiguity entirely. */
+    width: calc(100% - var(--rail-width)) !important;
+    min-width: 0 !important;
+  }
+}
+
+.navbar-brand {
+  display: flex !important;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 1.35rem 1.25rem 1.05rem !important;
+  margin: 0 !important;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1.3;
+  color: #ffffff !important;
+}
+
+#logo {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+}
+
+/* The demo's logo badge gradient itself shifts between themes (sidebar.css's
+   --accent-2/--accent-solid differ light vs dark); an <img>-referenced SVG
+   can't see the page's CSS variables, so ship two files and swap via
+   content:url() instead, keeping the same per-theme gradient stops. */
+[data-bs-theme="dark"] #logo {
+  content: url("../images/logo-dark.svg");
+}
+
+.navbar-nav .nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  position: relative;
+  color: var(--rail-text);
+  padding: 0.6rem 0.65rem 0.6rem calc(0.65rem + 3px);
+  border-left: 3px solid transparent;
+  border-radius: 0 var(--bs-border-radius-sm) var(--bs-border-radius-sm) 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  min-height: 40px;
+  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.navbar-nav .nav-link::before {
+  content: "";
+  width: 19px;
+  height: 19px;
+  flex-shrink: 0;
+  font: 19px bootstrap-icons;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.85;
+}
+
+.navbar-nav .nav-link[href$="index.html"]::before { content: "\f425"; }
+.navbar-nav .nav-link[href*="/api/"]::before { content: "\f194"; }
+.navbar-nav .nav-link[href*="/articles/"]::before { content: "\f444"; }
+
+.navbar-nav .nav-link:hover {
+  color: var(--rail-active-text);
+  background: var(--rail-surface);
+}
+
+.navbar-nav .nav-link.active {
+  color: var(--rail-active-text);
+  background: var(--rail-surface);
+  border-left-color: var(--bs-primary);
+  font-weight: 600;
+}
+
+.navbar-nav .nav-link.active::before,
+.navbar-nav .nav-link:hover::before {
+  opacity: 1;
+  color: var(--bs-primary);
+}
+
+.dropdown-menu {
+  --bs-dropdown-bg: var(--rail-surface);
+  --bs-dropdown-link-color: var(--rail-text);
+  --bs-dropdown-link-hover-color: var(--rail-active-text);
+  --bs-dropdown-link-hover-bg: var(--rail-bg);
+  --bs-dropdown-border-color: var(--rail-border);
+}
+
+/* The theme-toggle button (and, at mobile widths, the hamburger next to
+   it) are plain Bootstrap .btn elements that default to --bs-body-color —
+   the page's general text color, which is dark in light theme. Since the
+   rail they sit in stays dark in both themes, that made the toggle
+   invisible specifically in light mode. */
+.navbar .btn {
+  color: var(--rail-text-dim);
+}
+
+.navbar .btn:hover,
+.navbar .btn:focus {
+  color: var(--rail-active-text);
+}
+
+.search {
+  margin: 0.4rem 0.9rem 1rem;
+}
+
+.search .form-control {
+  background: var(--rail-bg);
+  border: 1px solid var(--rail-border);
+  color: var(--rail-text);
+  border-radius: var(--bs-border-radius-pill);
+}
+
+.search .form-control::placeholder {
+  color: var(--rail-text-dim);
+}
+
+.search .bi-search {
+  color: var(--rail-text-dim);
+}
+
+/* Class-tree TOC on API pages: a lighter panel to the right of the rail,
+   in the same spirit as the demo's active-link accent highlighting. DocFX's
+   own CSS sticks this at top:calc(60px + 1.6rem), a leftover offset that
+   assumed an in-flow horizontal navbar above it; the rail is fixed instead,
+   so that offset is now dead space — zero it out. */
+@media (min-width: 768px) {
+  .toc-offcanvas,
+  .affix {
+    top: 1.5rem !important;
+  }
+}
+
+/* The outer .toc-offcanvas wrapper stays in main's flex row at every width
+   — it's the child .offcanvas-md.offcanvas-start div that becomes a real
+   fixed-position, transform-hidden mobile drawer below 768px. That leaves
+   the outer wrapper collapsed to ~1px (its content is gone, not just
+   hidden) at narrow widths, so background/border-right here — previously
+   unscoped — must stay gated to the same 768px breakpoint as the rest of
+   the rail, or they paint as a stray vertical line down the page. */
+@media (min-width: 768px) {
+  .toc-offcanvas {
+    background: var(--bs-body-bg);
+    border-right: 1px solid var(--bs-border-color);
+    min-width: 220px;
+  }
+}
+
+/* Long class names (PhoneNumberMatcher.CheckGroups, ...) were wrapping to
+   4-5 lines each once this panel got squeezed below ~260px at tablet/small-
+   laptop widths — unreadable. Truncate to one line with an ellipsis
+   instead; the filter box above covers finding a name that's cut off. */
+.toc-offcanvas .toc .nav-link {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  border-left: 3px solid transparent;
+  border-radius: 0 var(--bs-border-radius-sm) var(--bs-border-radius-sm) 0;
+  padding: 0.35rem 0.6rem 0.35rem calc(0.6rem - 3px);
+}
+
+/* DocFX inserts <wbr> inside long CamelCase names (Missing<wbr>Metadata...)
+   as break opportunities for when this panel is wide enough to wrap onto a
+   second line; Chrome still honors them as break points even under
+   white-space:nowrap above, defeating the single-line ellipsis. */
+.toc-offcanvas .toc .nav-link wbr {
+  display: none;
+}
+
+.toc-offcanvas .toc .nav-link:hover {
+  background: var(--bs-tertiary-bg);
+}
+
+.toc-offcanvas .toc .nav-link.active {
+  background: var(--bs-tertiary-bg);
+  border-left-color: var(--bs-primary);
+  color: var(--bs-primary) !important;
+  font-weight: 600;
+}
+
+.toc-offcanvas .filter .form-control {
+  border-radius: var(--bs-border-radius-pill);
+}
+
+/* ============================================================
+   Content polish
+   ============================================================ */
+/* main.container-xxl (toc-offcanvas + .content + .affix) is a flex row;
+   flex items default to min-width:auto (won't shrink below their content's
+   natural min-content width), which is what let a long code line/URL in
+   .content force the whole row — and the page — wider than the viewport
+   at narrower desktop widths. */
+@media (min-width: 768px) {
+  .content {
+    min-width: 0;
+  }
+}
+
+.content article {
+  max-width: 860px;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+pre {
+  overflow-x: auto;
+}
+
+.alert, .card {
+  border-radius: var(--bs-border-radius) !important;
+  border-color: var(--bs-border-color) !important;
+}
+
+table {
+  border-radius: var(--bs-border-radius-sm);
+  overflow: hidden;
+}
+
+table thead th {
+  background: var(--bs-tertiary-bg);
+}
+
+.article :is(h1, h2, h3):not(:first-child) {
+  margin-top: 2.2rem;
+}
+
+.article h1 {
+  border-bottom: 1px solid var(--bs-border-color);
+  padding-bottom: 0.6rem;
+}
+
+.contribution .edit-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* DocFX's stock .actionbar>button{margin-left:-.8em} pulls the mobile "show
+   TOC" hamburger left to visually align its icon with the breadcrumb text
+   next to it, assuming more container gutter than this layout has at
+   narrow widths — it renders a few px off the left edge of the viewport.
+   The button is d-md-none (desktop hides it entirely), so dropping the
+   pull only affects mobile, and aligning it with the rest of the content's
+   left edge instead of past it reads better anyway. */
+.actionbar > button {
+  margin-left: 0 !important;
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--bs-primary);
+  --bs-btn-border-color: var(--bs-primary);
+  --bs-btn-hover-bg: var(--bs-link-hover-color);
+  --bs-btn-hover-border-color: var(--bs-link-hover-color);
+  border-radius: var(--bs-border-radius-pill);
+}
+
+/* ============================================================
+   Hero + feature cards, used by the raw HTML in docfx/index.md
+   ============================================================ */
+.docs-hero {
+  padding: 2.5rem 0 1.5rem;
+}
+
+.docs-hero__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.85rem;
+  border-radius: var(--bs-border-radius-pill);
+  background: var(--bs-tertiary-bg);
+  color: var(--bs-secondary-color);
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 1.1rem;
+}
+
+.docs-hero__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #34d27f;
+}
+
+.docs-hero h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.docs-hero p {
+  font-size: 1.1rem;
+  color: var(--bs-secondary-color);
+  max-width: 640px;
+}
+
+.docs-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.3rem;
+  border-radius: var(--bs-border-radius-pill);
+  background: linear-gradient(145deg, #f97316, #c2410c);
+  color: #ffffff !important;
+  font-weight: 600;
+  text-decoration: none !important;
+  box-shadow: 0 6px 16px -4px rgba(234, 88, 12, 0.35);
+  margin-top: 0.5rem;
+}
+
+.docs-btn:hover {
+  box-shadow: 0 8px 20px -4px rgba(234, 88, 12, 0.45);
+}
+
+.docs-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0 2rem;
+  list-style: none !important;
+  padding: 0 !important;
+}
+
+.docs-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+/* text-decoration:none on the <li> above doesn't reach the <a> inside it —
+   the anchor sets its own underline (the site's default link style) that
+   an ancestor's "none" doesn't override. DocFX's JS also tags any external
+   link inside <article> with class="external" and a CSS ::after icon
+   (\f1c5); since that lands after this anchor's last block child (the
+   description <p>), it wrapped onto its own line. Absolutely position it
+   into the same top-right corner as .docs-card__go instead, and hand off
+   between the two on hover rather than showing both. */
+.docs-card > a {
+  text-decoration: none !important;
+  color: inherit !important;
+  display: block;
+}
+
+.docs-card .external[href]::after {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  margin: 0 !important;
+  opacity: 0.5;
+  transition: opacity 0.15s ease;
+}
+
+.docs-card:hover .external[href]::after {
+  opacity: 0;
+}
+
+.docs-card:hover {
+  border-color: var(--bs-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.docs-card__icon {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--bs-border-radius-sm);
+  background: var(--accent-soft);
+  color: var(--accent-soft-fg);
+  border: 1px solid var(--accent-soft-border);
+  margin-bottom: 0.75rem;
+}
+
+.docs-card__icon svg {
+  width: 22px;
+  height: 22px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Brand logomarks (e.g. NuGet) are filled shapes, not stroke icons. */
+.docs-card__icon--filled svg {
+  fill: currentColor;
+  stroke: none;
+}
+
+.docs-card__title {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.docs-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--bs-secondary-color);
+  line-height: 1.55;
+  flex: 1;
+}
+
+/* Matches the demo's own .install-block (csharp/PhoneNumbers.Demo/wwwroot/
+   css/install-block.css) exactly — same "$ " terminal-prompt treatment,
+   same permanently-dark ground in both themes. That one is deliberate: a
+   one-line shell command is meant to look like an actual terminal
+   regardless of page theme, unlike a real code block (see --code-bg
+   above, which is *not* permanently dark). */
+.install-block {
+  font-family: var(--bs-font-monospace);
+  font-size: 0.875rem;
+  background: var(--install-bg);
+  color: var(--install-text);
+  border-radius: var(--bs-border-radius-sm);
+  padding: 0.7rem 0.9rem;
+  display: flex;
+  /* flex-start, not center: with align-items:center a wrapped multi-line
+     command centers the "$" against the whole block's height instead of
+     sitting next to the first line, which doesn't read like a real shell
+     prompt. */
+  align-items: flex-start;
+  gap: 0.5rem;
+  overflow-x: auto;
+}
+
+.install-block__prompt {
+  color: var(--bs-primary);
+  user-select: none;
+  font-weight: 600;
+}
+
+.docs-card__go {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  color: var(--bs-secondary-color);
+  transform: translateX(-4px);
+  opacity: 0;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.docs-card__go svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.docs-card:hover .docs-card__go {
+  opacity: 1;
+  transform: translateX(0);
+  color: var(--bs-primary);
+}

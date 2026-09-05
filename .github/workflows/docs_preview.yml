@@ -1,0 +1,60 @@
+name: docs_preview
+
+on:
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'csharp/PhoneNumbers/**'
+      - 'csharp/PhoneNumbers.Extensions/**'
+      - 'csharp/Directory.Build.props'
+      - 'csharp/Directory.Packages.props'
+      - 'docs/**'
+      - 'docfx/**'
+      - '.github/workflows/docs_preview.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  build_docs_preview:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: 10.x
+
+      # docfx loads PhoneNumbers.csproj/PhoneNumbers.Extensions.csproj through MSBuild to
+      # extract API metadata, which needs a restored project.assets.json - this repo uses
+      # Central Package Management, so an unrestored project fails to resolve references
+      # rather than just producing incomplete docs.
+      - name: Restore
+        run: dotnet restore csharp
+
+      - name: Build
+        run: dotnet build csharp --no-restore
+
+      - name: Build API docs site
+        run: ./docfx/build.sh
+
+      # No GitHub Pages deploy here (that only happens from main, in deploy_demo.yml) — this
+      # is purely so a PR reviewer can view the rendered site without merging. Download the
+      # "api-docs-preview" artifact from this run's summary, unzip it, and serve it with any
+      # static file server (e.g. `python3 -m http.server` from inside the unzipped folder) —
+      # opening index.html directly via file:// won't work, the site fetches its nav/search
+      # data with relative requests that require a real HTTP origin.
+      - name: Upload docs preview artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: api-docs-preview
+          path: docfx/_site
+          retention-days: 14
