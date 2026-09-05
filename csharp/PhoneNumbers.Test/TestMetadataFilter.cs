@@ -893,6 +893,28 @@ namespace PhoneNumbers.Test
             Assert.False(result);
         }
 
+        [Fact]
+        public void TestGetHashCodeForEmptyBlacklistDoesNotThrow()
+        {
+            // EmptyFilter() has an empty blacklist, and a seedless Aggregate over an empty sequence
+            // throws InvalidOperationException - so this used to throw rather than return a hash.
+            var filter = MetadataFilter.EmptyFilter();
+
+            var exception = Record.Exception(() => filter.GetHashCode());
+
+            Assert.Null(exception);
+        }
+
+        [Fact]
+        public void TestGetHashCodeAgreesWithEqualsForEmptyBlacklists()
+        {
+            var filter = MetadataFilter.EmptyFilter();
+            var same = new MetadataFilter(new Dictionary<string, SortedSet<string>>());
+
+            Assert.True(filter.Equals(same));
+            Assert.Equal(filter.GetHashCode(), same.GetHashCode());
+        }
+
         private static PhoneMetadata.Builder FakeArmeniaPhoneMetadata()
         {
             var metadata = new PhoneMetadata.Builder();

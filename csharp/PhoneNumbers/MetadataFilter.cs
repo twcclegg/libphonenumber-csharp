@@ -121,9 +121,12 @@ namespace PhoneNumbers
         {
             unchecked
             {
+                // Seeded, because the seedless Aggregate throws on an empty sequence and an empty
+                // blacklist is a normal filter - EmptyFilter() is exactly that. XOR-ing from 0
+                // leaves the hash of every non-empty blacklist unchanged.
                 return blacklist.GetType().GetHashCode() ^ blacklist
                            .Select(kvp => kvp.Key.GetHashCode() * 17 ^ kvp.Value.GetHashCode() * 23)
-                           .Aggregate((a, b) => a ^ b);
+                           .Aggregate(0, (a, b) => a ^ b);
             }
         }
 
