@@ -51,6 +51,10 @@ NUGET_PACKAGE_ID="${NUGET_PACKAGE_ID:-libphonenumber-csharp}"
 NUGET_EXTENSIONS_PACKAGE_ID="${NUGET_EXTENSIONS_PACKAGE_ID:-${NUGET_PACKAGE_ID}.extensions}"
 UPSTREAM_REPOSITORY="${UPSTREAM_REPOSITORY:-google/libphonenumber}"
 PUBLISH_WORKFLOW="${PUBLISH_WORKFLOW:-publish_nuget.yml}"
+# How long a metadata-update PR stays open before enable-metadata-auto-merge.sh turns
+# auto-merge on. Shared here so the script that writes the PR body and the script that
+# enforces the window cannot disagree about the number.
+AUTO_MERGE_DELAY_HOURS="${AUTO_MERGE_DELAY_HOURS:-24}"
 
 # Authenticated api calls, so the job is not subject to the unauthenticated rate limit shared
 # by every action runner on the same address. The header is built as an array so the token

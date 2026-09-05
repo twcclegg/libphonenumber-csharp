@@ -331,8 +331,9 @@ if isTrue "${DRY_RUN}"; then
     log "  - regenerate resources/locale/country_names.txt with $(java -version 2>&1 | head -n 1 || echo 'the local jdk')"
     log "  - add a CHANGELOG.md entry for ${UPSTREAM_GITHUB_RELEASE_TAG}"
     log "  - commit \"feat: automatic upgrade to ${UPSTREAM_GITHUB_RELEASE_TAG}\" on ${BRANCH} and push it"
-    log "  - open a PR from ${BRANCH} into main and enable auto-merge"
-    log "  - once that PR's required checks pass and it merges, finalize-metadata-release.sh creates release ${UPSTREAM_GITHUB_RELEASE_TAG} and dispatches ${PUBLISH_WORKFLOW}"
+    log "  - open a PR from ${BRANCH} into main, leaving auto-merge off"
+    log "  - after ${AUTO_MERGE_DELAY_HOURS} hours, enable-metadata-auto-merge.sh enables auto-merge, and the PR merges once its required checks pass"
+    log "  - on merge, finalize-metadata-release.sh creates release ${UPSTREAM_GITHUB_RELEASE_TAG} and dispatches ${PUBLISH_WORKFLOW}"
     exit 0
 fi
 
@@ -417,7 +418,9 @@ git push --force origin "HEAD:refs/heads/${BRANCH}"
 PR_BODY=$(cat <<EOF
 Syncs \`resources/\` from [${UPSTREAM_REPOSITORY} ${UPSTREAM_GITHUB_RELEASE_TAG}](https://github.com/${UPSTREAM_REPOSITORY}/releases/tag/${UPSTREAM_GITHUB_RELEASE_TAG}), regenerates \`resources/locale/country_names.txt\`, and records the release in \`CHANGELOG.md\`.
 
-Auto-merges once the required checks pass. On merge, [finalize_metadata_release.yml](.github/workflows/finalize_metadata_release.yml) tags the merge commit, creates the GitHub release, and dispatches the NuGet publish.
+Open for review for ${AUTO_MERGE_DELAY_HOURS} hours first: [enable_metadata_auto_merge.yml](.github/workflows/enable_metadata_auto_merge.yml) turns auto-merge on after that, and the PR then merges once its required checks pass. Merge or close it by hand at any point to skip the wait.
+
+On merge, [finalize_metadata_release.yml](.github/workflows/finalize_metadata_release.yml) tags the merge commit, creates the GitHub release, and dispatches the NuGet publish.
 EOF
 )
 
@@ -427,20 +430,10 @@ PR_RESPONSE=$(jq -n --arg title "feat: automatic upgrade to ${UPSTREAM_GITHUB_RE
     | ghApi -X POST --data @- "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls")
 
 PR_NUMBER=$(jq -er '.number' <<<"${PR_RESPONSE}")
-PR_NODE_ID=$(jq -er '.node_id' <<<"${PR_RESPONSE}")
 log "opened PR #${PR_NUMBER} for ${UPSTREAM_GITHUB_RELEASE_TAG}"
 
-# GraphQL errors come back as HTTP 200 with an "errors" field, so --fail above will not
-# catch this - check the body instead. Failing to enable auto-merge (e.g. the repository
-# setting for it is off) is not fatal: the PR is still valid, it just needs a manual merge
-# once checks pass.
-AUTOMERGE_RESPONSE=$(jq -n --arg id "${PR_NODE_ID}" \
-    '{query: "mutation($id: ID!) { enablePullRequestAutoMerge(input: {pullRequestId: $id, mergeMethod: MERGE}) { clientMutationId } }", variables: {id: $id}}' \
-    | ghApi -X POST --data @- "https://api.github.com/graphql")
-
-if jq -e '.errors' <<<"${AUTOMERGE_RESPONSE}" >/dev/null 2>&1; then
-    warn "could not enable auto-merge on PR #${PR_NUMBER}: $(jq -r '.errors[0].message' <<<"${AUTOMERGE_RESPONSE}")"
-    warn "the PR was opened but will need a manual merge once its checks pass"
-else
-    log "enabled auto-merge on PR #${PR_NUMBER}"
-fi
+# Auto-merge is deliberately NOT enabled here. The PR sits for a review window first, and
+# enable-metadata-auto-merge.sh turns auto-merge on once that window has elapsed - see
+# enable_metadata_auto_merge.yml. Merging by hand during the window is always allowed; the
+# delay only governs the unattended path.
+log "left auto-merge off on PR #${PR_NUMBER}; enable_metadata_auto_merge.yml turns it on after the review window"
