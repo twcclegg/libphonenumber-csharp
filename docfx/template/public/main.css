@@ -523,10 +523,35 @@ table thead th {
   border-radius: var(--bs-border-radius);
   background: var(--surface);
   box-shadow: var(--shadow-sm);
-  text-decoration: none !important;
-  color: inherit !important;
   overflow: hidden;
   transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+/* text-decoration:none on the <li> above doesn't reach the <a> inside it —
+   the anchor sets its own underline (the site's default link style) that
+   an ancestor's "none" doesn't override. DocFX's JS also tags any external
+   link inside <article> with class="external" and a CSS ::after icon
+   (\f1c5); since that lands after this anchor's last block child (the
+   description <p>), it wrapped onto its own line. Absolutely position it
+   into the same top-right corner as .docs-card__go instead, and hand off
+   between the two on hover rather than showing both. */
+.docs-card > a {
+  text-decoration: none !important;
+  color: inherit !important;
+  display: block;
+}
+
+.docs-card .external[href]::after {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  margin: 0 !important;
+  opacity: 0.5;
+  transition: opacity 0.15s ease;
+}
+
+.docs-card:hover .external[href]::after {
+  opacity: 0;
 }
 
 .docs-card:hover {
