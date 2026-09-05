@@ -60,6 +60,11 @@ namespace PhoneNumbers.Test
         /// </summary>
         // IMetadataLoader/EmbeddedResourceMetadataLoader/SetMetadataLoader are Obsolete for external
         // callers only; this test exercises them directly as this project's own internal API.
+        // The Obsolete message names no replacement — the member is slated to become internal, not
+        // to be superseded — so there is nothing for these calls to migrate to, and covering the
+        // deprecated entry point is exactly what the two tests below are for. CodeQL's
+        // cs/call-to-obsolete-method still reports them; dismiss those alerts rather than
+        // rewriting the tests away from the API under test.
 #pragma warning disable CS0618
         [Fact]
         public void SetMetadataLoader_RoutesLookupsThroughCustomLoader()

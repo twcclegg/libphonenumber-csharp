@@ -167,7 +167,10 @@ namespace PhoneNumbers
             public bool ItalianLeadingZero
             {
                 get => MessageBeingBuilt.ItalianLeadingZero;
-                set => SetItalianLeadingZero(value);
+                // Goes straight to the replacement rather than through the equally-obsolete
+                // SetItalianLeadingZero: that method is nothing but
+                // SetNumberOfLeadingZeros(value ? 1 : 0), so this is the same write.
+                set => SetNumberOfLeadingZeros(value ? 1 : 0);
             }
 
             public bool HasNumberOfLeadingZeros => MessageBeingBuilt.HasNumberOfLeadingZeros;

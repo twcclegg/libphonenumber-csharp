@@ -60,6 +60,23 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
+        public void TestItalianLeadingZeroSetterWritesNumberOfLeadingZeros()
+        {
+            // Exercises the obsolete ItalianLeadingZero property setter itself, not
+            // SetNumberOfLeadingZeros directly, since that setter is what delegates to
+            // SetNumberOfLeadingZeros(value ? 1 : 0) under the hood.
+#pragma warning disable CS0618 // intentionally exercising the obsolete setter
+            var builder = new PhoneNumber.Builder()
+                .SetCountryCode(1).SetNationalNumber(6502530000L);
+            builder.ItalianLeadingZero = true;
+            Assert.Equal(1, builder.NumberOfLeadingZeros);
+
+            builder.ItalianLeadingZero = false;
+            Assert.Equal(0, builder.NumberOfLeadingZeros);
+#pragma warning restore CS0618
+        }
+
+        [Fact]
         public void TestNonEqualWithDifferingRawInput()
         {
             var numberA = new PhoneNumber.Builder()
