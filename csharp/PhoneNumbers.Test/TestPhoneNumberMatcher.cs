@@ -247,6 +247,11 @@ namespace PhoneNumbers.Test
             Assert.True(PhoneNumberMatcher.IsLatinLetter('C'));
             Assert.True(PhoneNumberMatcher.IsLatinLetter('\u00C9'));
             Assert.True(PhoneNumberMatcher.IsLatinLetter('\u0301'));  // Combining acute accent
+            // One letter from each remaining accepted block, so every arm of the range test is
+            // exercised: these were the blocks no assertion reached.
+            Assert.True(PhoneNumberMatcher.IsLatinLetter('\u0100'));  // Latin Extended-A
+            Assert.True(PhoneNumberMatcher.IsLatinLetter('\u0180'));  // Latin Extended-B
+            Assert.True(PhoneNumberMatcher.IsLatinLetter('\u1E00'));  // Latin Extended Additional
             // Punctuation, digits and white-space are not considered "latin letters".
             Assert.False(PhoneNumberMatcher.IsLatinLetter(':'));
             Assert.False(PhoneNumberMatcher.IsLatinLetter('5'));
