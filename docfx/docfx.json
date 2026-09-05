@@ -16,7 +16,7 @@
       },
       "dest": "api",
       "includePrivateMembers": false,
-      "disableGitFeatures": false,
+      "disableGitFeatures": true,
       "disableDefaultFilter": false,
       "filter": "filterConfig.yml"
     }
@@ -46,17 +46,12 @@
       "_appLogoPath": "images/logo.svg",
       "_appFaviconPath": "images/favicon.svg",
       "_enableSearch": true,
-      "_disableContribution": false,
-      "_gitContribute": {
-        "repo": "https://github.com/twcclegg/libphonenumber-csharp",
-        "branch": "main",
-        "path": "docfx"
-      }
+      "_disableContribution": true
     },
     "markdownEngineName": "markdig",
     "noLangKeyword": false,
     "keepFileLink": false,
     "cleanupCacheHistory": false,
-    "disableGitFeatures": false
+    "disableGitFeatures": true
   }
 }
