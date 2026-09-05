@@ -1,0 +1,38 @@
+@inject NavigationManager Nav
+
+@* Wraps FocusOnNavigate so the page heading is focused on SPA navigation but not
+   on the initial page load. On first load the browser already starts the user at
+   the top of the document, so focusing the <h1> gains nothing and paints a focus
+   ring around the heading until the next click. *@
+@if (_hasNavigated)
+{
+    <FocusOnNavigate RouteData="@RouteData" Selector="@Selector" />
+}
+
+@code {
+    private string? _lastUri;
+    private bool _hasNavigated;
+
+    [Parameter]
+    [EditorRequired]
+    public RouteData RouteData { get; set; } = default!;
+
+    [Parameter]
+    [EditorRequired]
+    public string Selector { get; set; } = default!;
+
+    protected override void OnParametersSet()
+    {
+        // Compare URIs rather than RouteData instances: the router hands out a fresh
+        // RouteData on every render, navigation or not.
+        if (_lastUri is null)
+        {
+            _lastUri = Nav.Uri;
+        }
+        else if (_lastUri != Nav.Uri)
+        {
+            _lastUri = Nav.Uri;
+            _hasNavigated = true;
+        }
+    }
+}
