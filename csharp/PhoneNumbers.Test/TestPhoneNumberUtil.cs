@@ -960,6 +960,17 @@ namespace PhoneNumbers.Test
             Assert.Equal("+800 1234 5678",
                 phoneUtil.FormatNumberForMobileDialing(InternationalTollFree, RegionCode.UN001, true));
 
+            // MX fixed line and mobile numbers dialled from MX: international format, because a
+            // national-format call needs a carrier code that depends on both parties' local area.
+            // This is the MX/CL/UZ arm of the same branch, which short-circuit evaluation reaches
+            // only when the number's region is not the non-geographical one.
+            Assert.Equal("+52 1 234 567 8900",
+                phoneUtil.FormatNumberForMobileDialing(MXMobile1, RegionCode.MX, true));
+            Assert.Equal("+5212345678900",
+                phoneUtil.FormatNumberForMobileDialing(MXMobile1, RegionCode.MX, false));
+            Assert.Equal("+52 33 1234 5678",
+                phoneUtil.FormatNumberForMobileDialing(MXNumber1, RegionCode.MX, true));
+
             // Test that the Australian emergency number 000 is formatted correctly.
             var auNumber = new PhoneNumber.Builder()
                 .SetCountryCode(61)
