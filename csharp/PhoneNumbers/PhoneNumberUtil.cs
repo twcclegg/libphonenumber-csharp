@@ -2604,14 +2604,26 @@ namespace PhoneNumbers
         internal bool MaybeStripNationalPrefixAndCarrierCode(StringBuilder number, string numberString, PhoneMetadata metadata, bool getCarrier, out string carrierCode)
         {
             carrierCode = null;
-            var numberLength = numberString?.Length ?? number?.Length ?? 0;
-            if (numberLength == 0 || !metadata.HasNationalPrefixForParsing)
+            // Callers supply either form of the number: the ones that already hold a string pass it
+            // so the StringBuilder need not be materialised, while the public overload passes only
+            // the StringBuilder. Branch on which one was supplied rather than folding both into a
+            // single length, so the ToString() below is reached only when the StringBuilder is the
+            // form that is present.
+            if (numberString is null)
+            {
+                if (number is null || number.Length == 0 || !metadata.HasNationalPrefixForParsing)
+                {
+                    // Early return for numbers of zero length.
+                    return false;
+                }
+                // Attempt to parse the first digits as a national prefix.
+                numberString = number.ToString();
+            }
+            else if (numberString.Length == 0 || !metadata.HasNationalPrefixForParsing)
             {
                 // Early return for numbers of zero length.
                 return false;
             }
-            // Attempt to parse the first digits as a national prefix.
-            numberString ??= number.ToString();
 
             // Whether the groups are needed at all is known before matching: only a transform rule or
             // a requested carrier code reads them. Without either, the length of the prefix is the

@@ -887,10 +887,23 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
-        public void TestEquals_WhenNull_ReturnsFalse()
+        public void TestEqualsRejectsNullAndForeignTypesAndAcceptsSameBlacklist()
         {
-            var result = new MetadataFilter(new Dictionary<string, SortedSet<string>>()).Equals(null);
-            Assert.False(result);
+            var filter = new MetadataFilter(new Dictionary<string, SortedSet<string>>());
+
+            // Object.Equals must answer false for a null reference rather than throwing. The null is
+            // held in a variable so the call is a real reference comparison at run time rather than
+            // a literal argument, which reads as a compile-time constant comparison.
+            object? nullReference = null;
+            Assert.False(filter.Equals(nullReference));
+
+            // ... and false for an object that is not a MetadataFilter at all.
+            Assert.False(filter.Equals("not a MetadataFilter"));
+
+            // Equality is by blacklist contents, so a separately built empty filter is equal, and a
+            // filter carrying a non-empty blacklist is not.
+            Assert.True(filter.Equals(MetadataFilter.EmptyFilter()));
+            Assert.False(filter.Equals(MetadataFilter.ForLiteBuild()));
         }
 
         private static PhoneMetadata.Builder FakeArmeniaPhoneMetadata()
