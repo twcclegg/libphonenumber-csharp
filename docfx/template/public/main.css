@@ -26,8 +26,8 @@
   --bs-primary: #c2410c;
   --bs-primary-rgb: 194, 65, 12;
   --bs-code-color: #b8410b;
-  --code-bg: #2c271f;
-  --code-text: #f3ede2;
+  --code-bg: #ffffff;
+  --code-text: #211d18;
 
   --surface: #ffffff;
   --accent-soft: #fae6d6;
@@ -89,26 +89,42 @@ code, pre, kbd, samp, .lang-csharp {
   font-family: var(--bs-font-monospace);
 }
 
-pre code, pre.code, .article pre {
-  background-color: var(--code-bg);
-  color: var(--code-text);
+/* DocFX bundles its own minimal highlight.js theme (.hljs{background:#fff;
+   color:#000}, plus a #1e1e1e/#dcdcdc dark variant under [data-bs-theme=
+   dark]) directly on the .hljs class highlight.js adds to every code
+   block. A single class selector outranks any number of type selectors
+   regardless of how many are chained, so "pre code, .article pre" here
+   never actually beat it — every --code-bg/--code-text below was silently
+   inert, and the real background was always DocFX's stub. Match its own
+   selector target (.hljs) so specificity is at least equal, and settle
+   the remaining tie (dark theme's is itself scoped under [data-bs-theme=
+   dark], equal specificity to this) with !important. */
+pre code, pre.code, .article pre, .hljs {
+  background-color: var(--code-bg) !important;
+  color: var(--code-text) !important;
   border-radius: var(--bs-border-radius-sm);
+}
+
+.article pre {
+  border: 1px solid var(--bs-border-color);
 }
 
 /* Syntax highlighting ("Ember"): the docs site's default highlight.js
    theme (VS-style blues/teals/greens) clashed with the orange accent, so
    every token here sits on the same warm wheel instead — from rust-red
-   keywords to golden strings. Calibrated separately per code-block ground
-   (see --code-bg above): light theme's #2c271f is a touch brighter than
-   dark theme's #0f0c08, so it gets paler/higher-contrast tones rather than
-   dark theme's fully-saturated ones, which would otherwise read as
-   slightly muddier against the lighter ground. */
-.hljs-keyword  { color: #ff6a3f; }
-.hljs-built_in { color: #ffb84f; }
-.hljs-title    { color: #ffa07a; }
-.hljs-string   { color: #ffd166; }
-.hljs-comment  { color: #b8a190; font-style: italic; }
-.hljs-number   { color: #ffb37a; }
+   keywords to golden strings. Code blocks are a real per-theme surface
+   (--code-bg above: white in light theme, near-black in dark theme, same
+   as any other panel), so the two token sets below are opposites, not
+   variations: dark, saturated tones for light theme's white ground; pale,
+   vivid tones for dark theme's near-black one. Every light-theme color is
+   independently verified at >=4.5:1 contrast against #ffffff (WCAG AA);
+   dark-theme's against #0f0c08. */
+.hljs-keyword  { color: #c23616; }
+.hljs-built_in { color: #986508; }
+.hljs-title    { color: #a8451f; }
+.hljs-string   { color: #7a6b12; }
+.hljs-comment  { color: #7d7266; font-style: italic; }
+.hljs-number   { color: #b1600f; }
 
 [data-bs-theme="dark"] .hljs-keyword  { color: #ff5522; }
 [data-bs-theme="dark"] .hljs-built_in { color: #ffa726; }
