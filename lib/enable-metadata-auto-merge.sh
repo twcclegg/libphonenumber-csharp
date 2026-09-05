@@ -22,7 +22,7 @@ Environment variables:
   GITHUB_REPOSITORY        owner/name of the repository to act on. Set automatically by
                            GitHub Actions.
   AUTO_MERGE_DELAY_HOURS   How long a PR must have been open before auto-merge is enabled
-                           (default 24).
+                           (default 18).
   BOT_LOGIN                Account whose PRs are eligible (default libphonenumber-csharp-bot).
   DRY_RUN                  Report what would happen and change nothing.
 

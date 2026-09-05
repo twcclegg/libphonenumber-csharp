@@ -4,15 +4,21 @@
 # the PR when its required checks pass, and finalize_metadata_release.yml takes over from
 # there.
 #
-# Hourly rather than daily so the wait is the review window plus at most an hour, instead of
-# rounding up to the next daily slot. Runs are a few api calls and exit immediately when no PR
-# is eligible, which is almost always.
+# Once a day is enough, and the 18-hour window is what makes that work. The sync opens its PR
+# at 08:00 UTC, so by 05:00 the next day the PR is about 21 hours old: comfortably past the
+# window, with roughly two hours of slack for a late-firing sync (scheduled workflows can lag,
+# and the sync step itself allows 30 minutes) before a PR would miss the cut and have to wait
+# another whole day. Running before 08:00 also means the previous sync has normally merged by
+# the time the next one opens, so two metadata PRs rarely overlap.
+#
+# A shorter window would let a PR merge overnight without ever being seen; a longer one would
+# not fit between two daily syncs.
 
 name: "enable_metadata_auto_merge"
 
 on:
   schedule:
-    - cron: '20 * * * *'
+    - cron: '20 5 * * *'
   workflow_dispatch:
     inputs:
       dry_run:
