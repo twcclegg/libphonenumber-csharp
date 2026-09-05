@@ -120,6 +120,9 @@ Every code change must follow this workflow before the task is considered comple
    ```bash
    dotnet test csharp/PhoneNumbers.Demo.Tests -p:TargetFrameworks=net10.0
    ```
+   Check the run actually reported a test count. `dotnet test` exits 0 when it discovers
+   no tests at all, so output ending in `No test is available in ...` means nothing ran —
+   treat that as a failure to be fixed, not as a pass.
 2. If the change touches any page, component, or logic branch not already exercised by an existing test, add a new test covering it in `csharp/PhoneNumbers.Demo.Tests/Pages/`.
 3. Never mark a task done while tests are failing or skipped.
 
