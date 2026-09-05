@@ -1333,7 +1333,7 @@ namespace PhoneNumbers
                     // For non-geographical countries, and Mexican, Chilean, and Uzbek fixed line and mobile
                     // numbers, we output international format for numbers that can be dialed internationally as
                     // that always works.
-                    if (regionCode == REGION_CODE_FOR_NON_GEO_ENTITY
+                    if ((regionCode == REGION_CODE_FOR_NON_GEO_ENTITY
                         // MX fixed line and mobile numbers should always be formatted in international format,
                         // even when dialed within MX. For national format to work, a carrier code needs to be
                         // used, and the correct carrier code depends on if the caller and callee are from the
@@ -1348,7 +1348,7 @@ namespace PhoneNumbers
                         // special codes and to be consistent with formatting across all phone types we return
                         // the number in international format here.
                         || ((regionCode == "MX" || regionCode == "CL"
-                                || regionCode == "UZ") && isFixedLineOrMobile)
+                                || regionCode == "UZ") && isFixedLineOrMobile))
                         && CanBeInternationallyDialled(numberNoExt))
                     {
                         formattedNumber = Format(numberNoExt, PhoneNumberFormat.INTERNATIONAL);
