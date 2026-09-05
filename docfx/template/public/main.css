@@ -325,13 +325,17 @@ header {
   }
 }
 
-.toc-offcanvas {
-  background: var(--bs-body-bg);
-  border-right: 1px solid var(--bs-border-color);
-}
-
+/* The outer .toc-offcanvas wrapper stays in main's flex row at every width
+   — it's the child .offcanvas-md.offcanvas-start div that becomes a real
+   fixed-position, transform-hidden mobile drawer below 768px. That leaves
+   the outer wrapper collapsed to ~1px (its content is gone, not just
+   hidden) at narrow widths, so background/border-right here — previously
+   unscoped — must stay gated to the same 768px breakpoint as the rest of
+   the rail, or they paint as a stray vertical line down the page. */
 @media (min-width: 768px) {
   .toc-offcanvas {
+    background: var(--bs-body-bg);
+    border-right: 1px solid var(--bs-border-color);
     min-width: 220px;
   }
 }
