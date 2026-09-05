@@ -1933,6 +1933,25 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
+        public void TestMaybeStripNationalPrefixLeavesEmptyNumberAlone()
+        {
+            var metadata = new PhoneMetadata.Builder()
+                .SetNationalPrefixForParsing("34")
+                .SetGeneralDesc(new PhoneNumberDesc.Builder().SetNationalNumberPattern("\\d{4,8}").Build())
+                .BuildPartial();
+            // A zero-length number has no national prefix to strip, and asking must not throw even
+            // though there is nothing to turn into a string.
+            var numberToStrip = new StringBuilder();
+            Assert.False(phoneUtil.MaybeStripNationalPrefixAndCarrierCode(numberToStrip, metadata, null));
+            Assert.Equal("", numberToStrip.ToString());
+
+            // Same for a carrier code being requested.
+            var carrierCode = new StringBuilder();
+            Assert.False(phoneUtil.MaybeStripNationalPrefixAndCarrierCode(numberToStrip, metadata, carrierCode));
+            Assert.Equal("", carrierCode.ToString());
+        }
+
+        [Fact]
         public void TestMaybeStripInternationalPrefix()
         {
             var internationalPrefix = "00[39]";
