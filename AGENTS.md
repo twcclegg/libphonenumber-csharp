@@ -23,7 +23,7 @@ The library tracks upstream metadata releases (~every two weeks) via the `create
 - `csharp/PhoneNumbers.Demo.Tests/` — bUnit tests for the demo.
 - `csharp/coverlet.runsettings` — keeps the generated data tables out of coverage instrumentation; passed by the coverage workflow.
 - `resources/` — XML metadata (`PhoneNumberMetadata.xml`, `ShortNumberMetadata.xml`, `PhoneNumberAlternateFormats.xml`, `PhoneNumberMetadataForTesting.xml`), plus `geocoding/`, `carrier/`, `timezones/`. **These are copied verbatim from upstream** (`locale/` is the exception: it is generated from the local jdk by `DumpLocale.java`) — do not hand-edit. The library no longer reads them at runtime: the build pipeline emits binary equivalents under `obj/metadata/`, `obj/geocoding/`, `obj/timezones/` which are embedded into the published assembly.
-- `lib/github-actions-metadata-update.sh` + `lib/DumpLocale.java` — automation that pulls upstream resources and regenerates `resources/locale/country_names.txt`.
+- `lib/github-actions-metadata-update.sh` + `lib/DumpLocale.java` — automation that pulls upstream resources and regenerates `resources/locale/country_names.txt`. It opens the metadata PR but does not merge it: `lib/enable-metadata-auto-merge.sh` enables auto-merge once the PR has been open for the review window, and `lib/finalize-metadata-release.sh` releases it after the merge.
 - `csharp/PhoneNumbers.Fuzz/` — SharpFuzz/libFuzzer target for the parsing surface, run weekly by `fuzz.yml`. Not in the solution; see its README and the note in its csproj.
 
 ## Common commands

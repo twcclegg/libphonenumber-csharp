@@ -1,7 +1,9 @@
-# Second half of the metadata-update flow: github-actions-metadata-update.sh (see
+# Last step of the metadata-update flow: github-actions-metadata-update.sh (see
 # create_new_release_on_new_metadata_update.yml) opens a metadata-update/* PR against main and
-# stops. Once that PR's required checks pass and it auto-merges, this workflow tags the merge
-# commit, creates the GitHub release, and dispatches the NuGet publish.
+# stops, leaving auto-merge off; enable_metadata_auto_merge.yml turns auto-merge on after the
+# review window. Once that happens and the PR's required checks pass, it merges and this
+# workflow tags the merge commit, creates the GitHub release, and dispatches the NuGet
+# publish.
 
 name: "finalize_metadata_release"
 

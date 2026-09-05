@@ -1,0 +1,58 @@
+# Middle step of the metadata-update flow: create_new_release_on_new_metadata_update.yml opens
+# the metadata-update/* PR with auto-merge deliberately off, so it sits open as a review
+# window. This workflow turns auto-merge on once that window has elapsed; GitHub then merges
+# the PR when its required checks pass, and finalize_metadata_release.yml takes over from
+# there.
+#
+# Once a day is enough, and the 18-hour window is what makes that work. The sync opens its PR
+# at 08:00 UTC, so by 05:20 the next day (the cron below) the PR is about 21h20m old:
+# comfortably past the window, with just over three hours of slack for a late-firing sync
+# (scheduled workflows can lag, and the sync step itself allows 30 minutes) before a PR would
+# miss the cut and have to wait another whole day. Running before 08:00 also means the
+# previous sync has normally merged by the time the next one opens, so two metadata PRs
+# rarely overlap.
+#
+# A shorter window would let a PR merge overnight without ever being seen; a longer one would
+# not fit between two daily syncs.
+
+name: "enable_metadata_auto_merge"
+
+on:
+  schedule:
+    - cron: '20 5 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Report which PRs would have auto-merge enabled and stop without changing anything'
+        type: boolean
+        default: false
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  enable_metadata_auto_merge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # No elevation: like create_new_release_on_new_metadata_update.yml, the write happens as
+    # BOT_ACCESS_TOKEN rather than GITHUB_TOKEN. That is required, not stylistic - GitHub does
+    # not raise workflow-triggering events for actions taken by GITHUB_TOKEN, so an auto-merge
+    # enabled by it would merge the PR without firing the pull_request closed event that
+    # finalize_metadata_release.yml listens for, and the release would never be cut.
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Enable auto-merge on metadata PRs past the review window
+        # The token is read from the environment rather than passed as an argument, so it
+        # never appears on the process command line.
+        run: bash lib/enable-metadata-auto-merge.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.BOT_ACCESS_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || false }}
