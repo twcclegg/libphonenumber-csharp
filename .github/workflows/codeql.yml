@@ -102,13 +102,13 @@ jobs:
       # those files straight from the Roslyn compilation because the csharp job uses
       # build-mode: manual, so they are not on disk and the config-file paths-ignore filter
       # does not apply to them. Filtering the SARIF removes them without disabling any query
-      # for hand-written code. See .github/codeql/filter-sarif.py for the details.
+      # for hand-written code. See .github/codeql/filter-sarif.sh for the details.
       - name: Filter generated code out of SARIF
         run: |
-          python3 .github/codeql/filter-sarif.py \
+          .github/codeql/filter-sarif.sh \
             --input  sarif-results/${{ matrix.language }}.sarif \
             --output sarif-results/${{ matrix.language }}.sarif \
-            --exclude '**/obj/**'
+            --exclude-dir obj
 
       - name: Upload CodeQL results
         uses: github/codeql-action/upload-sarif@db488ddef3bf6cb639b32c2e9a7c0a7ea8271d28 # v4.37.8
