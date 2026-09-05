@@ -426,6 +426,17 @@ table thead th {
   gap: 0.4rem;
 }
 
+/* DocFX's stock .actionbar>button{margin-left:-.8em} pulls the mobile "show
+   TOC" hamburger left to visually align its icon with the breadcrumb text
+   next to it, assuming more container gutter than this layout has at
+   narrow widths — it renders a few px off the left edge of the viewport.
+   The button is d-md-none (desktop hides it entirely), so dropping the
+   pull only affects mobile, and aligning it with the rest of the content's
+   left edge instead of past it reads better anyway. */
+.actionbar > button {
+  margin-left: 0 !important;
+}
+
 .btn-primary {
   --bs-btn-bg: var(--bs-primary);
   --bs-btn-border-color: var(--bs-primary);
