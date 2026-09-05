@@ -17,11 +17,9 @@ on:
   issues:
     types: [opened]
 
+# Read-only by default; the triage job below raises exactly what it needs.
 permissions:
-  contents: write
-  issues: write
-  pull-requests: write
-  copilot-requests: write
+  contents: read
 
 concurrency:
   group: triage-metadata-issue-${{ github.event.issue.number }}
@@ -35,6 +33,19 @@ jobs:
     # Don't second-guess the maintainers' own issues (e.g. tracking/planning
     # issues like #375), only third-party bug reports.
     if: github.event.issue.author_association != 'OWNER' && github.event.issue.author_association != 'MEMBER' && github.event.issue.author_association != 'COLLABORATOR'
+    permissions:
+      # "Propose adding this issue to the examples list" creates the
+      # triage/metadata-example-issue-* branch and commits
+      # .github/triage/metadata_examples.md onto it.
+      contents: write
+      # "Act on classification" creates/adds the metadata label, comments, and closes
+      # the issue.
+      issues: write
+      # ...and the examples-list step opens the follow-up PR.
+      pull-requests: write
+      # actions/ai-inference calls the Copilot inference api with the built-in
+      # GITHUB_TOKEN; see the header comment.
+      copilot-requests: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 

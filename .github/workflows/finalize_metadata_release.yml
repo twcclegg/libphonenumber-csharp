@@ -29,14 +29,24 @@ jobs:
       github.event.pull_request.user.login == 'libphonenumber-csharp-bot'
     runs-on: ubuntu-latest
     permissions:
+      # createRelease (lib/github-release-helpers.sh) POSTs /repos/.../releases, which
+      # creates the vX.Y.Z tag as well as the release entry - that needs contents: write.
       contents: write
+      # dispatchPublish POSTs /repos/.../actions/workflows/publish_nuget.yml/dispatches,
+      # and workflow_dispatch needs actions: write. github suppresses push events raised
+      # by GITHUB_TOKEN, so creating the tag alone cannot start the publish run.
       actions: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Create release and dispatch publish
-        run: |
-          bash lib/finalize-metadata-release.sh \
-            "${{ github.event.pull_request.head.ref }}" \
-            "${{ github.event.pull_request.merge_commit_sha }}"
+        # head.ref is attacker-controlled - a branch name may contain shell
+        # metacharacters - so both values are handed to the step through the
+        # environment and referenced as quoted shell variables. Interpolating
+        # ${{ }} straight into the run body would let a crafted branch name run as
+        # code. The script still receives the same two positional arguments.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+        run: |
+          bash lib/finalize-metadata-release.sh "$HEAD_REF" "$MERGE_SHA"
