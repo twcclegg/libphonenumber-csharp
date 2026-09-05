@@ -124,9 +124,29 @@ namespace PhoneNumbers
                 // Seeded, because the seedless Aggregate throws on an empty sequence and an empty
                 // blacklist is a normal filter - EmptyFilter() is exactly that. XOR-ing from 0
                 // leaves the hash of every non-empty blacklist unchanged.
+                //
+                // Uses SetHashCode(kvp.Value) rather than kvp.Value.GetHashCode(): SortedSet<T>
+                // does not override GetHashCode, so the latter is reference-identity, while Equals
+                // above compares blacklists with SetEquals - content equality. Two independently
+                // built MetadataFilter instances with equal-content but distinct SortedSet<string>
+                // values (e.g. two ForLiteBuild() calls) would compare equal but hash differently.
                 return blacklist.GetType().GetHashCode() ^ blacklist
-                           .Select(kvp => kvp.Key.GetHashCode() * 17 ^ kvp.Value.GetHashCode() * 23)
+                           .Select(kvp => kvp.Key.GetHashCode() * 17 ^ SetHashCode(kvp.Value) * 23)
                            .Aggregate(0, (a, b) => a ^ b);
+            }
+        }
+
+        // Order-independent, matching SortedSet<T>.SetEquals's content-based equality.
+        private static int SetHashCode(SortedSet<string> set)
+        {
+            unchecked
+            {
+                var hash = 0;
+                foreach (var item in set)
+                {
+                    hash ^= item.GetHashCode();
+                }
+                return hash;
             }
         }
 

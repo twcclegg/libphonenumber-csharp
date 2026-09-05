@@ -915,6 +915,21 @@ namespace PhoneNumbers.Test
             Assert.Equal(filter.GetHashCode(), same.GetHashCode());
         }
 
+        [Fact]
+        public void TestGetHashCodeAgreesWithEqualsForNonEmptyBlacklists()
+        {
+            // Two independently built instances whose blacklists have equal content but are not the
+            // same SortedSet<string> instances: SortedSet<T> doesn't override GetHashCode, so hashing
+            // it directly is reference-identity, while Equals above compares with SetEquals - content
+            // equality. That mismatch would let content-equal filters compare equal but hash
+            // differently, which is exactly what ForLiteBuild() produces here on every call.
+            var filter = MetadataFilter.ForLiteBuild();
+            var same = MetadataFilter.ForLiteBuild();
+
+            Assert.True(filter.Equals(same));
+            Assert.Equal(filter.GetHashCode(), same.GetHashCode());
+        }
+
         private static PhoneMetadata.Builder FakeArmeniaPhoneMetadata()
         {
             var metadata = new PhoneMetadata.Builder();
