@@ -28,6 +28,8 @@
   --bs-code-color: #b8410b;
   --code-bg: #ffffff;
   --code-text: #211d18;
+  --install-bg: #2c271f;
+  --install-text: #f3ede2;
 
   --surface: #ffffff;
   --accent-soft: #fae6d6;
@@ -56,6 +58,8 @@
   --bs-code-color: #fdb874;
   --code-bg: #0f0c08;
   --code-text: #f0e9dc;
+  --install-bg: #0f0c08;
+  --install-text: #f0e9dc;
 
   --surface: #211d16;
   --accent-soft: #3a2412;
@@ -330,6 +334,20 @@ header {
   --bs-dropdown-link-hover-color: var(--rail-active-text);
   --bs-dropdown-link-hover-bg: var(--rail-bg);
   --bs-dropdown-border-color: var(--rail-border);
+}
+
+/* The theme-toggle button (and, at mobile widths, the hamburger next to
+   it) are plain Bootstrap .btn elements that default to --bs-body-color —
+   the page's general text color, which is dark in light theme. Since the
+   rail they sit in stays dark in both themes, that made the toggle
+   invisible specifically in light mode. */
+.navbar .btn {
+  color: var(--rail-text-dim);
+}
+
+.navbar .btn:hover,
+.navbar .btn:focus {
+  color: var(--rail-active-text);
 }
 
 .search {
@@ -632,6 +650,35 @@ table thead th {
   color: var(--bs-secondary-color);
   line-height: 1.55;
   flex: 1;
+}
+
+/* Matches the demo's own .install-block (csharp/PhoneNumbers.Demo/wwwroot/
+   css/install-block.css) exactly — same "$ " terminal-prompt treatment,
+   same permanently-dark ground in both themes. That one is deliberate: a
+   one-line shell command is meant to look like an actual terminal
+   regardless of page theme, unlike a real code block (see --code-bg
+   above, which is *not* permanently dark). */
+.install-block {
+  font-family: var(--bs-font-monospace);
+  font-size: 0.875rem;
+  background: var(--install-bg);
+  color: var(--install-text);
+  border-radius: var(--bs-border-radius-sm);
+  padding: 0.7rem 0.9rem;
+  display: flex;
+  /* flex-start, not center: with align-items:center a wrapped multi-line
+     command centers the "$" against the whole block's height instead of
+     sitting next to the first line, which doesn't read like a real shell
+     prompt. */
+  align-items: flex-start;
+  gap: 0.5rem;
+  overflow-x: auto;
+}
+
+.install-block__prompt {
+  color: var(--bs-primary);
+  user-select: none;
+  font-weight: 600;
 }
 
 .docs-card__go {
