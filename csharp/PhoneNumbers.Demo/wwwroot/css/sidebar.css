@@ -195,6 +195,12 @@
     opacity: 1;
 }
 
+/* Brand logomarks (e.g. NuGet) are filled shapes, not stroke icons. */
+.sidebar__link-icon--filled svg {
+    fill: currentColor;
+    stroke: none;
+}
+
 .sidebar__footer {
     padding: 0.9rem 1.25rem 1.1rem;
     border-top: 1px solid var(--rail-border);
