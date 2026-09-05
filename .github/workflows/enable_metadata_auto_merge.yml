@@ -5,11 +5,12 @@
 # there.
 #
 # Once a day is enough, and the 18-hour window is what makes that work. The sync opens its PR
-# at 08:00 UTC, so by 05:00 the next day the PR is about 21 hours old: comfortably past the
-# window, with roughly two hours of slack for a late-firing sync (scheduled workflows can lag,
-# and the sync step itself allows 30 minutes) before a PR would miss the cut and have to wait
-# another whole day. Running before 08:00 also means the previous sync has normally merged by
-# the time the next one opens, so two metadata PRs rarely overlap.
+# at 08:00 UTC, so by 05:20 the next day (the cron below) the PR is about 21h20m old:
+# comfortably past the window, with just over three hours of slack for a late-firing sync
+# (scheduled workflows can lag, and the sync step itself allows 30 minutes) before a PR would
+# miss the cut and have to wait another whole day. Running before 08:00 also means the
+# previous sync has normally merged by the time the next one opens, so two metadata PRs
+# rarely overlap.
 #
 # A shorter window would let a PR merge overnight without ever being seen; a longer one would
 # not fit between two daily syncs.

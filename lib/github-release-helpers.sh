@@ -56,7 +56,7 @@ PUBLISH_WORKFLOW="${PUBLISH_WORKFLOW:-publish_nuget.yml}"
 # enforces the window cannot disagree about the number.
 #
 # 18 rather than 24 so a once-a-day check can catch a PR opened by the previous day's sync:
-# 08:00 open, 05:00 check, ~21 hours elapsed. At 24 the check would have to run after the
+# 08:00 open, 05:20 check, ~21h20m elapsed. At 24 the check would have to run after the
 # following sync, or hourly. See enable_metadata_auto_merge.yml.
 AUTO_MERGE_DELAY_HOURS="${AUTO_MERGE_DELAY_HOURS:-18}"
 

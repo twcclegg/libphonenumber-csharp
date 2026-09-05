@@ -70,6 +70,19 @@ log "enabling auto-merge on ${GITHUB_REPOSITORY} metadata PRs opened before $(fo
 
 OPEN_PRS=$(ghApi "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls?state=open&base=main&per_page=100")
 
+# created_at never changes across a close/reopen, so a PR a maintainer closed to hold for
+# manual review and later reopened would otherwise look just as "past the window" as one that
+# has been open, untouched, the whole time - the very case the window exists to protect.
+# Treat any PR that has ever been reopened as needing a human to merge it, not this script.
+hasBeenReopened() {
+    local pr_number="$1" events
+    if ! events=$(ghApi "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${pr_number}/events?per_page=100" 2>/dev/null); then
+        warn "could not fetch the timeline for PR #${pr_number} to check for a manual reopen; treating it as reopened to be safe"
+        return 0
+    fi
+    jq -e 'any(.[]; .event == "reopened")' <<<"${events}" >/dev/null 2>&1
+}
+
 # Eligibility is deliberately strict. The branch name alone decides nothing: anyone can push a
 # branch called metadata-update/anything, and this script's whole job is to arrange a merge to
 # main without a human in the loop. So the PR must also be authored by the bot and come from a
@@ -94,6 +107,11 @@ while IFS=$'\t' read -r PR_NUMBER PR_NODE_ID PR_BRANCH PR_CREATED; do
     [ -n "${PR_NUMBER}" ] || continue
     log "PR #${PR_NUMBER} (${PR_BRANCH}) opened ${PR_CREATED} is past the ${AUTO_MERGE_DELAY_HOURS}h window"
 
+    if hasBeenReopened "${PR_NUMBER}"; then
+        log "  #${PR_NUMBER} was closed and reopened at some point; leaving it for a manual merge instead of auto-enabling"
+        continue
+    fi
+
     if isTrue "${DRY_RUN}"; then
         log "  dry run: would enable auto-merge"
         continue
@@ -102,10 +120,15 @@ while IFS=$'\t' read -r PR_NUMBER PR_NODE_ID PR_BRANCH PR_CREATED; do
     # GraphQL errors come back as HTTP 200 with an "errors" field, so --fail does not catch
     # them - check the body. None of these are fatal to the run: a PR that cannot take
     # auto-merge (already enabled, repository setting off, branch protection unsatisfiable)
-    # still merges by hand, and the remaining PRs should still be processed.
-    AUTOMERGE_RESPONSE=$(jq -n --arg id "${PR_NODE_ID}" \
+    # still merges by hand, and the remaining PRs should still be processed. A transport
+    # failure (curl exhausting its retries) is handled the same way: warn and move on to the
+    # next PR rather than letting set -e abort the whole run over one PR.
+    if ! AUTOMERGE_RESPONSE=$(jq -n --arg id "${PR_NODE_ID}" \
         '{query: "mutation($id: ID!) { enablePullRequestAutoMerge(input: {pullRequestId: $id, mergeMethod: MERGE}) { clientMutationId } }", variables: {id: $id}}' \
-        | ghApi -X POST --data @- "https://api.github.com/graphql")
+        | ghApi -X POST --data @- "https://api.github.com/graphql"); then
+        warn "could not reach the GitHub API to enable auto-merge on PR #${PR_NUMBER}; it will be retried on the next run"
+        continue
+    fi
 
     if jq -e '.errors' <<<"${AUTOMERGE_RESPONSE}" >/dev/null 2>&1; then
         ERROR_MESSAGE=$(jq -r '.errors[0].message' <<<"${AUTOMERGE_RESPONSE}")
