@@ -217,14 +217,15 @@ namespace PhoneNumbers
             // Combining marks are a subset of non-spacing-mark.
             if (!char.IsLetter(letter) && CharUnicodeInfo.GetUnicodeCategory(letter) != UnicodeCategory.NonSpacingMark)
                 return false;
-            return
-                letter <= 0x007F                             // BASIC_LATIN
-                || letter >= 0x0080 && letter <= 0x00FF     // LATIN_1_SUPPLEMENT
-                || letter >= 0x0100 && letter <= 0x017F     // LATIN_EXTENDED_A
-                || letter >= 0x1E00 && letter <= 0x1EFF     // LATIN_EXTENDED_ADDITIONAL
-                || letter >= 0x0180 && letter <= 0x024F     // LATIN_EXTENDED_B
-                || letter >= 0x0300 && letter <= 0x036F     // COMBINING_DIACRITICAL_MARKS
-                ;
+            // The Unicode blocks Java's isLatinLetter() accepts, expressed as the code point
+            // ranges that define them (C# has no Character.UnicodeBlock equivalent).
+            return letter is
+                <= '\u007F'                            // BASIC_LATIN
+                or (>= '\u0080' and <= '\u00FF')       // LATIN_1_SUPPLEMENT
+                or (>= '\u0100' and <= '\u017F')       // LATIN_EXTENDED_A
+                or (>= '\u1E00' and <= '\u1EFF')       // LATIN_EXTENDED_ADDITIONAL
+                or (>= '\u0180' and <= '\u024F')       // LATIN_EXTENDED_B
+                or (>= '\u0300' and <= '\u036F');      // COMBINING_DIACRITICAL_MARKS
         }
 
         private static bool IsInvalidPunctuationSymbol(char character)

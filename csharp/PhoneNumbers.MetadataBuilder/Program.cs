@@ -57,6 +57,12 @@ internal static class Program
             try { return Run(args); }
             finally { mutex.ReleaseMutex(); }
         }
+        // Deliberately broad: this is the process-wide handler for a build-time tool, and the
+        // work it guards reaches XML parsing, file I/O and named-mutex code that between them
+        // can throw a dozen unrelated types. Nothing is swallowed — the full exception goes to
+        // stderr and the non-zero exit code fails the MSBuild target that invoked us — so
+        // narrowing this would only trade a readable one-line diagnostic for an unhandled-
+        // exception crash dump, with no change to whether the build fails.
         catch (Exception ex)
         {
             Console.Error.WriteLine($"PhoneNumbers.MetadataBuilder failed: {ex.Message}");
