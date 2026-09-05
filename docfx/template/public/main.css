@@ -95,6 +95,28 @@ pre code, pre.code, .article pre {
   border-radius: var(--bs-border-radius-sm);
 }
 
+/* Syntax highlighting ("Ember"): the docs site's default highlight.js
+   theme (VS-style blues/teals/greens) clashed with the orange accent, so
+   every token here sits on the same warm wheel instead — from rust-red
+   keywords to golden strings. Calibrated separately per code-block ground
+   (see --code-bg above): light theme's #2c271f is a touch brighter than
+   dark theme's #0f0c08, so it gets paler/higher-contrast tones rather than
+   dark theme's fully-saturated ones, which would otherwise read as
+   slightly muddier against the lighter ground. */
+.hljs-keyword  { color: #ff6a3f; }
+.hljs-built_in { color: #ffb84f; }
+.hljs-title    { color: #ffa07a; }
+.hljs-string   { color: #ffd166; }
+.hljs-comment  { color: #b8a190; font-style: italic; }
+.hljs-number   { color: #ffb37a; }
+
+[data-bs-theme="dark"] .hljs-keyword  { color: #ff5522; }
+[data-bs-theme="dark"] .hljs-built_in { color: #ffa726; }
+[data-bs-theme="dark"] .hljs-title    { color: #ff7a52; }
+[data-bs-theme="dark"] .hljs-string   { color: #ffc233; }
+[data-bs-theme="dark"] .hljs-comment  { color: #a88f78; font-style: italic; }
+[data-bs-theme="dark"] .hljs-number   { color: #ff9159; }
+
 /* ============================================================
    Rail: the demo's persistent dark sidebar (sidebar.css), rebuilt
    from DocFX's horizontal navbar. Fixed full-height on the left at
