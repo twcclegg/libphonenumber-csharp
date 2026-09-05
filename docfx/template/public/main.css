@@ -638,6 +638,12 @@ table thead th {
   stroke-linejoin: round;
 }
 
+/* Brand logomarks (e.g. NuGet) are filled shapes, not stroke icons. */
+.docs-card__icon--filled svg {
+  fill: currentColor;
+  stroke: none;
+}
+
 .docs-card__title {
   font-family: 'Space Grotesk', system-ui, sans-serif;
   font-weight: 600;
