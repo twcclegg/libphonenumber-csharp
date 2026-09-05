@@ -1,17 +1,15 @@
-@inject NavigationManager Nav
-
 @* Wraps FocusOnNavigate so the page heading is focused on SPA navigation but not
    on the initial page load. On first load the browser already starts the user at
    the top of the document, so focusing the <h1> gains nothing and paints a focus
    ring around the heading until the next click. *@
-@if (_hasNavigated)
+@if (_hasNavigatedToAnotherPage)
 {
     <FocusOnNavigate RouteData="@RouteData" Selector="@Selector" />
 }
 
 @code {
-    private string? _lastUri;
-    private bool _hasNavigated;
+    private Type? _lastPageType;
+    private bool _hasNavigatedToAnotherPage;
 
     [Parameter]
     [EditorRequired]
@@ -23,16 +21,22 @@
 
     protected override void OnParametersSet()
     {
-        // Compare URIs rather than RouteData instances: the router hands out a fresh
-        // RouteData on every render, navigation or not.
-        if (_lastUri is null)
+        // Compare the matched page type, not Nav.Uri: every page here syncs its input state
+        // into the query string on blur/change (see SyncUrl in Home.razor, Formatting.razor,
+        // and friends), which calls NavigateTo for the *same* page. Comparing raw URIs treated
+        // that as a navigation, mounting FocusOnNavigate for the first time on ordinary form
+        // interaction and yanking focus back to the heading the user had just left. PageType
+        // only changes on an actual different-page transition, which is the only case
+        // FocusOnNavigate itself reacts to internally, so this mirrors its own logic instead
+        // of second-guessing it from the URI.
+        if (_lastPageType is null)
         {
-            _lastUri = Nav.Uri;
+            _lastPageType = RouteData.PageType;
         }
-        else if (_lastUri != Nav.Uri)
+        else if (_lastPageType != RouteData.PageType)
         {
-            _lastUri = Nav.Uri;
-            _hasNavigated = true;
+            _lastPageType = RouteData.PageType;
+            _hasNavigatedToAnotherPage = true;
         }
     }
 }
