@@ -897,8 +897,11 @@ namespace PhoneNumbers.Test
             object? nullReference = null;
             Assert.False(filter.Equals(nullReference));
 
-            // ... and false for an object that is not a MetadataFilter at all.
-            Assert.False(filter.Equals("not a MetadataFilter"));
+            // ... and false for an object that is not a MetadataFilter at all. Held in an object
+            // local for the same reason: passing the string literal straight in is a comparison
+            // between statically incomparable types, which is a real smell everywhere except here.
+            object foreignObject = "not a MetadataFilter";
+            Assert.False(filter.Equals(foreignObject));
 
             // Equality is by blacklist contents, so a separately built empty filter is equal, and a
             // filter carrying a non-empty blacklist is not.
