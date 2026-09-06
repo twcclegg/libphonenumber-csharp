@@ -638,8 +638,16 @@ table thead th {
   stroke-linejoin: round;
 }
 
-/* Brand logomarks (e.g. NuGet) are filled shapes, not stroke icons. */
-.docs-card__icon--filled svg {
+/* The NuGet logomark is drawn as line art to sit alongside the feather-style
+   icons, with two adjustments the shared rule above can't make: at 2px the
+   stroke closes up its small punch-hole circle, and its lead dot is a solid
+   dot in the real mark rather than an outlined ring. The svg's own viewBox is
+   inset by 1.5 units so the outer stroke isn't clipped at the edge. */
+.docs-card__icon--nuget svg {
+  stroke-width: 1.75;
+}
+
+.docs-card__icon--nuget .nuget-dot {
   fill: currentColor;
   stroke: none;
 }
