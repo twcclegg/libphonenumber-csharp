@@ -62,6 +62,13 @@ if [[ ${#EXCLUDE_DIRS[@]} -eq 0 ]]; then
   exit 1
 fi
 
+# jq is given a scratch file to write to and the result is moved into place at the end,
+# so --input and --output are allowed to name the same path. Redirecting straight to
+# "$OUTPUT" would not be: the shell truncates a redirection target before jq is exec'd, so
+# an in-place run would hand jq an empty file and quietly emit an empty SARIF.
+SCRATCH=$(mktemp)
+trap 'rm -f "$SCRATCH"' EXIT
+
 SEGMENTS_JSON=$(printf '%s\n' "${EXCLUDE_DIRS[@]}" | jq -R . | jq -s .)
 
 # jq definitions shared by the stats pass and the filtering pass.
@@ -96,7 +103,7 @@ jq --argjson segments "$SEGMENTS_JSON" "
     (.artifacts // []) as \$arts
     | .results |= map(select(is_excluded(uri_for(.; \$arts); \$segments) | not))
   )
-" "$INPUT" >"$OUTPUT"
+" "$INPUT" >"$SCRATCH"
 
 TOTAL=$(jq -r '.total' <<<"$STATS")
 DROPPED=$(jq -r '.dropped' <<<"$STATS")
@@ -109,10 +116,22 @@ else
   jq -r '.by_rule[] | "filter-sarif:   \(.count)  \(.rule)"' <<<"$STATS"
 fi
 
-# Refuse to silently produce a SARIF with no findings left: a future --exclude-dir
-# that ends up matching too broadly (a typo, a glob widened when a new language is
-# added) should fail loudly here, not show up as a clean security scan.
-if [[ "$TOTAL" -gt 0 && "$KEPT" -eq 0 ]]; then
-  echo "filter-sarif: all ${TOTAL} result(s) were dropped -- refusing to upload an empty SARIF; check --exclude-dir" >&2
+# Check the file that was actually written, rather than trusting the stats pass: the two jq
+# invocations read the same input but only this one produced the artifact that gets uploaded,
+# and a SARIF that is truncated or unparseable would otherwise reach upload-sarif as a bare
+# "Invalid SARIF. JSON syntax error" with nothing pointing back at this script.
+#
+# Note this deliberately does not treat "nothing left" as an error. Every remaining result
+# living in generated code is the goal state, not a misconfigured --exclude-dir, and failing
+# on it would turn a repository with no hand-written alerts into a red build.
+if ! WRITTEN=$(jq '[.runs[] | (.results // [])[]] | length' "$SCRATCH" 2>&1); then
+  echo "filter-sarif: the filtered SARIF is not valid JSON; refusing to overwrite ${OUTPUT}" >&2
+  echo "filter-sarif:   ${WRITTEN}" >&2
   exit 1
 fi
+if [[ "$WRITTEN" -ne "$KEPT" ]]; then
+  echo "filter-sarif: expected ${KEPT} result(s) in the filtered SARIF but found ${WRITTEN}" >&2
+  exit 1
+fi
+
+mv "$SCRATCH" "$OUTPUT"

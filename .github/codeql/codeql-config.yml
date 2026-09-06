@@ -16,7 +16,7 @@ name: "CodeQL config"
 # https://github.com/github/docs/blob/main/data/reusables/code-scanning/alerts-found-in-generated-code.md
 #
 # Generated-code results are therefore stripped from the SARIF instead, in between the analyze and
-# upload steps of codeql.yml - see .github/codeql/filter-sarif.py. That removes them by path
+# upload steps of codeql.yml - see .github/codeql/filter-sarif.sh. That removes them by path
 # without disabling any query, so cs/useless-cast-to-self, cs/nested-if-statements,
 # cs/coupled-types and friends all still report normally against hand-written code.
 #
