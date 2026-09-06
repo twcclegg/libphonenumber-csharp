@@ -35,7 +35,10 @@
     ],
     "resource": [
       {
-        "files": [ "images/**" ]
+        "//": "Shared with the Blazor demo, which publishes the same three files into its own wwwroot; kept at the repo root so the two sites cannot drift. Mapped to images/ so _appLogoPath and _appFaviconPath below stay site-relative.",
+        "src": "../assets/brand",
+        "files": [ "*.svg" ],
+        "dest": "images"
       }
     ],
     "output": "_site",

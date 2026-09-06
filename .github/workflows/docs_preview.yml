@@ -33,16 +33,9 @@ jobs:
         with:
           dotnet-version: 10.x
 
-      # docfx loads PhoneNumbers.csproj/PhoneNumbers.Extensions.csproj through MSBuild to
-      # extract API metadata, which needs a restored project.assets.json - this repo uses
-      # Central Package Management, so an unrestored project fails to resolve references
-      # rather than just producing incomplete docs.
-      - name: Restore
-        run: dotnet restore csharp
-
-      - name: Build
-        run: dotnet build csharp --no-restore
-
+      # build.sh restores and builds the two documented projects itself, so this runs the
+      # same command deploy-demo.yml does and the preview cannot pass on a build state the
+      # deploy will not have.
       - name: Build API docs site
         run: ./docfx/build.sh
 
