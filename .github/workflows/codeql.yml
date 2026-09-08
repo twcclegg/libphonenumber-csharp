@@ -90,7 +90,28 @@ jobs:
           cd csharp
           dotnet build
 
+      # Analyze but do not upload yet: the SARIF has to be filtered first (see below).
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@db488ddef3bf6cb639b32c2e9a7c0a7ea8271d28 # v4.37.8
         with:
+          category: "/language:${{matrix.language}}"
+          output: sarif-results
+          upload: never
+
+      # Strip results whose primary location is source-generator output. CodeQL extracts
+      # those files straight from the Roslyn compilation because the csharp job uses
+      # build-mode: manual, so they are not on disk and the config-file paths-ignore filter
+      # does not apply to them. Filtering the SARIF removes them without disabling any query
+      # for hand-written code. See .github/codeql/filter-sarif.sh for the details.
+      - name: Filter generated code out of SARIF
+        run: |
+          .github/codeql/filter-sarif.sh \
+            --input  sarif-results/${{ matrix.language }}.sarif \
+            --output sarif-results/${{ matrix.language }}.sarif \
+            --exclude-dir obj
+
+      - name: Upload CodeQL results
+        uses: github/codeql-action/upload-sarif@db488ddef3bf6cb639b32c2e9a7c0a7ea8271d28 # v4.37.8
+        with:
+          sarif_file: sarif-results
           category: "/language:${{matrix.language}}"
