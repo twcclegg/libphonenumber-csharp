@@ -47,7 +47,11 @@ jobs:
       # GITHUB_TOKEN; see the header comment.
       copilot-requests: write
     steps:
+      # Only checked out for .github/triage/*.md - the branch, commit and PR below are made
+      # through the rest api by github-script, never by git, so no credential is needed here.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Read issue
         id: issue
