@@ -47,11 +47,7 @@ jobs:
       # GITHUB_TOKEN; see the header comment.
       copilot-requests: write
     steps:
-      # .github/triage/ only: the sole thing this job reads off disk is the three prompt
-      # fragments concatenated in "Build classifier system prompt" below - every other step
-      # goes through the GitHub api (github-script) or the inference action, and the
-      # examples-list PR is built with repos.createOrUpdateFileContents rather than a local
-      # commit. A full checkout materializes ~81 MiB, ~80 MiB of it resources/ metadata.
+      # This job only reads .github/triage/, avoiding a ~81 MiB checkout dominated by resources/.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           sparse-checkout: .github/triage
