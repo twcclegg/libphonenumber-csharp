@@ -47,11 +47,14 @@ jobs:
       # GITHUB_TOKEN; see the header comment.
       copilot-requests: write
     steps:
-      # Only checked out for .github/triage/*.md - the branch, commit and PR below are made
-      # through the rest api by github-script, never by git, so no credential is needed here.
+      # Only checked out for .github/triage/*.md - those three prompt fragments, concatenated
+      # in "Build classifier system prompt" below, are the sole thing this job reads off disk.
+      # The branch, commit and PR it opens are made through the rest api by github-script rather
+      # than by git, so it needs no credential either.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+          sparse-checkout: .github/triage
 
       - name: Read issue
         id: issue
