@@ -37,7 +37,13 @@ jobs:
       # by GITHUB_TOKEN, so creating the tag alone cannot start the publish run.
       actions: write
     steps:
+      # lib/ only: this job runs lib/finalize-metadata-release.sh (plus the
+      # lib/github-release-helpers.sh it sources), which talks to the GitHub api and reads
+      # nothing else out of the tree. A full checkout materializes ~81 MiB, ~80 MiB of it
+      # resources/ metadata this job never opens.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: lib
       - name: Create release and dispatch publish
         # head.ref is attacker-controlled - a branch name may contain shell
         # metacharacters - so both values are handed to the step through the
