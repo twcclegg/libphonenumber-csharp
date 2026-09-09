@@ -1,4 +1,0 @@
-Region ; Type       ; Number
-NI     ; FIXED_LINE ; "21234567"
-NI     ; MOBILE     ; "81234567"
-NI     ; TOLL_FREE  ; "18001234"
