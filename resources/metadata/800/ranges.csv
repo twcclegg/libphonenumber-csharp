@@ -1,3 +1,0 @@
-Prefix ; Length ; Type       ; Tariff    ; Format     ; Regions
-00     ; 8      ; FIXED_LINE ; TOLL_FREE ; "fmt1_4/4" ; "001"
-[1-9]  ; 8      ; FIXED_LINE ; TOLL_FREE ; "fmt1_4/4" ; "001"

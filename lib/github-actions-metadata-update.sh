@@ -318,6 +318,14 @@ fi
 git -c advice.detachedHead=false clone --quiet --depth 1 --branch "${UPSTREAM_GITHUB_RELEASE_TAG}" \
     "https://github.com/${UPSTREAM_REPOSITORY}.git" "${WORK_DIR}/libphonenumber"
 
+# resources/metadata/ is ~1300 per-calling-code csv files (ranges, examples, operators,
+# shortcodes, ...) that upstream generates for its own tooling, about 72 MiB of the 87 MiB
+# resources/ used to weigh. Nothing in this port reads them: the build generates its binary
+# metadata from PhoneNumberMetadata.xml and friends, and the geocoding, carrier, timezone and
+# locale tables come from their own directories. They were only ever committed here because this
+# script copied the whole upstream directory in one go.
+UPSTREAM_RESOURCES_EXCLUDES=(metadata)
+
 UPSTREAM_RESOURCES="${WORK_DIR}/libphonenumber/resources"
 if [ -z "$(ls -A "${UPSTREAM_RESOURCES}" 2>/dev/null)" ]; then
     fail 1 "upstream resources directory is missing or empty"
@@ -327,7 +335,7 @@ fi
 if isTrue "${DRY_RUN}"; then
     log ""
     log "dry run complete, a real run would now:"
-    log "  - replace ${GITHUB_ACTION_WORKING_DIRECTORY}/resources with $(find "${UPSTREAM_RESOURCES}" -type f | wc -l | tr -d ' ') files from ${UPSTREAM_GITHUB_RELEASE_TAG}"
+    log "  - replace ${GITHUB_ACTION_WORKING_DIRECTORY}/resources with $(find "${UPSTREAM_RESOURCES}" -type f | wc -l | tr -d ' ') files from ${UPSTREAM_GITHUB_RELEASE_TAG}, less ${UPSTREAM_RESOURCES_EXCLUDES[*]}/"
     log "  - regenerate resources/locale/country_names.txt with $(java -version 2>&1 | head -n 1 || echo 'the local jdk')"
     log "  - add a CHANGELOG.md entry for ${UPSTREAM_GITHUB_RELEASE_TAG}"
     log "  - commit \"feat: automatic upgrade to ${UPSTREAM_GITHUB_RELEASE_TAG}\" on ${BRANCH} and push it"
@@ -339,6 +347,15 @@ fi
 rm -rf "${GITHUB_ACTION_WORKING_DIRECTORY:?}/resources"
 mkdir -p "${GITHUB_ACTION_WORKING_DIRECTORY}/resources"
 cp -r "${UPSTREAM_RESOURCES}/." "${GITHUB_ACTION_WORKING_DIRECTORY}/resources/"
+
+# Upstream directories this port does not read, dropped again right after the copy. Kept as an
+# exclusion list rather than an allow-list on purpose: a copy-everything-then-remove keeps
+# resources/ a verbatim mirror of upstream apart from these named exceptions, so anything new
+# upstream adds arrives on its own and is visible in the sync PR's diff. An allow-list would
+# silently drop it instead, and a file this port needs going missing is the worse failure.
+for excluded in "${UPSTREAM_RESOURCES_EXCLUDES[@]}"; do
+    rm -rf "${GITHUB_ACTION_WORKING_DIRECTORY:?}/resources/${excluded:?}"
+done
 
 # Generate into the temporary directory first, so a failure part way through can
 # never leave a truncated country_names.txt or a stray DumpLocale.class behind for

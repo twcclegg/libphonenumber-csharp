@@ -1,4 +1,0 @@
-Region ; Type       ; Number
-BN     ; FIXED_LINE ; "2345678"
-BN     ; MOBILE     ; "7123456"
-BN     ; VOIP       ; "5345678"
