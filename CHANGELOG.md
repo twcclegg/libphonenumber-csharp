@@ -52,6 +52,10 @@ in the README for why staying current matters even for patch-looking bumps.
 
 <!-- next-entry -->
 
+## [v9.0.39](https://github.com/twcclegg/libphonenumber-csharp/compare/v9.0.38...v9.0.39) - 2026-09-10
+
+Includes the metadata sync to upstream [libphonenumber v9.0.39](https://github.com/google/libphonenumber/releases/tag/v9.0.39) plus other changes merged to `main` since the last release — see the compare link above for the full diff.
+
 ## [v9.0.38](https://github.com/twcclegg/libphonenumber-csharp/compare/v9.0.37...v9.0.38) - 2026-08-28
 
 A larger-than-usual release: the metadata-sync automation itself was reworked, alongside a batch of
