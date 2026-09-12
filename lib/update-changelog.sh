@@ -105,7 +105,7 @@ buildMetadataOnlyBlock() {
     if [ "${count}" -eq 1 ]; then
         body="Metadata update to upstream [libphonenumber ${latest}]($(upstreamReleaseLink "${UPSTREAM_REPO}" "${latest}"))."
     else
-        body="${count} consecutive metadata-only releases (no changes to hand-written source, tests, docs, or CI/build configuration). Latest upstream sync: [libphonenumber ${latest}]($(upstreamReleaseLink "${UPSTREAM_REPO}" "${latest}"))."
+        body="${count} consecutive releases carrying no hand-written changes — metadata syncs plus automated dependency updates. Latest upstream sync: [libphonenumber ${latest}]($(upstreamReleaseLink "${UPSTREAM_REPO}" "${latest}"))."
     fi
     printf '%s\n## [%s](%s) - %s\n\n%s\n' "${markerLine}" "${heading}" "${link}" "${dateRange}" "${body}"
 }
