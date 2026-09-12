@@ -1,7 +1,8 @@
 #! /bin/bash
-# Shared by github-actions-metadata-update.sh (opens the metadata-update PR) and
-# finalize-metadata-release.sh (tags + releases it once merged) - both scripts source this
-# rather than each carrying its own copy of the release-creation payload.
+# Shared by github-actions-metadata-update.sh (opens the metadata-update PR),
+# finalize-metadata-release.sh (tags + releases it once merged) and
+# update-target-frameworks.sh (opens the yearly target-framework PR) - they source this rather
+# than each carrying its own copy of the logging, api and release-creation plumbing.
 #
 # Not meant to be run directly: it only defines functions and expects the caller to already
 # have `set -euo pipefail`.
@@ -51,6 +52,28 @@ NUGET_PACKAGE_ID="${NUGET_PACKAGE_ID:-libphonenumber-csharp}"
 NUGET_EXTENSIONS_PACKAGE_ID="${NUGET_EXTENSIONS_PACKAGE_ID:-${NUGET_PACKAGE_ID}.extensions}"
 UPSTREAM_REPOSITORY="${UPSTREAM_REPOSITORY:-google/libphonenumber}"
 PUBLISH_WORKFLOW="${PUBLISH_WORKFLOW:-publish_nuget.yml}"
+
+# Which repository this run targets. Actions sets GITHUB_REPOSITORY for us; when
+# it is not set fall back to the origin remote, so a fork or a scratch clone acts on
+# itself instead of on the upstream project.
+resolveRepository() {
+    local url
+
+    if [ -n "${GITHUB_REPOSITORY:-}" ]; then
+        echo "${GITHUB_REPOSITORY}"
+        return 0
+    fi
+
+    url=$(git remote get-url origin 2>/dev/null || true)
+    url="${url%.git}"
+
+    case "${url}" in
+        *github.com[:/]*)
+            echo "${url##*github.com}" | sed 's|^[:/]*||'
+            ;;
+        *) return 1 ;;
+    esac
+}
 
 # Authenticated api calls, so the job is not subject to the unauthenticated rate limit shared
 # by every action runner on the same address. The header is built as an array so the token

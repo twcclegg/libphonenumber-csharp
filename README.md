@@ -28,7 +28,7 @@ dotnet add package libphonenumber-csharp
 
 Available on NuGet as package [`libphonenumber-csharp`](https://www.nuget.org/packages/libphonenumber-csharp).
 
-Targets `netstandard2.0`, `net8.0` and `net10.0`.
+Targets `netstandard2.0`, `net8.0` and `net10.0` — `netstandard2.0` for anything older, plus every .NET version still in support. That set is kept current automatically; see [Target framework updates](#target-framework-updates).
 
 [`libphonenumber-csharp.extensions`](https://www.nuget.org/packages/libphonenumber-csharp.extensions) is an optional companion package with helpers that suit C# better than the ported Java API — `PhoneNumber.TryParse` and `PhoneNumber.TryParseValid` return a `bool` instead of throwing, and `PhoneNumberConverter` is a `System.Text.Json` converter for `PhoneNumber`.
 
@@ -241,6 +241,24 @@ Nothing about the target repository is hard-coded. The script commits and pushes
 ### Automated triage of metadata issues
 
 A large share of the issues filed here turn out to be reports about Google's phone number metadata itself (an unrecognized prefix, an outdated numbering plan) rather than a bug in this port's code — see the checklist in [`bug_report.md`](.github/ISSUE_TEMPLATE/bug_report.md). The [`triage_metadata_issues`](.github/workflows/triage_metadata_issues.yml) workflow uses the GitHub Copilot CLI, grounded in [`.github/triage/metadata_examples.md`](.github/triage/metadata_examples.md), to spot these on issue creation, closes them with a comment pointing to [google/libphonenumber](https://github.com/google/libphonenumber), and labels them `metadata`. Every closure appends to that examples file, so the classifier keeps learning from real outcomes instead of drifting from a fixed prompt.
+
+## Target framework updates
+
+.NET gets a new major version every November, and an older one goes out of support at the same time — see [Microsoft's support policy](https://learn.microsoft.com/en-us/lifecycle/products/microsoft-net-and-net-core). The [`update_target_frameworks`](https://github.com/twcclegg/libphonenumber-csharp/actions/workflows/update_target_frameworks.yml) workflow runs every December 1, a fortnight after that release, and drives [`lib/update-target-frameworks.sh`](lib/update-target-frameworks.sh).
+
+It reads Microsoft's release index, works out which .NET versions are still supported, and retargets the repository at them: the `TargetFramework(s)` of every project under `csharp/`, the SDK pin in `global.json`, `dotnet-version` in every workflow, the benchmarks' `RuntimeMoniker`, and the target frameworks and commands quoted in this file, [AGENTS.md](AGENTS.md) and [CONTRIBUTING.md](CONTRIBUTING.md). Then it opens a PR, authenticating as the `libphonenumber-csharp-bot` account for the same reason the metadata sync does. Nothing happens when the supported set has not moved, so the workflow is a no-op in a year Microsoft changes nothing.
+
+The new set keeps every target framework already in use that is still supported and adds anything newer that has shipped, so a version this project deliberately skipped does not come back on its own. `netstandard2.0` is never touched: it is what consumers on a retired runtime resolve once the asset for their own target framework goes away, which is why dropping one is not a breaking change for them. Unlike the metadata PR this one does not auto-merge — it changes what the published packages ship — and `#if NET*_OR_GREATER` guards are left alone, since they name the floor a code path needs rather than a target. Anything else still mentioning a dropped target framework (usually a measurement taken on that runtime) is listed in the PR body for a human to judge.
+
+`--dry-run` applies the retarget to a throwaway worktree of `HEAD` and prints the diff it produces, without touching your checkout; `ACTIVE_CHANNELS` overrides the support lookup, which replays a given year:
+
+```bash
+# what would this December's run do?
+bash lib/update-target-frameworks.sh --dry-run
+
+# replay a particular year by naming the .NET channels supported at the time
+ACTIVE_CHANNELS="10.0 11.0" bash lib/update-target-frameworks.sh --dry-run
+```
 
 ## Contributing
 See [CONTRIBUTING.md](CONTRIBUTING.md)

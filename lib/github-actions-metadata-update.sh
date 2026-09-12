@@ -136,28 +136,6 @@ done
 
 GITHUB_ACTION_WORKING_DIRECTORY=$(pwd)
 
-# Which repository this run targets. Actions sets GITHUB_REPOSITORY for us; when
-# it is not set fall back to the origin remote, so a fork or a scratch clone
-# releases to itself instead of to the upstream project.
-resolveRepository() {
-    local url
-
-    if [ -n "${GITHUB_REPOSITORY:-}" ]; then
-        echo "${GITHUB_REPOSITORY}"
-        return 0
-    fi
-
-    url=$(git remote get-url origin 2>/dev/null || true)
-    url="${url%.git}"
-
-    case "${url}" in
-        *github.com[:/]*)
-            echo "${url##*github.com}" | sed 's|^[:/]*||'
-            ;;
-        *) return 1 ;;
-    esac
-}
-
 getLatestGitHubRelease() {
     ghApi "https://api.github.com/repos/$1/releases/latest" | jq -er '.tag_name'
 }

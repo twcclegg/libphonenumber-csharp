@@ -1,0 +1,59 @@
+name: "update_target_frameworks"
+
+on:
+  schedule:
+    # December 1, 08:00 UTC. .NET ships a new major version every November and retires an older one
+    # at the same time (https://learn.microsoft.com/en-us/lifecycle/products/microsoft-net-and-net-core),
+    # so this runs a fortnight after that release, once it has settled, and no more often than the
+    # thing it tracks changes. To also catch a version that goes out of support mid-year - .NET 9's
+    # support ended in May - make it monthly by replacing the day-of-month and month fields with
+    # `1 *`: the script opens a PR only when the supported set actually moved, so the extra runs
+    # cost nothing but a minute of a runner.
+    - cron: '0 8 1 12 *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Report the retarget it would make, as a diff, and stop before changing anything'
+        type: boolean
+        default: false
+      active_channels:
+        description: 'Use these .NET channel versions ("10.0 11.0") instead of asking Microsoft which are supported - for replaying a year, or for a support decision not published yet'
+        type: string
+        default: ''
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  update_target_frameworks:
+    runs-on: ubuntu-latest
+    # No elevation needed here: the push and the PR (contents + pull-requests writes) both
+    # authenticate as BOT_ACCESS_TOKEN below rather than as GITHUB_TOKEN. Same reason as
+    # create_new_release_on_new_metadata_update.yml - a PR opened with GITHUB_TOKEN needs a
+    # maintainer to click "Approve and run" before its checks execute, and the whole point of this
+    # PR is to arrive with the build and test matrix already run against the new target frameworks.
+    permissions:
+      contents: read
+    steps:
+      # token is the bot's PAT, not the default GITHUB_TOKEN, so the commit this pushes
+      # authenticates as the bot account - see the permissions comment above.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          token: ${{ secrets.BOT_ACCESS_TOKEN }}
+      # No .NET here on purpose: this job only rewrites project files, workflows and docs. Building
+      # and testing the result is the opened PR's own required checks, which is also the only place
+      # it can be tested against the new SDK.
+      - name: Retarget at the supported .NET versions and open a PR
+        timeout-minutes: 15
+        # The token is read from GITHUB_TOKEN below rather than passed as an argument, so it never
+        # appears on the process command line.
+        run: |
+          bash lib/update-target-frameworks.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.BOT_ACCESS_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || false }}
+          ACTIVE_CHANNELS: ${{ inputs.active_channels || '' }}
