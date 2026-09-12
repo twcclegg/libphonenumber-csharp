@@ -28,7 +28,7 @@ dotnet add package libphonenumber-csharp
 
 Available on NuGet as package [`libphonenumber-csharp`](https://www.nuget.org/packages/libphonenumber-csharp).
 
-Targets `netstandard2.0`, `net8.0` and `net10.0`.
+Targets `netstandard2.0`, `net8.0` and `net10.0` — `netstandard2.0` for anything older, plus every .NET version still in support. That set is checked monthly against Microsoft's support dates; see [Target framework updates](#target-framework-updates).
 
 [`libphonenumber-csharp.extensions`](https://www.nuget.org/packages/libphonenumber-csharp.extensions) is an optional companion package with helpers that suit C# better than the ported Java API — `PhoneNumber.TryParse` and `PhoneNumber.TryParseValid` return a `bool` instead of throwing, and `PhoneNumberConverter` is a `System.Text.Json` converter for `PhoneNumber`.
 
@@ -241,6 +241,22 @@ Nothing about the target repository is hard-coded. The script commits and pushes
 ### Automated triage of metadata issues
 
 A large share of the issues filed here turn out to be reports about Google's phone number metadata itself (an unrecognized prefix, an outdated numbering plan) rather than a bug in this port's code — see the checklist in [`bug_report.md`](.github/ISSUE_TEMPLATE/bug_report.md). The [`triage_metadata_issues`](.github/workflows/triage_metadata_issues.yml) workflow uses the GitHub Copilot CLI, grounded in [`.github/triage/metadata_examples.md`](.github/triage/metadata_examples.md), to spot these on issue creation, closes them with a comment pointing to [google/libphonenumber](https://github.com/google/libphonenumber), and labels them `metadata`. Every closure appends to that examples file, so the classifier keeps learning from real outcomes instead of drifting from a fixed prompt.
+
+## Target framework updates
+
+.NET gets a new major version every November, and an older one goes out of support at the same time — see [Microsoft's support policy](https://learn.microsoft.com/en-us/lifecycle/products/microsoft-net-and-net-core). The [`check_target_frameworks`](https://github.com/twcclegg/libphonenumber-csharp/actions/workflows/check_target_frameworks.yml) workflow runs [`lib/check-target-frameworks.sh`](lib/check-target-frameworks.sh) on the 1st of every month: it compares the target frameworks in `csharp/**/*.csproj` against Microsoft's release index and files an issue when a new version has been released or one of ours has passed end of support. A run that finds neither says nothing, so the monthly cadence costs nothing and catches a support date that doesn't fall in November — .NET 9's didn't.
+
+A release candidate doesn't count as released (`go-live` and `preview` channels are ignored), and the set proposed keeps every target framework already in use that is still supported, adding only versions newer than the newest one already targeted — so a version this project deliberately skipped isn't proposed again. The issue names what moved, with Microsoft's support dates, and points at [AGENTS.md](AGENTS.md) for everything that has to move together. Retargeting is done by hand: it changes what the published packages ship, so the timing is a maintainer's call rather than a bot's.
+
+`--dry-run` prints the issue it would file instead of filing it, and `SUPPORTED_CHANNELS` overrides the support lookup, which replays a particular year:
+
+```bash
+# is anything out of date right now?
+bash lib/check-target-frameworks.sh --dry-run
+
+# what the check will say once a new version ships and an old one retires
+SUPPORTED_CHANNELS="10.0 11.0" bash lib/check-target-frameworks.sh --dry-run
+```
 
 ## Contributing
 See [CONTRIBUTING.md](CONTRIBUTING.md)

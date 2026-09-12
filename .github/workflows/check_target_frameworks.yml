@@ -1,0 +1,52 @@
+name: "check_target_frameworks"
+
+on:
+  schedule:
+    # The 1st of every month, 08:00 UTC. .NET's cadence is annual - a new major version every
+    # November, an older one retired at the same time
+    # (https://learn.microsoft.com/en-us/lifecycle/products/microsoft-net-and-net-core) - but support
+    # dates do not all land in November (.NET 9's ended in May), and a check that finds nothing costs
+    # a minute of a runner. Runs are silent unless the supported set has actually moved.
+    - cron: '0 8 1 * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Print the issue that would be filed and stop, without filing it'
+        type: boolean
+        default: false
+      supported_channels:
+        description: 'Treat these .NET channel versions ("10.0 11.0") as the supported ones instead of asking Microsoft - for replaying a year, or a support decision not published yet'
+        type: string
+        default: ''
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  check_target_frameworks:
+    runs-on: ubuntu-latest
+    # Filing the issue is all this does, so the default GITHUB_TOKEN is enough - no bot PAT, unlike
+    # create_new_release_on_new_metadata_update.yml, which needs one so that the PR it opens can run
+    # its own checks.
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # No .NET here on purpose: this job reads project files, it does not build them.
+      - name: Compare the target frameworks against Microsoft's supported versions
+        timeout-minutes: 10
+        # The token is read from GITHUB_TOKEN below rather than passed as an argument, so it never
+        # appears on the process command line.
+        run: |
+          bash lib/check-target-frameworks.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || false }}
+          SUPPORTED_CHANNELS: ${{ inputs.supported_channels || '' }}
