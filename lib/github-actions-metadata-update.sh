@@ -344,6 +344,33 @@ if isTrue "${DRY_RUN}"; then
     exit 0
 fi
 
+# Commit as the account GITHUB_TOKEN belongs to; <id>+<login>@users.noreply.github.com is the
+# address form github resolves back to it. Below the dry-run exit because a dry run needs no
+# token, and above anything destructive so a credential problem discards no work. See "CI and
+# release" in AGENTS.md.
+SYNC_ACCOUNT=$(ghApi "https://api.github.com/user" \
+    | jq -er 'if (.login | type) == "string" and (.id | type) == "number" then "\(.login)\t\(.id)" else error("no login/id") end') \
+    || fail ${EXIT_MISSING_PREREQUISITE} "could not resolve the account GITHUB_TOKEN belongs to, so the sync commit could not be attributed to it"
+
+IFS=$'\t' read -r SYNC_LOGIN SYNC_ID <<<"${SYNC_ACCOUNT}"
+
+# finalize_metadata_release.yml only cuts a release for PRs whose user.login is this, and that
+# gate is a literal in the workflow. Reissuing the token to another account would otherwise leave
+# the sync working perfectly - committing, pushing, opening and merging the PR - while no tag,
+# release or nuget publish ever followed, with nothing failing anywhere to show it.
+RELEASE_BOT_LOGIN="libphonenumber-csharp-bot"
+if [ "${SYNC_LOGIN}" != "${RELEASE_BOT_LOGIN}" ]; then
+    fail ${EXIT_MISSING_PREREQUISITE} "GITHUB_TOKEN belongs to ${SYNC_LOGIN}, but finalize_metadata_release.yml only releases PRs opened by ${RELEASE_BOT_LOGIN} - update that workflow's gate before pointing this at another account"
+fi
+
+METADATA_COMMIT_AUTHOR_NAME="${SYNC_LOGIN}"
+METADATA_COMMIT_AUTHOR_EMAIL="${SYNC_ID}+${SYNC_LOGIN}@users.noreply.github.com"
+# Git author names - not logins - whose commits do not make a release substantive for
+# changelog-folding purposes. Compared case-insensitively and in full, so they must match what
+# git records: dependabot commits as "dependabot[bot]", not "dependabot".
+CHANGELOG_FOLD_IGNORED_AUTHORS="${METADATA_COMMIT_AUTHOR_NAME}|dependabot[bot]"
+log "committing as ${METADATA_COMMIT_AUTHOR_NAME} <${METADATA_COMMIT_AUTHOR_EMAIL}>"
+
 rm -rf "${GITHUB_ACTION_WORKING_DIRECTORY:?}/resources"
 mkdir -p "${GITHUB_ACTION_WORKING_DIRECTORY}/resources"
 cp -r "${UPSTREAM_RESOURCES}/." "${GITHUB_ACTION_WORKING_DIRECTORY}/resources/"
@@ -383,35 +410,74 @@ fi
 # separate PR once the tag exists: the version number is already known here (it's
 # UPSTREAM_GITHUB_RELEASE_TAG itself - this port tracks upstream's version 1:1), so there is
 # nothing to guess. The finalize step (finalize-metadata-release.sh) only tags and releases an
-# existing commit; it can't push a follow-up commit of its own; main's branch-protection ruleset
-# requires a PR for every push, with no bypass for any actor, including this automation's own
-# bot account - the same reason this script opens a PR instead of pushing directly (see the
-# file-level comment above). Doing it here keeps everything in the one PR that already goes
-# through that ruleset.
+# existing commit; it can't push a follow-up commit of its own; and main requires status checks a
+# direct push could never satisfy - the same reason this script opens a PR instead of pushing
+# directly (see the file-level comment above). Doing it here keeps everything in the one PR.
 CHANGELOG_FILE="${GITHUB_ACTION_WORKING_DIRECTORY}/CHANGELOG.md"
 if [ -f "${CHANGELOG_FILE}" ] && grep -qF '<!-- next-entry -->' "${CHANGELOG_FILE}"; then
-    # Every release always includes a metadata sync (that's the only thing that ever cuts a tag),
-    # but some releases also bundle other work merged to `main` in between - a version number alone
-    # doesn't say which. Diff this repo's own history since the last release (not the upstream diff
-    # checked above, which is google/libphonenumber's) against everything but resources/ itself and
-    # this bookkeeping file, so update-changelog.sh can tell whether this release is foldable into a
-    # prior metadata-only run or needs its own standalone entry. Deliberately NOT excluded:
-    # CountryCodeToRegionCodeMap.cs - despite its name, it is hand-maintained (its own header still
-    # says "todo make this file automatically generated"), so a change to it is real, hand-relevant
-    # content, not a mechanical byproduct of this sync. Fetching just the one tag works even from a
-    # shallow checkout: a tree-level `git diff` needs both commits' trees, not a connected history
-    # between them.
+    # Does this release fold into the previous changelog entry, or earn its own? It folds when
+    # nobody but the bots has landed anything since the last release. AGENTS.md has the why,
+    # including why the tag below must never be fetched with --depth=1.
     METADATA_ONLY=true
-    if git fetch --quiet --depth=1 origin "refs/tags/v${DEPLOYED_NUGET_TAG}:refs/tags/v${DEPLOYED_NUGET_TAG}" 2>/dev/null \
-        && git rev-parse -q --verify "v${DEPLOYED_NUGET_TAG}" >/dev/null; then
-        NON_METADATA_FILES=$(git diff --name-only "v${DEPLOYED_NUGET_TAG}" HEAD -- . ':!resources' ':!CHANGELOG.md')
-        if [ -n "${NON_METADATA_FILES}" ]; then
+    if ! git rev-parse -q --verify "v${DEPLOYED_NUGET_TAG}" >/dev/null; then
+        git fetch --quiet origin "refs/tags/v${DEPLOYED_NUGET_TAG}:refs/tags/v${DEPLOYED_NUGET_TAG}" 2>/dev/null || true
+    fi
+
+    if isTrue "$(git rev-parse --is-shallow-repository)"; then
+        warn "the checkout is shallow, so the commits since v${DEPLOYED_NUGET_TAG} cannot be read; treating this release as more than a metadata sync"
+        METADATA_ONLY=false
+    elif git rev-parse -q --verify "v${DEPLOYED_NUGET_TAG}" >/dev/null \
+        && git merge-base --is-ancestor "v${DEPLOYED_NUGET_TAG}" HEAD 2>/dev/null; then
+        # Co-authored-by trailers are read as well as the author. A squash merge records only the
+        # PR's author, demoting everyone else to a trailer, so a hand-written fix pushed onto a
+        # dependabot PR would otherwise be folded away as a routine sync. (Dependabot's own squash
+        # commits name dependabot in that trailer, which is why the trailer's identity is checked
+        # rather than merely its presence.)
+        #
+        # Exact, case-insensitive name matching via a lookup table rather than a regex: as a
+        # regex the pattern was matched case-sensitively against fields that had been lowercased,
+        # went unanchored so `not-<bot>-really` was swallowed, tested the contributor-controlled
+        # email as well as the name so `dependabot-alerts@example.com` hid a real commit, and an
+        # empty login produced `|dependabot`, which mawk - the awk on ubuntu-latest - rejects at
+        # run time, aborting the sync. `%h` leads so that a tab inside an author name cannot shift
+        # the hash out of position; such a name simply fails to match and counts as substantive.
+        SUBSTANTIVE_COMMITS=$(git log --no-merges \
+            --format='%h%x09%an%x1f%(trailers:key=Co-authored-by,valueonly,separator=%x1f)' \
+            "v${DEPLOYED_NUGET_TAG}..HEAD" \
+            | awk -F'\t' -v ignored="${CHANGELOG_FOLD_IGNORED_AUTHORS}" '
+                BEGIN {
+                    count = split(ignored, names, "|")
+                    for (i = 1; i <= count; i++) {
+                        if (names[i] != "") ignore[tolower(names[i])] = 1
+                    }
+                }
+                {
+                    hash = $1
+                    people = substr($0, index($0, "\t") + 1)
+                    total = split(people, who, "\037")
+                    for (i = 1; i <= total; i++) {
+                        name = who[i]
+                        sub(/ *<[^<>]*>$/, "", name)
+                        if (name == "") continue
+                        if (!(tolower(name) in ignore)) {
+                            print hash
+                            next
+                        }
+                    }
+                }')
+
+        if [ -n "${SUBSTANTIVE_COMMITS}" ]; then
             METADATA_ONLY=false
+            log "release includes work beyond the metadata sync:"
+            # One argument per line: printf would consume the format once and indent only the first.
+            while IFS= read -r commit; do
+                [ -n "${commit}" ] && git log --no-walk --format='  %h %s' "${commit}"
+            done <<<"${SUBSTANTIVE_COMMITS}"
         fi
     else
         # Fail closed: better to give this release its own entry than to silently fold real changes
-        # away as if they never happened because the one tag needed to check couldn't be fetched.
-        warn "could not fetch v${DEPLOYED_NUGET_TAG} to check for non-metadata changes since the last release"
+        # away as if they never happened because the history needed to check wasn't there.
+        warn "could not reach v${DEPLOYED_NUGET_TAG} from HEAD to check for work beyond the metadata sync; is the checkout shallow?"
         METADATA_ONLY=false
     fi
 
@@ -423,7 +489,7 @@ fi
 
 git checkout -b "${BRANCH}"
 git add -A
-git -c user.email='<>' -c user.name='libphonenumber-csharp-bot' \
+git -c user.email="${METADATA_COMMIT_AUTHOR_EMAIL}" -c user.name="${METADATA_COMMIT_AUTHOR_NAME}" \
     commit -m "feat: automatic upgrade to ${UPSTREAM_GITHUB_RELEASE_TAG}"
 
 # Force is safe: this branch exists only for this automation's own PRs, nothing else ever
