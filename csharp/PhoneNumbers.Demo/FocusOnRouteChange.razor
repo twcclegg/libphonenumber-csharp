@@ -1,0 +1,42 @@
+@* Wraps FocusOnNavigate so the page heading is focused on SPA navigation but not
+   on the initial page load. On first load the browser already starts the user at
+   the top of the document, so focusing the <h1> gains nothing and paints a focus
+   ring around the heading until the next click. *@
+@if (_hasNavigatedToAnotherPage)
+{
+    <FocusOnNavigate RouteData="@RouteData" Selector="@Selector" />
+}
+
+@code {
+    private Type? _lastPageType;
+    private bool _hasNavigatedToAnotherPage;
+
+    [Parameter]
+    [EditorRequired]
+    public RouteData RouteData { get; set; } = default!;
+
+    [Parameter]
+    [EditorRequired]
+    public string Selector { get; set; } = default!;
+
+    protected override void OnParametersSet()
+    {
+        // Compare the matched page type, not Nav.Uri: every page here syncs its input state
+        // into the query string on blur/change (see SyncUrl in Home.razor, Formatting.razor,
+        // and friends), which calls NavigateTo for the *same* page. Comparing raw URIs treated
+        // that as a navigation, mounting FocusOnNavigate for the first time on ordinary form
+        // interaction and yanking focus back to the heading the user had just left. PageType
+        // only changes on an actual different-page transition, which is the only case
+        // FocusOnNavigate itself reacts to internally, so this mirrors its own logic instead
+        // of second-guessing it from the URI.
+        if (_lastPageType is null)
+        {
+            _lastPageType = RouteData.PageType;
+        }
+        else if (_lastPageType != RouteData.PageType)
+        {
+            _lastPageType = RouteData.PageType;
+            _hasNavigatedToAnotherPage = true;
+        }
+    }
+}

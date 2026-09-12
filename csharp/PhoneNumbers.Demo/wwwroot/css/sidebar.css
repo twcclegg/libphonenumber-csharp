@@ -195,6 +195,20 @@
     opacity: 1;
 }
 
+/* The NuGet logomark is drawn as line art to sit alongside the feather-style
+   icons, with two adjustments the shared rule above can't make: at 2px the
+   stroke closes up its small punch-hole circle, and its lead dot is a solid
+   dot in the real mark rather than an outlined ring. The svg's own viewBox is
+   inset by 1.5 units so the outer stroke isn't clipped at the edge. */
+.sidebar__link-icon--nuget svg {
+    stroke-width: 1.75;
+}
+
+.sidebar__link-icon--nuget .nuget-dot {
+    fill: currentColor;
+    stroke: none;
+}
+
 .sidebar__footer {
     padding: 0.9rem 1.25rem 1.1rem;
     border-top: 1px solid var(--rail-border);
