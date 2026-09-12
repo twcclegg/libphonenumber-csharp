@@ -68,6 +68,30 @@ ghApi() {
         "$@"
 }
 
+# Turns on github's auto-merge, so the PR lands by itself once its required checks pass. Only
+# accepted while the PR is blocked from merging - on one that could be merged right now github
+# answers "Pull request is in clean status" - so call it straight after a push, while the checks it
+# just triggered are still pending. Echoes github's error message, or nothing on success; a graphql
+# error is an http 200 with an "errors" array, which --fail cannot catch.
+armAutoMerge() {
+    local response
+    if ! response=$(jq -n --arg id "$1" \
+        '{query: "mutation($id: ID!) { enablePullRequestAutoMerge(input: {pullRequestId: $id, mergeMethod: MERGE}) { pullRequest { number } } }", variables: {id: $id}}' \
+        | ghApi -X POST --data @- "https://api.github.com/graphql"); then
+        echo "could not reach the github api"
+        return 0
+    fi
+
+    # Success is the mutation reporting back a pull request, not merely the absence of an "errors"
+    # key - {"data":null} has neither.
+    jq -er '
+        if ((.errors // []) | length) > 0 then (if ((.errors[0].message // "") | length) > 0 then .errors[0].message else "unknown error" end)
+        elif (.data.enablePullRequestAutoMerge.pullRequest.number | type) == "number" then ""
+        else "github accepted the request without reporting auto-merge as enabled"
+        end' <<<"${response}" 2>/dev/null \
+        || echo "could not parse github's response"
+}
+
 # generate_release_notes appends the commit/PR changelog below the links.
 createRelease() {
     jq -n --arg tag "$2" --arg version "${2#v}" --arg commit "$3" \
