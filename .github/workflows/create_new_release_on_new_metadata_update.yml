@@ -43,9 +43,16 @@ jobs:
     steps:
       # token is the bot's PAT, not the default GITHUB_TOKEN, so the commit this pushes
       # authenticates as the bot account - see the permissions comment above.
+      # fetch-depth: 0 because the changelog step walks the commits between the last release tag
+      # and HEAD to work out who wrote them; the default shallow checkout has no history to walk.
+      # filter: blob:none keeps that affordable - a full clone of this repository is ~92 MiB of
+      # packed objects against ~3 MiB at depth 1, most of it blobs from releases this job never
+      # reads. Blobs for the commit actually checked out are fetched on demand.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           token: ${{ secrets.BOT_ACCESS_TOKEN }}
+          fetch-depth: 0
+          filter: blob:none
       - name: Setup .NET
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v5
         with:
