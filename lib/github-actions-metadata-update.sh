@@ -10,6 +10,9 @@
 # GITHUB_TOKEN - a direct push can never satisfy that (the checks have nothing to run
 # against yet), so GitHub rejects it outright.
 #
+# No open PR: sync, open one with auto-merge off, stop. One already open: regenerate onto the same
+# branch, force-push, turn auto-merge on. See "CI and release" in AGENTS.md for why.
+#
 # Exit on any error, treat unset variables as errors, and fail a pipeline if any
 # stage fails. The pipefail matters here: every network read below is `curl | jq`,
 # and without it a failed curl would feed empty input to the parser and the script
@@ -243,14 +246,17 @@ log "target repository is ${GITHUB_REPOSITORY}"
 
 BRANCH="metadata-update/${UPSTREAM_GITHUB_RELEASE_TAG}"
 
-# A later scheduled run can fire before an earlier PR for the same tag has merged (checks
-# take a few minutes) - without this it would open a second, duplicate PR every time.
+# Which half of the flow this run is. An open PR for this branch is the only state either half
+# depends on, so nothing has to be persisted anywhere.
+REFRESHING_PR_NUMBER=""
+REFRESHING_PR_NODE_ID=""
 if ! isTrue "${DRY_RUN}"; then
-    EXISTING_PR_COUNT=$(ghApi "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls?state=open&head=${GITHUB_REPOSITORY%%/*}:${BRANCH}" \
-        | jq -er 'length')
-    if [ "${EXISTING_PR_COUNT}" -gt 0 ]; then
-        log "a PR for ${UPSTREAM_GITHUB_RELEASE_TAG} is already open, nothing to do"
-        exit 0
+    OPEN_PRS=$(ghApi "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls?state=open&base=main&head=${GITHUB_REPOSITORY%%/*}:${BRANCH}")
+    REFRESHING_PR_NUMBER=$(jq -r '.[0].number // empty' <<<"${OPEN_PRS}")
+    REFRESHING_PR_NODE_ID=$(jq -r '.[0].node_id // empty' <<<"${OPEN_PRS}")
+
+    if [ -n "${REFRESHING_PR_NUMBER}" ]; then
+        log "PR #${REFRESHING_PR_NUMBER} for ${UPSTREAM_GITHUB_RELEASE_TAG} was not merged by hand, so this run regenerates it and enables auto-merge"
     fi
 fi
 
@@ -339,8 +345,9 @@ if isTrue "${DRY_RUN}"; then
     log "  - regenerate resources/locale/country_names.txt with $(java -version 2>&1 | head -n 1 || echo 'the local jdk')"
     log "  - add a CHANGELOG.md entry for ${UPSTREAM_GITHUB_RELEASE_TAG}"
     log "  - commit \"feat: automatic upgrade to ${UPSTREAM_GITHUB_RELEASE_TAG}\" on ${BRANCH} and push it"
-    log "  - open a PR from ${BRANCH} into main and enable auto-merge"
-    log "  - once that PR's required checks pass and it merges, finalize-metadata-release.sh creates release ${UPSTREAM_GITHUB_RELEASE_TAG} and dispatches ${PUBLISH_WORKFLOW}"
+    log "  - open a PR from ${BRANCH} into main for review, leaving auto-merge off"
+    log "  - if nobody merges it, a later run regenerates that branch and enables auto-merge as a backstop"
+    log "  - on merge, finalize-metadata-release.sh creates release ${UPSTREAM_GITHUB_RELEASE_TAG} and dispatches ${PUBLISH_WORKFLOW}"
     exit 0
 fi
 
@@ -426,38 +433,50 @@ git add -A
 git -c user.email='<>' -c user.name='libphonenumber-csharp-bot' \
     commit -m "feat: automatic upgrade to ${UPSTREAM_GITHUB_RELEASE_TAG}"
 
-# Force is safe: this branch exists only for this automation's own PRs, nothing else ever
-# develops on it, and a stale remote copy from an earlier failed/closed attempt (the duplicate
-# check above only rules out an *open* PR) should not block a fresh retry.
+# Force is safe: this branch carries nothing but this automation's own PRs, and overwriting
+# whatever is on it is the point rather than a side effect.
 git push --force origin "HEAD:refs/heads/${BRANCH}"
 
-PR_BODY=$(cat <<EOF
+
+
+if [ -n "${REFRESHING_PR_NUMBER}" ]; then
+    PR_NUMBER="${REFRESHING_PR_NUMBER}"
+    PR_NODE_ID="${REFRESHING_PR_NODE_ID}"
+    log "refreshed PR #${PR_NUMBER} with a newly generated ${UPSTREAM_GITHUB_RELEASE_TAG} sync"
+else
+    PR_BODY=$(cat <<EOF
 Syncs \`resources/\` from [${UPSTREAM_REPOSITORY} ${UPSTREAM_GITHUB_RELEASE_TAG}](https://github.com/${UPSTREAM_REPOSITORY}/releases/tag/${UPSTREAM_GITHUB_RELEASE_TAG}), regenerates \`resources/locale/country_names.txt\`, and records the release in \`CHANGELOG.md\`.
 
-Auto-merges once the required checks pass. On merge, [finalize_metadata_release.yml](.github/workflows/finalize_metadata_release.yml) tags the merge commit, creates the GitHub release, and dispatches the NuGet publish.
+**Review and merge this when you are happy with it** - that is the intended way for a metadata release to ship.
+
+If it is still open at the next daily [create_new_release_on_new_metadata_update.yml](.github/workflows/create_new_release_on_new_metadata_update.yml) run, that run regenerates this branch from ${UPSTREAM_GITHUB_RELEASE_TAG} and turns auto-merge on, so a sync is never left stalled because nobody was around. Don't push fixes to this branch - that regeneration force-pushes over anything else that is there, deliberately: the commit that merges is always one this automation just built.
+
+On merge, [finalize_metadata_release.yml](.github/workflows/finalize_metadata_release.yml) tags the merge commit, creates the GitHub release, and dispatches the NuGet publish.
 EOF
-)
+    )
 
-PR_RESPONSE=$(jq -n --arg title "feat: automatic upgrade to ${UPSTREAM_GITHUB_RELEASE_TAG}" \
-    --arg head "${BRANCH}" --arg base "main" --arg body "${PR_BODY}" \
-    '{title: $title, head: $head, base: $base, body: $body}' \
-    | ghApi -X POST --data @- "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls")
+    PR_RESPONSE=$(jq -n --arg title "feat: automatic upgrade to ${UPSTREAM_GITHUB_RELEASE_TAG}" \
+        --arg head "${BRANCH}" --arg base "main" --arg body "${PR_BODY}" \
+        '{title: $title, head: $head, base: $base, body: $body}' \
+        | ghApi -X POST --data @- "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls")
 
-PR_NUMBER=$(jq -er '.number' <<<"${PR_RESPONSE}")
-PR_NODE_ID=$(jq -er '.node_id' <<<"${PR_RESPONSE}")
-log "opened PR #${PR_NUMBER} for ${UPSTREAM_GITHUB_RELEASE_TAG}"
+    PR_NUMBER=$(jq -er '.number' <<<"${PR_RESPONSE}")
+    PR_NODE_ID=$(jq -er '.node_id' <<<"${PR_RESPONSE}")
+    # Auto-merge stays off: this PR is for a person to read and merge.
+    log "opened PR #${PR_NUMBER} for ${UPSTREAM_GITHUB_RELEASE_TAG} with auto-merge off; a later run arms it if nobody merges it first"
+    exit 0
+fi
 
-# GraphQL errors come back as HTTP 200 with an "errors" field, so --fail above will not
-# catch this - check the body instead. Failing to enable auto-merge (e.g. the repository
-# setting for it is off) is not fatal: the PR is still valid, it just needs a manual merge
-# once checks pass.
-AUTOMERGE_RESPONSE=$(jq -n --arg id "${PR_NODE_ID}" \
-    '{query: "mutation($id: ID!) { enablePullRequestAutoMerge(input: {pullRequestId: $id, mergeMethod: MERGE}) { clientMutationId } }", variables: {id: $id}}' \
-    | ghApi -X POST --data @- "https://api.github.com/graphql")
-
-if jq -e '.errors' <<<"${AUTOMERGE_RESPONSE}" >/dev/null 2>&1; then
-    warn "could not enable auto-merge on PR #${PR_NUMBER}: $(jq -r '.errors[0].message' <<<"${AUTOMERGE_RESPONSE}")"
-    warn "the PR was opened but will need a manual merge once its checks pass"
+# Immediately after the force-push, which is the only moment github accepts this: the mutation is
+# rejected unless the PR is blocked from merging, and the push has just put its checks back into
+# pending.
+AUTOMERGE_ERROR=$(armAutoMerge "${PR_NODE_ID}")
+if [ -z "${AUTOMERGE_ERROR}" ]; then
+    log "enabled auto-merge on PR #${PR_NUMBER}; it merges once its required checks pass"
 else
-    log "enabled auto-merge on PR #${PR_NUMBER}"
+    # Fatal rather than a warning: this runs again every day, so a permanent failure would
+    # otherwise loop silently - regenerate, force-push, warn, exit 0 - burning a build a day on a
+    # release that never ships while every run reports green.
+    warn "the PR is still valid, it just needs a merge by hand once its checks pass"
+    fail 1 "could not enable auto-merge on PR #${PR_NUMBER}: ${AUTOMERGE_ERROR}"
 fi
