@@ -15,8 +15,8 @@ already known: it's copied straight from the upstream tag being synced.
 That said, **real work constantly lands on `main` between metadata syncs and rides along in whatever
 release happens to come next** — a version number by itself says nothing about how much changed.
 This file was rebuilt from the actual commit history (not from the version-number pattern) to reflect
-that: every release range that touched hand-written source, tests, docs, CI/build configuration, or a
-shipped package's dependencies gets its own entry, sized to what actually happened — a one-liner for
+that: every release range that touched hand-written source, tests, docs, or CI/build configuration
+by hand gets its own entry, sized to what actually happened — a one-liner for
 a small fix, several bullets under `### Added`/`### Fixed`/`### Changed`/`### Performance` for a
 large one. Two categories of file changes are folded into the plain metadata-sync entries even though
 they're not `resources/*.xml` themselves, because they carry no hand-authored content: the generated
@@ -29,8 +29,9 @@ still has a matching entry, so no version number is skipped. One stretch of earl
 `debian/`) alongside the C# port; those files are called out but not itemized.
 
 **Folding is automatic going forward.** [`lib/update-changelog.sh`](lib/update-changelog.sh), called
-from the same sync script, checks whether anything outside `resources/` changed on `main` since the
-last release. If not, it either starts a new one-release entry or, when the release immediately above
+from the same sync script, checks whether anyone but the bots landed anything on `main` since the
+last release. Automated dependency updates are folded in along with the syncs, which is why a folded
+entry reports "no hand-written changes" rather than claiming nothing at all moved. If not, it either starts a new one-release entry or, when the release immediately above
 it is *also* an automated metadata-only entry, extends that entry's range instead of adding another
 one — so a long stretch of routine syncs keeps collapsing into a single entry the way the historical
 ranges above do, without a human curating it. The moment a release includes anything else, it always

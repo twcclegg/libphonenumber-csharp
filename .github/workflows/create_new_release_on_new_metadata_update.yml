@@ -43,9 +43,13 @@ jobs:
     steps:
       # token is the bot's PAT, not the default GITHUB_TOKEN, so the commit this pushes
       # authenticates as the bot account - see the permissions comment above.
+      # fetch-depth: 0 so the changelog step can walk who wrote the commits since the last release
+      # tag; blob:none keeps that cheap, since the history's blobs are never read (~92 vs ~3 MiB).
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           token: ${{ secrets.BOT_ACCESS_TOKEN }}
+          fetch-depth: 0
+          filter: blob:none
       - name: Setup .NET
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v5
         with:
