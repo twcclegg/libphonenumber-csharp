@@ -1,0 +1,81 @@
+---
+name: changing-ci-workflows
+description: Add or edit a GitHub Actions workflow, Dependabot config, or CI helper script in this repository. Use when touching anything under .github/, adding a CI job or step, bumping an action, changing runners or permissions, writing tooling under lib/, or when a workflow change could affect the OSSF Scorecard rating or the NuGet publish. Covers the SHA-pinning, least-privilege, runner and no-JavaScript conventions the repo holds to without exception.
+---
+
+# Changing CI workflows
+
+This repo publishes an OSSF Scorecard rating and uses OIDC trusted publishing to nuget.org, so the
+supply-chain conventions below are load-bearing rather than stylistic. Every existing workflow
+follows all of them; a new one that doesn't will lower the score or break the publish.
+
+## Non-negotiables
+
+- **Pin every action to a full 40-character commit SHA**, with the human-readable version in a
+  trailing comment. All uses in this repo are pinned today — keep it at 100%:
+
+  ```yaml
+  - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+  ```
+
+  Never `@v7`, never `@main`. Dependabot bumps these monthly and keeps the comment in sync; let it
+  do the bumping rather than hand-editing SHAs.
+- **Every workflow declares top-level `permissions:`**, normally `contents: read`. Escalate at the
+  *job* level only, only to what that job needs, and say why in a comment. Every workflow here has
+  a top-level block — don't add the first one without.
+- **`persist-credentials: false` on every `actions/checkout`** unless the job genuinely pushes
+  (today only the metadata sync does, with `BOT_ACCESS_TOKEN`).
+- **Default to `runs-on: ubuntu-24.04-arm`.** Four workflows run on x64 `ubuntu-latest` — the
+  metadata sync, `finalize_metadata_release`, `scorecard` and `triage_metadata_issues` — and only
+  the last documents why (the Copilot CLI's npm package lacks reliable arm64 binaries). A new x64
+  job should carry a reason in a comment. **There are no Windows or macOS runners** (bar CodeQL's
+  swift matrix leg), so never write a step that only works on Windows.
+- **No new secrets for publishing.** `publish_nuget.yml` exchanges the workflow's OIDC token
+  (`id-token: write`) for a short-lived nuget.org key via `NuGet/login`, and the same token signs
+  build provenance. Don't reintroduce a stored API key.
+
+## CI tooling: bash or C#, never JavaScript
+
+Scripts under `lib/` are bash (`set -euo pipefail`, `jq` for JSON). Anything needing real data
+structures, statistics or a library is a small C# console project like
+`csharp/PhoneNumbers.BenchmarkTools/`, run with `dotnet run --project` and kept out of the
+solution. A few `lib/*.js` helpers once crept in as an implementation detail and were ported away;
+JavaScript belongs only in the Blazor demo's own web assets.
+
+Shared shell functions live in `lib/github-release-helpers.sh`, which is sourced rather than run.
+Keep scripts bash-3.2-compatible (no `${var,,}`), since maintainers run them on macOS.
+
+## Dependabot
+
+`.github/dependabot.yml` covers two ecosystems: `github-actions` at `/`, and `nuget` at `/csharp` —
+one entry, because every version lives in `csharp/Directory.Packages.props`. Major updates are
+ignored deliberately, minor/patch NuGet updates are grouped, and `github/codeql-action*` is grouped
+because the CodeQL Action refuses to run with mismatched `init`/`analyze` versions. Adding a package
+manifest outside `/csharp` means adding an entry; adding another project inside it does not.
+
+## Path filters go stale
+
+Three workflows are path-filtered, and the lists are duplicated rather than shared — GitHub
+Actions has no YAML anchors. If you add a directory that should trigger CI, update *every* copy:
+
+- `run_performance_tests.yml` — duplicated across its `pull_request` and `push` triggers.
+- `build_and_run_demo_tests.yml` and `deploy-demo.yml` — both include the library, Extensions,
+  `resources/**` and both `Directory.*.props`.
+
+A new source directory that nothing lists is a directory CI silently ignores.
+
+## Before you push
+
+Workflow syntax errors only surface on GitHub, so re-read the trigger and permissions blocks
+carefully. `actionlint` catches most of it locally if available. Then check what the change implies
+for:
+
+- **CodeQL** (`codeql.yml`) and **Scorecard** (`scorecard.yml`) — both run on a schedule and report
+  into the repository's security posture.
+- **Required checks on `main`** — `main` requires status checks before any push lands, including
+  from automation. That constraint is why the metadata sync opens a PR instead of pushing directly
+  (see the `syncing-upstream-metadata` skill); a new job that becomes required affects that path
+  too, and the `finalize_metadata_release.yml` gate is a literal bot login.
+- **Checkout depth** — the sync's checkout is `fetch-depth: 0` with `filter: blob:none` on purpose
+  and must stay that way; the reasons are in
+  `.claude/skills/syncing-upstream-metadata/reference/changelog-and-release-internals.md`.

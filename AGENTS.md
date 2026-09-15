@@ -1,112 +1,103 @@
 # AGENTS.md
 
-This file provides guidance to coding agents (including Claude Code, claude.ai/code) when working with code in this repository.
+Guidance for coding agents (Claude Code, claude.ai/code, and others) working in this repository.
+Keep this file short: it is loaded into every session. Task-specific detail lives in the skills
+under `.claude/skills/` (see the index at the end), which are loaded only when relevant.
 
 ## What this repo is
 
-C# port of Google's [libphonenumber](https://github.com/google/libphonenumber). Code was rewritten from the Java source mostly unchanged — when in doubt about behavior, the Java upstream is the source of truth.
-
-The library tracks upstream metadata releases (~every two weeks) via the `create_new_release_on_new_metadata_update.yml` GitHub Action; see commits like "feat: automatic upgrade to vX.Y.Z" for what those changes look like. The action stops when the upstream diff touches `.java` or `.proto` files, since those may need porting by hand; README.md ("Metadata updates") documents the dry-run and check-override options.
+C# port of Google's [libphonenumber](https://github.com/google/libphonenumber). The code was
+rewritten from the Java source mostly unchanged — **when in doubt about behaviour, the Java
+upstream is the source of truth.** `resources/` is a verbatim copy of upstream's metadata, synced
+automatically every ~two weeks; the library compiles it to binaries at build time and embeds them.
 
 ## Repository layout
 
-- `csharp/Directory.Build.props` — build settings shared by every project: `LangVersion`, `TreatWarningsAsErrors` (so warnings break the build), the repo-wide `NoWarn` baseline, repository metadata, the NuGet audit settings, symbol packaging (`.snupkg`), and the reproducible-build/Source Link switches. Set things here rather than per-csproj.
-- `csharp/Directory.Packages.props` — Central Package Management. Every package version lives here; a `PackageReference` carrying its own `Version` is an error (`NU1008`).
-- `csharp/PhoneNumbers/` — main library (NuGet `libphonenumber-csharp`). Multi-targets `netstandard2.0;net8.0;net10.0`.
-- `csharp/PhoneNumbers.Test/` — xUnit tests, ported from the Java tests. Multi-targets `net8.0;net10.0`.
-- `csharp/PhoneNumbers.Extensions/` — separate NuGet (`libphonenumber-csharp.extensions`) with C#-idiomatic helpers that don't exist in the Java library.
-- `csharp/PhoneNumbers.Extensions.Test/` — xUnit tests for the Extensions package.
+- `csharp/Directory.Build.props` — settings shared by every project (`TreatWarningsAsErrors`,
+  `NoWarn` baseline, NuGet audit, Source Link, `.snupkg`). Set things here, not per csproj.
+- `csharp/Directory.Packages.props` — Central Package Management; every package version lives here.
+- `csharp/PhoneNumbers/` — main library (NuGet `libphonenumber-csharp`), `netstandard2.0;net8.0;net10.0`.
+- `csharp/PhoneNumbers.Test/` — xUnit tests ported from Java, `net8.0;net10.0`.
+- `csharp/PhoneNumbers.Extensions/` (+ `.Test/`) — NuGet `libphonenumber-csharp.extensions`:
+  C#-idiomatic helpers with no Java counterpart.
+- `csharp/PhoneNumbers.MetadataBuilder/` — build-time tool that turns `resources/` into per-region
+  binaries; source-links a few library files so it cannot cycle with the main project.
 - `csharp/PhoneNumbers.PerformanceTest/` — BenchmarkDotNet harness.
-- `csharp/PhoneNumbers.BenchmarkTools/` — CI-only console tool that compares two `PhoneNumbers.PerformanceTest` JSON result sets (Welch's t-test via MathNet.Numerics) and writes the significant differences for `run_performance_tests.yml`/`post_performance_test_comment.yml`; paired with `lib/fail-on-benchmark-regression.sh`. Not in the solution; run directly via `dotnet run --project`.
-- `csharp/PhoneNumbers.MetadataBuilder/` — build-time tool that converts XML metadata + geocoding/timezone text files into per-region binary files. Source-links a small set of files from `PhoneNumbers/` so it doesn't depend on (and can't cycle with) the main library at build time.
-- `csharp/PhoneNumbers.Demo/` — Blazor WebAssembly demo, deployed to GitHub Pages by `deploy-demo.yml`. Doubles as proof the library works trimmed under WASM.
-- `csharp/PhoneNumbers.Demo.Tests/` — bUnit tests for the demo.
-- `csharp/coverlet.runsettings` — keeps the generated data tables out of coverage instrumentation; passed by the coverage workflow.
-- `resources/` — XML metadata (`PhoneNumberMetadata.xml`, `ShortNumberMetadata.xml`, `PhoneNumberAlternateFormats.xml`, `PhoneNumberMetadataForTesting.xml`), plus `geocoding/`, `carrier/`, `timezones/`. **These are copied verbatim from upstream**, with two exceptions: `locale/` is generated from the local jdk by `DumpLocale.java`, and upstream's `metadata/` (~1300 per-calling-code csv files, ~72 MiB) is skipped by the sync because nothing here reads it. Do not hand-edit. The library no longer reads them at runtime: the build pipeline emits binary equivalents under `obj/metadata/`, `obj/geocoding/`, `obj/timezones/` which are embedded into the published assembly.
-- `lib/github-actions-metadata-update.sh` + `lib/DumpLocale.java` — automation that pulls upstream resources and regenerates `resources/locale/country_names.txt`. It runs daily and opens the metadata PR with auto-merge off, for a maintainer to review and merge. If a later run finds that PR still open it regenerates the branch and enables auto-merge, as a backstop so a release is not stalled by nobody looking. `lib/finalize-metadata-release.sh` releases it after the merge.
-- `csharp/PhoneNumbers.Fuzz/` — SharpFuzz/libFuzzer target for the parsing surface, run weekly by `fuzz.yml`. Not in the solution; see its README and the note in its csproj.
+  `csharp/PhoneNumbers.BenchmarkTools/` — CI-only comparison tool (not in the solution).
+- `csharp/PhoneNumbers.Demo/` (+ `.Tests/`) — Blazor WASM demo on GitHub Pages; also proves the
+  library works trimmed. Has its own `AGENTS.md`.
+- `csharp/PhoneNumbers.Fuzz/` — SharpFuzz/libFuzzer target, run weekly (not in the solution).
+- `resources/` — upstream XML metadata plus `geocoding/`, `carrier/`, `timezones/`;
+  `resources/locale/country_names.txt` is generated here by `lib/DumpLocale.java`.
+- `lib/` — bash automation for the metadata sync, changelog and release.
+- `docs/api-differences-from-java.md` — the deliberate API-shape divergences from Java.
 
 ## Common commands
 
-All commands below run from the repository root, which is what the `csharp/…` paths in them assume.
-
-Metadata is built from XML/text into per-region binary files at build time by
-`csharp/PhoneNumbers.MetadataBuilder/` (see the `BuildBinaryMetadata`,
-`BuildGeocodingBins`, and `BuildTimezoneBin` MSBuild targets in `PhoneNumbers.csproj`).
-You don't need to run anything by hand — `dotnet build` invokes the tool. At run time those
-binaries are read straight out of the assembly's embedded resources (gzip-compressed) via
-`IMetadataLoader` / `BuildPrefixMapFromBin` — no XML or text resource is parsed, and no zip
-archive or file on disk is involved.
-
-Build / test:
+Run from the repository root.
 
 ```bash
 dotnet restore csharp
 dotnet build csharp --no-restore
-# Full test matrix:
-dotnet test csharp/PhoneNumbers.slnx
-# Faster: net10.0 only (matches the Linux PR check):
-dotnet test csharp/PhoneNumbers.slnx -p:TargetFrameworks=net10.0
-```
-
-Run a single test (xUnit filter syntax):
-
-```bash
+dotnet test csharp/PhoneNumbers.slnx -p:TargetFrameworks=net10.0   # what the PR check runs
+dotnet test csharp/PhoneNumbers.slnx                                # every TFM
 dotnet test csharp/PhoneNumbers.Test --filter "FullyQualifiedName~TestPhoneNumberUtil.TestParseNationalNumber"
-dotnet test csharp/PhoneNumbers.Test --filter "FullyQualifiedName~TestPhoneNumberUtil"   # whole class
 ```
 
-Pack the NuGet packages (mirrors `publish_nuget.yml`; the workflow adds `-p:VersionPrefix=<tag minus "v">`):
+`dotnet build` runs the metadata pipeline itself; there is no separate generation step.
 
-```bash
-dotnet pack -c Release csharp/PhoneNumbers
-dotnet pack -c Release csharp/PhoneNumbers.Extensions
-```
+## Hard rules
 
-Benchmarks:
+- **Don't hand-edit `resources/`** (overwritten by the next sync — metadata fixes go upstream), or
+  the generated `CountryCodeToRegionCodeMap.cs` and `resources/locale/country_names.txt`.
+- **Adding a public member to `csharp/PhoneNumbers/` needs explicit sign-off from the user, as its
+  own decision.** Package validation only catches removals, so nothing automated will object. "It
+  matches an existing pattern" is not permission — `IMetadataLoader`/`SetMetadataLoader` and
+  `PrewarmRegionsAsync` were added on exactly that reasoning and both were regretted. Ask, every
+  time. `PhoneNumbers.Extensions` is exempt and exists to grow.
+- **Never build a metadata-derived regex with `RegexOptions.Compiled`.** It shipped as a regression
+  three times; `TestPhoneRegex.MetadataPatternsAreNeverCompiled` guards it. Go through
+  `RegexCache` / `PhoneRegex` rather than constructing `Regex` on a call path.
+- **Warnings are errors**, including the trim/AOT analyzers (`IsAotCompatible` on the modern TFMs):
+  no reflection or dynamic code reachable from the public API.
+- **Package versions go in `Directory.Packages.props` only** — an inline `Version` fails restore.
+  There are deliberately no `packages.lock.json` files: every version is exact already, and a lock
+  file would only couple the build to the SDK's implicit package versions. Don't add one.
+- **No JavaScript in `lib/`.** CI/build tooling is bash (+`jq`) or a small C# console tool.
+- **A PR's title and body describe its final state, never its editing history.** Commit subjects use
+  conventional prefixes (`feat:`, `fix:`, `perf:`, `ci:`, `test:`, `docs:`, `refactor:`).
 
-```bash
-cd csharp/PhoneNumbers.PerformanceTest
-dotnet run -c Release --framework net10.0 -- --filter "*"
-dotnet run -c Release --framework net10.0 -- --filter "*PhoneNumberWorkflowBenchmark*"
-```
+## Architecture in brief
 
-## Architecture notes that span files
+- `PhoneNumberUtil.GetInstance()` is the entry point. Region metadata loads lazily through
+  `MetadataSource` + `IMetadataLoader` (`EmbeddedResourceMetadataLoader` reads the embedded
+  binaries under `PhoneNumbers.metadata.*`). `BuildMetadataFromXml.cs` survives for build time and
+  the legacy `PhoneNumberUtil(Stream)` constructor only.
+- `PhoneNumberUtil` is a partial class split by TFM: `PhoneNumberUtil.net.cs` (modern BCL) and
+  `PhoneNumberUtil.netstandard.cs` (fallbacks). Every public signature must exist on all three TFMs.
+- Subsystems mirror Java types of the same name: `AsYouTypeFormatter`, `PhoneNumberMatcher`,
+  `ShortNumberInfo`, `PhoneNumberOfflineGeocoder` / `PhoneNumberToCarrierMapper` /
+  `PhoneNumberToTimeZonesMapper` (backed by `AreaCodeMap` prefix maps).
+- Parsing and formatting are allocation-light on purpose: spans and slices over substrings and
+  `Match` objects; lookup tables built once into frozen collections. Measure hot-path changes with
+  the benchmark harness rather than reasoning about them.
+- Nullable reference types are on everywhere except `netstandard2.0`; annotate new code regardless.
+- CI is GitHub Actions on `ubuntu-24.04-arm` only — no Windows or macOS runners. Releases are
+  tag-driven (`vX.Y.Z` → `publish_nuget.yml`, OIDC trusted publishing, no API key).
 
-- **Singleton + metadata loading.** `PhoneNumberUtil.GetInstance()` is the entry point. Region/country metadata is lazily loaded via `MetadataSource` + `IMetadataLoader` (default impl: `EmbeddedResourceMetadataLoader`, which reads per-region binary files generated at build time by `PhoneNumbers.MetadataBuilder` and embedded under `PhoneNumbers.metadata.<prefix>_<region-or-cc>`). The XML parser (`BuildMetadataFromXml.cs`) is still used at build time and by the legacy `PhoneNumberUtil(Stream)` constructor for consumers loading custom XML, but is no longer on the default load path.
-- **Generated files.** `CountryCodeToRegionCodeMap.cs` is generated; don't hand-edit it. `resources/locale/country_names.txt` is generated too, by `javac DumpLocale.java && java DumpLocale > resources/locale/country_names.txt` (see `lib/github-actions-metadata-update.sh`); the build turns it into per-country binaries that `LocaleNames` reads one country at a time, and `LocaleData` exposes the whole table only for callers outside the library.
-- **Partial-class TFM split.** `PhoneNumberUtil.cs` is a `partial class` with framework-specific halves: `PhoneNumberUtil.net.cs` (modern .NET) and `PhoneNumberUtil.netstandard.cs` (netstandard2.0 fallbacks). When adding APIs that use newer BCL features, put the polyfill on the netstandard side.
-- **Subsystems and their entry types** (each ports a Java counterpart of the same name):
-  - `PhoneNumberUtil` — parse / format / validate.
-  - `AsYouTypeFormatter` — incremental formatting.
-  - `PhoneNumberMatcher` / `PhoneNumberMatch` — find numbers in free text.
-  - `ShortNumberInfo` — short codes / SMS shortcodes (separate metadata file).
-  - `PhoneNumberOfflineGeocoder`, `PhoneNumberToCarrierMapper`, `PhoneNumberToTimeZonesMapper` — geo / carrier / tz lookups, backed by the binary prefix maps embedded at build time.
-  - `AreaCodeMap` + `AreaCodeMapStorageStrategy` / `DefaultMapStorage` / `FlyweightMapStorage` — prefix → string lookup used by geocoder/carrier/timezone mappers.
-- **Regex caching.** Use `RegexCache` / `PhoneRegex` rather than constructing `Regex` ad hoc on hot paths — phone parsing is regex-heavy and the cache matters for throughput.
-- **Never make metadata-derived regexes `RegexOptions.Compiled`.** This has shipped as a regression three times (8.8.0, 8.13.0, 9.0.30) on "compiled should be faster" reasoning that doesn't hold here: measured end-to-end, compiling the metadata patterns is 34x slower for 1,000 operations across 245 regions, 3.7x slower for 100,000, and still 1.7x slower at 1,000,000 (see README.md, "Regex compilation and startup cost", for the break-even math). `TestPhoneRegex.MetadataPatternsAreNeverCompiled` asserts on the actual options the metadata regexes are built with and fails the build if this regresses again. The library's own small set of fixed regexes is a different case and stays compiled.
-- **Nullable reference types** are enabled on every target except `netstandard2.0` (see csproj `Condition`). New code should still annotate.
-- **Trim/AOT clean.** `IsAotCompatible` is set on the modern TFMs, so the trim, single-file and AOT analyzers run during the build and their warnings are errors. Keep reflection and dynamic code off any path reachable from the public API — the Blazor WASM demo depends on this too.
-- **Hot-path allocation.** Parsing and formatting are deliberately allocation-light: match against spans and slices instead of materialising substrings or `Match` objects, and build lookup tables once into frozen collections. Measure a hot-path change with `PhoneNumbers.PerformanceTest` rather than reasoning about it — `run_performance_tests.yml` benchmarks the base commit on the same runner and posts a comparison to the PR.
+## Skills
 
-## Working with this port vs. upstream Java
+Task-specific procedures live in `.claude/skills/<name>/SKILL.md`. Claude Code loads them on
+demand; other agents should read the matching file before starting one of these tasks.
 
-- When fixing parsing/validation bugs, first check the upstream Java equivalent (`java/` in `google/libphonenumber`) — fixes that already exist upstream should be ported faithfully rather than reinvented. File and method names match closely (`PhoneNumberUtil.java` ↔ `PhoneNumberUtil.cs`, `BuildMetadataFromXml.java` ↔ `BuildMetadataFromXml.cs`, etc.).
-- **Don't change `resources/*.xml` to fix metadata bugs.** Those changes belong upstream; here they will be overwritten on the next automated metadata sync.
-- The XML-vs-protobuf and `CharSequence` divergences are documented in `csharp/README.md` ("Known Issues") — be aware they exist if you see API shape differences from Java.
-- **Adding a new public member to `PhoneNumbers` (the main library) is treated as seriously as removing one — never do it silently.** `EnablePackageValidation` only catches breaking removals/signature changes against the baseline; it has nothing to say about new members, so a new public type/method/property can ship with zero automated pushback. Before adding one, stop and get explicit sign-off from the user in that conversation, as its own decision — a task like "fix this perf issue" does not by itself authorize a new public member as a side effect, no matter how well it matches an existing pattern. `IMetadataLoader`/`MetadataManager.SetMetadataLoader` and `PhoneNumberUtil.PrewarmRegionsAsync` were both added exactly this way — justified in the moment by "matches an existing precedent" reasoning — and both were later regretted. That reasoning is not itself permission; ask anyway, break-glass style. `PhoneNumbers.Extensions` is exempt from this — it exists specifically to grow with C#-idiomatic helpers beyond Java's API, so add to it freely.
-
-## CI and release
-
-- CI is GitHub Actions only, on `ubuntu-24.04-arm`. There are no Windows runners.
-- PRs trigger `build_and_run_unit_tests_linux.yml` (net10.0 only), `run_all_tests_and_upload_code_coverage.yml` (whole solution, every TFM, uploads to Codecov), and `codeql.yml`. Two more are path-filtered: `run_performance_tests.yml` (library or benchmark changes, with `post_performance_test_comment.yml` posting the result) and `build_and_run_demo_tests.yml` (demo changes). `scorecard.yml` runs on `main` and on branch-protection changes.
-- **Restore is not locked.** There are no `packages.lock.json` files: every version is exact in `Directory.Packages.props`, so restore already resolves the same graph, and a lock file would only couple the build to the SDK's implicit package versions. `NuGetAudit` covers advisories; `nuget.config` pins the single source.
-- `global.json` pins the SDK to 10.0.100 with `latestFeature` roll-forward, and CI verifies the build is reproducible. `EnablePackageValidation` is on for both packable projects, so a change that breaks the public surface — or that makes it inconsistent across TFMs — fails the build rather than shipping.
-- **A metadata sync opens a PR and stops; merging it is the intended path.** `create_new_release_on_new_metadata_update.yml` runs daily. Finding no open `metadata-update/*` PR, it syncs and opens one with auto-merge off, for a maintainer to read and merge. Finding one already open, it regenerates that sync onto the same branch, force-pushes, and turns auto-merge on — the backstop, so a release is not stalled by nobody looking. Three things follow from regenerating rather than arming what is already there, and all of them are why it is worth the second sync: GitHub only accepts `enablePullRequestAutoMerge` on a PR that is *blocked* from merging, and the force-push is what makes it blocked again (a day-old PR whose checks passed cannot be armed at all); `metadata-update/*` sits outside every ruleset, so the force-push is also what guarantees a commit pushed to that branch in the meantime never reaches a release; and the checks gating the merge are minutes old rather than a day stale against a `main` that has moved. The cost is that the commit which merges is not the one read the day before.
-- **The release flow deliberately has no notion of declining, and no guards against same-day runs.** Closing the PR just means the next run opens another: a rejected sync either gets skipped once and resumed at upstream's next release, or blocks releases indefinitely, and upstream's next release resolves it either way. Nothing but the schedule or a person can start a run, so a second run on the same day means someone chose to advance the release. Upstream releases are at least five days apart, so at most one metadata PR is ever open, and a maintainer merging or closing by hand happens hours either side of a scheduled job rather than inside one — guards for those interleavings were written and removed.
-- **Whether a release folds into the previous changelog entry is decided by authorship, not by paths.** `update-changelog.sh` collapses consecutive metadata-only releases into one ranged entry; the sync tells it which qualify by asking whether every commit since the last release was written by the sync account or by dependabot (`Co-authored-by` trailers count, since a squash merge records only the PR's author). Dependabot has to be ignored because its monthly updates land between fortnightly metadata releases often enough to break most runs — over v9.0.12..v9.0.27 that alone is the difference between sixteen entries and one. Authorship rather than paths because a path list cannot tell a maintainer's own CI change, which deserves an entry, from dependabot's, and because the sync's own generated output kept counting as substantive work under the old file-based rule. The trade-off is that a human commit touching only `resources/` or only `CHANGELOG.md` now breaks a run; hand-editing either is worth its own entry anyway.
-- **That fold check needs real history, so its checkout is `fetch-depth: 0`** (with `filter: blob:none`, since the blobs are never read). Don't shallow it, and don't fetch the tag shallowly instead: a `--depth=1` fetch grafts it as a parentless root and writes `.git/shallow` even into a full clone, after which `v<tag>..HEAD` covers the wrong commits — measured here, one range grew from 350 to 1648 commits and another collapsed to zero. `--is-ancestor` still answers yes in that state and is no guard, which is why the script tests `--is-shallow-repository` and fails closed.
-- **The sync commits as the account its token belongs to**, resolved from the API rather than hardcoded, as `<id>+<login>@users.noreply.github.com` — the form GitHub resolves back to an account. It committed as `libphonenumber-csharp-bot <>` for years, a bare name with no email, which GitHub links to no account at all. The run aborts if that account is not the one `finalize_metadata_release.yml` gates on, because that gate is a literal login and a mismatch would leave the sync working perfectly while no release ever followed.
-- Releases are tag-driven: a `vX.Y.Z` tag fires `publish_nuget.yml`, which packs both projects at the tag's version and pushes them, each with its `.snupkg`, to nuget.org via trusted publishing (GitHub OIDC, `NuGet/login`) — there is no API key secret. Metadata-bump tags are created by `finalize_metadata_release.yml` once the PR opened by `create_new_release_on_new_metadata_update.yml` merges.
-- **No JavaScript in `lib/`.** JavaScript belongs only in `csharp/PhoneNumbers.Demo/` (the Blazor WASM demo's own web assets, if any) — a handful of `lib/*.js` CI helper scripts were added as an incidental implementation detail of unrelated work and later ported to bash or C# (see `csharp/PhoneNumbers.BenchmarkTools/`, `lib/fail-on-benchmark-regression.sh`, `lib/update-changelog.sh`) once that was noticed. Write new CI/build tooling in bash (simple text/JSON-via-`jq` logic) or a small C# console tool (anything needing real data structures, math, or a library) instead.
-- **A PR's title and description describe its current, final state — never its own editing history.** A short-lived PR doesn't need "originally did X, then on reflection switched to Y"; by the time it merges, only what it actually does matters, and self-narrated history just makes the description harder to read for no benefit. This is unrelated to `CHANGELOG.md`, which does need to describe how `main` changed release over release — that's about the codebase's history, not one PR's own drafting process. If a PR's approach changed after review or discussion, force-push the branch (or amend, on a branch nobody else is building on) so the diff and description both reflect only the final approach, and update the title/body to match rather than layering a "revised" section on top.
+| Task | Skill |
+| --- | --- |
+| "Number X in region Y returns Z" — is it metadata or a port bug? | `diagnosing-number-behaviour` |
+| Port a fix, feature or test from the Java upstream | `porting-upstream-changes` |
+| Add, change or remove public API; package-validation or TFM-parity failures | `changing-public-api` |
+| Decide where a test goes and how to write it (synthetic vs real metadata, FsCheck, fuzz) | `writing-tests` |
+| Parse/format/match performance, benchmarks, PR benchmark comments | `tuning-hot-paths` |
+| How `resources/` becomes embedded binaries; stale metadata; CS2012 / obj races | `building-embedded-metadata` |
+| The upstream metadata sync, `metadata-update/*` PRs, releases and the changelog | `syncing-upstream-metadata` |
+| Anything under `.github/workflows/`, Dependabot, Scorecard, CI tooling | `changing-ci-workflows` |
+| The Blazor demo: styling, accessibility, bUnit tests, browser verification | `changing-demo-ui` |
