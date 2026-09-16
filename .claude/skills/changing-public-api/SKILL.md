@@ -60,7 +60,7 @@ Both projects target `netstandard2.0;net8.0;net10.0`.
 ```bash
 dotnet build csharp --no-restore                     # catches TFM parity, trim/AOT, validation
 dotnet test csharp/PhoneNumbers.slnx -p:TargetFrameworks=net10.0
-dotnet pack -c Release csharp/PhoneNumbers           # what publish_nuget.yml runs
+dotnet pack -c Release csharp/PhoneNumbers           # publish_nuget.yml adds -p:VersionPrefix=<tag minus "v">
 dotnet pack -c Release csharp/PhoneNumbers.Extensions
 ```
 

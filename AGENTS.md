@@ -30,7 +30,9 @@ automatically every ~two weeks; the library compiles it to binaries at build tim
 - `csharp/PhoneNumbers.Fuzz/` — SharpFuzz/libFuzzer target, run weekly (not in the solution).
 - `resources/` — upstream XML metadata plus `geocoding/`, `carrier/`, `timezones/`;
   `resources/locale/country_names.txt` is generated here by `lib/DumpLocale.java`.
-- `lib/` — bash automation for the metadata sync, changelog and release.
+- `lib/` — bash automation for the metadata sync, changelog and release. The sync runs daily and
+  opens a `metadata-update/*` PR with auto-merge off for a maintainer to review and merge; a later
+  run that finds it still open regenerates the branch and arms auto-merge as a backstop.
 - `docs/api-differences-from-java.md` — the deliberate API-shape divergences from Java.
 
 ## Common commands
@@ -61,7 +63,8 @@ dotnet test csharp/PhoneNumbers.Test --filter "FullyQualifiedName~TestPhoneNumbe
   `RegexCache` / `PhoneRegex` rather than constructing `Regex` on a call path.
 - **Warnings are errors**, including the trim/AOT analyzers (`IsAotCompatible` on the modern TFMs):
   no reflection or dynamic code reachable from the public API.
-- **Package versions go in `Directory.Packages.props` only** — an inline `Version` fails restore.
+- **Package versions go in `Directory.Packages.props` only** — an inline `Version` on a
+  `PackageReference` fails restore (`NU1008`). `nuget.config` pins nuget.org as the only source.
   There are deliberately no `packages.lock.json` files: every version is exact already, and a lock
   file would only couple the build to the SDK's implicit package versions. Don't add one.
 - **No JavaScript in `lib/`.** CI/build tooling is bash (+`jq`) or a small C# console tool.
@@ -86,8 +89,8 @@ dotnet test csharp/PhoneNumbers.Test --filter "FullyQualifiedName~TestPhoneNumbe
   the benchmark harness rather than reasoning about them.
 - Nullable reference types are on everywhere except `netstandard2.0`; annotate new code regardless.
 - CI is GitHub Actions. The default runner is `ubuntu-24.04-arm`; a handful of jobs run x64 on
-  `ubuntu-latest`; there are no Windows or macOS runners. PRs run the net10.0 unit tests, the
-  full-matrix coverage run (Codecov) and CodeQL, and the unit-test job rebuilds the packages and
+  `ubuntu-latest`; there are no Windows or macOS runners. PRs run `build_and_run_unit_tests_linux.yml`
+  (net10.0), `run_all_tests_and_upload_code_coverage.yml` (every TFM, Codecov) and `codeql.yml`, and the unit-test job rebuilds the packages and
   fails if any assembly is not byte-identical. Releases are tag-driven (`vX.Y.Z` →
   `publish_nuget.yml`, OIDC trusted publishing, no API key).
 

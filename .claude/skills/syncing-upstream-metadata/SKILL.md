@@ -10,14 +10,18 @@ description: Work with the automated upstream metadata sync and the release it t
 `lib/github-actions-metadata-update.sh`, which copies upstream `resources/` (less upstream's
 `metadata/` csv tables, which nothing here reads), regenerates `resources/locale/country_names.txt`
 via `lib/DumpLocale.java`, writes the `CHANGELOG.md` entry, and opens a `metadata-update/*` PR
-against `main` with auto-merge on. Once that PR's checks pass and it merges,
+against `main` **with auto-merge off, for a maintainer to review and merge** — that is the intended
+way a metadata release ships. If the next daily run finds that PR still open, it regenerates the
+sync onto the same branch, force-pushes, and turns auto-merge on as a backstop, so a release is
+never stalled because nobody looked. Once the PR merges, by hand or by auto-merge,
 `finalize_metadata_release.yml` runs `lib/finalize-metadata-release.sh` to tag the merge commit,
 cut the GitHub release, and dispatch the NuGet publish.
 
 `README.md` § "Metadata updates" is the user-facing description; this skill is the working detail.
-The reasoning behind the changelog fold, the commit identity and the checkout depth is in
+The reasoning behind the review-then-backstop flow, the changelog fold, the commit identity and the
+checkout depth is in
 [reference/changelog-and-release-internals.md](reference/changelog-and-release-internals.md) —
-read it before changing any of those three things.
+read it before changing any of those four things.
 
 ## Reviewing a `metadata-update/*` PR
 
@@ -28,6 +32,13 @@ than approving.
 Check the PR's own status checks. Test failures on a metadata bump are usually genuine: a region's
 example number or formatting rule changed upstream, and a ported test asserts the old value.
 Fix the *test* to match the new metadata; never edit `resources/` to make a test pass.
+
+**Don't push fixes onto the `metadata-update/*` branch.** The next daily run force-pushes a fresh
+sync over it, deliberately, so anything else there never reaches a release. A test that needs
+updating gets its own PR to `main`; the metadata PR is then regenerated on top of it.
+
+**Closing the PR does not decline the release** — the next run just opens another. There is no
+notion of rejecting a sync; a bad upstream release is resolved by upstream's next release.
 
 ## When the sync stops
 

@@ -66,9 +66,10 @@ dotnet run -c Release --framework net10.0 -- --retained-memory   # exits non-zer
 ## The PR comparison, and its blind spot
 
 Changes under `csharp/PhoneNumbers/`, the benchmark project, `resources/`, or the shared build files
-trigger `run_performance_tests.yml`, which runs the base commit and the branch on the same runner
-and posts a comparison comment via `post_performance_test_comment.yml`. Read that comment rather
-than guessing.
+trigger `run_performance_tests.yml`, which runs the base commit and the branch on the same runner,
+compares them with `csharp/PhoneNumbers.BenchmarkTools/` (Welch's t-test), fails the job through
+`lib/fail-on-benchmark-regression.sh` on a significant regression, and posts a comparison comment
+via `post_performance_test_comment.yml`. Read that comment rather than guessing.
 
 It flags a case only when Welch's t-test clears p < 0.001 **and** the mean moved by at least **20%**.
 That floor is deliberate — base and branch each get one process launch, and launch-to-launch drift
