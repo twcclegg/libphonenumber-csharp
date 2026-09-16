@@ -11,16 +11,15 @@ fails the build rather than shipping.
 
 ## First: is a new member authorised?
 
-**Adding a public member to `csharp/PhoneNumbers/` requires the user's explicit sign-off in the
-current conversation, as its own decision.** Package validation only catches removals and signature
-changes, so a new type, method or property ships with zero automated pushback. A task like "fix
-this perf issue" does not authorise a new public member as a side effect, and "it matches an
-existing pattern" is not permission — `IMetadataLoader`/`MetadataManager.SetMetadataLoader` and
-`PhoneNumberUtil.PrewarmRegionsAsync` were both added on exactly that reasoning and both were later
-regretted. Stop and ask, every time. If the answer is no, an `internal` member or a helper in
-`PhoneNumbers.Extensions` usually serves.
+**Adding a public member to `csharp/PhoneNumbers/` needs explicit sign-off from the user, as its
+own decision.** Package validation only catches removals, so nothing automated will object. "It
+matches an existing pattern" is not permission — `IMetadataLoader`/`SetMetadataLoader` and
+`PrewarmRegionsAsync` were added on exactly that reasoning and both were regretted. Ask, every
+time. `PhoneNumbers.Extensions` is exempt and exists to grow.
 
-`PhoneNumbers.Extensions` is exempt: it exists to grow with C#-idiomatic helpers.
+This is the same rule `AGENTS.md` states; keep the two copies identical. A task like "fix this perf
+issue" does not authorise a new public member as a side effect. If the answer is no, an `internal`
+member or a helper in `PhoneNumbers.Extensions` usually serves.
 
 ## Which package?
 

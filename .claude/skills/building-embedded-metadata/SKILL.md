@@ -7,12 +7,14 @@ description: Understand or change how resources/ becomes the binary metadata emb
 
 Nothing under `resources/` ships as-is and nothing is read from disk at run time.
 `PhoneNumbers.MetadataBuilder` converts the XML and text files into per-region binaries during
-`dotnet build`, and `PhoneNumbers.csproj` embeds them gzip-compressed into the assembly. At run time
-`MetadataSource` + `EmbeddedResourceMetadataLoader` pull a region's binary out of the assembly's
-resources on first use.
+`dotnet build`, writing each one through a `GZipStream` (`CompressionLevel.SmallestSize`) as it
+goes; `PhoneNumbers.csproj` then embeds those already-compressed files into the assembly. At run
+time `MetadataSource` + `EmbeddedResourceMetadataLoader` pull a region's binary out of the
+assembly's resources and decompress it on first use.
 
-The whole pipeline lives in **`csharp/PhoneNumbers/PhoneNumbers.csproj`, roughly lines 50–220**.
-Read the comments there before changing any of it — several encode races that already broke CI.
+The whole pipeline lives in **`csharp/PhoneNumbers/PhoneNumbers.csproj`** — the targets named in
+the table below. Read the comments there before changing any of it — several encode races that
+already broke CI.
 
 ## Shape of it
 

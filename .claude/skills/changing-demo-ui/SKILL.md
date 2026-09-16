@@ -41,7 +41,7 @@ Demo change:
 
 bUnit, xUnit, classes derive from `BunitContext`, one file per page in
 `csharp/PhoneNumbers.Demo.Tests/Pages/`, test names in snake_case describing behaviour
-(`shows_valid_badge_for_default_uk_number`). Arrange-Act-Assert; one concept per test.
+(`shows_valid_badge_for_prepopulated_us_number`). Arrange-Act-Assert; one concept per test.
 
 **Do test**: rendered text and results, badges/labels, list contents and order; what happens after
 input changes, clicks, select changes; every conditional branch the user can see (error message,
@@ -70,8 +70,14 @@ without the switch.
 
 ## 4. Verify in the browser
 
-Start the preview with the `demo` configuration in `.claude/launch.json` (it runs
-`dotnet run --project csharp/PhoneNumbers.Demo` on <http://localhost:5099>). Then:
+Start the dev server and open the URL the SDK prints (add `--urls http://localhost:<port>` to
+pin one):
+
+```bash
+dotnet run --project csharp/PhoneNumbers.Demo
+```
+
+Then:
 
 1. Reload the page and read the console for errors.
 2. Exercise the changed flow — type a number, change the region select, click the button — and read

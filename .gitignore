@@ -199,8 +199,11 @@ FakesAssemblies/
 .DS_Store
 .idea
 
-# Claude Code local worktrees (background agent scratch state)
-.claude/
+# Claude Code: worktrees are background-agent scratch state; settings.local.json and
+# launch.json are per-developer. Everything else under .claude/ (skills) is shared repo content.
+.claude/worktrees/
+.claude/settings.local.json
+.claude/launch.json
 
 # Zipped Geocoding Data
 geocoding.zip

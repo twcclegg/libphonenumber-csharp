@@ -25,11 +25,12 @@ follows all of them; a new one that doesn't will lower the score or break the pu
   a top-level block — don't add the first one without.
 - **`persist-credentials: false` on every `actions/checkout`** unless the job genuinely pushes
   (today only the metadata sync does, with `BOT_ACCESS_TOKEN`).
-- **Default to `runs-on: ubuntu-24.04-arm`.** Four workflows run on x64 `ubuntu-latest` — the
-  metadata sync, `finalize_metadata_release`, `scorecard` and `triage_metadata_issues` — and only
-  the last documents why (the Copilot CLI's npm package lacks reliable arm64 binaries). A new x64
-  job should carry a reason in a comment. **There are no Windows or macOS runners** (bar CodeQL's
-  swift matrix leg), so never write a step that only works on Windows.
+- **Default to `runs-on: ubuntu-24.04-arm`.** Five workflows run on x64 `ubuntu-latest` — the
+  metadata sync, `finalize_metadata_release`, `scorecard`, `triage_metadata_issues` and `codeql`
+  (whose `macos-latest` branch is dead template residue; the matrix has only `csharp`) — and only
+  `triage_metadata_issues` documents why (the Copilot CLI's npm package lacks reliable arm64
+  binaries). A new x64 job should carry a reason in a comment. **There are no Windows or macOS
+  runners**, so never write a step that only works on Windows.
 - **No new secrets for publishing.** `publish_nuget.yml` exchanges the workflow's OIDC token
   (`id-token: write`) for a short-lived nuget.org key via `NuGet/login`, and the same token signs
   build provenance. Don't reintroduce a stored API key.
@@ -42,16 +43,30 @@ structures, statistics or a library is a small C# console project like
 solution. A few `lib/*.js` helpers once crept in as an implementation detail and were ported away;
 JavaScript belongs only in the Blazor demo's own web assets.
 
-Shared shell functions live in `lib/github-release-helpers.sh`, which is sourced rather than run.
-Keep scripts bash-3.2-compatible (no `${var,,}`), since maintainers run them on macOS.
+Shared shell functions live in `lib/github-release-helpers.sh`, which is sourced rather than run
+and is kept bash-3.2-compatible (no `${var,,}`) so it loads on macOS's stock bash. The scripts
+that source it are not held to that — `lib/update-changelog.sh` already uses `mapfile` (bash 4+) —
+so don't "fix" such lines, but don't add bash-4 constructs to the helper either.
 
 ## Dependabot
 
 `.github/dependabot.yml` covers two ecosystems: `github-actions` at `/`, and `nuget` at `/csharp` —
-one entry, because every version lives in `csharp/Directory.Packages.props`. Major updates are
-ignored deliberately, minor/patch NuGet updates are grouped, and `github/codeql-action*` is grouped
-because the CodeQL Action refuses to run with mismatched `init`/`analyze` versions. Adding a package
+one entry, because every version lives in `csharp/Directory.Packages.props`. NuGet major updates
+are ignored deliberately and minor/patch NuGet updates are grouped; GitHub Actions majors are not
+ignored, and `github/codeql-action*` is grouped because the CodeQL Action refuses to run with
+mismatched `init`/`analyze` versions. Adding a package
 manifest outside `/csharp` means adding an entry; adding another project inside it does not.
+
+## The build must be reproducible
+
+`build_and_run_unit_tests_linux.yml` packs `PhoneNumbers`, cleans, packs again, and fails if any
+`PhoneNumbers.dll` in the two `.nupkg`s differs by hash — for every TFM, and after a clean that also
+regenerates the metadata bins, so MetadataBuilder's output is covered too. Anything that embeds a
+timestamp, an absolute path, a random seed or an unordered collection into the build breaks it with
+nothing to point at. `Directory.Build.props` already sets `ContinuousIntegrationBuild` under `CI`
+and `EmbedUntrackedSources`; keep new build properties deterministic. `global.json` pins the SDK
+(`10.0.100`, `latestFeature`, no prerelease) so the two builds and the release use the same
+compiler.
 
 ## Path filters go stale
 

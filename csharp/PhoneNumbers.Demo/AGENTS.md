@@ -12,7 +12,7 @@ ones every change must respect.
 
 ```bash
 dotnet build csharp/PhoneNumbers.Demo
-dotnet run --project csharp/PhoneNumbers.Demo          # or the "demo" entry in .claude/launch.json
+dotnet run --project csharp/PhoneNumbers.Demo          # open the URL the SDK prints
 dotnet test csharp/PhoneNumbers.Demo.Tests             # bUnit; must report a test count, not "No test is available"
 dotnet publish csharp/PhoneNumbers.Demo -c Release     # what GitHub Pages serves
 ```

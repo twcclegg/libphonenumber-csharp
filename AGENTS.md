@@ -13,8 +13,9 @@ automatically every ~two weeks; the library compiles it to binaries at build tim
 
 ## Repository layout
 
-- `csharp/Directory.Build.props` — settings shared by every project (`TreatWarningsAsErrors`,
-  `NoWarn` baseline, NuGet audit, Source Link, `.snupkg`). Set things here, not per csproj.
+- `csharp/Directory.Build.props` — settings shared by every project (`LangVersion`,
+  `TreatWarningsAsErrors`, `NoWarn` baseline, NuGet audit, Source Link, `.snupkg`). Set things
+  here, not per csproj. `global.json` pins the SDK (`10.0.100`, `latestFeature` roll-forward).
 - `csharp/Directory.Packages.props` — Central Package Management; every package version lives here.
 - `csharp/PhoneNumbers/` — main library (NuGet `libphonenumber-csharp`), `netstandard2.0;net8.0;net10.0`.
 - `csharp/PhoneNumbers.Test/` — xUnit tests ported from Java, `net8.0;net10.0`.
@@ -72,18 +73,23 @@ dotnet test csharp/PhoneNumbers.Test --filter "FullyQualifiedName~TestPhoneNumbe
 - `PhoneNumberUtil.GetInstance()` is the entry point. Region metadata loads lazily through
   `MetadataSource` + `IMetadataLoader` (`EmbeddedResourceMetadataLoader` reads the embedded
   binaries under `PhoneNumbers.metadata.*`). `BuildMetadataFromXml.cs` survives for build time and
-  the legacy `PhoneNumberUtil(Stream)` constructor only.
+  the legacy `PhoneNumberUtil(Stream)` constructor only. `LocaleNames` reads country display names
+  one country at a time; `LocaleData` exposes the whole table only for callers outside the library.
 - `PhoneNumberUtil` is a partial class split by TFM: `PhoneNumberUtil.net.cs` (modern BCL) and
   `PhoneNumberUtil.netstandard.cs` (fallbacks). Every public signature must exist on all three TFMs.
 - Subsystems mirror Java types of the same name: `AsYouTypeFormatter`, `PhoneNumberMatcher`,
   `ShortNumberInfo`, `PhoneNumberOfflineGeocoder` / `PhoneNumberToCarrierMapper` /
-  `PhoneNumberToTimeZonesMapper` (backed by `AreaCodeMap` prefix maps).
+  `PhoneNumberToTimeZonesMapper` (backed by `AreaCodeMap` prefix maps, stored via
+  `AreaCodeMapStorageStrategy` — `DefaultMapStorage` or `FlyweightMapStorage`).
 - Parsing and formatting are allocation-light on purpose: spans and slices over substrings and
   `Match` objects; lookup tables built once into frozen collections. Measure hot-path changes with
   the benchmark harness rather than reasoning about them.
 - Nullable reference types are on everywhere except `netstandard2.0`; annotate new code regardless.
-- CI is GitHub Actions on `ubuntu-24.04-arm` only — no Windows or macOS runners. Releases are
-  tag-driven (`vX.Y.Z` → `publish_nuget.yml`, OIDC trusted publishing, no API key).
+- CI is GitHub Actions. The default runner is `ubuntu-24.04-arm`; a handful of jobs run x64 on
+  `ubuntu-latest`; there are no Windows or macOS runners. PRs run the net10.0 unit tests, the
+  full-matrix coverage run (Codecov) and CodeQL, and the unit-test job rebuilds the packages and
+  fails if any assembly is not byte-identical. Releases are tag-driven (`vX.Y.Z` →
+  `publish_nuget.yml`, OIDC trusted publishing, no API key).
 
 ## Skills
 
