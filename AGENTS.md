@@ -33,6 +33,14 @@ automatically every ~two weeks; the library compiles it to binaries at build tim
 - `lib/` — bash automation for the metadata sync, changelog and release. The sync runs daily and
   opens a `metadata-update/*` PR with auto-merge off for a maintainer to review and merge; a later
   run that finds it still open regenerates the branch and arms auto-merge as a backstop.
+- `docfx/` — DocFX config for the generated API reference site, deployed alongside the demo under
+  `/docs/` in the same `deploy-demo.yml` run. Build it with `docfx/build.sh`, never `docfx`
+  directly — the script copies `docs/*.md` in as articles and rewrites their repo-relative links.
+  `docfx/template/public/main.css` ports the demo's design tokens onto DocFX's `modern` template
+  so the two sites match; `docs_preview.yml` uploads the rendered site as a PR artifact.
+- `assets/brand/` — the logomark and favicon SVGs, used by the docfx site (mapped to `images/` by
+  `docfx/docfx.json`). Kept at the repo root rather than inside one site so that everything that
+  needs the mark shares a single copy and the sites can't drift.
 - `docs/api-differences-from-java.md` — the deliberate API-shape divergences from Java.
 
 ## Common commands
@@ -52,7 +60,10 @@ dotnet test csharp/PhoneNumbers.Test --filter "FullyQualifiedName~TestPhoneNumbe
 ## Hard rules
 
 - **Don't hand-edit `resources/`** (overwritten by the next sync — metadata fixes go upstream), or
-  the generated `CountryCodeToRegionCodeMap.cs` and `resources/locale/country_names.txt`.
+  the generated `resources/locale/country_names.txt`. `CountryCodeToRegionCodeMap.cs` reads like a
+  generated file and is named like one, but nothing regenerates it — its own header still says
+  "todo make this file automatically generated", and `lib/github-actions-metadata-update.sh`
+  deliberately treats a change to it as hand-written content. Edit it by hand when you need to.
 - **Adding a public member to `csharp/PhoneNumbers/` needs explicit sign-off from the user, as its
   own decision.** Package validation only catches breaks against the published baseline — never
   additions, so nothing automated will object. "It matches an existing pattern" is not permission —

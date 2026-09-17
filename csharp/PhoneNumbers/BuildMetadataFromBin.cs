@@ -16,6 +16,7 @@
  */
 
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Text;
 
@@ -32,6 +33,10 @@ namespace PhoneNumbers
     /// Java's framing buys us nothing here and complicates the writer. The format is versioned so
     /// it can evolve without breaking older consumers if a binary is shipped without rebuilding.
     /// </remarks>
+    // Implementation detail: reads the binary metadata the build pipeline emits. Public
+    // only because the port mirrored Java's class layout, not because callers are meant to
+    // reach it; hidden from IntelliSense and from the generated API reference.
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public static class BuildMetadataFromBin
     {
         // 4-byte magic + 1-byte version. Bumped if the schema below changes incompatibly.

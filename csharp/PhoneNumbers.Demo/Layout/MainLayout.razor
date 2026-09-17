@@ -90,6 +90,12 @@
 
             <div class="sidebar__section">
                 <div class="sidebar__section-title">Resources</div>
+                <a href="@DocsUrl" class="sidebar__link">
+                    <span class="sidebar__link-icon" aria-hidden="true">
+                        <BookIcon />
+                    </span>
+                    API Docs
+                </a>
                 <a href="https://github.com/twcclegg/libphonenumber-csharp" target="_blank" rel="noopener" class="sidebar__link">
                     <span class="sidebar__link-icon" aria-hidden="true">
                         <GitHubIcon />
@@ -151,6 +157,12 @@
     private string _theme = "light";
     private bool _shareCopied;
     private string _currentTitle = "Home";
+
+    // The API docs site is published as a sibling folder alongside this app (see
+    // deploy-demo.yml, which copies docfx's output to release/wwwroot/docs). Nav.BaseUri
+    // already includes the GitHub Pages repo-name PathBase, so this resolves correctly
+    // regardless of which client-side route the user is currently on.
+    private string DocsUrl => $"{Nav.BaseUri}docs/";
 
     private static readonly Dictionary<string, string> Titles = new()
     {

@@ -31,6 +31,10 @@ namespace PhoneNumbers
     /// XML files. <para/>
     /// Author: Lara Rennie
     /// </remarks>
+    // Implementation detail: metadata loading plumbing. Public only because the port
+    // mirrored Java's class layout, not because callers are meant to reach it; hidden from
+    // IntelliSense and from the generated API reference.
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public static class MetadataManager
     {
         private const string AlternateFormatsPrefix = "PhoneNumberAlternateFormats";

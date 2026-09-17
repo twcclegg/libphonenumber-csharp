@@ -18,9 +18,14 @@
  */
 
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace PhoneNumbers
 {
+    // Implementation detail: the country-code -> region-code lookup table the library reads
+    // at startup. Public only because the port mirrored Java's class layout, not because
+    // callers are meant to reach it; hidden from IntelliSense and from the API reference.
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public static class CountryCodeToRegionCodeMap
     {
         // A mapping from a country code to the region codes which denote the
