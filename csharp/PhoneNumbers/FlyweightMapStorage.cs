@@ -18,6 +18,7 @@
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace PhoneNumbers
@@ -28,6 +29,10 @@ namespace PhoneNumbers
     /// the provided area code map contains a lot of description redundant descriptions.
     /// </summary>
     /// <remarks>Author: Philippe Liard</remarks>
+    // Implementation detail: AreaCodeMap storage strategy. Public only because the port
+    // mirrored Java's class layout, not because callers are meant to reach it; hidden from
+    // IntelliSense and from the generated API reference.
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public class FlyweightMapStorage : AreaCodeMapStorageStrategy
     {
         // Size of short and integer types in bytes.

@@ -11,6 +11,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Text;
 
@@ -27,6 +28,10 @@ namespace PhoneNumbers
     /// for timezone maps (long prefix, string[] descriptions). Each gets its own magic so the
     /// reader can fail loudly if a caller passes the wrong stream.
     /// </remarks>
+    // Implementation detail: reads the binary prefix maps the build pipeline emits. Public
+    // only because the port mirrored Java's class layout, not because callers are meant to
+    // reach it; hidden from IntelliSense and from the generated API reference.
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public static class BuildPrefixMapFromBin
     {
         // Magic + version layout matches BuildMetadataFromBin so future tooling can sniff a stream.
