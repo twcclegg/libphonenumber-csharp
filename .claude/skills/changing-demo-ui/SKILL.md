@@ -13,7 +13,7 @@ components in `Components/Icons/`, styles in `wwwroot/css/` linked from `wwwroot
 ```
 Demo change:
 - [ ] 1. Make the change (Razor + CSS rules below)
-- [ ] 2. Add or update a bUnit test in PhoneNumbers.Demo.Tests/Pages/
+- [ ] 2. Add or update a bUnit test in PhoneNumbers.Demo.Tests (Pages/, Layout/ or Components/)
 - [ ] 3. dotnet test csharp/PhoneNumbers.Demo.Tests — confirm a non-zero test count
 - [ ] 4. Run the "demo" preview and verify visually, at desktop and mobile width
 - [ ] 5. Accessibility pass (contrast, keyboard, labels, reduced motion)
@@ -60,13 +60,15 @@ Demo change:
   block. If a stateful spot needs different glyphs, switch components
   (`_theme == "dark" ? @<SunIcon /> : @<MoonIcon />`), don't branch inside one.
 - Icons are decorative: the accessible name lives on the enclosing `<button>`/`<a>`
-  (`aria-label`) or the adjacent text, never on the SVG. `IconTests.cs` renders every `IconBase`
-  subclass and asserts a single `aria-hidden` `<svg>`, so a new icon is covered automatically.
+  (`aria-label`) or the adjacent text, never on the SVG. `Components/IconTests.cs` renders every
+  `IconBase` subclass and asserts a single `aria-hidden`, `focusable="false"` `<svg>`, so a new
+  icon is covered automatically.
 
 ## 2. Tests: what to assert
 
-bUnit, xUnit, classes derive from `BunitContext`, one file per page in
-`csharp/PhoneNumbers.Demo.Tests/Pages/`, test names in snake_case describing behaviour
+bUnit, xUnit, classes derive from `BunitContext`. The test tree mirrors the demo: one file per
+page in `csharp/PhoneNumbers.Demo.Tests/Pages/`, layout tests in `Layout/`, component tests in
+`Components/`. Test names in snake_case describing behaviour
 (`shows_valid_badge_for_prepopulated_us_number`). Arrange-Act-Assert; one concept per test.
 
 **Do test**: rendered text and results, badges/labels, list contents and order; what happens after

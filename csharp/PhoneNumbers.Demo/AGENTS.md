@@ -32,8 +32,9 @@ drops the xunit runner assets, so `dotnet test` exits 0 having discovered zero t
 - **WCAG 2.1 AA is a hard requirement**: 4.5:1 text contrast, semantic HTML, keyboard-operable
   controls with visible focus, labelled inputs, `prefers-reduced-motion` respected, meaning never
   conveyed by colour alone.
-- **Every logic change gets a bUnit test** in `csharp/PhoneNumbers.Demo.Tests/Pages/`, asserting on
-  what the user sees — never on CSS, class names, or implementation details.
+- **Every logic change gets a bUnit test** in `csharp/PhoneNumbers.Demo.Tests/` (`Pages/`, `Layout/`
+  or `Components/`, mirroring the source tree), asserting on what the user sees — never on CSS,
+  class names, or implementation details.
 - Use `PhoneNumberUtil.GetInstance()`; never construct a new instance. Wrap `Parse` in
   `try/catch (NumberParseException)` and show the error inline with `.error-message`.
 - Don't hand-edit `resources/` and don't add server-side dependencies.

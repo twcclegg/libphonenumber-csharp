@@ -1,4 +1,6 @@
-@* Shared <svg> wrapper used by every icon component in this folder. Not used directly by pages. *@
+@* Shared <svg> wrapper used by every icon component in this folder. Not used directly by pages.
+   Deliberately declares its own AdditionalAttributes instead of @inherits IconBase: IconTests
+   renders every concrete IconBase subclass and expects a glyph inside, and this wrapper has none. *@
 <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" @attributes="AdditionalAttributes">@ChildContent</svg>
 
 @code {

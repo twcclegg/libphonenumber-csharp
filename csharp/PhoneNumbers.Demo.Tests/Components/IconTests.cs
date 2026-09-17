@@ -26,6 +26,7 @@ public class IconTests : BunitContext
 
         var svg = Assert.Single(cut.FindAll("svg"));
         Assert.Equal("true", svg.GetAttribute("aria-hidden"));
+        Assert.Equal("false", svg.GetAttribute("focusable"));
         Assert.Equal("0 0 24 24", svg.GetAttribute("viewBox"));
         Assert.NotEmpty(svg.Children);
     }
