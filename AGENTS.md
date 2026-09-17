@@ -54,10 +54,11 @@ dotnet test csharp/PhoneNumbers.Test --filter "FullyQualifiedName~TestPhoneNumbe
 - **Don't hand-edit `resources/`** (overwritten by the next sync — metadata fixes go upstream), or
   the generated `CountryCodeToRegionCodeMap.cs` and `resources/locale/country_names.txt`.
 - **Adding a public member to `csharp/PhoneNumbers/` needs explicit sign-off from the user, as its
-  own decision.** Package validation only catches removals, so nothing automated will object. "It
-  matches an existing pattern" is not permission — `IMetadataLoader`/`SetMetadataLoader` and
-  `PrewarmRegionsAsync` were added on exactly that reasoning and both were regretted. Ask, every
-  time. `PhoneNumbers.Extensions` is exempt and exists to grow.
+  own decision.** Package validation only catches breaks against the published baseline — never
+  additions, so nothing automated will object. "It matches an existing pattern" is not permission —
+  `IMetadataLoader`/`SetMetadataLoader` and `PrewarmRegionsAsync` were added on exactly that
+  reasoning and both were regretted. Ask, every time. `PhoneNumbers.Extensions` is exempt and
+  exists to grow.
 - **Never build a metadata-derived regex with `RegexOptions.Compiled`.** It shipped as a regression
   three times; `TestPhoneRegex.MetadataPatternsAreNeverCompiled` guards it. Go through
   `RegexCache` / `PhoneRegex` rather than constructing `Regex` on a call path.
@@ -67,6 +68,9 @@ dotnet test csharp/PhoneNumbers.Test --filter "FullyQualifiedName~TestPhoneNumbe
   `PackageReference` fails restore (`NU1008`). `nuget.config` pins nuget.org as the only source.
   There are deliberately no `packages.lock.json` files: every version is exact already, and a lock
   file would only couple the build to the SDK's implicit package versions. Don't add one.
+- **The build must be reproducible.** CI packs twice and fails if any assembly differs by hash, so
+  a build property that embeds a timestamp, an absolute path or a random seed breaks CI with nothing
+  to point at. See the `changing-ci-workflows` skill.
 - **No JavaScript in `lib/`.** CI/build tooling is bash (+`jq`) or a small C# console tool.
 - **A PR's title and body describe its final state, never its editing history.** Commit subjects use
   conventional prefixes (`feat:`, `fix:`, `perf:`, `ci:`, `test:`, `docs:`, `refactor:`).
@@ -89,10 +93,10 @@ dotnet test csharp/PhoneNumbers.Test --filter "FullyQualifiedName~TestPhoneNumbe
   the benchmark harness rather than reasoning about them.
 - Nullable reference types are on everywhere except `netstandard2.0`; annotate new code regardless.
 - CI is GitHub Actions. The default runner is `ubuntu-24.04-arm`; a handful of jobs run x64 on
-  `ubuntu-latest`; there are no Windows or macOS runners. PRs run `build_and_run_unit_tests_linux.yml`
-  (net10.0), `run_all_tests_and_upload_code_coverage.yml` (every TFM, Codecov) and `codeql.yml`, and the unit-test job rebuilds the packages and
-  fails if any assembly is not byte-identical. Releases are tag-driven (`vX.Y.Z` →
-  `publish_nuget.yml`, OIDC trusted publishing, no API key).
+  `ubuntu-latest`; there are no Windows or macOS runners. PRs run
+  `build_and_run_unit_tests_linux.yml` (net10.0, plus the reproducibility check),
+  `run_all_tests_and_upload_code_coverage.yml` (every TFM, Codecov) and `codeql.yml`. Releases are
+  tag-driven (`vX.Y.Z` → `publish_nuget.yml`, OIDC trusted publishing, no API key).
 
 ## Skills
 

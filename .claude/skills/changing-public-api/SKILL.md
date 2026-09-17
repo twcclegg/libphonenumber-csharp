@@ -12,10 +12,11 @@ fails the build rather than shipping.
 ## First: is a new member authorised?
 
 **Adding a public member to `csharp/PhoneNumbers/` needs explicit sign-off from the user, as its
-own decision.** Package validation only catches removals, so nothing automated will object. "It
-matches an existing pattern" is not permission — `IMetadataLoader`/`SetMetadataLoader` and
-`PrewarmRegionsAsync` were added on exactly that reasoning and both were regretted. Ask, every
-time. `PhoneNumbers.Extensions` is exempt and exists to grow.
+own decision.** Package validation only catches breaks against the published baseline — never
+additions, so nothing automated will object. "It matches an existing pattern" is not permission —
+`IMetadataLoader`/`SetMetadataLoader` and `PrewarmRegionsAsync` were added on exactly that
+reasoning and both were regretted. Ask, every time. `PhoneNumbers.Extensions` is exempt and
+exists to grow.
 
 This is the same rule `AGENTS.md` states; keep the two copies identical. A task like "fix this perf
 issue" does not authorise a new public member as a side effect. If the answer is no, an `internal`

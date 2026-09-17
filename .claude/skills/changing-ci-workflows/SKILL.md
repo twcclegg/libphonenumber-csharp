@@ -1,6 +1,6 @@
 ---
 name: changing-ci-workflows
-description: Add or edit a GitHub Actions workflow, Dependabot config, or CI helper script in this repository. Use when touching anything under .github/, adding a CI job or step, bumping an action, changing runners or permissions, writing tooling under lib/, or when a workflow change could affect the OSSF Scorecard rating or the NuGet publish. Covers the SHA-pinning, least-privilege, runner and no-JavaScript conventions the repo holds to without exception.
+description: Add or edit a GitHub Actions workflow, Dependabot config, or CI helper script in this repository. Use when touching anything under .github/, adding a CI job or step, bumping an action, changing runners or permissions, writing tooling under lib/, when a workflow change could affect the OSSF Scorecard rating or the NuGet publish, or when adding an MSBuild property to Directory.Build.props or a csproj that could make the build non-deterministic. Covers the SHA-pinning, least-privilege, runner and no-JavaScript conventions the repo holds to without exception.
 ---
 
 # Changing CI workflows
