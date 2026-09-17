@@ -1,0 +1,15 @@
+apiRules:
+  - exclude:
+      hasAttribute:
+        uid: System.Runtime.CompilerServices.CompilerGeneratedAttribute
+  # Members carrying [EditorBrowsable(EditorBrowsableState.Never)] are ones the library
+  # authors have deliberately hidden from IntelliSense - RegexCache, ValidStartCharPattern,
+  # the leading-zero compat shims, and friends. Most are also [Obsolete(error: true)], so a
+  # consumer can't even reference them without a compile error. Publishing them as normal API
+  # docs would defeat the point of hiding them and undermine this site's "clean, curated
+  # reference" goal, so they're excluded here the same way generated code is.
+  - exclude:
+      hasAttribute:
+        uid: System.ComponentModel.EditorBrowsableAttribute
+        ctorArguments:
+          - System.ComponentModel.EditorBrowsableState.Never
