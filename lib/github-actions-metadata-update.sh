@@ -11,7 +11,8 @@
 # against yet), so GitHub rejects it outright.
 #
 # No open PR: sync, open one with auto-merge off, stop. One already open: regenerate onto the same
-# branch, force-push, turn auto-merge on. See "CI and release" in AGENTS.md for why.
+# branch, force-push, turn auto-merge on. See
+# .claude/skills/syncing-upstream-metadata/reference/changelog-and-release-internals.md for why.
 #
 # Exit on any error, treat unset variables as errors, and fail a pipeline if any
 # stage fails. The pipefail matters here: every network read below is `curl | jq`,
@@ -416,7 +417,7 @@ fi
 CHANGELOG_FILE="${GITHUB_ACTION_WORKING_DIRECTORY}/CHANGELOG.md"
 if [ -f "${CHANGELOG_FILE}" ] && grep -qF '<!-- next-entry -->' "${CHANGELOG_FILE}"; then
     # Folds into the previous changelog entry when nobody but the bots has landed anything since
-    # the last release; AGENTS.md says why.
+    # the last release; .claude/skills/syncing-upstream-metadata/reference/changelog-and-release-internals.md says why.
     METADATA_ONLY=true
     if isTrue "$(git rev-parse --is-shallow-repository)"; then
         warn "the checkout is shallow, so the commits since v${DEPLOYED_NUGET_TAG} cannot be read; treating this release as more than a metadata sync"
