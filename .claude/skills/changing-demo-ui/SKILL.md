@@ -1,14 +1,14 @@
 ---
 name: changing-demo-ui
-description: Change the Blazor WebAssembly demo site under csharp/PhoneNumbers.Demo — a Razor page, layout, CSS, or its bUnit tests — and verify the result in the browser. Use when editing anything in PhoneNumbers.Demo or PhoneNumbers.Demo.Tests, when asked to run or screenshot the demo, or when a demo test run reports zero tests. Covers the BEM/no-inline-style CSS rules, WCAG AA accessibility checks, what a demo test should and should not assert, and the preview-verification loop.
+description: Change the Blazor WebAssembly demo site under csharp/PhoneNumbers.Demo — a Razor page, layout, CSS, or its bUnit tests — and verify the result in the browser. Use when editing anything in PhoneNumbers.Demo or PhoneNumbers.Demo.Tests, when asked to run or screenshot the demo, or when a demo test run reports zero tests. Covers the BEM/no-inline-style CSS rules, the SVG-icons-as-components rule (Components/Icons/), WCAG AA accessibility checks, what a demo test should and should not assert, and the preview-verification loop.
 ---
 
 # Changing the demo UI
 
 The demo is a static Blazor WASM app served from GitHub Pages (`deploy-demo.yml`). Pages live in
 `Pages/*.razor` (one `@page` route each, self-contained `@code` block, `@inject NavigationManager`
-for URL state via `UrlState.cs`), the shell in `Layout/MainLayout.razor`, styles in `wwwroot/css/`
-linked from `wwwroot/index.html`.
+for URL state via `UrlState.cs`), the shell in `Layout/MainLayout.razor`, SVG icons as
+components in `Components/Icons/`, styles in `wwwroot/css/` linked from `wwwroot/index.html`.
 
 ```
 Demo change:
@@ -36,6 +36,32 @@ Demo change:
   grids (`input-row`, `result-grid`, `feature-grid`) go single-column.
 - Light theme only today. If adding dark mode: light defaults in custom properties, overrides under
   `[data-theme="dark"]`, contrast verified in both.
+
+### SVG icons are components, never inline markup
+
+- **No `<svg>` in a page or layout `.razor` file**, and no SVG strings in `@code` or
+  `AddMarkupContent`. Every glyph is a component in `Components/Icons/` named `<Glyph>Icon.razor`
+  (`SearchIcon`, `GlobeIcon`, `ArrowRightIcon`, …), used as `<SearchIcon />`. `_Imports.razor`
+  already brings the namespace in. The only exceptions are the data-URI in `form.css` (a CSS
+  background, not markup) and anything Blazor itself generates.
+- Before adding an icon, check the folder: the same glyph reused at a different size or colour is
+  the *same* component — size, stroke and fill come from the enclosing block's CSS
+  (`.sidebar__link-icon svg { … }`, `.empty-state__icon svg { … }`), never from attributes on the
+  `<svg>`. Add a new component only for a new shape.
+- A new icon is two lines, and inherits the `aria-hidden`/`focusable="false"`/`viewBox` wrapper
+  from `Icon.razor` plus attribute forwarding from `IconBase`:
+
+  ```razor
+  @inherits IconBase
+  <Icon @attributes="AdditionalAttributes"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></Icon>
+  ```
+
+  Keep the 24×24 viewBox (feather-style, stroke-based, `currentColor`), so any icon can sit in any
+  block. If a stateful spot needs different glyphs, switch components
+  (`_theme == "dark" ? @<SunIcon /> : @<MoonIcon />`), don't branch inside one.
+- Icons are decorative: the accessible name lives on the enclosing `<button>`/`<a>`
+  (`aria-label`) or the adjacent text, never on the SVG. `IconTests.cs` renders every `IconBase`
+  subclass and asserts a single `aria-hidden` `<svg>`, so a new icon is covered automatically.
 
 ## 2. Tests: what to assert
 
@@ -106,6 +132,7 @@ if a library change trips it, that is a library bug (see `changing-public-api`),
 ## Don'ts
 
 - No heavyweight JS interop; no server-side dependencies — it must stay a static site.
+- No inline `<svg>` in pages or layouts — see *SVG icons are components* above.
 - Don't hand-edit `resources/`.
 - Don't construct `PhoneNumberUtil`; use `GetInstance()`. Wrap `Parse` in
   `try/catch (NumberParseException)` and render the message inline with `.error-message`.

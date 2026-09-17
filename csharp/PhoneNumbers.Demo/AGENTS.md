@@ -26,6 +26,9 @@ drops the xunit runner assets, so `dotnet test` exits 0 having discovered zero t
 - **No inline `style="…"`** in `.razor` or `.html`. Styling lives in `wwwroot/css/`, one file per
   component, using BEM (`block__element--modifier`) and the custom properties on `:root` in
   `app.css` (`--primary`, `--text`, `--border`, `--radius`, …) — never hard-coded colours or sizes.
+- **No inline `<svg>`** in pages, layouts or `@code` blocks. Every icon is a component in
+  `Components/Icons/` (`<SearchIcon />`, `<GlobeIcon />`, …); reuse an existing glyph before adding
+  one, and let the enclosing block's CSS set its size and stroke.
 - **WCAG 2.1 AA is a hard requirement**: 4.5:1 text contrast, semantic HTML, keyboard-operable
   controls with visible focus, labelled inputs, `prefers-reduced-motion` respected, meaning never
   conveyed by colour alone.

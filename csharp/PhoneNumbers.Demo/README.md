@@ -52,6 +52,8 @@ The [`deploy-demo.yml`](../../.github/workflows/deploy-demo.yml) workflow does t
 
 ```
 PhoneNumbers.Demo/
+├── Components/
+│   └── Icons/                  # One Razor component per SVG icon (<SearchIcon />, …)
 ├── Layout/
 │   └── MainLayout.razor        # Sidebar + responsive shell
 ├── Pages/
