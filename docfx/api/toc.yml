@@ -1,0 +1,107 @@
+### YamlMime:TableOfContent
+items:
+- uid: PhoneNumbers
+  name: PhoneNumbers
+  type: Namespace
+  items:
+  - uid: PhoneNumbers.AsYouTypeFormatter
+    name: AsYouTypeFormatter
+    type: Class
+  - uid: PhoneNumbers.ErrorType
+    name: ErrorType
+    type: Enum
+  - uid: PhoneNumbers.LeniencyExtensions
+    name: LeniencyExtensions
+    type: Class
+  - uid: PhoneNumbers.Locale
+    name: Locale
+    type: Class
+  - uid: PhoneNumbers.LocaleData
+    name: LocaleData
+    type: Class
+  - uid: PhoneNumbers.MissingMetadataException
+    name: MissingMetadataException
+    type: Class
+  - uid: PhoneNumbers.NumberFormat
+    name: NumberFormat
+    type: Class
+  - uid: PhoneNumbers.NumberParseException
+    name: NumberParseException
+    type: Class
+  - uid: PhoneNumbers.PhoneMetadata
+    name: PhoneMetadata
+    type: Class
+  - uid: PhoneNumbers.PhoneNumber
+    name: PhoneNumber
+    type: Class
+  - uid: PhoneNumbers.PhoneNumberDesc
+    name: PhoneNumberDesc
+    type: Class
+  - uid: PhoneNumbers.PhoneNumberFormat
+    name: PhoneNumberFormat
+    type: Enum
+  - uid: PhoneNumbers.PhoneNumberMatch
+    name: PhoneNumberMatch
+    type: Class
+  - uid: PhoneNumbers.PhoneNumberMatcher
+    name: PhoneNumberMatcher
+    type: Class
+  - uid: PhoneNumbers.PhoneNumberMatcher.CheckGroups
+    name: PhoneNumberMatcher.CheckGroups
+    type: Delegate
+  - uid: PhoneNumbers.PhoneNumberOfflineGeocoder
+    name: PhoneNumberOfflineGeocoder
+    type: Class
+  - uid: PhoneNumbers.PhoneNumberToCarrierMapper
+    name: PhoneNumberToCarrierMapper
+    type: Class
+  - uid: PhoneNumbers.PhoneNumberToTimeZonesMapper
+    name: PhoneNumberToTimeZonesMapper
+    type: Class
+  - uid: PhoneNumbers.PhoneNumberType
+    name: PhoneNumberType
+    type: Enum
+  - uid: PhoneNumbers.PhoneNumberUtil
+    name: PhoneNumberUtil
+    type: Class
+  - uid: PhoneNumbers.PhoneNumberUtil.Leniency
+    name: PhoneNumberUtil.Leniency
+    type: Enum
+  - uid: PhoneNumbers.PhoneNumberUtil.MatchType
+    name: PhoneNumberUtil.MatchType
+    type: Enum
+  - uid: PhoneNumbers.PhoneNumberUtil.ValidationResult
+    name: PhoneNumberUtil.ValidationResult
+    type: Enum
+  - uid: PhoneNumbers.ShortNumberInfo
+    name: ShortNumberInfo
+    type: Class
+  - uid: PhoneNumbers.ShortNumberInfo.ShortNumberCost
+    name: ShortNumberInfo.ShortNumberCost
+    type: Enum
+- uid: PhoneNumbers.Extensions
+  name: PhoneNumbers.Extensions
+  type: Namespace
+  items:
+  - uid: PhoneNumbers.Extensions.PhoneNumber
+    name: PhoneNumber
+    type: Class
+  - uid: PhoneNumbers.Extensions.PhoneNumberAttribute
+    name: PhoneNumberAttribute
+    type: Class
+  - uid: PhoneNumbers.Extensions.PhoneNumberConverter
+    name: PhoneNumberConverter
+    type: Class
+  - uid: PhoneNumbers.Extensions.PhoneNumberExtensions
+    name: PhoneNumberExtensions
+    type: Class
+  - uid: PhoneNumbers.Extensions.PhoneNumberJsonContext
+    name: PhoneNumberJsonContext
+    type: Class
+  - uid: PhoneNumbers.Extensions.PhoneNumberJsonOptions
+    name: PhoneNumberJsonOptions
+    type: Class
+  - uid: PhoneNumbers.Extensions.PhoneNumberTypeConverter
+    name: PhoneNumberTypeConverter
+    type: Class
+memberLayout: SamePage

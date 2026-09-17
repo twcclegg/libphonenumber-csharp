@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Class PhoneNumberOfflineGeocoder | libphonenumber-csharp API Reference </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Class PhoneNumberOfflineGeocoder | libphonenumber-csharp API Reference ">
+      
+      <meta name="description" content="An offline geocoder which provides geographical information related to a phone number.">
+      <link rel="icon" href="../images/favicon.svg">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../images/logo.svg" alt="libphonenumber-csharp">
+            libphonenumber-csharp
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="PhoneNumbers.PhoneNumberOfflineGeocoder">
+
+
+
+  <h1 id="PhoneNumbers_PhoneNumberOfflineGeocoder" data-uid="PhoneNumbers.PhoneNumberOfflineGeocoder" class="text-break">
+Class PhoneNumberOfflineGeocoder  
+  </h1>
+
+  <div class="facts text-secondary">
+    <dl><dt>Namespace</dt><dd><a class="xref" href="PhoneNumbers.html">PhoneNumbers</a></dd></dl>
+  <dl><dt>Assembly</dt><dd>PhoneNumbers.dll</dd></dl>
+  </div>
+
+  <div class="markdown summary"><p>An offline geocoder which provides geographical information related to a phone number.</p>
+</div>
+  <div class="markdown conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class PhoneNumberOfflineGeocoder</code></pre>
+  </div>
+
+
+
+
+  <dl class="typelist inheritance">
+    <dt>Inheritance</dt>
+    <dd>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+      <div><span class="xref">PhoneNumberOfflineGeocoder</span></div>
+    </dd>
+  </dl>
+
+
+
+  <dl class="typelist inheritedMembers">
+    <dt>Inherited Members</dt>
+    <dd>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+  </dd></dl>
+
+
+
+
+  <h2 id="PhoneNumbers_PhoneNumberOfflineGeocoder_remarks">Remarks</h2>
+  <div class="markdown level0 remarks"><pre><code>Author: Shaopeng Jia. 
+</code></pre>
+<p></p>
+<pre><code>Loads phone-prefix → location-string mappings from per-(language, country-code) binary
+files generated at build time by &lt;code&gt;PhoneNumbers.MetadataBuilder&lt;/code&gt;, via
+&lt;xref href=&quot;PhoneNumbers.PrefixFileReader&quot; data-throw-if-not-resolved=&quot;false&quot;&gt;&lt;/xref&gt;.
+</code></pre>
+</div>
+
+
+  <h2 class="section" id="methods">Methods
+</h2>
+
+
+  <a id="PhoneNumbers_PhoneNumberOfflineGeocoder_GetDescriptionForNumber_" data-uid="PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForNumber*"></a>
+
+  <h3 id="PhoneNumbers_PhoneNumberOfflineGeocoder_GetDescriptionForNumber_PhoneNumbers_PhoneNumber_PhoneNumbers_Locale_" data-uid="PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale)">
+  GetDescriptionForNumber(PhoneNumber, Locale)
+  
+  </h3>
+
+  <div class="markdown level1 summary"><p>As per <a class="xref" href="PhoneNumbers.PhoneNumberOfflineGeocoder.html#PhoneNumbers_PhoneNumberOfflineGeocoder_GetDescriptionForValidNumber_PhoneNumbers_PhoneNumber_PhoneNumbers_Locale_">GetDescriptionForValidNumber(PhoneNumber, Locale)</a> but explicitly checks
+the validity of the number passed in.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string GetDescriptionForNumber(PhoneNumber number, Locale languageCode)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>number</code> <a class="xref" href="PhoneNumbers.PhoneNumber.html">PhoneNumber</a></dt>
+    <dd><p>the phone number for which we want to get a text description</p>
+</dd>
+    <dt><code>languageCode</code> <a class="xref" href="PhoneNumbers.Locale.html">Locale</a></dt>
+    <dd><p>the language code for which the description should be written</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd><p>a text description for the given language code for the given phone number, or empty
+string if the number passed in is invalid or could belong to multiple countries</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneNumberOfflineGeocoder_GetDescriptionForNumber_" data-uid="PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForNumber*"></a>
+
+  <h3 id="PhoneNumbers_PhoneNumberOfflineGeocoder_GetDescriptionForNumber_PhoneNumbers_PhoneNumber_PhoneNumbers_Locale_System_String_" data-uid="PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale,System.String)">
+  GetDescriptionForNumber(PhoneNumber, Locale, string)
+  
+  </h3>
+
+  <div class="markdown level1 summary"><p>As per <a class="xref" href="PhoneNumbers.PhoneNumberOfflineGeocoder.html#PhoneNumbers_PhoneNumberOfflineGeocoder_GetDescriptionForValidNumber_PhoneNumbers_PhoneNumber_PhoneNumbers_Locale_System_String_">GetDescriptionForValidNumber(PhoneNumber, Locale, string)</a> but
+explicitly checks the validity of the number passed in.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string GetDescriptionForNumber(PhoneNumber number, Locale languageCode, string userRegion)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>number</code> <a class="xref" href="PhoneNumbers.PhoneNumber.html">PhoneNumber</a></dt>
+    <dd><p>the phone number for which we want to get a text description</p>
+</dd>
+    <dt><code>languageCode</code> <a class="xref" href="PhoneNumbers.Locale.html">Locale</a></dt>
+    <dd><p>the language code for which the description should be written</p>
+</dd>
+    <dt><code>userRegion</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd><p>the region code for a given user. This region will be omitted from the description if the phone number comes from this region. It should be a two-letter upper-case CLDR region code.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd><p>a text description for the given language code for the given phone number, or empty
+string if the number passed in is invalid or could belong to multiple countries</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneNumberOfflineGeocoder_GetDescriptionForValidNumber_" data-uid="PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber*"></a>
+
+  <h3 id="PhoneNumbers_PhoneNumberOfflineGeocoder_GetDescriptionForValidNumber_PhoneNumbers_PhoneNumber_PhoneNumbers_Locale_" data-uid="PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale)">
+  GetDescriptionForValidNumber(PhoneNumber, Locale)
+  
+  </h3>
+
+  <div class="markdown level1 summary"><p>Returns a text description for the given phone number, in the language provided. The
+description might consist of the name of the country where the phone number is from, or the
+name of the geographical area the phone number is from if more detailed information is
+available.</p>
+<p>This method assumes the validity of the number passed in has already been checked, and that
+the number is suitable for geocoding. We consider fixed-line and mobile numbers possible
+candidates for geocoding.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string GetDescriptionForValidNumber(PhoneNumber number, Locale languageCode)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>number</code> <a class="xref" href="PhoneNumbers.PhoneNumber.html">PhoneNumber</a></dt>
+    <dd><p>a valid phone number for which we want to get a text description</p>
+</dd>
+    <dt><code>languageCode</code> <a class="xref" href="PhoneNumbers.Locale.html">Locale</a></dt>
+    <dd><p>the language code for which the description should be written</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd><p>a text description for the given language code for the given phone number, or an
+empty string if the number could come from multiple countries, or the country code is in fact invalid</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneNumberOfflineGeocoder_GetDescriptionForValidNumber_" data-uid="PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber*"></a>
+
+  <h3 id="PhoneNumbers_PhoneNumberOfflineGeocoder_GetDescriptionForValidNumber_PhoneNumbers_PhoneNumber_PhoneNumbers_Locale_System_String_" data-uid="PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale,System.String)">
+  GetDescriptionForValidNumber(PhoneNumber, Locale, string)
+  
+  </h3>
+
+  <div class="markdown level1 summary"><p>As per <a class="xref" href="PhoneNumbers.PhoneNumberOfflineGeocoder.html#PhoneNumbers_PhoneNumberOfflineGeocoder_GetDescriptionForValidNumber_PhoneNumbers_PhoneNumber_PhoneNumbers_Locale_">GetDescriptionForValidNumber(PhoneNumber, Locale)</a> but also considers the
+region of the user. If the phone number is from the same region as the user, only a lower-level
+description will be returned, if one exists. Otherwise, the phone number's region will be
+returned, with optionally some more detailed information.</p>
+<p>For example, for a user from the region "US" (United States), we would show "Mountain View,
+CA" for a particular number, omitting the United States from the description. For a user from
+the United Kingdom (region "GB"), for the same number we may show "Mountain View, CA, United
+States" or even just "United States".</p>
+<p>This method assumes the validity of the number passed in has already been checked.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string GetDescriptionForValidNumber(PhoneNumber number, Locale languageCode, string userRegion)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>number</code> <a class="xref" href="PhoneNumbers.PhoneNumber.html">PhoneNumber</a></dt>
+    <dd><p>the phone number for which we want to get a text description</p>
+</dd>
+    <dt><code>languageCode</code> <a class="xref" href="PhoneNumbers.Locale.html">Locale</a></dt>
+    <dd><p>the language code for which the description should be written</p>
+</dd>
+    <dt><code>userRegion</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd><p>the region code for a given user. This region will be omitted from the description if the phone number comes from this region. It should be a two-letter upper-case CLDR region code.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd><p>a text description for the given language code for the given phone number, or an
+empty string if the number could come from multiple countries, or the country code is in fact invalid</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneNumberOfflineGeocoder_GetInstance_" data-uid="PhoneNumbers.PhoneNumberOfflineGeocoder.GetInstance*"></a>
+
+  <h3 id="PhoneNumbers_PhoneNumberOfflineGeocoder_GetInstance" data-uid="PhoneNumbers.PhoneNumberOfflineGeocoder.GetInstance">
+  GetInstance()
+  
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets a <a class="xref" href="PhoneNumbers.PhoneNumberOfflineGeocoder.html">PhoneNumberOfflineGeocoder</a> instance to carry out international phone number
+geocoding.</p>
+<p>The <a class="xref" href="PhoneNumbers.PhoneNumberOfflineGeocoder.html">PhoneNumberOfflineGeocoder</a> is implemented as a singleton. Therefore, calling
+this method multiple times will only result in one instance being created.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static PhoneNumberOfflineGeocoder GetInstance()</code></pre>
+  </div>
+
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="PhoneNumbers.PhoneNumberOfflineGeocoder.html">PhoneNumberOfflineGeocoder</a></dt>
+    <dd><p>a <a class="xref" href="PhoneNumbers.PhoneNumberOfflineGeocoder.html">PhoneNumberOfflineGeocoder</a> instance</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneNumberOfflineGeocoder_LoadDataFile_" data-uid="PhoneNumbers.PhoneNumberOfflineGeocoder.LoadDataFile*"></a>
+
+  <h3 id="PhoneNumbers_PhoneNumberOfflineGeocoder_LoadDataFile_PhoneNumbers_Locale_System_Int32_" data-uid="PhoneNumbers.PhoneNumberOfflineGeocoder.LoadDataFile(PhoneNumbers.Locale,System.Int32)">
+  LoadDataFile(Locale, int)
+  
+  </h3>
+
+  <div class="markdown level1 summary"><p>Preload the data file for the given language and country calling code, so that a future lookup
+for this language and country calling code will not incur any file loading.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void LoadDataFile(Locale locale, int countryCallingCode)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>locale</code> <a class="xref" href="PhoneNumbers.Locale.html">Locale</a></dt>
+    <dd><p>specifies the language of the data file to load</p>
+</dd>
+    <dt><code>countryCallingCode</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd><p>specifies the country calling code of phone numbers that are contained by the file to be loaded</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</article>
+
+
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span><script>(function(){function sync(){var dark=document.documentElement.getAttribute('data-bs-theme')==='dark';var link=document.querySelector('link[rel="icon"]');if(!link)return;link.href=link.href.replace(/[^/]+$/,dark?'logo-dark.svg':'logo.svg');}sync();new MutationObserver(sync).observe(document.documentElement,{attributes:true,attributeFilter:['data-bs-theme']});})();</script>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

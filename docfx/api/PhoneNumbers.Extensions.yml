@@ -1,0 +1,89 @@
+### YamlMime:ManagedReference
+items:
+- uid: PhoneNumbers.Extensions
+  commentId: N:PhoneNumbers.Extensions
+  id: PhoneNumbers.Extensions
+  children:
+  - PhoneNumbers.Extensions.PhoneNumber
+  - PhoneNumbers.Extensions.PhoneNumberAttribute
+  - PhoneNumbers.Extensions.PhoneNumberConverter
+  - PhoneNumbers.Extensions.PhoneNumberExtensions
+  - PhoneNumbers.Extensions.PhoneNumberJsonContext
+  - PhoneNumbers.Extensions.PhoneNumberJsonOptions
+  - PhoneNumbers.Extensions.PhoneNumberTypeConverter
+  langs:
+  - csharp
+  - vb
+  name: PhoneNumbers.Extensions
+  nameWithType: PhoneNumbers.Extensions
+  fullName: PhoneNumbers.Extensions
+  type: Namespace
+  assemblies:
+  - PhoneNumbers.Extensions
+references:
+- uid: PhoneNumbers.Extensions.PhoneNumber
+  commentId: T:PhoneNumbers.Extensions.PhoneNumber
+  href: PhoneNumbers.Extensions.PhoneNumber.html
+  name: PhoneNumber
+  nameWithType: PhoneNumber
+  fullName: PhoneNumbers.Extensions.PhoneNumber
+- uid: PhoneNumbers.Extensions.PhoneNumberAttribute
+  commentId: T:PhoneNumbers.Extensions.PhoneNumberAttribute
+  href: PhoneNumbers.Extensions.PhoneNumberAttribute.html
+  name: PhoneNumberAttribute
+  nameWithType: PhoneNumberAttribute
+  fullName: PhoneNumbers.Extensions.PhoneNumberAttribute
+- uid: PhoneNumbers.Extensions.PhoneNumberConverter
+  commentId: T:PhoneNumbers.Extensions.PhoneNumberConverter
+  href: PhoneNumbers.Extensions.PhoneNumberConverter.html
+  name: PhoneNumberConverter
+  nameWithType: PhoneNumberConverter
+  fullName: PhoneNumbers.Extensions.PhoneNumberConverter
+- uid: PhoneNumbers.Extensions.PhoneNumberExtensions
+  commentId: T:PhoneNumbers.Extensions.PhoneNumberExtensions
+  parent: PhoneNumbers.Extensions
+  href: PhoneNumbers.Extensions.PhoneNumberExtensions.html
+  name: PhoneNumberExtensions
+  nameWithType: PhoneNumberExtensions
+  fullName: PhoneNumbers.Extensions.PhoneNumberExtensions
+- uid: PhoneNumbers.Extensions.PhoneNumberJsonContext
+  commentId: T:PhoneNumbers.Extensions.PhoneNumberJsonContext
+  parent: PhoneNumbers.Extensions
+  href: PhoneNumbers.Extensions.PhoneNumberJsonContext.html
+  name: PhoneNumberJsonContext
+  nameWithType: PhoneNumberJsonContext
+  fullName: PhoneNumbers.Extensions.PhoneNumberJsonContext
+- uid: PhoneNumbers.Extensions.PhoneNumberJsonOptions
+  commentId: T:PhoneNumbers.Extensions.PhoneNumberJsonOptions
+  href: PhoneNumbers.Extensions.PhoneNumberJsonOptions.html
+  name: PhoneNumberJsonOptions
+  nameWithType: PhoneNumberJsonOptions
+  fullName: PhoneNumbers.Extensions.PhoneNumberJsonOptions
+- uid: PhoneNumbers.Extensions.PhoneNumberTypeConverter
+  commentId: T:PhoneNumbers.Extensions.PhoneNumberTypeConverter
+  href: PhoneNumbers.Extensions.PhoneNumberTypeConverter.html
+  name: PhoneNumberTypeConverter
+  nameWithType: PhoneNumberTypeConverter
+  fullName: PhoneNumbers.Extensions.PhoneNumberTypeConverter
+- uid: PhoneNumbers.Extensions
+  commentId: N:PhoneNumbers.Extensions
+  href: PhoneNumbers.html
+  name: PhoneNumbers.Extensions
+  nameWithType: PhoneNumbers.Extensions
+  fullName: PhoneNumbers.Extensions
+  spec.csharp:
+  - uid: PhoneNumbers
+    name: PhoneNumbers
+    href: PhoneNumbers.html
+  - name: .
+  - uid: PhoneNumbers.Extensions
+    name: Extensions
+    href: PhoneNumbers.Extensions.html
+  spec.vb:
+  - uid: PhoneNumbers
+    name: PhoneNumbers
+    href: PhoneNumbers.html
+  - name: .
+  - uid: PhoneNumbers.Extensions
+    name: Extensions
+    href: PhoneNumbers.Extensions.html

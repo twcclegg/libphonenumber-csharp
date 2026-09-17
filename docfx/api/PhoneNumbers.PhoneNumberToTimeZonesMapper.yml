@@ -1,0 +1,528 @@
+### YamlMime:ManagedReference
+items:
+- uid: PhoneNumbers.PhoneNumberToTimeZonesMapper
+  commentId: T:PhoneNumbers.PhoneNumberToTimeZonesMapper
+  id: PhoneNumberToTimeZonesMapper
+  parent: PhoneNumbers
+  children:
+  - PhoneNumbers.PhoneNumberToTimeZonesMapper.GetInstance
+  - PhoneNumbers.PhoneNumberToTimeZonesMapper.GetTimeZonesForGeographicalNumber(PhoneNumbers.PhoneNumber)
+  - PhoneNumbers.PhoneNumberToTimeZonesMapper.GetTimeZonesForNumber(PhoneNumbers.PhoneNumber)
+  - PhoneNumbers.PhoneNumberToTimeZonesMapper.GetUnknownTimeZone
+  langs:
+  - csharp
+  - vb
+  name: PhoneNumberToTimeZonesMapper
+  nameWithType: PhoneNumberToTimeZonesMapper
+  fullName: PhoneNumbers.PhoneNumberToTimeZonesMapper
+  type: Class
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public sealed class PhoneNumberToTimeZonesMapper
+    content.vb: Public NotInheritable Class PhoneNumberToTimeZonesMapper
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: PhoneNumbers.PhoneNumberToTimeZonesMapper.GetTimeZonesForGeographicalNumber(PhoneNumbers.PhoneNumber)
+  commentId: M:PhoneNumbers.PhoneNumberToTimeZonesMapper.GetTimeZonesForGeographicalNumber(PhoneNumbers.PhoneNumber)
+  id: GetTimeZonesForGeographicalNumber(PhoneNumbers.PhoneNumber)
+  parent: PhoneNumbers.PhoneNumberToTimeZonesMapper
+  langs:
+  - csharp
+  - vb
+  name: GetTimeZonesForGeographicalNumber(PhoneNumber)
+  nameWithType: PhoneNumberToTimeZonesMapper.GetTimeZonesForGeographicalNumber(PhoneNumber)
+  fullName: PhoneNumbers.PhoneNumberToTimeZonesMapper.GetTimeZonesForGeographicalNumber(PhoneNumbers.PhoneNumber)
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    Returns a list of time zones to which a phone number belongs.
+
+    This method assumes the validity of the number passed in has already been checked, and that
+
+    the number is geo-localizable. We consider fixed-line and mobile numbers possible candidates
+
+    for geo-localization.
+
+
+    param number  a valid phone number for which we want to get the time zones to which it belongs
+
+    return  a list of the corresponding time zones or a single element list with the default
+        unknown time zone if no other time zone was found or if the number was invalid
+  example: []
+  syntax:
+    content: public List<string> GetTimeZonesForGeographicalNumber(PhoneNumber number)
+    parameters:
+    - id: number
+      type: PhoneNumbers.PhoneNumber
+      description: a valid phone number for which we want to get the time zones to which it belongs
+    return:
+      type: System.Collections.Generic.List{System.String}
+      description: >-
+        a list of the corresponding time zones or a single element list with the default
+
+        unknown time zone if no other time zone was found or if the number was invalid
+    content.vb: Public Function GetTimeZonesForGeographicalNumber(number As PhoneNumber) As List(Of String)
+  overload: PhoneNumbers.PhoneNumberToTimeZonesMapper.GetTimeZonesForGeographicalNumber*
+- uid: PhoneNumbers.PhoneNumberToTimeZonesMapper.GetTimeZonesForNumber(PhoneNumbers.PhoneNumber)
+  commentId: M:PhoneNumbers.PhoneNumberToTimeZonesMapper.GetTimeZonesForNumber(PhoneNumbers.PhoneNumber)
+  id: GetTimeZonesForNumber(PhoneNumbers.PhoneNumber)
+  parent: PhoneNumbers.PhoneNumberToTimeZonesMapper
+  langs:
+  - csharp
+  - vb
+  name: GetTimeZonesForNumber(PhoneNumber)
+  nameWithType: PhoneNumberToTimeZonesMapper.GetTimeZonesForNumber(PhoneNumber)
+  fullName: PhoneNumbers.PhoneNumberToTimeZonesMapper.GetTimeZonesForNumber(PhoneNumbers.PhoneNumber)
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    As per GetTimeZonesForGeographicalNumber(PhoneNumber)
+
+    but explicitly checks the validity of the number passed in.
+
+
+    param number  the phone number for which we want to get the time zones to which it belongs
+
+    return  a list of the corresponding time zones or a single element list with the default
+
+    unknown time zone if no other time zone was found or if the number was invalid
+  example: []
+  syntax:
+    content: public List<string> GetTimeZonesForNumber(PhoneNumber number)
+    parameters:
+    - id: number
+      type: PhoneNumbers.PhoneNumber
+      description: the phone number for which we want to get the time zones to which it belongs
+    return:
+      type: System.Collections.Generic.List{System.String}
+      description: >-
+        a list of the corresponding time zones or a single element list with the default
+
+        unknown time zone if no other time zone was found or if the number was invalid
+    content.vb: Public Function GetTimeZonesForNumber(number As PhoneNumber) As List(Of String)
+  overload: PhoneNumbers.PhoneNumberToTimeZonesMapper.GetTimeZonesForNumber*
+- uid: PhoneNumbers.PhoneNumberToTimeZonesMapper.GetUnknownTimeZone
+  commentId: M:PhoneNumbers.PhoneNumberToTimeZonesMapper.GetUnknownTimeZone
+  id: GetUnknownTimeZone
+  parent: PhoneNumbers.PhoneNumberToTimeZonesMapper
+  langs:
+  - csharp
+  - vb
+  name: GetUnknownTimeZone()
+  nameWithType: PhoneNumberToTimeZonesMapper.GetUnknownTimeZone()
+  fullName: PhoneNumbers.PhoneNumberToTimeZonesMapper.GetUnknownTimeZone()
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: Returns a string with the ICU unknown time zone.
+  example: []
+  syntax:
+    content: public string GetUnknownTimeZone()
+    return:
+      type: System.String
+      description: ''
+    content.vb: Public Function GetUnknownTimeZone() As String
+  overload: PhoneNumbers.PhoneNumberToTimeZonesMapper.GetUnknownTimeZone*
+- uid: PhoneNumbers.PhoneNumberToTimeZonesMapper.GetInstance
+  commentId: M:PhoneNumbers.PhoneNumberToTimeZonesMapper.GetInstance
+  id: GetInstance
+  parent: PhoneNumbers.PhoneNumberToTimeZonesMapper
+  langs:
+  - csharp
+  - vb
+  name: GetInstance()
+  nameWithType: PhoneNumberToTimeZonesMapper.GetInstance()
+  fullName: PhoneNumbers.PhoneNumberToTimeZonesMapper.GetInstance()
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public static PhoneNumberToTimeZonesMapper GetInstance()
+    return:
+      type: PhoneNumbers.PhoneNumberToTimeZonesMapper
+    content.vb: Public Shared Function GetInstance() As PhoneNumberToTimeZonesMapper
+  overload: PhoneNumbers.PhoneNumberToTimeZonesMapper.GetInstance*
+references:
+- uid: PhoneNumbers
+  commentId: N:PhoneNumbers
+  href: PhoneNumbers.html
+  name: PhoneNumbers
+  nameWithType: PhoneNumbers
+  fullName: PhoneNumbers
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: PhoneNumbers.PhoneNumberToTimeZonesMapper.GetTimeZonesForGeographicalNumber*
+  commentId: Overload:PhoneNumbers.PhoneNumberToTimeZonesMapper.GetTimeZonesForGeographicalNumber
+  href: PhoneNumbers.PhoneNumberToTimeZonesMapper.html#PhoneNumbers_PhoneNumberToTimeZonesMapper_GetTimeZonesForGeographicalNumber_PhoneNumbers_PhoneNumber_
+  name: GetTimeZonesForGeographicalNumber
+  nameWithType: PhoneNumberToTimeZonesMapper.GetTimeZonesForGeographicalNumber
+  fullName: PhoneNumbers.PhoneNumberToTimeZonesMapper.GetTimeZonesForGeographicalNumber
+- uid: PhoneNumbers.PhoneNumber
+  commentId: T:PhoneNumbers.PhoneNumber
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumber.html
+  name: PhoneNumber
+  nameWithType: PhoneNumber
+  fullName: PhoneNumbers.PhoneNumber
+- uid: System.Collections.Generic.List{System.String}
+  commentId: T:System.Collections.Generic.List{System.String}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.List`1
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  name: List<string>
+  nameWithType: List<string>
+  fullName: System.Collections.Generic.List<string>
+  nameWithType.vb: List(Of String)
+  fullName.vb: System.Collections.Generic.List(Of String)
+  name.vb: List(Of String)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: <
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: )
+- uid: System.Collections.Generic.List`1
+  commentId: T:System.Collections.Generic.List`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  name: List<T>
+  nameWithType: List<T>
+  fullName: System.Collections.Generic.List<T>
+  nameWithType.vb: List(Of T)
+  fullName.vb: System.Collections.Generic.List(Of T)
+  name.vb: List(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.List`1
+    name: List
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.list-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: System.Collections.Generic
+  commentId: N:System.Collections.Generic
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Collections.Generic
+  nameWithType: System.Collections.Generic
+  fullName: System.Collections.Generic
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+- uid: PhoneNumbers.PhoneNumberToTimeZonesMapper.GetTimeZonesForNumber*
+  commentId: Overload:PhoneNumbers.PhoneNumberToTimeZonesMapper.GetTimeZonesForNumber
+  href: PhoneNumbers.PhoneNumberToTimeZonesMapper.html#PhoneNumbers_PhoneNumberToTimeZonesMapper_GetTimeZonesForNumber_PhoneNumbers_PhoneNumber_
+  name: GetTimeZonesForNumber
+  nameWithType: PhoneNumberToTimeZonesMapper.GetTimeZonesForNumber
+  fullName: PhoneNumbers.PhoneNumberToTimeZonesMapper.GetTimeZonesForNumber
+- uid: PhoneNumbers.PhoneNumberToTimeZonesMapper.GetUnknownTimeZone*
+  commentId: Overload:PhoneNumbers.PhoneNumberToTimeZonesMapper.GetUnknownTimeZone
+  href: PhoneNumbers.PhoneNumberToTimeZonesMapper.html#PhoneNumbers_PhoneNumberToTimeZonesMapper_GetUnknownTimeZone
+  name: GetUnknownTimeZone
+  nameWithType: PhoneNumberToTimeZonesMapper.GetUnknownTimeZone
+  fullName: PhoneNumbers.PhoneNumberToTimeZonesMapper.GetUnknownTimeZone
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: string
+  nameWithType: string
+  fullName: string
+  nameWithType.vb: String
+  fullName.vb: String
+  name.vb: String
+- uid: PhoneNumbers.PhoneNumberToTimeZonesMapper.GetInstance*
+  commentId: Overload:PhoneNumbers.PhoneNumberToTimeZonesMapper.GetInstance
+  href: PhoneNumbers.PhoneNumberToTimeZonesMapper.html#PhoneNumbers_PhoneNumberToTimeZonesMapper_GetInstance
+  name: GetInstance
+  nameWithType: PhoneNumberToTimeZonesMapper.GetInstance
+  fullName: PhoneNumbers.PhoneNumberToTimeZonesMapper.GetInstance
+- uid: PhoneNumbers.PhoneNumberToTimeZonesMapper
+  commentId: T:PhoneNumbers.PhoneNumberToTimeZonesMapper
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumberToTimeZonesMapper.html
+  name: PhoneNumberToTimeZonesMapper
+  nameWithType: PhoneNumberToTimeZonesMapper
+  fullName: PhoneNumbers.PhoneNumberToTimeZonesMapper

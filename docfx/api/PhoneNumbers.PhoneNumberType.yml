@@ -1,0 +1,262 @@
+### YamlMime:ManagedReference
+items:
+- uid: PhoneNumbers.PhoneNumberType
+  commentId: T:PhoneNumbers.PhoneNumberType
+  id: PhoneNumberType
+  parent: PhoneNumbers
+  children:
+  - PhoneNumbers.PhoneNumberType.FIXED_LINE
+  - PhoneNumbers.PhoneNumberType.FIXED_LINE_OR_MOBILE
+  - PhoneNumbers.PhoneNumberType.MOBILE
+  - PhoneNumbers.PhoneNumberType.PAGER
+  - PhoneNumbers.PhoneNumberType.PERSONAL_NUMBER
+  - PhoneNumbers.PhoneNumberType.PREMIUM_RATE
+  - PhoneNumbers.PhoneNumberType.SHARED_COST
+  - PhoneNumbers.PhoneNumberType.TOLL_FREE
+  - PhoneNumbers.PhoneNumberType.UAN
+  - PhoneNumbers.PhoneNumberType.UNKNOWN
+  - PhoneNumbers.PhoneNumberType.VOICEMAIL
+  - PhoneNumbers.PhoneNumberType.VOIP
+  langs:
+  - csharp
+  - vb
+  name: PhoneNumberType
+  nameWithType: PhoneNumberType
+  fullName: PhoneNumbers.PhoneNumberType
+  type: Enum
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public enum PhoneNumberType
+    content.vb: Public Enum PhoneNumberType
+- uid: PhoneNumbers.PhoneNumberType.FIXED_LINE
+  commentId: F:PhoneNumbers.PhoneNumberType.FIXED_LINE
+  id: FIXED_LINE
+  parent: PhoneNumbers.PhoneNumberType
+  langs:
+  - csharp
+  - vb
+  name: FIXED_LINE
+  nameWithType: PhoneNumberType.FIXED_LINE
+  fullName: PhoneNumbers.PhoneNumberType.FIXED_LINE
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: FIXED_LINE = 0
+    return:
+      type: PhoneNumbers.PhoneNumberType
+- uid: PhoneNumbers.PhoneNumberType.MOBILE
+  commentId: F:PhoneNumbers.PhoneNumberType.MOBILE
+  id: MOBILE
+  parent: PhoneNumbers.PhoneNumberType
+  langs:
+  - csharp
+  - vb
+  name: MOBILE
+  nameWithType: PhoneNumberType.MOBILE
+  fullName: PhoneNumbers.PhoneNumberType.MOBILE
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: MOBILE = 1
+    return:
+      type: PhoneNumbers.PhoneNumberType
+- uid: PhoneNumbers.PhoneNumberType.FIXED_LINE_OR_MOBILE
+  commentId: F:PhoneNumbers.PhoneNumberType.FIXED_LINE_OR_MOBILE
+  id: FIXED_LINE_OR_MOBILE
+  parent: PhoneNumbers.PhoneNumberType
+  langs:
+  - csharp
+  - vb
+  name: FIXED_LINE_OR_MOBILE
+  nameWithType: PhoneNumberType.FIXED_LINE_OR_MOBILE
+  fullName: PhoneNumbers.PhoneNumberType.FIXED_LINE_OR_MOBILE
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: FIXED_LINE_OR_MOBILE = 2
+    return:
+      type: PhoneNumbers.PhoneNumberType
+- uid: PhoneNumbers.PhoneNumberType.TOLL_FREE
+  commentId: F:PhoneNumbers.PhoneNumberType.TOLL_FREE
+  id: TOLL_FREE
+  parent: PhoneNumbers.PhoneNumberType
+  langs:
+  - csharp
+  - vb
+  name: TOLL_FREE
+  nameWithType: PhoneNumberType.TOLL_FREE
+  fullName: PhoneNumbers.PhoneNumberType.TOLL_FREE
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: TOLL_FREE = 3
+    return:
+      type: PhoneNumbers.PhoneNumberType
+- uid: PhoneNumbers.PhoneNumberType.PREMIUM_RATE
+  commentId: F:PhoneNumbers.PhoneNumberType.PREMIUM_RATE
+  id: PREMIUM_RATE
+  parent: PhoneNumbers.PhoneNumberType
+  langs:
+  - csharp
+  - vb
+  name: PREMIUM_RATE
+  nameWithType: PhoneNumberType.PREMIUM_RATE
+  fullName: PhoneNumbers.PhoneNumberType.PREMIUM_RATE
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: PREMIUM_RATE = 4
+    return:
+      type: PhoneNumbers.PhoneNumberType
+- uid: PhoneNumbers.PhoneNumberType.SHARED_COST
+  commentId: F:PhoneNumbers.PhoneNumberType.SHARED_COST
+  id: SHARED_COST
+  parent: PhoneNumbers.PhoneNumberType
+  langs:
+  - csharp
+  - vb
+  name: SHARED_COST
+  nameWithType: PhoneNumberType.SHARED_COST
+  fullName: PhoneNumbers.PhoneNumberType.SHARED_COST
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: SHARED_COST = 5
+    return:
+      type: PhoneNumbers.PhoneNumberType
+- uid: PhoneNumbers.PhoneNumberType.VOIP
+  commentId: F:PhoneNumbers.PhoneNumberType.VOIP
+  id: VOIP
+  parent: PhoneNumbers.PhoneNumberType
+  langs:
+  - csharp
+  - vb
+  name: VOIP
+  nameWithType: PhoneNumberType.VOIP
+  fullName: PhoneNumbers.PhoneNumberType.VOIP
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: VOIP = 6
+    return:
+      type: PhoneNumbers.PhoneNumberType
+- uid: PhoneNumbers.PhoneNumberType.PERSONAL_NUMBER
+  commentId: F:PhoneNumbers.PhoneNumberType.PERSONAL_NUMBER
+  id: PERSONAL_NUMBER
+  parent: PhoneNumbers.PhoneNumberType
+  langs:
+  - csharp
+  - vb
+  name: PERSONAL_NUMBER
+  nameWithType: PhoneNumberType.PERSONAL_NUMBER
+  fullName: PhoneNumbers.PhoneNumberType.PERSONAL_NUMBER
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: PERSONAL_NUMBER = 7
+    return:
+      type: PhoneNumbers.PhoneNumberType
+- uid: PhoneNumbers.PhoneNumberType.PAGER
+  commentId: F:PhoneNumbers.PhoneNumberType.PAGER
+  id: PAGER
+  parent: PhoneNumbers.PhoneNumberType
+  langs:
+  - csharp
+  - vb
+  name: PAGER
+  nameWithType: PhoneNumberType.PAGER
+  fullName: PhoneNumbers.PhoneNumberType.PAGER
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: PAGER = 8
+    return:
+      type: PhoneNumbers.PhoneNumberType
+- uid: PhoneNumbers.PhoneNumberType.UAN
+  commentId: F:PhoneNumbers.PhoneNumberType.UAN
+  id: UAN
+  parent: PhoneNumbers.PhoneNumberType
+  langs:
+  - csharp
+  - vb
+  name: UAN
+  nameWithType: PhoneNumberType.UAN
+  fullName: PhoneNumbers.PhoneNumberType.UAN
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: UAN = 9
+    return:
+      type: PhoneNumbers.PhoneNumberType
+- uid: PhoneNumbers.PhoneNumberType.VOICEMAIL
+  commentId: F:PhoneNumbers.PhoneNumberType.VOICEMAIL
+  id: VOICEMAIL
+  parent: PhoneNumbers.PhoneNumberType
+  langs:
+  - csharp
+  - vb
+  name: VOICEMAIL
+  nameWithType: PhoneNumberType.VOICEMAIL
+  fullName: PhoneNumbers.PhoneNumberType.VOICEMAIL
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: VOICEMAIL = 10
+    return:
+      type: PhoneNumbers.PhoneNumberType
+- uid: PhoneNumbers.PhoneNumberType.UNKNOWN
+  commentId: F:PhoneNumbers.PhoneNumberType.UNKNOWN
+  id: UNKNOWN
+  parent: PhoneNumbers.PhoneNumberType
+  langs:
+  - csharp
+  - vb
+  name: UNKNOWN
+  nameWithType: PhoneNumberType.UNKNOWN
+  fullName: PhoneNumbers.PhoneNumberType.UNKNOWN
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: UNKNOWN = 11
+    return:
+      type: PhoneNumbers.PhoneNumberType
+references:
+- uid: PhoneNumbers
+  commentId: N:PhoneNumbers
+  href: PhoneNumbers.html
+  name: PhoneNumbers
+  nameWithType: PhoneNumbers
+  fullName: PhoneNumbers
+- uid: PhoneNumbers.PhoneNumberType
+  commentId: T:PhoneNumbers.PhoneNumberType
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumberType.html
+  name: PhoneNumberType
+  nameWithType: PhoneNumberType
+  fullName: PhoneNumbers.PhoneNumberType

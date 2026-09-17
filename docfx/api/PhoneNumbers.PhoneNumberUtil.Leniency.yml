@@ -1,0 +1,429 @@
+### YamlMime:ManagedReference
+items:
+- uid: PhoneNumbers.PhoneNumberUtil.Leniency
+  commentId: T:PhoneNumbers.PhoneNumberUtil.Leniency
+  id: PhoneNumberUtil.Leniency
+  parent: PhoneNumbers
+  children:
+  - PhoneNumbers.PhoneNumberUtil.Leniency.EXACT_GROUPING
+  - PhoneNumbers.PhoneNumberUtil.Leniency.POSSIBLE
+  - PhoneNumbers.PhoneNumberUtil.Leniency.STRICT_GROUPING
+  - PhoneNumbers.PhoneNumberUtil.Leniency.VALID
+  langs:
+  - csharp
+  - vb
+  name: PhoneNumberUtil.Leniency
+  nameWithType: PhoneNumberUtil.Leniency
+  fullName: PhoneNumbers.PhoneNumberUtil.Leniency
+  type: Enum
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    Leniency when <xref href="PhoneNumbers.PhoneNumberUtil.FindNumbers(System.String%2cSystem.String)" data-throw-if-not-resolved="false"></xref> finding potential phone numbers in text
+
+    segments. The levels here are ordered in increasing strictness.
+  example: []
+  syntax:
+    content: public enum PhoneNumberUtil.Leniency
+    content.vb: Public Enum PhoneNumberUtil.Leniency
+  extensionMethods:
+  - PhoneNumbers.PhoneNumberUtil.Leniency.PhoneNumbers.LeniencyExtensions.Verify(PhoneNumbers.PhoneNumber,System.String,PhoneNumbers.PhoneNumberUtil,PhoneNumbers.PhoneNumberMatcher)
+- uid: PhoneNumbers.PhoneNumberUtil.Leniency.POSSIBLE
+  commentId: F:PhoneNumbers.PhoneNumberUtil.Leniency.POSSIBLE
+  id: POSSIBLE
+  parent: PhoneNumbers.PhoneNumberUtil.Leniency
+  langs:
+  - csharp
+  - vb
+  name: POSSIBLE
+  nameWithType: PhoneNumberUtil.Leniency.POSSIBLE
+  fullName: PhoneNumbers.PhoneNumberUtil.Leniency.POSSIBLE
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    Phone numbers accepted are <xref href="PhoneNumbers.PhoneNumberUtil.IsPossibleNumber(PhoneNumbers.PhoneNumber)" data-throw-if-not-resolved="false"></xref>
+
+    possible, but not necessarily <xref href="PhoneNumbers.PhoneNumberUtil.IsValidNumber(PhoneNumbers.PhoneNumber)" data-throw-if-not-resolved="false"></xref> valid.
+  example: []
+  syntax:
+    content: POSSIBLE = 0
+    return:
+      type: PhoneNumbers.PhoneNumberUtil.Leniency
+- uid: PhoneNumbers.PhoneNumberUtil.Leniency.VALID
+  commentId: F:PhoneNumbers.PhoneNumberUtil.Leniency.VALID
+  id: VALID
+  parent: PhoneNumbers.PhoneNumberUtil.Leniency
+  langs:
+  - csharp
+  - vb
+  name: VALID
+  nameWithType: PhoneNumberUtil.Leniency.VALID
+  fullName: PhoneNumbers.PhoneNumberUtil.Leniency.VALID
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    Phone numbers accepted are <xref href="PhoneNumbers.PhoneNumberUtil.IsPossibleNumber(PhoneNumbers.PhoneNumber)" data-throw-if-not-resolved="false"></xref>
+
+    possible and <xref href="PhoneNumbers.PhoneNumberUtil.IsValidNumber(PhoneNumbers.PhoneNumber)" data-throw-if-not-resolved="false"></xref> valid. Numbers written
+
+    in national format must have their national-prefix present if it is usually written for a
+
+    number of this type.
+  example: []
+  syntax:
+    content: VALID = 1
+    return:
+      type: PhoneNumbers.PhoneNumberUtil.Leniency
+- uid: PhoneNumbers.PhoneNumberUtil.Leniency.STRICT_GROUPING
+  commentId: F:PhoneNumbers.PhoneNumberUtil.Leniency.STRICT_GROUPING
+  id: STRICT_GROUPING
+  parent: PhoneNumbers.PhoneNumberUtil.Leniency
+  langs:
+  - csharp
+  - vb
+  name: STRICT_GROUPING
+  nameWithType: PhoneNumberUtil.Leniency.STRICT_GROUPING
+  fullName: PhoneNumbers.PhoneNumberUtil.Leniency.STRICT_GROUPING
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    Phone numbers accepted are <xref href="PhoneNumbers.PhoneNumberUtil.IsValidNumber(PhoneNumbers.PhoneNumber)" data-throw-if-not-resolved="false"></xref> valid and
+
+    are grouped in a possible way for this locale. For example, a US number written as
+
+    "65 02 53 00 00" and "650253 0000" are not accepted at this leniency level, whereas
+
+    "650 253 0000", "650 2530000" or "6502530000" are.
+
+    Numbers with more than one '/' symbol are also dropped at this level.
+
+
+    <p>
+
+    Warning: This level might result in lower coverage especially for regions outside of country
+
+    code "+1". If you are not sure about which level to use, email the discussion group
+
+    libphonenumber-discuss@googlegroups.com.
+
+    </p>
+  example: []
+  syntax:
+    content: STRICT_GROUPING = 2
+    return:
+      type: PhoneNumbers.PhoneNumberUtil.Leniency
+- uid: PhoneNumbers.PhoneNumberUtil.Leniency.EXACT_GROUPING
+  commentId: F:PhoneNumbers.PhoneNumberUtil.Leniency.EXACT_GROUPING
+  id: EXACT_GROUPING
+  parent: PhoneNumbers.PhoneNumberUtil.Leniency
+  langs:
+  - csharp
+  - vb
+  name: EXACT_GROUPING
+  nameWithType: PhoneNumberUtil.Leniency.EXACT_GROUPING
+  fullName: PhoneNumbers.PhoneNumberUtil.Leniency.EXACT_GROUPING
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    Phone numbers accepted are <xref href="PhoneNumbers.PhoneNumberUtil.IsValidNumber(PhoneNumbers.PhoneNumber)" data-throw-if-not-resolved="false"></xref> valid and
+
+    are grouped in the same way that we would have formatted it, or as a single block. For
+
+    example, a US number written as "650 2530000" is not accepted at this leniency level, whereas
+
+    "650 253 0000" or "6502530000" are.
+
+    Numbers with more than one '/' symbol are also dropped at this level.
+
+
+    <p>
+
+    Warning: This level might result in lower coverage especially for regions outside of country
+
+    code "+1". If you are not sure about which level to use, email the discussion group
+
+    libphonenumber-discuss@googlegroups.com.
+
+    </p>
+  example: []
+  syntax:
+    content: EXACT_GROUPING = 3
+    return:
+      type: PhoneNumbers.PhoneNumberUtil.Leniency
+references:
+- uid: PhoneNumbers.PhoneNumberUtil.FindNumbers(System.String,System.String)
+  commentId: M:PhoneNumbers.PhoneNumberUtil.FindNumbers(System.String,System.String)
+  isExternal: true
+  href: PhoneNumbers.PhoneNumberUtil.html#PhoneNumbers_PhoneNumberUtil_FindNumbers_System_String_System_String_
+  name: FindNumbers(string, string)
+  nameWithType: PhoneNumberUtil.FindNumbers(string, string)
+  fullName: PhoneNumbers.PhoneNumberUtil.FindNumbers(string, string)
+  nameWithType.vb: PhoneNumberUtil.FindNumbers(String, String)
+  fullName.vb: PhoneNumbers.PhoneNumberUtil.FindNumbers(String, String)
+  name.vb: FindNumbers(String, String)
+  spec.csharp:
+  - uid: PhoneNumbers.PhoneNumberUtil.FindNumbers(System.String,System.String)
+    name: FindNumbers
+    href: PhoneNumbers.PhoneNumberUtil.html#PhoneNumbers_PhoneNumberUtil_FindNumbers_System_String_System_String_
+  - name: (
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: )
+  spec.vb:
+  - uid: PhoneNumbers.PhoneNumberUtil.FindNumbers(System.String,System.String)
+    name: FindNumbers
+    href: PhoneNumbers.PhoneNumberUtil.html#PhoneNumbers_PhoneNumberUtil_FindNumbers_System_String_System_String_
+  - name: (
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: )
+- uid: PhoneNumbers
+  commentId: N:PhoneNumbers
+  href: PhoneNumbers.html
+  name: PhoneNumbers
+  nameWithType: PhoneNumbers
+  fullName: PhoneNumbers
+- uid: PhoneNumbers.PhoneNumberUtil.Leniency.PhoneNumbers.LeniencyExtensions.Verify(PhoneNumbers.PhoneNumber,System.String,PhoneNumbers.PhoneNumberUtil,PhoneNumbers.PhoneNumberMatcher)
+  commentId: M:PhoneNumbers.LeniencyExtensions.Verify(PhoneNumbers.PhoneNumberUtil.Leniency,PhoneNumbers.PhoneNumber,System.String,PhoneNumbers.PhoneNumberUtil,PhoneNumbers.PhoneNumberMatcher)
+  parent: PhoneNumbers.LeniencyExtensions
+  definition: PhoneNumbers.LeniencyExtensions.Verify(PhoneNumbers.PhoneNumberUtil.Leniency,PhoneNumbers.PhoneNumber,System.String,PhoneNumbers.PhoneNumberUtil,PhoneNumbers.PhoneNumberMatcher)
+  href: PhoneNumbers.LeniencyExtensions.html#PhoneNumbers_LeniencyExtensions_Verify_PhoneNumbers_PhoneNumberUtil_Leniency_PhoneNumbers_PhoneNumber_System_String_PhoneNumbers_PhoneNumberUtil_PhoneNumbers_PhoneNumberMatcher_
+  name: Verify(Leniency, PhoneNumber, string, PhoneNumberUtil, PhoneNumberMatcher)
+  nameWithType: LeniencyExtensions.Verify(PhoneNumberUtil.Leniency, PhoneNumber, string, PhoneNumberUtil, PhoneNumberMatcher)
+  fullName: PhoneNumbers.LeniencyExtensions.Verify(PhoneNumbers.PhoneNumberUtil.Leniency, PhoneNumbers.PhoneNumber, string, PhoneNumbers.PhoneNumberUtil, PhoneNumbers.PhoneNumberMatcher)
+  nameWithType.vb: LeniencyExtensions.Verify(PhoneNumberUtil.Leniency, PhoneNumber, String, PhoneNumberUtil, PhoneNumberMatcher)
+  fullName.vb: PhoneNumbers.LeniencyExtensions.Verify(PhoneNumbers.PhoneNumberUtil.Leniency, PhoneNumbers.PhoneNumber, String, PhoneNumbers.PhoneNumberUtil, PhoneNumbers.PhoneNumberMatcher)
+  name.vb: Verify(Leniency, PhoneNumber, String, PhoneNumberUtil, PhoneNumberMatcher)
+  spec.csharp:
+  - uid: PhoneNumbers.LeniencyExtensions.Verify(PhoneNumbers.PhoneNumberUtil.Leniency,PhoneNumbers.PhoneNumber,System.String,PhoneNumbers.PhoneNumberUtil,PhoneNumbers.PhoneNumberMatcher)
+    name: Verify
+    href: PhoneNumbers.LeniencyExtensions.html#PhoneNumbers_LeniencyExtensions_Verify_PhoneNumbers_PhoneNumberUtil_Leniency_PhoneNumbers_PhoneNumber_System_String_PhoneNumbers_PhoneNumberUtil_PhoneNumbers_PhoneNumberMatcher_
+  - name: (
+  - uid: PhoneNumbers.PhoneNumberUtil.Leniency
+    name: Leniency
+    href: PhoneNumbers.PhoneNumberUtil.Leniency.html
+  - name: ','
+  - name: " "
+  - uid: PhoneNumbers.PhoneNumber
+    name: PhoneNumber
+    href: PhoneNumbers.PhoneNumber.html
+  - name: ','
+  - name: " "
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: PhoneNumbers.PhoneNumberUtil
+    name: PhoneNumberUtil
+    href: PhoneNumbers.PhoneNumberUtil.html
+  - name: ','
+  - name: " "
+  - uid: PhoneNumbers.PhoneNumberMatcher
+    name: PhoneNumberMatcher
+    href: PhoneNumbers.PhoneNumberMatcher.html
+  - name: )
+  spec.vb:
+  - uid: PhoneNumbers.LeniencyExtensions.Verify(PhoneNumbers.PhoneNumberUtil.Leniency,PhoneNumbers.PhoneNumber,System.String,PhoneNumbers.PhoneNumberUtil,PhoneNumbers.PhoneNumberMatcher)
+    name: Verify
+    href: PhoneNumbers.LeniencyExtensions.html#PhoneNumbers_LeniencyExtensions_Verify_PhoneNumbers_PhoneNumberUtil_Leniency_PhoneNumbers_PhoneNumber_System_String_PhoneNumbers_PhoneNumberUtil_PhoneNumbers_PhoneNumberMatcher_
+  - name: (
+  - uid: PhoneNumbers.PhoneNumberUtil.Leniency
+    name: Leniency
+    href: PhoneNumbers.PhoneNumberUtil.Leniency.html
+  - name: ','
+  - name: " "
+  - uid: PhoneNumbers.PhoneNumber
+    name: PhoneNumber
+    href: PhoneNumbers.PhoneNumber.html
+  - name: ','
+  - name: " "
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: PhoneNumbers.PhoneNumberUtil
+    name: PhoneNumberUtil
+    href: PhoneNumbers.PhoneNumberUtil.html
+  - name: ','
+  - name: " "
+  - uid: PhoneNumbers.PhoneNumberMatcher
+    name: PhoneNumberMatcher
+    href: PhoneNumbers.PhoneNumberMatcher.html
+  - name: )
+- uid: PhoneNumbers.LeniencyExtensions.Verify(PhoneNumbers.PhoneNumberUtil.Leniency,PhoneNumbers.PhoneNumber,System.String,PhoneNumbers.PhoneNumberUtil,PhoneNumbers.PhoneNumberMatcher)
+  commentId: M:PhoneNumbers.LeniencyExtensions.Verify(PhoneNumbers.PhoneNumberUtil.Leniency,PhoneNumbers.PhoneNumber,System.String,PhoneNumbers.PhoneNumberUtil,PhoneNumbers.PhoneNumberMatcher)
+  isExternal: true
+  href: PhoneNumbers.LeniencyExtensions.html#PhoneNumbers_LeniencyExtensions_Verify_PhoneNumbers_PhoneNumberUtil_Leniency_PhoneNumbers_PhoneNumber_System_String_PhoneNumbers_PhoneNumberUtil_PhoneNumbers_PhoneNumberMatcher_
+  name: Verify(Leniency, PhoneNumber, string, PhoneNumberUtil, PhoneNumberMatcher)
+  nameWithType: LeniencyExtensions.Verify(PhoneNumberUtil.Leniency, PhoneNumber, string, PhoneNumberUtil, PhoneNumberMatcher)
+  fullName: PhoneNumbers.LeniencyExtensions.Verify(PhoneNumbers.PhoneNumberUtil.Leniency, PhoneNumbers.PhoneNumber, string, PhoneNumbers.PhoneNumberUtil, PhoneNumbers.PhoneNumberMatcher)
+  nameWithType.vb: LeniencyExtensions.Verify(PhoneNumberUtil.Leniency, PhoneNumber, String, PhoneNumberUtil, PhoneNumberMatcher)
+  fullName.vb: PhoneNumbers.LeniencyExtensions.Verify(PhoneNumbers.PhoneNumberUtil.Leniency, PhoneNumbers.PhoneNumber, String, PhoneNumbers.PhoneNumberUtil, PhoneNumbers.PhoneNumberMatcher)
+  name.vb: Verify(Leniency, PhoneNumber, String, PhoneNumberUtil, PhoneNumberMatcher)
+  spec.csharp:
+  - uid: PhoneNumbers.LeniencyExtensions.Verify(PhoneNumbers.PhoneNumberUtil.Leniency,PhoneNumbers.PhoneNumber,System.String,PhoneNumbers.PhoneNumberUtil,PhoneNumbers.PhoneNumberMatcher)
+    name: Verify
+    href: PhoneNumbers.LeniencyExtensions.html#PhoneNumbers_LeniencyExtensions_Verify_PhoneNumbers_PhoneNumberUtil_Leniency_PhoneNumbers_PhoneNumber_System_String_PhoneNumbers_PhoneNumberUtil_PhoneNumbers_PhoneNumberMatcher_
+  - name: (
+  - uid: PhoneNumbers.PhoneNumberUtil.Leniency
+    name: Leniency
+    href: PhoneNumbers.PhoneNumberUtil.Leniency.html
+  - name: ','
+  - name: " "
+  - uid: PhoneNumbers.PhoneNumber
+    name: PhoneNumber
+    href: PhoneNumbers.PhoneNumber.html
+  - name: ','
+  - name: " "
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: PhoneNumbers.PhoneNumberUtil
+    name: PhoneNumberUtil
+    href: PhoneNumbers.PhoneNumberUtil.html
+  - name: ','
+  - name: " "
+  - uid: PhoneNumbers.PhoneNumberMatcher
+    name: PhoneNumberMatcher
+    href: PhoneNumbers.PhoneNumberMatcher.html
+  - name: )
+  spec.vb:
+  - uid: PhoneNumbers.LeniencyExtensions.Verify(PhoneNumbers.PhoneNumberUtil.Leniency,PhoneNumbers.PhoneNumber,System.String,PhoneNumbers.PhoneNumberUtil,PhoneNumbers.PhoneNumberMatcher)
+    name: Verify
+    href: PhoneNumbers.LeniencyExtensions.html#PhoneNumbers_LeniencyExtensions_Verify_PhoneNumbers_PhoneNumberUtil_Leniency_PhoneNumbers_PhoneNumber_System_String_PhoneNumbers_PhoneNumberUtil_PhoneNumbers_PhoneNumberMatcher_
+  - name: (
+  - uid: PhoneNumbers.PhoneNumberUtil.Leniency
+    name: Leniency
+    href: PhoneNumbers.PhoneNumberUtil.Leniency.html
+  - name: ','
+  - name: " "
+  - uid: PhoneNumbers.PhoneNumber
+    name: PhoneNumber
+    href: PhoneNumbers.PhoneNumber.html
+  - name: ','
+  - name: " "
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: PhoneNumbers.PhoneNumberUtil
+    name: PhoneNumberUtil
+    href: PhoneNumbers.PhoneNumberUtil.html
+  - name: ','
+  - name: " "
+  - uid: PhoneNumbers.PhoneNumberMatcher
+    name: PhoneNumberMatcher
+    href: PhoneNumbers.PhoneNumberMatcher.html
+  - name: )
+- uid: PhoneNumbers.LeniencyExtensions
+  commentId: T:PhoneNumbers.LeniencyExtensions
+  parent: PhoneNumbers
+  href: PhoneNumbers.LeniencyExtensions.html
+  name: LeniencyExtensions
+  nameWithType: LeniencyExtensions
+  fullName: PhoneNumbers.LeniencyExtensions
+- uid: PhoneNumbers.PhoneNumberUtil.IsPossibleNumber(PhoneNumbers.PhoneNumber)
+  commentId: M:PhoneNumbers.PhoneNumberUtil.IsPossibleNumber(PhoneNumbers.PhoneNumber)
+  href: PhoneNumbers.PhoneNumberUtil.html#PhoneNumbers_PhoneNumberUtil_IsPossibleNumber_PhoneNumbers_PhoneNumber_
+  name: IsPossibleNumber(PhoneNumber)
+  nameWithType: PhoneNumberUtil.IsPossibleNumber(PhoneNumber)
+  fullName: PhoneNumbers.PhoneNumberUtil.IsPossibleNumber(PhoneNumbers.PhoneNumber)
+  spec.csharp:
+  - uid: PhoneNumbers.PhoneNumberUtil.IsPossibleNumber(PhoneNumbers.PhoneNumber)
+    name: IsPossibleNumber
+    href: PhoneNumbers.PhoneNumberUtil.html#PhoneNumbers_PhoneNumberUtil_IsPossibleNumber_PhoneNumbers_PhoneNumber_
+  - name: (
+  - uid: PhoneNumbers.PhoneNumber
+    name: PhoneNumber
+    href: PhoneNumbers.PhoneNumber.html
+  - name: )
+  spec.vb:
+  - uid: PhoneNumbers.PhoneNumberUtil.IsPossibleNumber(PhoneNumbers.PhoneNumber)
+    name: IsPossibleNumber
+    href: PhoneNumbers.PhoneNumberUtil.html#PhoneNumbers_PhoneNumberUtil_IsPossibleNumber_PhoneNumbers_PhoneNumber_
+  - name: (
+  - uid: PhoneNumbers.PhoneNumber
+    name: PhoneNumber
+    href: PhoneNumbers.PhoneNumber.html
+  - name: )
+- uid: PhoneNumbers.PhoneNumberUtil.IsValidNumber(PhoneNumbers.PhoneNumber)
+  commentId: M:PhoneNumbers.PhoneNumberUtil.IsValidNumber(PhoneNumbers.PhoneNumber)
+  href: PhoneNumbers.PhoneNumberUtil.html#PhoneNumbers_PhoneNumberUtil_IsValidNumber_PhoneNumbers_PhoneNumber_
+  name: IsValidNumber(PhoneNumber)
+  nameWithType: PhoneNumberUtil.IsValidNumber(PhoneNumber)
+  fullName: PhoneNumbers.PhoneNumberUtil.IsValidNumber(PhoneNumbers.PhoneNumber)
+  spec.csharp:
+  - uid: PhoneNumbers.PhoneNumberUtil.IsValidNumber(PhoneNumbers.PhoneNumber)
+    name: IsValidNumber
+    href: PhoneNumbers.PhoneNumberUtil.html#PhoneNumbers_PhoneNumberUtil_IsValidNumber_PhoneNumbers_PhoneNumber_
+  - name: (
+  - uid: PhoneNumbers.PhoneNumber
+    name: PhoneNumber
+    href: PhoneNumbers.PhoneNumber.html
+  - name: )
+  spec.vb:
+  - uid: PhoneNumbers.PhoneNumberUtil.IsValidNumber(PhoneNumbers.PhoneNumber)
+    name: IsValidNumber
+    href: PhoneNumbers.PhoneNumberUtil.html#PhoneNumbers_PhoneNumberUtil_IsValidNumber_PhoneNumbers_PhoneNumber_
+  - name: (
+  - uid: PhoneNumbers.PhoneNumber
+    name: PhoneNumber
+    href: PhoneNumbers.PhoneNumber.html
+  - name: )
+- uid: PhoneNumbers.PhoneNumberUtil.Leniency
+  commentId: T:PhoneNumbers.PhoneNumberUtil.Leniency
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumberUtil.html
+  name: PhoneNumberUtil.Leniency
+  nameWithType: PhoneNumberUtil.Leniency
+  fullName: PhoneNumbers.PhoneNumberUtil.Leniency
+  spec.csharp:
+  - uid: PhoneNumbers.PhoneNumberUtil
+    name: PhoneNumberUtil
+    href: PhoneNumbers.PhoneNumberUtil.html
+  - name: .
+  - uid: PhoneNumbers.PhoneNumberUtil.Leniency
+    name: Leniency
+    href: PhoneNumbers.PhoneNumberUtil.Leniency.html
+  spec.vb:
+  - uid: PhoneNumbers.PhoneNumberUtil
+    name: PhoneNumberUtil
+    href: PhoneNumbers.PhoneNumberUtil.html
+  - name: .
+  - uid: PhoneNumbers.PhoneNumberUtil.Leniency
+    name: Leniency
+    href: PhoneNumbers.PhoneNumberUtil.Leniency.html

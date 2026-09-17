@@ -1,0 +1,1270 @@
+### YamlMime:ManagedReference
+items:
+- uid: PhoneNumbers.Extensions.PhoneNumberJsonContext
+  commentId: T:PhoneNumbers.Extensions.PhoneNumberJsonContext
+  id: PhoneNumberJsonContext
+  parent: PhoneNumbers.Extensions
+  children:
+  - PhoneNumbers.Extensions.PhoneNumberJsonContext.#ctor
+  - PhoneNumbers.Extensions.PhoneNumberJsonContext.#ctor(System.Text.Json.JsonSerializerOptions)
+  - PhoneNumbers.Extensions.PhoneNumberJsonContext.Boolean
+  - PhoneNumbers.Extensions.PhoneNumberJsonContext.CountryCodeSource
+  - PhoneNumbers.Extensions.PhoneNumberJsonContext.Default
+  - PhoneNumbers.Extensions.PhoneNumberJsonContext.GeneratedSerializerOptions
+  - PhoneNumbers.Extensions.PhoneNumberJsonContext.GetTypeInfo(System.Type)
+  - PhoneNumbers.Extensions.PhoneNumberJsonContext.Int32
+  - PhoneNumbers.Extensions.PhoneNumberJsonContext.PhoneNumber
+  - PhoneNumbers.Extensions.PhoneNumberJsonContext.String
+  - PhoneNumbers.Extensions.PhoneNumberJsonContext.UInt64
+  langs:
+  - csharp
+  - vb
+  name: PhoneNumberJsonContext
+  nameWithType: PhoneNumberJsonContext
+  fullName: PhoneNumbers.Extensions.PhoneNumberJsonContext
+  type: Class
+  assemblies:
+  - PhoneNumbers.Extensions
+  namespace: PhoneNumbers.Extensions
+  summary: >-
+    Source-generated <xref href="System.Text.Json.Serialization.JsonSerializerContext" data-throw-if-not-resolved="false"></xref> for <xref href="PhoneNumbers.PhoneNumber" data-throw-if-not-resolved="false"></xref>,
+
+    so consumers building trimmed or Native AOT apps do not need to hand-write one.
+  remarks: >-
+    <p>
+
+    The metadata this context generates for <xref href="PhoneNumbers.PhoneNumber" data-throw-if-not-resolved="false"></xref> is a plain,
+
+    member-based (reflection-free) serializer — it knows nothing about
+
+    <xref href="PhoneNumbers.Extensions.PhoneNumberConverter" data-throw-if-not-resolved="false"></xref>. Do not use it to actually serialize a
+
+    <xref href="PhoneNumbers.PhoneNumber" data-throw-if-not-resolved="false"></xref>: <xref href="PhoneNumbers.PhoneNumber" data-throw-if-not-resolved="false"></xref>.DefaultInstanceForType is a
+
+    public get-only property that returns the type's static default instance, which is itself a
+
+    <xref href="PhoneNumbers.PhoneNumber" data-throw-if-not-resolved="false"></xref> exposing the same DefaultInstanceForType property, so
+
+    member-based serialization walks straight into infinite recursion (a
+
+    <xref href="System.InvalidOperationException" data-throw-if-not-resolved="false"></xref> for exceeding the writer's max depth, or a real
+
+    stack overflow at larger depth limits) instead of ever producing JSON. This context exists only
+
+    so <xref href="PhoneNumbers.PhoneNumber" data-throw-if-not-resolved="false"></xref> can be *resolved*
+
+    (given a <xref href="System.Text.Json.Serialization.Metadata.JsonTypeInfo" data-throw-if-not-resolved="false"></xref> to satisfy the type
+
+    graph) when it appears as a member of another type covered by source generation — e.g. a
+
+    consumer's own <xref href="System.Text.Json.Serialization.JsonSerializerContext" data-throw-if-not-resolved="false"></xref> combined with this one via
+
+    <xref href="System.Text.Json.Serialization.Metadata.JsonTypeInfoResolver" data-throw-if-not-resolved="false"></xref>.Combine — provided a converter is also registered so that
+
+    resolved-but-broken metadata is never actually invoked.
+
+    </p>
+
+    <p>
+
+    <b>Actual serialization always goes through <xref href="PhoneNumbers.Extensions.PhoneNumberConverter" data-throw-if-not-resolved="false"></xref>, never through
+
+    the metadata generated here.</b> Prefer <xref href="PhoneNumbers.Extensions.PhoneNumberJsonOptions.Default" data-throw-if-not-resolved="false"></xref> (or
+
+    <xref href="PhoneNumbers.Extensions.PhoneNumberJsonOptions.Create(System.Text.Json.JsonSerializerOptions)" data-throw-if-not-resolved="false"></xref>), which wires both together correctly. If you build
+
+    your own <xref href="System.Text.Json.JsonSerializerOptions" data-throw-if-not-resolved="false"></xref> instead, you must set both:
+
+
+    <pre><code class="lang-csharp">options.TypeInfoResolver = PhoneNumberJsonContext.Default;
+
+    options.Converters.Add(new PhoneNumberConverter());</code></pre>
+
+
+    and always serialize via <code>JsonSerializer.Serialize(value, options)</code> /
+
+    <code>JsonSerializer.Deserialize(json, typeof(T), options)</code> — never via the raw
+
+    <code>PhoneNumberJsonContext.Default.PhoneNumber</code> <xref href="System.Text.Json.Serialization.Metadata.JsonTypeInfo%601" data-throw-if-not-resolved="false"></xref> directly. That
+
+    overload uses the <xref href="System.Text.Json.Serialization.Metadata.JsonTypeInfo%601" data-throw-if-not-resolved="false"></xref>'s own baked-in (member-based) converter and
+
+    bypasses <xref href="System.Text.Json.JsonSerializerOptions.Converters" data-throw-if-not-resolved="false"></xref> entirely, hitting the recursion above.
+
+    </p>
+  example: []
+  syntax:
+    content: >-
+      [JsonSourceGenerationOptions]
+
+      [JsonSerializable(typeof(PhoneNumber))]
+
+      public class PhoneNumberJsonContext : JsonSerializerContext, IJsonTypeInfoResolver
+    content.vb: >-
+      <JsonSourceGenerationOptions>
+
+      <JsonSerializable(GetType(PhoneNumber))>
+
+      Public Class PhoneNumberJsonContext Inherits JsonSerializerContext Implements IJsonTypeInfoResolver
+  inheritance:
+  - System.Object
+  - System.Text.Json.Serialization.JsonSerializerContext
+  implements:
+  - System.Text.Json.Serialization.Metadata.IJsonTypeInfoResolver
+  inheritedMembers:
+  - System.Text.Json.Serialization.JsonSerializerContext.Options
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+  attributes:
+  - type: System.Text.Json.Serialization.JsonSourceGenerationOptionsAttribute
+    ctor: System.Text.Json.Serialization.JsonSourceGenerationOptionsAttribute.#ctor
+    arguments: []
+  - type: System.Text.Json.Serialization.JsonSerializableAttribute
+    ctor: System.Text.Json.Serialization.JsonSerializableAttribute.#ctor(System.Type)
+    arguments:
+    - type: System.Type
+      value: PhoneNumbers.PhoneNumber
+- uid: PhoneNumbers.Extensions.PhoneNumberJsonContext.Default
+  commentId: P:PhoneNumbers.Extensions.PhoneNumberJsonContext.Default
+  id: Default
+  parent: PhoneNumbers.Extensions.PhoneNumberJsonContext
+  langs:
+  - csharp
+  - vb
+  name: Default
+  nameWithType: PhoneNumberJsonContext.Default
+  fullName: PhoneNumbers.Extensions.PhoneNumberJsonContext.Default
+  type: Property
+  assemblies:
+  - PhoneNumbers.Extensions
+  namespace: PhoneNumbers.Extensions
+  summary: The default <xref href="System.Text.Json.Serialization.JsonSerializerContext" data-throw-if-not-resolved="false"></xref> associated with a default <xref href="System.Text.Json.JsonSerializerOptions" data-throw-if-not-resolved="false"></xref> instance.
+  example: []
+  syntax:
+    content: public static PhoneNumberJsonContext Default { get; }
+    parameters: []
+    return:
+      type: PhoneNumbers.Extensions.PhoneNumberJsonContext
+    content.vb: Public Shared ReadOnly Property [Default] As PhoneNumberJsonContext
+  overload: PhoneNumbers.Extensions.PhoneNumberJsonContext.Default*
+- uid: PhoneNumbers.Extensions.PhoneNumberJsonContext.GeneratedSerializerOptions
+  commentId: P:PhoneNumbers.Extensions.PhoneNumberJsonContext.GeneratedSerializerOptions
+  id: GeneratedSerializerOptions
+  parent: PhoneNumbers.Extensions.PhoneNumberJsonContext
+  langs:
+  - csharp
+  - vb
+  name: GeneratedSerializerOptions
+  nameWithType: PhoneNumberJsonContext.GeneratedSerializerOptions
+  fullName: PhoneNumbers.Extensions.PhoneNumberJsonContext.GeneratedSerializerOptions
+  type: Property
+  assemblies:
+  - PhoneNumbers.Extensions
+  namespace: PhoneNumbers.Extensions
+  summary: The source-generated options associated with this context.
+  example: []
+  syntax:
+    content: protected override JsonSerializerOptions? GeneratedSerializerOptions { get; }
+    parameters: []
+    return:
+      type: System.Text.Json.JsonSerializerOptions
+    content.vb: Protected Overrides ReadOnly Property GeneratedSerializerOptions As JsonSerializerOptions
+  overridden: System.Text.Json.Serialization.JsonSerializerContext.GeneratedSerializerOptions
+  overload: PhoneNumbers.Extensions.PhoneNumberJsonContext.GeneratedSerializerOptions*
+- uid: PhoneNumbers.Extensions.PhoneNumberJsonContext.#ctor
+  commentId: M:PhoneNumbers.Extensions.PhoneNumberJsonContext.#ctor
+  id: '#ctor'
+  parent: PhoneNumbers.Extensions.PhoneNumberJsonContext
+  langs:
+  - csharp
+  - vb
+  name: PhoneNumberJsonContext()
+  nameWithType: PhoneNumberJsonContext.PhoneNumberJsonContext()
+  fullName: PhoneNumbers.Extensions.PhoneNumberJsonContext.PhoneNumberJsonContext()
+  type: Constructor
+  assemblies:
+  - PhoneNumbers.Extensions
+  namespace: PhoneNumbers.Extensions
+  example: []
+  syntax:
+    content: public PhoneNumberJsonContext()
+    content.vb: Public Sub New()
+  overload: PhoneNumbers.Extensions.PhoneNumberJsonContext.#ctor*
+  nameWithType.vb: PhoneNumberJsonContext.New()
+  fullName.vb: PhoneNumbers.Extensions.PhoneNumberJsonContext.New()
+  name.vb: New()
+- uid: PhoneNumbers.Extensions.PhoneNumberJsonContext.#ctor(System.Text.Json.JsonSerializerOptions)
+  commentId: M:PhoneNumbers.Extensions.PhoneNumberJsonContext.#ctor(System.Text.Json.JsonSerializerOptions)
+  id: '#ctor(System.Text.Json.JsonSerializerOptions)'
+  parent: PhoneNumbers.Extensions.PhoneNumberJsonContext
+  langs:
+  - csharp
+  - vb
+  name: PhoneNumberJsonContext(JsonSerializerOptions)
+  nameWithType: PhoneNumberJsonContext.PhoneNumberJsonContext(JsonSerializerOptions)
+  fullName: PhoneNumbers.Extensions.PhoneNumberJsonContext.PhoneNumberJsonContext(System.Text.Json.JsonSerializerOptions)
+  type: Constructor
+  assemblies:
+  - PhoneNumbers.Extensions
+  namespace: PhoneNumbers.Extensions
+  summary: Creates an instance of <xref href="System.Text.Json.Serialization.JsonSerializerContext" data-throw-if-not-resolved="false"></xref> and binds it with the indicated <xref href="System.Text.Json.JsonSerializerOptions" data-throw-if-not-resolved="false"></xref>.
+  example: []
+  syntax:
+    content: public PhoneNumberJsonContext(JsonSerializerOptions options)
+    parameters:
+    - id: options
+      type: System.Text.Json.JsonSerializerOptions
+      description: The run time provided options for the context instance.
+    content.vb: Public Sub New(options As JsonSerializerOptions)
+  overload: PhoneNumbers.Extensions.PhoneNumberJsonContext.#ctor*
+  nameWithType.vb: PhoneNumberJsonContext.New(JsonSerializerOptions)
+  fullName.vb: PhoneNumbers.Extensions.PhoneNumberJsonContext.New(System.Text.Json.JsonSerializerOptions)
+  name.vb: New(JsonSerializerOptions)
+- uid: PhoneNumbers.Extensions.PhoneNumberJsonContext.GetTypeInfo(System.Type)
+  commentId: M:PhoneNumbers.Extensions.PhoneNumberJsonContext.GetTypeInfo(System.Type)
+  id: GetTypeInfo(System.Type)
+  parent: PhoneNumbers.Extensions.PhoneNumberJsonContext
+  langs:
+  - csharp
+  - vb
+  name: GetTypeInfo(Type)
+  nameWithType: PhoneNumberJsonContext.GetTypeInfo(Type)
+  fullName: PhoneNumbers.Extensions.PhoneNumberJsonContext.GetTypeInfo(System.Type)
+  type: Method
+  assemblies:
+  - PhoneNumbers.Extensions
+  namespace: PhoneNumbers.Extensions
+  summary: Gets metadata for the specified type.
+  example: []
+  syntax:
+    content: public override JsonTypeInfo? GetTypeInfo(Type type)
+    parameters:
+    - id: type
+      type: System.Type
+      description: The type to fetch metadata for.
+    return:
+      type: System.Text.Json.Serialization.Metadata.JsonTypeInfo
+      description: The metadata for the specified type, or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> if the context has no metadata for the type.
+    content.vb: Public Overrides Function GetTypeInfo(type As Type) As JsonTypeInfo
+  overridden: System.Text.Json.Serialization.JsonSerializerContext.GetTypeInfo(System.Type)
+  overload: PhoneNumbers.Extensions.PhoneNumberJsonContext.GetTypeInfo*
+- uid: PhoneNumbers.Extensions.PhoneNumberJsonContext.Boolean
+  commentId: P:PhoneNumbers.Extensions.PhoneNumberJsonContext.Boolean
+  id: Boolean
+  parent: PhoneNumbers.Extensions.PhoneNumberJsonContext
+  langs:
+  - csharp
+  - vb
+  name: Boolean
+  nameWithType: PhoneNumberJsonContext.Boolean
+  fullName: PhoneNumbers.Extensions.PhoneNumberJsonContext.Boolean
+  type: Property
+  assemblies:
+  - PhoneNumbers.Extensions
+  namespace: PhoneNumbers.Extensions
+  summary: Defines the source generated JSON serialization contract metadata for a given type.
+  example: []
+  syntax:
+    content: public JsonTypeInfo<bool> Boolean { get; }
+    parameters: []
+    return:
+      type: System.Text.Json.Serialization.Metadata.JsonTypeInfo{System.Boolean}
+    content.vb: Public ReadOnly Property [Boolean] As JsonTypeInfo(Of Boolean)
+  overload: PhoneNumbers.Extensions.PhoneNumberJsonContext.Boolean*
+- uid: PhoneNumbers.Extensions.PhoneNumberJsonContext.String
+  commentId: P:PhoneNumbers.Extensions.PhoneNumberJsonContext.String
+  id: String
+  parent: PhoneNumbers.Extensions.PhoneNumberJsonContext
+  langs:
+  - csharp
+  - vb
+  name: String
+  nameWithType: PhoneNumberJsonContext.String
+  fullName: PhoneNumbers.Extensions.PhoneNumberJsonContext.String
+  type: Property
+  assemblies:
+  - PhoneNumbers.Extensions
+  namespace: PhoneNumbers.Extensions
+  summary: Defines the source generated JSON serialization contract metadata for a given type.
+  example: []
+  syntax:
+    content: public JsonTypeInfo<string> String { get; }
+    parameters: []
+    return:
+      type: System.Text.Json.Serialization.Metadata.JsonTypeInfo{System.String}
+    content.vb: Public ReadOnly Property [String] As JsonTypeInfo(Of String)
+  overload: PhoneNumbers.Extensions.PhoneNumberJsonContext.String*
+- uid: PhoneNumbers.Extensions.PhoneNumberJsonContext.Int32
+  commentId: P:PhoneNumbers.Extensions.PhoneNumberJsonContext.Int32
+  id: Int32
+  parent: PhoneNumbers.Extensions.PhoneNumberJsonContext
+  langs:
+  - csharp
+  - vb
+  name: Int32
+  nameWithType: PhoneNumberJsonContext.Int32
+  fullName: PhoneNumbers.Extensions.PhoneNumberJsonContext.Int32
+  type: Property
+  assemblies:
+  - PhoneNumbers.Extensions
+  namespace: PhoneNumbers.Extensions
+  summary: Defines the source generated JSON serialization contract metadata for a given type.
+  example: []
+  syntax:
+    content: public JsonTypeInfo<int> Int32 { get; }
+    parameters: []
+    return:
+      type: System.Text.Json.Serialization.Metadata.JsonTypeInfo{System.Int32}
+    content.vb: Public ReadOnly Property Int32 As JsonTypeInfo(Of Integer)
+  overload: PhoneNumbers.Extensions.PhoneNumberJsonContext.Int32*
+- uid: PhoneNumbers.Extensions.PhoneNumberJsonContext.UInt64
+  commentId: P:PhoneNumbers.Extensions.PhoneNumberJsonContext.UInt64
+  id: UInt64
+  parent: PhoneNumbers.Extensions.PhoneNumberJsonContext
+  langs:
+  - csharp
+  - vb
+  name: UInt64
+  nameWithType: PhoneNumberJsonContext.UInt64
+  fullName: PhoneNumbers.Extensions.PhoneNumberJsonContext.UInt64
+  type: Property
+  assemblies:
+  - PhoneNumbers.Extensions
+  namespace: PhoneNumbers.Extensions
+  summary: Defines the source generated JSON serialization contract metadata for a given type.
+  example: []
+  syntax:
+    content: public JsonTypeInfo<ulong> UInt64 { get; }
+    parameters: []
+    return:
+      type: System.Text.Json.Serialization.Metadata.JsonTypeInfo{System.UInt64}
+    content.vb: Public ReadOnly Property UInt64 As JsonTypeInfo(Of ULong)
+  overload: PhoneNumbers.Extensions.PhoneNumberJsonContext.UInt64*
+- uid: PhoneNumbers.Extensions.PhoneNumberJsonContext.CountryCodeSource
+  commentId: P:PhoneNumbers.Extensions.PhoneNumberJsonContext.CountryCodeSource
+  id: CountryCodeSource
+  parent: PhoneNumbers.Extensions.PhoneNumberJsonContext
+  langs:
+  - csharp
+  - vb
+  name: CountryCodeSource
+  nameWithType: PhoneNumberJsonContext.CountryCodeSource
+  fullName: PhoneNumbers.Extensions.PhoneNumberJsonContext.CountryCodeSource
+  type: Property
+  assemblies:
+  - PhoneNumbers.Extensions
+  namespace: PhoneNumbers.Extensions
+  summary: Defines the source generated JSON serialization contract metadata for a given type.
+  example: []
+  syntax:
+    content: public JsonTypeInfo<PhoneNumber.Types.CountryCodeSource> CountryCodeSource { get; }
+    parameters: []
+    return:
+      type: System.Text.Json.Serialization.Metadata.JsonTypeInfo{PhoneNumbers.PhoneNumber.Types.CountryCodeSource}
+    content.vb: Public ReadOnly Property CountryCodeSource As JsonTypeInfo(Of PhoneNumber.Types.CountryCodeSource)
+  overload: PhoneNumbers.Extensions.PhoneNumberJsonContext.CountryCodeSource*
+- uid: PhoneNumbers.Extensions.PhoneNumberJsonContext.PhoneNumber
+  commentId: P:PhoneNumbers.Extensions.PhoneNumberJsonContext.PhoneNumber
+  id: PhoneNumber
+  parent: PhoneNumbers.Extensions.PhoneNumberJsonContext
+  langs:
+  - csharp
+  - vb
+  name: PhoneNumber
+  nameWithType: PhoneNumberJsonContext.PhoneNumber
+  fullName: PhoneNumbers.Extensions.PhoneNumberJsonContext.PhoneNumber
+  type: Property
+  assemblies:
+  - PhoneNumbers.Extensions
+  namespace: PhoneNumbers.Extensions
+  summary: Defines the source generated JSON serialization contract metadata for a given type.
+  example: []
+  syntax:
+    content: public JsonTypeInfo<PhoneNumber> PhoneNumber { get; }
+    parameters: []
+    return:
+      type: System.Text.Json.Serialization.Metadata.JsonTypeInfo{PhoneNumbers.PhoneNumber}
+    content.vb: Public ReadOnly Property PhoneNumber As JsonTypeInfo(Of PhoneNumber)
+  overload: PhoneNumbers.Extensions.PhoneNumberJsonContext.PhoneNumber*
+references:
+- uid: System.Text.Json.Serialization.JsonSerializerContext
+  commentId: T:System.Text.Json.Serialization.JsonSerializerContext
+  parent: System.Text.Json.Serialization
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.jsonserializercontext
+  name: JsonSerializerContext
+  nameWithType: JsonSerializerContext
+  fullName: System.Text.Json.Serialization.JsonSerializerContext
+- uid: PhoneNumbers.PhoneNumber
+  commentId: T:PhoneNumbers.PhoneNumber
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumber.html
+  name: PhoneNumber
+  nameWithType: PhoneNumber
+  fullName: PhoneNumbers.PhoneNumber
+- uid: PhoneNumbers.Extensions.PhoneNumberConverter
+  commentId: T:PhoneNumbers.Extensions.PhoneNumberConverter
+  href: PhoneNumbers.Extensions.PhoneNumberConverter.html
+  name: PhoneNumberConverter
+  nameWithType: PhoneNumberConverter
+  fullName: PhoneNumbers.Extensions.PhoneNumberConverter
+- uid: System.InvalidOperationException
+  commentId: T:System.InvalidOperationException
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.invalidoperationexception
+  name: InvalidOperationException
+  nameWithType: InvalidOperationException
+  fullName: System.InvalidOperationException
+- uid: System.Text.Json.Serialization.Metadata.JsonTypeInfo
+  commentId: T:System.Text.Json.Serialization.Metadata.JsonTypeInfo
+  parent: System.Text.Json.Serialization.Metadata
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo
+  name: JsonTypeInfo
+  nameWithType: JsonTypeInfo
+  fullName: System.Text.Json.Serialization.Metadata.JsonTypeInfo
+- uid: System.Text.Json.Serialization.Metadata.JsonTypeInfoResolver
+  commentId: T:System.Text.Json.Serialization.Metadata.JsonTypeInfoResolver
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinforesolver
+  name: JsonTypeInfoResolver
+  nameWithType: JsonTypeInfoResolver
+  fullName: System.Text.Json.Serialization.Metadata.JsonTypeInfoResolver
+- uid: PhoneNumbers.Extensions.PhoneNumberJsonOptions.Default
+  commentId: P:PhoneNumbers.Extensions.PhoneNumberJsonOptions.Default
+  href: PhoneNumbers.Extensions.PhoneNumberJsonOptions.html#PhoneNumbers_Extensions_PhoneNumberJsonOptions_Default
+  name: Default
+  nameWithType: PhoneNumberJsonOptions.Default
+  fullName: PhoneNumbers.Extensions.PhoneNumberJsonOptions.Default
+- uid: PhoneNumbers.Extensions.PhoneNumberJsonOptions.Create(System.Text.Json.JsonSerializerOptions)
+  commentId: M:PhoneNumbers.Extensions.PhoneNumberJsonOptions.Create(System.Text.Json.JsonSerializerOptions)
+  isExternal: true
+  href: PhoneNumbers.Extensions.PhoneNumberJsonOptions.html#PhoneNumbers_Extensions_PhoneNumberJsonOptions_Create_System_Text_Json_JsonSerializerOptions_
+  name: Create(JsonSerializerOptions)
+  nameWithType: PhoneNumberJsonOptions.Create(JsonSerializerOptions)
+  fullName: PhoneNumbers.Extensions.PhoneNumberJsonOptions.Create(System.Text.Json.JsonSerializerOptions)
+  spec.csharp:
+  - uid: PhoneNumbers.Extensions.PhoneNumberJsonOptions.Create(System.Text.Json.JsonSerializerOptions)
+    name: Create
+    href: PhoneNumbers.Extensions.PhoneNumberJsonOptions.html#PhoneNumbers_Extensions_PhoneNumberJsonOptions_Create_System_Text_Json_JsonSerializerOptions_
+  - name: (
+  - uid: System.Text.Json.JsonSerializerOptions
+    name: JsonSerializerOptions
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text.json.jsonserializeroptions
+  - name: )
+  spec.vb:
+  - uid: PhoneNumbers.Extensions.PhoneNumberJsonOptions.Create(System.Text.Json.JsonSerializerOptions)
+    name: Create
+    href: PhoneNumbers.Extensions.PhoneNumberJsonOptions.html#PhoneNumbers_Extensions_PhoneNumberJsonOptions_Create_System_Text_Json_JsonSerializerOptions_
+  - name: (
+  - uid: System.Text.Json.JsonSerializerOptions
+    name: JsonSerializerOptions
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text.json.jsonserializeroptions
+  - name: )
+- uid: System.Text.Json.JsonSerializerOptions
+  commentId: T:System.Text.Json.JsonSerializerOptions
+  parent: System.Text.Json
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.text.json.jsonserializeroptions
+  name: JsonSerializerOptions
+  nameWithType: JsonSerializerOptions
+  fullName: System.Text.Json.JsonSerializerOptions
+- uid: System.Text.Json.Serialization.Metadata.JsonTypeInfo`1
+  commentId: T:System.Text.Json.Serialization.Metadata.JsonTypeInfo`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1
+  name: JsonTypeInfo<T>
+  nameWithType: JsonTypeInfo<T>
+  fullName: System.Text.Json.Serialization.Metadata.JsonTypeInfo<T>
+  nameWithType.vb: JsonTypeInfo(Of T)
+  fullName.vb: System.Text.Json.Serialization.Metadata.JsonTypeInfo(Of T)
+  name.vb: JsonTypeInfo(Of T)
+  spec.csharp:
+  - uid: System.Text.Json.Serialization.Metadata.JsonTypeInfo`1
+    name: JsonTypeInfo
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Text.Json.Serialization.Metadata.JsonTypeInfo`1
+    name: JsonTypeInfo
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: System.Text.Json.JsonSerializerOptions.Converters
+  commentId: P:System.Text.Json.JsonSerializerOptions.Converters
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.text.json.jsonserializeroptions.converters
+  name: Converters
+  nameWithType: JsonSerializerOptions.Converters
+  fullName: System.Text.Json.JsonSerializerOptions.Converters
+- uid: PhoneNumbers.Extensions
+  commentId: N:PhoneNumbers.Extensions
+  href: PhoneNumbers.html
+  name: PhoneNumbers.Extensions
+  nameWithType: PhoneNumbers.Extensions
+  fullName: PhoneNumbers.Extensions
+  spec.csharp:
+  - uid: PhoneNumbers
+    name: PhoneNumbers
+    href: PhoneNumbers.html
+  - name: .
+  - uid: PhoneNumbers.Extensions
+    name: Extensions
+    href: PhoneNumbers.Extensions.html
+  spec.vb:
+  - uid: PhoneNumbers
+    name: PhoneNumbers
+    href: PhoneNumbers.html
+  - name: .
+  - uid: PhoneNumbers.Extensions
+    name: Extensions
+    href: PhoneNumbers.Extensions.html
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Text.Json.Serialization.Metadata.IJsonTypeInfoResolver
+  commentId: T:System.Text.Json.Serialization.Metadata.IJsonTypeInfoResolver
+  parent: System.Text.Json.Serialization.Metadata
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.ijsontypeinforesolver
+  name: IJsonTypeInfoResolver
+  nameWithType: IJsonTypeInfoResolver
+  fullName: System.Text.Json.Serialization.Metadata.IJsonTypeInfoResolver
+- uid: System.Text.Json.Serialization.JsonSerializerContext.Options
+  commentId: P:System.Text.Json.Serialization.JsonSerializerContext.Options
+  parent: System.Text.Json.Serialization.JsonSerializerContext
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.jsonserializercontext.options
+  name: Options
+  nameWithType: JsonSerializerContext.Options
+  fullName: System.Text.Json.Serialization.JsonSerializerContext.Options
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  name: MemberwiseClone()
+  nameWithType: object.MemberwiseClone()
+  fullName: object.MemberwiseClone()
+  nameWithType.vb: Object.MemberwiseClone()
+  fullName.vb: Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System.Text.Json.Serialization
+  commentId: N:System.Text.Json.Serialization
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Text.Json.Serialization
+  nameWithType: System.Text.Json.Serialization
+  fullName: System.Text.Json.Serialization
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Text
+    name: Text
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text
+  - name: .
+  - uid: System.Text.Json
+    name: Json
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text.json
+  - name: .
+  - uid: System.Text.Json.Serialization
+    name: Serialization
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Text
+    name: Text
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text
+  - name: .
+  - uid: System.Text.Json
+    name: Json
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text.json
+  - name: .
+  - uid: System.Text.Json.Serialization
+    name: Serialization
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization
+- uid: PhoneNumbers
+  commentId: N:PhoneNumbers
+  href: PhoneNumbers.html
+  name: PhoneNumbers
+  nameWithType: PhoneNumbers
+  fullName: PhoneNumbers
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: System.Text.Json.Serialization.Metadata
+  commentId: N:System.Text.Json.Serialization.Metadata
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Text.Json.Serialization.Metadata
+  nameWithType: System.Text.Json.Serialization.Metadata
+  fullName: System.Text.Json.Serialization.Metadata
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Text
+    name: Text
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text
+  - name: .
+  - uid: System.Text.Json
+    name: Json
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text.json
+  - name: .
+  - uid: System.Text.Json.Serialization
+    name: Serialization
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization
+  - name: .
+  - uid: System.Text.Json.Serialization.Metadata
+    name: Metadata
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Text
+    name: Text
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text
+  - name: .
+  - uid: System.Text.Json
+    name: Json
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text.json
+  - name: .
+  - uid: System.Text.Json.Serialization
+    name: Serialization
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization
+  - name: .
+  - uid: System.Text.Json.Serialization.Metadata
+    name: Metadata
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata
+- uid: System.Text.Json
+  commentId: N:System.Text.Json
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Text.Json
+  nameWithType: System.Text.Json
+  fullName: System.Text.Json
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Text
+    name: Text
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text
+  - name: .
+  - uid: System.Text.Json
+    name: Json
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text.json
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Text
+    name: Text
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text
+  - name: .
+  - uid: System.Text.Json
+    name: Json
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text.json
+- uid: PhoneNumbers.Extensions.PhoneNumberJsonContext.Default*
+  commentId: Overload:PhoneNumbers.Extensions.PhoneNumberJsonContext.Default
+  href: PhoneNumbers.Extensions.PhoneNumberJsonContext.html#PhoneNumbers_Extensions_PhoneNumberJsonContext_Default
+  name: Default
+  nameWithType: PhoneNumberJsonContext.Default
+  fullName: PhoneNumbers.Extensions.PhoneNumberJsonContext.Default
+- uid: PhoneNumbers.Extensions.PhoneNumberJsonContext
+  commentId: T:PhoneNumbers.Extensions.PhoneNumberJsonContext
+  parent: PhoneNumbers.Extensions
+  href: PhoneNumbers.Extensions.PhoneNumberJsonContext.html
+  name: PhoneNumberJsonContext
+  nameWithType: PhoneNumberJsonContext
+  fullName: PhoneNumbers.Extensions.PhoneNumberJsonContext
+- uid: System.Text.Json.Serialization.JsonSerializerContext.GeneratedSerializerOptions
+  commentId: P:System.Text.Json.Serialization.JsonSerializerContext.GeneratedSerializerOptions
+  parent: System.Text.Json.Serialization.JsonSerializerContext
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.jsonserializercontext.generatedserializeroptions
+  name: GeneratedSerializerOptions
+  nameWithType: JsonSerializerContext.GeneratedSerializerOptions
+  fullName: System.Text.Json.Serialization.JsonSerializerContext.GeneratedSerializerOptions
+- uid: PhoneNumbers.Extensions.PhoneNumberJsonContext.GeneratedSerializerOptions*
+  commentId: Overload:PhoneNumbers.Extensions.PhoneNumberJsonContext.GeneratedSerializerOptions
+  href: PhoneNumbers.Extensions.PhoneNumberJsonContext.html#PhoneNumbers_Extensions_PhoneNumberJsonContext_GeneratedSerializerOptions
+  name: GeneratedSerializerOptions
+  nameWithType: PhoneNumberJsonContext.GeneratedSerializerOptions
+  fullName: PhoneNumbers.Extensions.PhoneNumberJsonContext.GeneratedSerializerOptions
+- uid: PhoneNumbers.Extensions.PhoneNumberJsonContext.#ctor*
+  commentId: Overload:PhoneNumbers.Extensions.PhoneNumberJsonContext.#ctor
+  href: PhoneNumbers.Extensions.PhoneNumberJsonContext.html#PhoneNumbers_Extensions_PhoneNumberJsonContext__ctor
+  name: PhoneNumberJsonContext
+  nameWithType: PhoneNumberJsonContext.PhoneNumberJsonContext
+  fullName: PhoneNumbers.Extensions.PhoneNumberJsonContext.PhoneNumberJsonContext
+  nameWithType.vb: PhoneNumberJsonContext.New
+  fullName.vb: PhoneNumbers.Extensions.PhoneNumberJsonContext.New
+  name.vb: New
+- uid: System.Text.Json.Serialization.JsonSerializerContext.GetTypeInfo(System.Type)
+  commentId: M:System.Text.Json.Serialization.JsonSerializerContext.GetTypeInfo(System.Type)
+  parent: System.Text.Json.Serialization.JsonSerializerContext
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.jsonserializercontext.gettypeinfo
+  name: GetTypeInfo(Type)
+  nameWithType: JsonSerializerContext.GetTypeInfo(Type)
+  fullName: System.Text.Json.Serialization.JsonSerializerContext.GetTypeInfo(System.Type)
+  spec.csharp:
+  - uid: System.Text.Json.Serialization.JsonSerializerContext.GetTypeInfo(System.Type)
+    name: GetTypeInfo
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.jsonserializercontext.gettypeinfo
+  - name: (
+  - uid: System.Type
+    name: Type
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.type
+  - name: )
+  spec.vb:
+  - uid: System.Text.Json.Serialization.JsonSerializerContext.GetTypeInfo(System.Type)
+    name: GetTypeInfo
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.jsonserializercontext.gettypeinfo
+  - name: (
+  - uid: System.Type
+    name: Type
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.type
+  - name: )
+- uid: PhoneNumbers.Extensions.PhoneNumberJsonContext.GetTypeInfo*
+  commentId: Overload:PhoneNumbers.Extensions.PhoneNumberJsonContext.GetTypeInfo
+  href: PhoneNumbers.Extensions.PhoneNumberJsonContext.html#PhoneNumbers_Extensions_PhoneNumberJsonContext_GetTypeInfo_System_Type_
+  name: GetTypeInfo
+  nameWithType: PhoneNumberJsonContext.GetTypeInfo
+  fullName: PhoneNumbers.Extensions.PhoneNumberJsonContext.GetTypeInfo
+- uid: System.Type
+  commentId: T:System.Type
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.type
+  name: Type
+  nameWithType: Type
+  fullName: System.Type
+- uid: PhoneNumbers.Extensions.PhoneNumberJsonContext.Boolean*
+  commentId: Overload:PhoneNumbers.Extensions.PhoneNumberJsonContext.Boolean
+  href: PhoneNumbers.Extensions.PhoneNumberJsonContext.html#PhoneNumbers_Extensions_PhoneNumberJsonContext_Boolean
+  name: Boolean
+  nameWithType: PhoneNumberJsonContext.Boolean
+  fullName: PhoneNumbers.Extensions.PhoneNumberJsonContext.Boolean
+- uid: System.Text.Json.Serialization.Metadata.JsonTypeInfo{System.Boolean}
+  commentId: T:System.Text.Json.Serialization.Metadata.JsonTypeInfo{System.Boolean}
+  parent: System.Text.Json.Serialization.Metadata
+  definition: System.Text.Json.Serialization.Metadata.JsonTypeInfo`1
+  href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1
+  name: JsonTypeInfo<bool>
+  nameWithType: JsonTypeInfo<bool>
+  fullName: System.Text.Json.Serialization.Metadata.JsonTypeInfo<bool>
+  nameWithType.vb: JsonTypeInfo(Of Boolean)
+  fullName.vb: System.Text.Json.Serialization.Metadata.JsonTypeInfo(Of Boolean)
+  name.vb: JsonTypeInfo(Of Boolean)
+  spec.csharp:
+  - uid: System.Text.Json.Serialization.Metadata.JsonTypeInfo`1
+    name: JsonTypeInfo
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1
+  - name: <
+  - uid: System.Boolean
+    name: bool
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.boolean
+  - name: '>'
+  spec.vb:
+  - uid: System.Text.Json.Serialization.Metadata.JsonTypeInfo`1
+    name: JsonTypeInfo
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.Boolean
+    name: Boolean
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.boolean
+  - name: )
+- uid: PhoneNumbers.Extensions.PhoneNumberJsonContext.String*
+  commentId: Overload:PhoneNumbers.Extensions.PhoneNumberJsonContext.String
+  href: PhoneNumbers.Extensions.PhoneNumberJsonContext.html#PhoneNumbers_Extensions_PhoneNumberJsonContext_String
+  name: String
+  nameWithType: PhoneNumberJsonContext.String
+  fullName: PhoneNumbers.Extensions.PhoneNumberJsonContext.String
+- uid: System.Text.Json.Serialization.Metadata.JsonTypeInfo{System.String}
+  commentId: T:System.Text.Json.Serialization.Metadata.JsonTypeInfo{System.String}
+  parent: System.Text.Json.Serialization.Metadata
+  definition: System.Text.Json.Serialization.Metadata.JsonTypeInfo`1
+  href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1
+  name: JsonTypeInfo<string>
+  nameWithType: JsonTypeInfo<string>
+  fullName: System.Text.Json.Serialization.Metadata.JsonTypeInfo<string>
+  nameWithType.vb: JsonTypeInfo(Of String)
+  fullName.vb: System.Text.Json.Serialization.Metadata.JsonTypeInfo(Of String)
+  name.vb: JsonTypeInfo(Of String)
+  spec.csharp:
+  - uid: System.Text.Json.Serialization.Metadata.JsonTypeInfo`1
+    name: JsonTypeInfo
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1
+  - name: <
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: '>'
+  spec.vb:
+  - uid: System.Text.Json.Serialization.Metadata.JsonTypeInfo`1
+    name: JsonTypeInfo
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: )
+- uid: PhoneNumbers.Extensions.PhoneNumberJsonContext.Int32*
+  commentId: Overload:PhoneNumbers.Extensions.PhoneNumberJsonContext.Int32
+  href: PhoneNumbers.Extensions.PhoneNumberJsonContext.html#PhoneNumbers_Extensions_PhoneNumberJsonContext_Int32
+  name: Int32
+  nameWithType: PhoneNumberJsonContext.Int32
+  fullName: PhoneNumbers.Extensions.PhoneNumberJsonContext.Int32
+- uid: System.Text.Json.Serialization.Metadata.JsonTypeInfo{System.Int32}
+  commentId: T:System.Text.Json.Serialization.Metadata.JsonTypeInfo{System.Int32}
+  parent: System.Text.Json.Serialization.Metadata
+  definition: System.Text.Json.Serialization.Metadata.JsonTypeInfo`1
+  href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1
+  name: JsonTypeInfo<int>
+  nameWithType: JsonTypeInfo<int>
+  fullName: System.Text.Json.Serialization.Metadata.JsonTypeInfo<int>
+  nameWithType.vb: JsonTypeInfo(Of Integer)
+  fullName.vb: System.Text.Json.Serialization.Metadata.JsonTypeInfo(Of Integer)
+  name.vb: JsonTypeInfo(Of Integer)
+  spec.csharp:
+  - uid: System.Text.Json.Serialization.Metadata.JsonTypeInfo`1
+    name: JsonTypeInfo
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1
+  - name: <
+  - uid: System.Int32
+    name: int
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: '>'
+  spec.vb:
+  - uid: System.Text.Json.Serialization.Metadata.JsonTypeInfo`1
+    name: JsonTypeInfo
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.Int32
+    name: Integer
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.int32
+  - name: )
+- uid: PhoneNumbers.Extensions.PhoneNumberJsonContext.UInt64*
+  commentId: Overload:PhoneNumbers.Extensions.PhoneNumberJsonContext.UInt64
+  href: PhoneNumbers.Extensions.PhoneNumberJsonContext.html#PhoneNumbers_Extensions_PhoneNumberJsonContext_UInt64
+  name: UInt64
+  nameWithType: PhoneNumberJsonContext.UInt64
+  fullName: PhoneNumbers.Extensions.PhoneNumberJsonContext.UInt64
+- uid: System.Text.Json.Serialization.Metadata.JsonTypeInfo{System.UInt64}
+  commentId: T:System.Text.Json.Serialization.Metadata.JsonTypeInfo{System.UInt64}
+  parent: System.Text.Json.Serialization.Metadata
+  definition: System.Text.Json.Serialization.Metadata.JsonTypeInfo`1
+  href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1
+  name: JsonTypeInfo<ulong>
+  nameWithType: JsonTypeInfo<ulong>
+  fullName: System.Text.Json.Serialization.Metadata.JsonTypeInfo<ulong>
+  nameWithType.vb: JsonTypeInfo(Of ULong)
+  fullName.vb: System.Text.Json.Serialization.Metadata.JsonTypeInfo(Of ULong)
+  name.vb: JsonTypeInfo(Of ULong)
+  spec.csharp:
+  - uid: System.Text.Json.Serialization.Metadata.JsonTypeInfo`1
+    name: JsonTypeInfo
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1
+  - name: <
+  - uid: System.UInt64
+    name: ulong
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.uint64
+  - name: '>'
+  spec.vb:
+  - uid: System.Text.Json.Serialization.Metadata.JsonTypeInfo`1
+    name: JsonTypeInfo
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.UInt64
+    name: ULong
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.uint64
+  - name: )
+- uid: PhoneNumbers.Extensions.PhoneNumberJsonContext.CountryCodeSource*
+  commentId: Overload:PhoneNumbers.Extensions.PhoneNumberJsonContext.CountryCodeSource
+  href: PhoneNumbers.Extensions.PhoneNumberJsonContext.html#PhoneNumbers_Extensions_PhoneNumberJsonContext_CountryCodeSource
+  name: CountryCodeSource
+  nameWithType: PhoneNumberJsonContext.CountryCodeSource
+  fullName: PhoneNumbers.Extensions.PhoneNumberJsonContext.CountryCodeSource
+- uid: System.Text.Json.Serialization.Metadata.JsonTypeInfo{PhoneNumbers.PhoneNumber.Types.CountryCodeSource}
+  commentId: T:System.Text.Json.Serialization.Metadata.JsonTypeInfo{PhoneNumbers.PhoneNumber.Types.CountryCodeSource}
+  parent: System.Text.Json.Serialization.Metadata
+  definition: System.Text.Json.Serialization.Metadata.JsonTypeInfo`1
+  href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1
+  name: JsonTypeInfo<PhoneNumber.Types.CountryCodeSource>
+  nameWithType: JsonTypeInfo<PhoneNumber.Types.CountryCodeSource>
+  fullName: System.Text.Json.Serialization.Metadata.JsonTypeInfo<PhoneNumbers.PhoneNumber.Types.CountryCodeSource>
+  nameWithType.vb: JsonTypeInfo(Of PhoneNumber.Types.CountryCodeSource)
+  fullName.vb: System.Text.Json.Serialization.Metadata.JsonTypeInfo(Of PhoneNumbers.PhoneNumber.Types.CountryCodeSource)
+  name.vb: JsonTypeInfo(Of PhoneNumber.Types.CountryCodeSource)
+  spec.csharp:
+  - uid: System.Text.Json.Serialization.Metadata.JsonTypeInfo`1
+    name: JsonTypeInfo
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1
+  - name: <
+  - uid: PhoneNumbers.PhoneNumber
+    name: PhoneNumber
+    href: PhoneNumbers.PhoneNumber.html
+  - name: .
+  - uid: PhoneNumbers.PhoneNumber.Types
+    name: Types
+  - name: .
+  - uid: PhoneNumbers.PhoneNumber.Types.CountryCodeSource
+    name: CountryCodeSource
+  - name: '>'
+  spec.vb:
+  - uid: System.Text.Json.Serialization.Metadata.JsonTypeInfo`1
+    name: JsonTypeInfo
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: PhoneNumbers.PhoneNumber
+    name: PhoneNumber
+    href: PhoneNumbers.PhoneNumber.html
+  - name: .
+  - uid: PhoneNumbers.PhoneNumber.Types
+    name: Types
+  - name: .
+  - uid: PhoneNumbers.PhoneNumber.Types.CountryCodeSource
+    name: CountryCodeSource
+  - name: )
+- uid: PhoneNumbers.Extensions.PhoneNumberJsonContext.PhoneNumber*
+  commentId: Overload:PhoneNumbers.Extensions.PhoneNumberJsonContext.PhoneNumber
+  href: PhoneNumbers.Extensions.PhoneNumberJsonContext.html#PhoneNumbers_Extensions_PhoneNumberJsonContext_PhoneNumber
+  name: PhoneNumber
+  nameWithType: PhoneNumberJsonContext.PhoneNumber
+  fullName: PhoneNumbers.Extensions.PhoneNumberJsonContext.PhoneNumber
+- uid: System.Text.Json.Serialization.Metadata.JsonTypeInfo{PhoneNumbers.PhoneNumber}
+  commentId: T:System.Text.Json.Serialization.Metadata.JsonTypeInfo{PhoneNumbers.PhoneNumber}
+  parent: System.Text.Json.Serialization.Metadata
+  definition: System.Text.Json.Serialization.Metadata.JsonTypeInfo`1
+  href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1
+  name: JsonTypeInfo<PhoneNumber>
+  nameWithType: JsonTypeInfo<PhoneNumber>
+  fullName: System.Text.Json.Serialization.Metadata.JsonTypeInfo<PhoneNumbers.PhoneNumber>
+  nameWithType.vb: JsonTypeInfo(Of PhoneNumber)
+  fullName.vb: System.Text.Json.Serialization.Metadata.JsonTypeInfo(Of PhoneNumbers.PhoneNumber)
+  name.vb: JsonTypeInfo(Of PhoneNumber)
+  spec.csharp:
+  - uid: System.Text.Json.Serialization.Metadata.JsonTypeInfo`1
+    name: JsonTypeInfo
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1
+  - name: <
+  - uid: PhoneNumbers.PhoneNumber
+    name: PhoneNumber
+    href: PhoneNumbers.PhoneNumber.html
+  - name: '>'
+  spec.vb:
+  - uid: System.Text.Json.Serialization.Metadata.JsonTypeInfo`1
+    name: JsonTypeInfo
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: PhoneNumbers.PhoneNumber
+    name: PhoneNumber
+    href: PhoneNumbers.PhoneNumber.html
+  - name: )

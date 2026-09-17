@@ -1,0 +1,501 @@
+### YamlMime:ManagedReference
+items:
+- uid: PhoneNumbers.PhoneNumberToCarrierMapper
+  commentId: T:PhoneNumbers.PhoneNumberToCarrierMapper
+  id: PhoneNumberToCarrierMapper
+  parent: PhoneNumbers
+  children:
+  - PhoneNumbers.PhoneNumberToCarrierMapper.GetInstance
+  - PhoneNumbers.PhoneNumberToCarrierMapper.GetNameForNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale)
+  - PhoneNumbers.PhoneNumberToCarrierMapper.GetNameForValidNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale)
+  - PhoneNumbers.PhoneNumberToCarrierMapper.GetSafeDisplayName(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale)
+  langs:
+  - csharp
+  - vb
+  name: PhoneNumberToCarrierMapper
+  nameWithType: PhoneNumberToCarrierMapper
+  fullName: PhoneNumbers.PhoneNumberToCarrierMapper
+  type: Class
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    A phone prefix mapper which provides carrier information related to a phone number.
+
+
+    <p>
+
+    Carrier data is the one the number was originally allocated to. If the country supports mobile
+
+    number portability the number might not belong to the returned carrier anymore.
+
+    </p>
+  example: []
+  syntax:
+    content: public sealed class PhoneNumberToCarrierMapper
+    content.vb: Public NotInheritable Class PhoneNumberToCarrierMapper
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: PhoneNumbers.PhoneNumberToCarrierMapper.GetInstance
+  commentId: M:PhoneNumbers.PhoneNumberToCarrierMapper.GetInstance
+  id: GetInstance
+  parent: PhoneNumbers.PhoneNumberToCarrierMapper
+  langs:
+  - csharp
+  - vb
+  name: GetInstance()
+  nameWithType: PhoneNumberToCarrierMapper.GetInstance()
+  fullName: PhoneNumbers.PhoneNumberToCarrierMapper.GetInstance()
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: Gets the singleton <xref href="PhoneNumbers.PhoneNumberToCarrierMapper" data-throw-if-not-resolved="false"></xref> instance.
+  example: []
+  syntax:
+    content: public static PhoneNumberToCarrierMapper GetInstance()
+    return:
+      type: PhoneNumbers.PhoneNumberToCarrierMapper
+    content.vb: Public Shared Function GetInstance() As PhoneNumberToCarrierMapper
+  overload: PhoneNumbers.PhoneNumberToCarrierMapper.GetInstance*
+- uid: PhoneNumbers.PhoneNumberToCarrierMapper.GetNameForValidNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale)
+  commentId: M:PhoneNumbers.PhoneNumberToCarrierMapper.GetNameForValidNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale)
+  id: GetNameForValidNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale)
+  parent: PhoneNumbers.PhoneNumberToCarrierMapper
+  langs:
+  - csharp
+  - vb
+  name: GetNameForValidNumber(PhoneNumber, Locale)
+  nameWithType: PhoneNumberToCarrierMapper.GetNameForValidNumber(PhoneNumber, Locale)
+  fullName: PhoneNumbers.PhoneNumberToCarrierMapper.GetNameForValidNumber(PhoneNumbers.PhoneNumber, PhoneNumbers.Locale)
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    Returns a carrier name for the given phone number, in the language provided.
+
+
+    <p>
+
+    The carrier name is the one the number was originally allocated to. If the country supports
+
+    mobile number portability the number might not belong to the returned carrier anymore.
+
+    If no mapping is found an empty string is returned.
+
+    </p>
+
+    <p>
+
+    This method assumes the validity of the number passed in has already been checked, and that
+
+    the number is suitable for carrier lookup. We consider mobile and pager numbers possible
+
+    candidates for carrier lookup.
+
+    </p>
+  example: []
+  syntax:
+    content: public string GetNameForValidNumber(PhoneNumber number, Locale languageCode)
+    parameters:
+    - id: number
+      type: PhoneNumbers.PhoneNumber
+      description: A valid phone number for which we want to get a carrier name.
+    - id: languageCode
+      type: PhoneNumbers.Locale
+      description: The language code in which the name should be written.
+    return:
+      type: System.String
+      description: A carrier name for the given phone number, or empty string if not found.
+    content.vb: Public Function GetNameForValidNumber(number As PhoneNumber, languageCode As Locale) As String
+  overload: PhoneNumbers.PhoneNumberToCarrierMapper.GetNameForValidNumber*
+- uid: PhoneNumbers.PhoneNumberToCarrierMapper.GetNameForNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale)
+  commentId: M:PhoneNumbers.PhoneNumberToCarrierMapper.GetNameForNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale)
+  id: GetNameForNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale)
+  parent: PhoneNumbers.PhoneNumberToCarrierMapper
+  langs:
+  - csharp
+  - vb
+  name: GetNameForNumber(PhoneNumber, Locale)
+  nameWithType: PhoneNumberToCarrierMapper.GetNameForNumber(PhoneNumber, Locale)
+  fullName: PhoneNumbers.PhoneNumberToCarrierMapper.GetNameForNumber(PhoneNumbers.PhoneNumber, PhoneNumbers.Locale)
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    Gets the name of the carrier for the given phone number, in the language provided.
+
+    As per <xref href="PhoneNumbers.PhoneNumberToCarrierMapper.GetNameForValidNumber(PhoneNumbers.PhoneNumber%2cPhoneNumbers.Locale)" data-throw-if-not-resolved="false"></xref> but explicitly checks the validity of
+
+    the number passed in, and returns empty string if the number is not a mobile or pager number.
+  example: []
+  syntax:
+    content: public string GetNameForNumber(PhoneNumber number, Locale languageCode)
+    parameters:
+    - id: number
+      type: PhoneNumbers.PhoneNumber
+      description: The phone number for which we want to get a carrier name.
+    - id: languageCode
+      type: PhoneNumbers.Locale
+      description: The language code in which the name should be written.
+    return:
+      type: System.String
+      description: >-
+        A carrier name for the given phone number, or empty string if the number passed
+            in is invalid or is not a mobile/pager number.
+    content.vb: Public Function GetNameForNumber(number As PhoneNumber, languageCode As Locale) As String
+  overload: PhoneNumbers.PhoneNumberToCarrierMapper.GetNameForNumber*
+- uid: PhoneNumbers.PhoneNumberToCarrierMapper.GetSafeDisplayName(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale)
+  commentId: M:PhoneNumbers.PhoneNumberToCarrierMapper.GetSafeDisplayName(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale)
+  id: GetSafeDisplayName(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale)
+  parent: PhoneNumbers.PhoneNumberToCarrierMapper
+  langs:
+  - csharp
+  - vb
+  name: GetSafeDisplayName(PhoneNumber, Locale)
+  nameWithType: PhoneNumberToCarrierMapper.GetSafeDisplayName(PhoneNumber, Locale)
+  fullName: PhoneNumbers.PhoneNumberToCarrierMapper.GetSafeDisplayName(PhoneNumbers.PhoneNumber, PhoneNumbers.Locale)
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    Gets the name of the carrier for the given phone number only when it is 'safe' to display
+
+    to users. A carrier name is considered safe if the number is valid and for a region that
+
+    doesn't support mobile number portability.
+  example: []
+  syntax:
+    content: public string GetSafeDisplayName(PhoneNumber number, Locale languageCode)
+    parameters:
+    - id: number
+      type: PhoneNumbers.PhoneNumber
+      description: The phone number for which we want to get a carrier name.
+    - id: languageCode
+      type: PhoneNumbers.Locale
+      description: The language code in which the name should be written.
+    return:
+      type: System.String
+      description: A carrier name that is safe to display to users, or the empty string.
+    content.vb: Public Function GetSafeDisplayName(number As PhoneNumber, languageCode As Locale) As String
+  overload: PhoneNumbers.PhoneNumberToCarrierMapper.GetSafeDisplayName*
+references:
+- uid: PhoneNumbers
+  commentId: N:PhoneNumbers
+  href: PhoneNumbers.html
+  name: PhoneNumbers
+  nameWithType: PhoneNumbers
+  fullName: PhoneNumbers
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: PhoneNumbers.PhoneNumberToCarrierMapper
+  commentId: T:PhoneNumbers.PhoneNumberToCarrierMapper
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumberToCarrierMapper.html
+  name: PhoneNumberToCarrierMapper
+  nameWithType: PhoneNumberToCarrierMapper
+  fullName: PhoneNumbers.PhoneNumberToCarrierMapper
+- uid: PhoneNumbers.PhoneNumberToCarrierMapper.GetInstance*
+  commentId: Overload:PhoneNumbers.PhoneNumberToCarrierMapper.GetInstance
+  href: PhoneNumbers.PhoneNumberToCarrierMapper.html#PhoneNumbers_PhoneNumberToCarrierMapper_GetInstance
+  name: GetInstance
+  nameWithType: PhoneNumberToCarrierMapper.GetInstance
+  fullName: PhoneNumbers.PhoneNumberToCarrierMapper.GetInstance
+- uid: PhoneNumbers.PhoneNumberToCarrierMapper.GetNameForValidNumber*
+  commentId: Overload:PhoneNumbers.PhoneNumberToCarrierMapper.GetNameForValidNumber
+  href: PhoneNumbers.PhoneNumberToCarrierMapper.html#PhoneNumbers_PhoneNumberToCarrierMapper_GetNameForValidNumber_PhoneNumbers_PhoneNumber_PhoneNumbers_Locale_
+  name: GetNameForValidNumber
+  nameWithType: PhoneNumberToCarrierMapper.GetNameForValidNumber
+  fullName: PhoneNumbers.PhoneNumberToCarrierMapper.GetNameForValidNumber
+- uid: PhoneNumbers.PhoneNumber
+  commentId: T:PhoneNumbers.PhoneNumber
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumber.html
+  name: PhoneNumber
+  nameWithType: PhoneNumber
+  fullName: PhoneNumbers.PhoneNumber
+- uid: PhoneNumbers.Locale
+  commentId: T:PhoneNumbers.Locale
+  parent: PhoneNumbers
+  href: PhoneNumbers.Locale.html
+  name: Locale
+  nameWithType: Locale
+  fullName: PhoneNumbers.Locale
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: string
+  nameWithType: string
+  fullName: string
+  nameWithType.vb: String
+  fullName.vb: String
+  name.vb: String
+- uid: PhoneNumbers.PhoneNumberToCarrierMapper.GetNameForValidNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale)
+  commentId: M:PhoneNumbers.PhoneNumberToCarrierMapper.GetNameForValidNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale)
+  href: PhoneNumbers.PhoneNumberToCarrierMapper.html#PhoneNumbers_PhoneNumberToCarrierMapper_GetNameForValidNumber_PhoneNumbers_PhoneNumber_PhoneNumbers_Locale_
+  name: GetNameForValidNumber(PhoneNumber, Locale)
+  nameWithType: PhoneNumberToCarrierMapper.GetNameForValidNumber(PhoneNumber, Locale)
+  fullName: PhoneNumbers.PhoneNumberToCarrierMapper.GetNameForValidNumber(PhoneNumbers.PhoneNumber, PhoneNumbers.Locale)
+  spec.csharp:
+  - uid: PhoneNumbers.PhoneNumberToCarrierMapper.GetNameForValidNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale)
+    name: GetNameForValidNumber
+    href: PhoneNumbers.PhoneNumberToCarrierMapper.html#PhoneNumbers_PhoneNumberToCarrierMapper_GetNameForValidNumber_PhoneNumbers_PhoneNumber_PhoneNumbers_Locale_
+  - name: (
+  - uid: PhoneNumbers.PhoneNumber
+    name: PhoneNumber
+    href: PhoneNumbers.PhoneNumber.html
+  - name: ','
+  - name: " "
+  - uid: PhoneNumbers.Locale
+    name: Locale
+    href: PhoneNumbers.Locale.html
+  - name: )
+  spec.vb:
+  - uid: PhoneNumbers.PhoneNumberToCarrierMapper.GetNameForValidNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale)
+    name: GetNameForValidNumber
+    href: PhoneNumbers.PhoneNumberToCarrierMapper.html#PhoneNumbers_PhoneNumberToCarrierMapper_GetNameForValidNumber_PhoneNumbers_PhoneNumber_PhoneNumbers_Locale_
+  - name: (
+  - uid: PhoneNumbers.PhoneNumber
+    name: PhoneNumber
+    href: PhoneNumbers.PhoneNumber.html
+  - name: ','
+  - name: " "
+  - uid: PhoneNumbers.Locale
+    name: Locale
+    href: PhoneNumbers.Locale.html
+  - name: )
+- uid: PhoneNumbers.PhoneNumberToCarrierMapper.GetNameForNumber*
+  commentId: Overload:PhoneNumbers.PhoneNumberToCarrierMapper.GetNameForNumber
+  href: PhoneNumbers.PhoneNumberToCarrierMapper.html#PhoneNumbers_PhoneNumberToCarrierMapper_GetNameForNumber_PhoneNumbers_PhoneNumber_PhoneNumbers_Locale_
+  name: GetNameForNumber
+  nameWithType: PhoneNumberToCarrierMapper.GetNameForNumber
+  fullName: PhoneNumbers.PhoneNumberToCarrierMapper.GetNameForNumber
+- uid: PhoneNumbers.PhoneNumberToCarrierMapper.GetSafeDisplayName*
+  commentId: Overload:PhoneNumbers.PhoneNumberToCarrierMapper.GetSafeDisplayName
+  href: PhoneNumbers.PhoneNumberToCarrierMapper.html#PhoneNumbers_PhoneNumberToCarrierMapper_GetSafeDisplayName_PhoneNumbers_PhoneNumber_PhoneNumbers_Locale_
+  name: GetSafeDisplayName
+  nameWithType: PhoneNumberToCarrierMapper.GetSafeDisplayName
+  fullName: PhoneNumbers.PhoneNumberToCarrierMapper.GetSafeDisplayName

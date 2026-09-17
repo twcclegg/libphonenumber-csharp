@@ -1,0 +1,382 @@
+### YamlMime:ManagedReference
+items:
+- uid: PhoneNumbers.LeniencyExtensions
+  commentId: T:PhoneNumbers.LeniencyExtensions
+  id: LeniencyExtensions
+  parent: PhoneNumbers
+  children:
+  - PhoneNumbers.LeniencyExtensions.Verify(PhoneNumbers.PhoneNumberUtil.Leniency,PhoneNumbers.PhoneNumber,System.String,PhoneNumbers.PhoneNumberUtil,PhoneNumbers.PhoneNumberMatcher)
+  langs:
+  - csharp
+  - vb
+  name: LeniencyExtensions
+  nameWithType: LeniencyExtensions
+  fullName: PhoneNumbers.LeniencyExtensions
+  type: Class
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public static class LeniencyExtensions
+    content.vb: Public Module LeniencyExtensions
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: PhoneNumbers.LeniencyExtensions.Verify(PhoneNumbers.PhoneNumberUtil.Leniency,PhoneNumbers.PhoneNumber,System.String,PhoneNumbers.PhoneNumberUtil,PhoneNumbers.PhoneNumberMatcher)
+  commentId: M:PhoneNumbers.LeniencyExtensions.Verify(PhoneNumbers.PhoneNumberUtil.Leniency,PhoneNumbers.PhoneNumber,System.String,PhoneNumbers.PhoneNumberUtil,PhoneNumbers.PhoneNumberMatcher)
+  id: Verify(PhoneNumbers.PhoneNumberUtil.Leniency,PhoneNumbers.PhoneNumber,System.String,PhoneNumbers.PhoneNumberUtil,PhoneNumbers.PhoneNumberMatcher)
+  isExtensionMethod: true
+  parent: PhoneNumbers.LeniencyExtensions
+  langs:
+  - csharp
+  - vb
+  name: Verify(Leniency, PhoneNumber, string, PhoneNumberUtil, PhoneNumberMatcher)
+  nameWithType: LeniencyExtensions.Verify(PhoneNumberUtil.Leniency, PhoneNumber, string, PhoneNumberUtil, PhoneNumberMatcher)
+  fullName: PhoneNumbers.LeniencyExtensions.Verify(PhoneNumbers.PhoneNumberUtil.Leniency, PhoneNumbers.PhoneNumber, string, PhoneNumbers.PhoneNumberUtil, PhoneNumbers.PhoneNumberMatcher)
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public static bool Verify(this PhoneNumberUtil.Leniency leniency, PhoneNumber number, string candidate, PhoneNumberUtil util, PhoneNumberMatcher matcher)
+    parameters:
+    - id: leniency
+      type: PhoneNumbers.PhoneNumberUtil.Leniency
+    - id: number
+      type: PhoneNumbers.PhoneNumber
+    - id: candidate
+      type: System.String
+    - id: util
+      type: PhoneNumbers.PhoneNumberUtil
+    - id: matcher
+      type: PhoneNumbers.PhoneNumberMatcher
+    return:
+      type: System.Boolean
+    content.vb: Public Shared Function Verify(leniency As PhoneNumberUtil.Leniency, number As PhoneNumber, candidate As String, util As PhoneNumberUtil, matcher As PhoneNumberMatcher) As Boolean
+  overload: PhoneNumbers.LeniencyExtensions.Verify*
+  nameWithType.vb: LeniencyExtensions.Verify(PhoneNumberUtil.Leniency, PhoneNumber, String, PhoneNumberUtil, PhoneNumberMatcher)
+  fullName.vb: PhoneNumbers.LeniencyExtensions.Verify(PhoneNumbers.PhoneNumberUtil.Leniency, PhoneNumbers.PhoneNumber, String, PhoneNumbers.PhoneNumberUtil, PhoneNumbers.PhoneNumberMatcher)
+  name.vb: Verify(Leniency, PhoneNumber, String, PhoneNumberUtil, PhoneNumberMatcher)
+references:
+- uid: PhoneNumbers
+  commentId: N:PhoneNumbers
+  href: PhoneNumbers.html
+  name: PhoneNumbers
+  nameWithType: PhoneNumbers
+  fullName: PhoneNumbers
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  name: MemberwiseClone()
+  nameWithType: object.MemberwiseClone()
+  fullName: object.MemberwiseClone()
+  nameWithType.vb: Object.MemberwiseClone()
+  fullName.vb: Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: PhoneNumbers.LeniencyExtensions.Verify*
+  commentId: Overload:PhoneNumbers.LeniencyExtensions.Verify
+  href: PhoneNumbers.LeniencyExtensions.html#PhoneNumbers_LeniencyExtensions_Verify_PhoneNumbers_PhoneNumberUtil_Leniency_PhoneNumbers_PhoneNumber_System_String_PhoneNumbers_PhoneNumberUtil_PhoneNumbers_PhoneNumberMatcher_
+  name: Verify
+  nameWithType: LeniencyExtensions.Verify
+  fullName: PhoneNumbers.LeniencyExtensions.Verify
+- uid: PhoneNumbers.PhoneNumberUtil.Leniency
+  commentId: T:PhoneNumbers.PhoneNumberUtil.Leniency
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumberUtil.html
+  name: PhoneNumberUtil.Leniency
+  nameWithType: PhoneNumberUtil.Leniency
+  fullName: PhoneNumbers.PhoneNumberUtil.Leniency
+  spec.csharp:
+  - uid: PhoneNumbers.PhoneNumberUtil
+    name: PhoneNumberUtil
+    href: PhoneNumbers.PhoneNumberUtil.html
+  - name: .
+  - uid: PhoneNumbers.PhoneNumberUtil.Leniency
+    name: Leniency
+    href: PhoneNumbers.PhoneNumberUtil.Leniency.html
+  spec.vb:
+  - uid: PhoneNumbers.PhoneNumberUtil
+    name: PhoneNumberUtil
+    href: PhoneNumbers.PhoneNumberUtil.html
+  - name: .
+  - uid: PhoneNumbers.PhoneNumberUtil.Leniency
+    name: Leniency
+    href: PhoneNumbers.PhoneNumberUtil.Leniency.html
+- uid: PhoneNumbers.PhoneNumber
+  commentId: T:PhoneNumbers.PhoneNumber
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumber.html
+  name: PhoneNumber
+  nameWithType: PhoneNumber
+  fullName: PhoneNumbers.PhoneNumber
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: string
+  nameWithType: string
+  fullName: string
+  nameWithType.vb: String
+  fullName.vb: String
+  name.vb: String
+- uid: PhoneNumbers.PhoneNumberUtil
+  commentId: T:PhoneNumbers.PhoneNumberUtil
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumberUtil.html
+  name: PhoneNumberUtil
+  nameWithType: PhoneNumberUtil
+  fullName: PhoneNumbers.PhoneNumberUtil
+- uid: PhoneNumbers.PhoneNumberMatcher
+  commentId: T:PhoneNumbers.PhoneNumberMatcher
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumberMatcher.html
+  name: PhoneNumberMatcher
+  nameWithType: PhoneNumberMatcher
+  fullName: PhoneNumbers.PhoneNumberMatcher
+- uid: System.Boolean
+  commentId: T:System.Boolean
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.boolean
+  name: bool
+  nameWithType: bool
+  fullName: bool
+  nameWithType.vb: Boolean
+  fullName.vb: Boolean
+  name.vb: Boolean

@@ -1,0 +1,147 @@
+### YamlMime:ManagedReference
+items:
+- uid: PhoneNumbers.PhoneNumberUtil.MatchType
+  commentId: T:PhoneNumbers.PhoneNumberUtil.MatchType
+  id: PhoneNumberUtil.MatchType
+  parent: PhoneNumbers
+  children:
+  - PhoneNumbers.PhoneNumberUtil.MatchType.EXACT_MATCH
+  - PhoneNumbers.PhoneNumberUtil.MatchType.NOT_A_NUMBER
+  - PhoneNumbers.PhoneNumberUtil.MatchType.NO_MATCH
+  - PhoneNumbers.PhoneNumberUtil.MatchType.NSN_MATCH
+  - PhoneNumbers.PhoneNumberUtil.MatchType.SHORT_NSN_MATCH
+  langs:
+  - csharp
+  - vb
+  name: PhoneNumberUtil.MatchType
+  nameWithType: PhoneNumberUtil.MatchType
+  fullName: PhoneNumbers.PhoneNumberUtil.MatchType
+  type: Enum
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: Types of phone number matches. See detailed description beside the isNumberMatch() method.
+  example: []
+  syntax:
+    content: public enum PhoneNumberUtil.MatchType
+    content.vb: Public Enum PhoneNumberUtil.MatchType
+- uid: PhoneNumbers.PhoneNumberUtil.MatchType.NOT_A_NUMBER
+  commentId: F:PhoneNumbers.PhoneNumberUtil.MatchType.NOT_A_NUMBER
+  id: NOT_A_NUMBER
+  parent: PhoneNumbers.PhoneNumberUtil.MatchType
+  langs:
+  - csharp
+  - vb
+  name: NOT_A_NUMBER
+  nameWithType: PhoneNumberUtil.MatchType.NOT_A_NUMBER
+  fullName: PhoneNumbers.PhoneNumberUtil.MatchType.NOT_A_NUMBER
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: NOT_A_NUMBER = 0
+    return:
+      type: PhoneNumbers.PhoneNumberUtil.MatchType
+- uid: PhoneNumbers.PhoneNumberUtil.MatchType.NO_MATCH
+  commentId: F:PhoneNumbers.PhoneNumberUtil.MatchType.NO_MATCH
+  id: NO_MATCH
+  parent: PhoneNumbers.PhoneNumberUtil.MatchType
+  langs:
+  - csharp
+  - vb
+  name: NO_MATCH
+  nameWithType: PhoneNumberUtil.MatchType.NO_MATCH
+  fullName: PhoneNumbers.PhoneNumberUtil.MatchType.NO_MATCH
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: NO_MATCH = 1
+    return:
+      type: PhoneNumbers.PhoneNumberUtil.MatchType
+- uid: PhoneNumbers.PhoneNumberUtil.MatchType.SHORT_NSN_MATCH
+  commentId: F:PhoneNumbers.PhoneNumberUtil.MatchType.SHORT_NSN_MATCH
+  id: SHORT_NSN_MATCH
+  parent: PhoneNumbers.PhoneNumberUtil.MatchType
+  langs:
+  - csharp
+  - vb
+  name: SHORT_NSN_MATCH
+  nameWithType: PhoneNumberUtil.MatchType.SHORT_NSN_MATCH
+  fullName: PhoneNumbers.PhoneNumberUtil.MatchType.SHORT_NSN_MATCH
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: SHORT_NSN_MATCH = 2
+    return:
+      type: PhoneNumbers.PhoneNumberUtil.MatchType
+- uid: PhoneNumbers.PhoneNumberUtil.MatchType.NSN_MATCH
+  commentId: F:PhoneNumbers.PhoneNumberUtil.MatchType.NSN_MATCH
+  id: NSN_MATCH
+  parent: PhoneNumbers.PhoneNumberUtil.MatchType
+  langs:
+  - csharp
+  - vb
+  name: NSN_MATCH
+  nameWithType: PhoneNumberUtil.MatchType.NSN_MATCH
+  fullName: PhoneNumbers.PhoneNumberUtil.MatchType.NSN_MATCH
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: NSN_MATCH = 3
+    return:
+      type: PhoneNumbers.PhoneNumberUtil.MatchType
+- uid: PhoneNumbers.PhoneNumberUtil.MatchType.EXACT_MATCH
+  commentId: F:PhoneNumbers.PhoneNumberUtil.MatchType.EXACT_MATCH
+  id: EXACT_MATCH
+  parent: PhoneNumbers.PhoneNumberUtil.MatchType
+  langs:
+  - csharp
+  - vb
+  name: EXACT_MATCH
+  nameWithType: PhoneNumberUtil.MatchType.EXACT_MATCH
+  fullName: PhoneNumbers.PhoneNumberUtil.MatchType.EXACT_MATCH
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: EXACT_MATCH = 4
+    return:
+      type: PhoneNumbers.PhoneNumberUtil.MatchType
+references:
+- uid: PhoneNumbers
+  commentId: N:PhoneNumbers
+  href: PhoneNumbers.html
+  name: PhoneNumbers
+  nameWithType: PhoneNumbers
+  fullName: PhoneNumbers
+- uid: PhoneNumbers.PhoneNumberUtil.MatchType
+  commentId: T:PhoneNumbers.PhoneNumberUtil.MatchType
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumberUtil.html
+  name: PhoneNumberUtil.MatchType
+  nameWithType: PhoneNumberUtil.MatchType
+  fullName: PhoneNumbers.PhoneNumberUtil.MatchType
+  spec.csharp:
+  - uid: PhoneNumbers.PhoneNumberUtil
+    name: PhoneNumberUtil
+    href: PhoneNumbers.PhoneNumberUtil.html
+  - name: .
+  - uid: PhoneNumbers.PhoneNumberUtil.MatchType
+    name: MatchType
+    href: PhoneNumbers.PhoneNumberUtil.MatchType.html
+  spec.vb:
+  - uid: PhoneNumbers.PhoneNumberUtil
+    name: PhoneNumberUtil
+    href: PhoneNumbers.PhoneNumberUtil.html
+  - name: .
+  - uid: PhoneNumbers.PhoneNumberUtil.MatchType
+    name: MatchType
+    href: PhoneNumbers.PhoneNumberUtil.MatchType.html

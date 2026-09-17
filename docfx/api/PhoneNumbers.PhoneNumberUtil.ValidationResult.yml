@@ -1,0 +1,192 @@
+### YamlMime:ManagedReference
+items:
+- uid: PhoneNumbers.PhoneNumberUtil.ValidationResult
+  commentId: T:PhoneNumbers.PhoneNumberUtil.ValidationResult
+  id: PhoneNumberUtil.ValidationResult
+  parent: PhoneNumbers
+  children:
+  - PhoneNumbers.PhoneNumberUtil.ValidationResult.INVALID_COUNTRY_CODE
+  - PhoneNumbers.PhoneNumberUtil.ValidationResult.INVALID_LENGTH
+  - PhoneNumbers.PhoneNumberUtil.ValidationResult.IS_POSSIBLE
+  - PhoneNumbers.PhoneNumberUtil.ValidationResult.IS_POSSIBLE_LOCAL_ONLY
+  - PhoneNumbers.PhoneNumberUtil.ValidationResult.TOO_LONG
+  - PhoneNumbers.PhoneNumberUtil.ValidationResult.TOO_SHORT
+  langs:
+  - csharp
+  - vb
+  name: PhoneNumberUtil.ValidationResult
+  nameWithType: PhoneNumberUtil.ValidationResult
+  fullName: PhoneNumbers.PhoneNumberUtil.ValidationResult
+  type: Enum
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: Possible outcomes when testing if a PhoneNumber is possible.
+  example: []
+  syntax:
+    content: public enum PhoneNumberUtil.ValidationResult
+    content.vb: Public Enum PhoneNumberUtil.ValidationResult
+- uid: PhoneNumbers.PhoneNumberUtil.ValidationResult.IS_POSSIBLE
+  commentId: F:PhoneNumbers.PhoneNumberUtil.ValidationResult.IS_POSSIBLE
+  id: IS_POSSIBLE
+  parent: PhoneNumbers.PhoneNumberUtil.ValidationResult
+  langs:
+  - csharp
+  - vb
+  name: IS_POSSIBLE
+  nameWithType: PhoneNumberUtil.ValidationResult.IS_POSSIBLE
+  fullName: PhoneNumbers.PhoneNumberUtil.ValidationResult.IS_POSSIBLE
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: The number length matches that of valid numbers for this region.
+  example: []
+  syntax:
+    content: IS_POSSIBLE = 0
+    return:
+      type: PhoneNumbers.PhoneNumberUtil.ValidationResult
+- uid: PhoneNumbers.PhoneNumberUtil.ValidationResult.IS_POSSIBLE_LOCAL_ONLY
+  commentId: F:PhoneNumbers.PhoneNumberUtil.ValidationResult.IS_POSSIBLE_LOCAL_ONLY
+  id: IS_POSSIBLE_LOCAL_ONLY
+  parent: PhoneNumbers.PhoneNumberUtil.ValidationResult
+  langs:
+  - csharp
+  - vb
+  name: IS_POSSIBLE_LOCAL_ONLY
+  nameWithType: PhoneNumberUtil.ValidationResult.IS_POSSIBLE_LOCAL_ONLY
+  fullName: PhoneNumbers.PhoneNumberUtil.ValidationResult.IS_POSSIBLE_LOCAL_ONLY
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    The number length matches that of local numbers for this region only (i.e. numbers that may
+
+    be able to be dialled within an area, but do not have all the information to be dialled from
+
+    anywhere inside or outside the country).
+  example: []
+  syntax:
+    content: IS_POSSIBLE_LOCAL_ONLY = 1
+    return:
+      type: PhoneNumbers.PhoneNumberUtil.ValidationResult
+- uid: PhoneNumbers.PhoneNumberUtil.ValidationResult.INVALID_COUNTRY_CODE
+  commentId: F:PhoneNumbers.PhoneNumberUtil.ValidationResult.INVALID_COUNTRY_CODE
+  id: INVALID_COUNTRY_CODE
+  parent: PhoneNumbers.PhoneNumberUtil.ValidationResult
+  langs:
+  - csharp
+  - vb
+  name: INVALID_COUNTRY_CODE
+  nameWithType: PhoneNumberUtil.ValidationResult.INVALID_COUNTRY_CODE
+  fullName: PhoneNumbers.PhoneNumberUtil.ValidationResult.INVALID_COUNTRY_CODE
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: The number has an invalid country calling code.
+  example: []
+  syntax:
+    content: INVALID_COUNTRY_CODE = 2
+    return:
+      type: PhoneNumbers.PhoneNumberUtil.ValidationResult
+- uid: PhoneNumbers.PhoneNumberUtil.ValidationResult.TOO_SHORT
+  commentId: F:PhoneNumbers.PhoneNumberUtil.ValidationResult.TOO_SHORT
+  id: TOO_SHORT
+  parent: PhoneNumbers.PhoneNumberUtil.ValidationResult
+  langs:
+  - csharp
+  - vb
+  name: TOO_SHORT
+  nameWithType: PhoneNumberUtil.ValidationResult.TOO_SHORT
+  fullName: PhoneNumbers.PhoneNumberUtil.ValidationResult.TOO_SHORT
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: The number is shorter than all valid numbers for this region.
+  example: []
+  syntax:
+    content: TOO_SHORT = 3
+    return:
+      type: PhoneNumbers.PhoneNumberUtil.ValidationResult
+- uid: PhoneNumbers.PhoneNumberUtil.ValidationResult.INVALID_LENGTH
+  commentId: F:PhoneNumbers.PhoneNumberUtil.ValidationResult.INVALID_LENGTH
+  id: INVALID_LENGTH
+  parent: PhoneNumbers.PhoneNumberUtil.ValidationResult
+  langs:
+  - csharp
+  - vb
+  name: INVALID_LENGTH
+  nameWithType: PhoneNumberUtil.ValidationResult.INVALID_LENGTH
+  fullName: PhoneNumbers.PhoneNumberUtil.ValidationResult.INVALID_LENGTH
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    The number is longer than the shortest valid numbers for this region, shorter than the
+
+    longest valid numbers for this region, and does not itself have a number length that matches
+
+    valid numbers for this region. This can also be returned in the case where
+
+    isPossibleNumberForTypeWithReason was called, and there are no numbers of this type at all
+
+    for this region.
+  example: []
+  syntax:
+    content: INVALID_LENGTH = 4
+    return:
+      type: PhoneNumbers.PhoneNumberUtil.ValidationResult
+- uid: PhoneNumbers.PhoneNumberUtil.ValidationResult.TOO_LONG
+  commentId: F:PhoneNumbers.PhoneNumberUtil.ValidationResult.TOO_LONG
+  id: TOO_LONG
+  parent: PhoneNumbers.PhoneNumberUtil.ValidationResult
+  langs:
+  - csharp
+  - vb
+  name: TOO_LONG
+  nameWithType: PhoneNumberUtil.ValidationResult.TOO_LONG
+  fullName: PhoneNumbers.PhoneNumberUtil.ValidationResult.TOO_LONG
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: The number is longer than all valid numbers for this region.
+  example: []
+  syntax:
+    content: TOO_LONG = 5
+    return:
+      type: PhoneNumbers.PhoneNumberUtil.ValidationResult
+references:
+- uid: PhoneNumbers
+  commentId: N:PhoneNumbers
+  href: PhoneNumbers.html
+  name: PhoneNumbers
+  nameWithType: PhoneNumbers
+  fullName: PhoneNumbers
+- uid: PhoneNumbers.PhoneNumberUtil.ValidationResult
+  commentId: T:PhoneNumbers.PhoneNumberUtil.ValidationResult
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumberUtil.html
+  name: PhoneNumberUtil.ValidationResult
+  nameWithType: PhoneNumberUtil.ValidationResult
+  fullName: PhoneNumbers.PhoneNumberUtil.ValidationResult
+  spec.csharp:
+  - uid: PhoneNumbers.PhoneNumberUtil
+    name: PhoneNumberUtil
+    href: PhoneNumbers.PhoneNumberUtil.html
+  - name: .
+  - uid: PhoneNumbers.PhoneNumberUtil.ValidationResult
+    name: ValidationResult
+    href: PhoneNumbers.PhoneNumberUtil.ValidationResult.html
+  spec.vb:
+  - uid: PhoneNumbers.PhoneNumberUtil
+    name: PhoneNumberUtil
+    href: PhoneNumbers.PhoneNumberUtil.html
+  - name: .
+  - uid: PhoneNumbers.PhoneNumberUtil.ValidationResult
+    name: ValidationResult
+    href: PhoneNumbers.PhoneNumberUtil.ValidationResult.html

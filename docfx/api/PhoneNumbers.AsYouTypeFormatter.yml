@@ -1,0 +1,603 @@
+### YamlMime:ManagedReference
+items:
+- uid: PhoneNumbers.AsYouTypeFormatter
+  commentId: T:PhoneNumbers.AsYouTypeFormatter
+  id: AsYouTypeFormatter
+  parent: PhoneNumbers
+  children:
+  - PhoneNumbers.AsYouTypeFormatter.#ctor(System.String,PhoneNumbers.PhoneNumberUtil)
+  - PhoneNumbers.AsYouTypeFormatter.Clear
+  - PhoneNumbers.AsYouTypeFormatter.GetRememberedPosition
+  - PhoneNumbers.AsYouTypeFormatter.InputDigit(System.Char)
+  - PhoneNumbers.AsYouTypeFormatter.InputDigitAndRememberPosition(System.Char)
+  langs:
+  - csharp
+  - vb
+  name: AsYouTypeFormatter
+  nameWithType: AsYouTypeFormatter
+  fullName: PhoneNumbers.AsYouTypeFormatter
+  type: Class
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    A formatter which formats phone numbers as they are entered.
+
+
+    <p>
+
+    An AsYouTypeFormatter can be created by invoking
+
+    <xref href="PhoneNumbers.PhoneNumberUtil.GetAsYouTypeFormatter(System.String)" data-throw-if-not-resolved="false"></xref>. After that, digits can be added by invoking
+
+    <xref href="PhoneNumbers.AsYouTypeFormatter.InputDigit(System.Char)" data-throw-if-not-resolved="false"></xref> on the formatter instance, and the partially formatted phone number will be
+
+    returned each time a digit is added. {@link #clear} can be invoked before formatting a new
+
+    number.
+
+    </p>
+
+
+    See the unittests for more details on how the formatter is to be used.
+
+    <!-- @author Shaopeng Jia -->
+  example: []
+  syntax:
+    content: public class AsYouTypeFormatter
+    content.vb: Public Class AsYouTypeFormatter
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.MemberwiseClone
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: PhoneNumbers.AsYouTypeFormatter.#ctor(System.String,PhoneNumbers.PhoneNumberUtil)
+  commentId: M:PhoneNumbers.AsYouTypeFormatter.#ctor(System.String,PhoneNumbers.PhoneNumberUtil)
+  id: '#ctor(System.String,PhoneNumbers.PhoneNumberUtil)'
+  parent: PhoneNumbers.AsYouTypeFormatter
+  langs:
+  - csharp
+  - vb
+  name: AsYouTypeFormatter(string, PhoneNumberUtil)
+  nameWithType: AsYouTypeFormatter.AsYouTypeFormatter(string, PhoneNumberUtil)
+  fullName: PhoneNumbers.AsYouTypeFormatter.AsYouTypeFormatter(string, PhoneNumbers.PhoneNumberUtil)
+  type: Constructor
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    Constructs an as-you-type formatter. Should be obtained from
+
+    <xref href="PhoneNumbers.PhoneNumberUtil.GetAsYouTypeFormatter(System.String)" data-throw-if-not-resolved="false"></xref>.
+  example: []
+  syntax:
+    content: public AsYouTypeFormatter(string regionCode, PhoneNumberUtil phoneUtil)
+    parameters:
+    - id: regionCode
+      type: System.String
+      description: The country/region where the phone number is being entered.
+    - id: phoneUtil
+      type: PhoneNumbers.PhoneNumberUtil
+      description: ''
+    content.vb: Public Sub New(regionCode As String, phoneUtil As PhoneNumberUtil)
+  overload: PhoneNumbers.AsYouTypeFormatter.#ctor*
+  nameWithType.vb: AsYouTypeFormatter.New(String, PhoneNumberUtil)
+  fullName.vb: PhoneNumbers.AsYouTypeFormatter.New(String, PhoneNumbers.PhoneNumberUtil)
+  name.vb: New(String, PhoneNumberUtil)
+- uid: PhoneNumbers.AsYouTypeFormatter.Clear
+  commentId: M:PhoneNumbers.AsYouTypeFormatter.Clear
+  id: Clear
+  parent: PhoneNumbers.AsYouTypeFormatter
+  langs:
+  - csharp
+  - vb
+  name: Clear()
+  nameWithType: AsYouTypeFormatter.Clear()
+  fullName: PhoneNumbers.AsYouTypeFormatter.Clear()
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: Clears the internal state of the formatter, so it can be reused.
+  example: []
+  syntax:
+    content: public void Clear()
+    content.vb: Public Sub Clear()
+  overload: PhoneNumbers.AsYouTypeFormatter.Clear*
+- uid: PhoneNumbers.AsYouTypeFormatter.InputDigit(System.Char)
+  commentId: M:PhoneNumbers.AsYouTypeFormatter.InputDigit(System.Char)
+  id: InputDigit(System.Char)
+  parent: PhoneNumbers.AsYouTypeFormatter
+  langs:
+  - csharp
+  - vb
+  name: InputDigit(char)
+  nameWithType: AsYouTypeFormatter.InputDigit(char)
+  fullName: PhoneNumbers.AsYouTypeFormatter.InputDigit(char)
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: Formats a phone number on-the-fly as each digit is entered.
+  example: []
+  syntax:
+    content: public string InputDigit(char nextChar)
+    parameters:
+    - id: nextChar
+      type: System.Char
+      description: >-
+        The most recently entered digit of a phone number. Formatting characters are
+            allowed, but as soon as they are encountered this method formats the number as entered and
+            not "as you type" anymore. Full width digits and Arabic-indic digits are allowed, and will
+            be shown as they are.
+    return:
+      type: System.String
+      description: The partially formatted phone number.
+    content.vb: Public Function InputDigit(nextChar As Char) As String
+  overload: PhoneNumbers.AsYouTypeFormatter.InputDigit*
+  nameWithType.vb: AsYouTypeFormatter.InputDigit(Char)
+  fullName.vb: PhoneNumbers.AsYouTypeFormatter.InputDigit(Char)
+  name.vb: InputDigit(Char)
+- uid: PhoneNumbers.AsYouTypeFormatter.InputDigitAndRememberPosition(System.Char)
+  commentId: M:PhoneNumbers.AsYouTypeFormatter.InputDigitAndRememberPosition(System.Char)
+  id: InputDigitAndRememberPosition(System.Char)
+  parent: PhoneNumbers.AsYouTypeFormatter
+  langs:
+  - csharp
+  - vb
+  name: InputDigitAndRememberPosition(char)
+  nameWithType: AsYouTypeFormatter.InputDigitAndRememberPosition(char)
+  fullName: PhoneNumbers.AsYouTypeFormatter.InputDigitAndRememberPosition(char)
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    Same as <xref href="PhoneNumbers.AsYouTypeFormatter.InputDigit(System.Char)" data-throw-if-not-resolved="false"></xref>, but remembers the position where nextChar is inserted, so
+
+    that it can be retrieved later by using <xref href="PhoneNumbers.AsYouTypeFormatter.GetRememberedPosition" data-throw-if-not-resolved="false"></xref>. The remembered
+
+    position will be automatically adjusted if additional formatting characters are later
+
+    inserted/removed in front of nextChar.
+  example: []
+  syntax:
+    content: public string InputDigitAndRememberPosition(char nextChar)
+    parameters:
+    - id: nextChar
+      type: System.Char
+      description: ''
+    return:
+      type: System.String
+      description: ''
+    content.vb: Public Function InputDigitAndRememberPosition(nextChar As Char) As String
+  overload: PhoneNumbers.AsYouTypeFormatter.InputDigitAndRememberPosition*
+  nameWithType.vb: AsYouTypeFormatter.InputDigitAndRememberPosition(Char)
+  fullName.vb: PhoneNumbers.AsYouTypeFormatter.InputDigitAndRememberPosition(Char)
+  name.vb: InputDigitAndRememberPosition(Char)
+- uid: PhoneNumbers.AsYouTypeFormatter.GetRememberedPosition
+  commentId: M:PhoneNumbers.AsYouTypeFormatter.GetRememberedPosition
+  id: GetRememberedPosition
+  parent: PhoneNumbers.AsYouTypeFormatter
+  langs:
+  - csharp
+  - vb
+  name: GetRememberedPosition()
+  nameWithType: AsYouTypeFormatter.GetRememberedPosition()
+  fullName: PhoneNumbers.AsYouTypeFormatter.GetRememberedPosition()
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    Returns the current position in the partially formatted phone number of the character which was
+
+    previously passed in as the parameter of {@link #inputDigitAndRememberPosition}.
+  example: []
+  syntax:
+    content: public int GetRememberedPosition()
+    return:
+      type: System.Int32
+      description: ''
+    content.vb: Public Function GetRememberedPosition() As Integer
+  overload: PhoneNumbers.AsYouTypeFormatter.GetRememberedPosition*
+references:
+- uid: PhoneNumbers.PhoneNumberUtil.GetAsYouTypeFormatter(System.String)
+  commentId: M:PhoneNumbers.PhoneNumberUtil.GetAsYouTypeFormatter(System.String)
+  isExternal: true
+  href: PhoneNumbers.PhoneNumberUtil.html#PhoneNumbers_PhoneNumberUtil_GetAsYouTypeFormatter_System_String_
+  name: GetAsYouTypeFormatter(string)
+  nameWithType: PhoneNumberUtil.GetAsYouTypeFormatter(string)
+  fullName: PhoneNumbers.PhoneNumberUtil.GetAsYouTypeFormatter(string)
+  nameWithType.vb: PhoneNumberUtil.GetAsYouTypeFormatter(String)
+  fullName.vb: PhoneNumbers.PhoneNumberUtil.GetAsYouTypeFormatter(String)
+  name.vb: GetAsYouTypeFormatter(String)
+  spec.csharp:
+  - uid: PhoneNumbers.PhoneNumberUtil.GetAsYouTypeFormatter(System.String)
+    name: GetAsYouTypeFormatter
+    href: PhoneNumbers.PhoneNumberUtil.html#PhoneNumbers_PhoneNumberUtil_GetAsYouTypeFormatter_System_String_
+  - name: (
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: )
+  spec.vb:
+  - uid: PhoneNumbers.PhoneNumberUtil.GetAsYouTypeFormatter(System.String)
+    name: GetAsYouTypeFormatter
+    href: PhoneNumbers.PhoneNumberUtil.html#PhoneNumbers_PhoneNumberUtil_GetAsYouTypeFormatter_System_String_
+  - name: (
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: )
+- uid: PhoneNumbers.AsYouTypeFormatter.InputDigit(System.Char)
+  commentId: M:PhoneNumbers.AsYouTypeFormatter.InputDigit(System.Char)
+  isExternal: true
+  href: PhoneNumbers.AsYouTypeFormatter.html#PhoneNumbers_AsYouTypeFormatter_InputDigit_System_Char_
+  name: InputDigit(char)
+  nameWithType: AsYouTypeFormatter.InputDigit(char)
+  fullName: PhoneNumbers.AsYouTypeFormatter.InputDigit(char)
+  nameWithType.vb: AsYouTypeFormatter.InputDigit(Char)
+  fullName.vb: PhoneNumbers.AsYouTypeFormatter.InputDigit(Char)
+  name.vb: InputDigit(Char)
+  spec.csharp:
+  - uid: PhoneNumbers.AsYouTypeFormatter.InputDigit(System.Char)
+    name: InputDigit
+    href: PhoneNumbers.AsYouTypeFormatter.html#PhoneNumbers_AsYouTypeFormatter_InputDigit_System_Char_
+  - name: (
+  - uid: System.Char
+    name: char
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.char
+  - name: )
+  spec.vb:
+  - uid: PhoneNumbers.AsYouTypeFormatter.InputDigit(System.Char)
+    name: InputDigit
+    href: PhoneNumbers.AsYouTypeFormatter.html#PhoneNumbers_AsYouTypeFormatter_InputDigit_System_Char_
+  - name: (
+  - uid: System.Char
+    name: Char
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.char
+  - name: )
+- uid: PhoneNumbers
+  commentId: N:PhoneNumbers
+  href: PhoneNumbers.html
+  name: PhoneNumbers
+  nameWithType: PhoneNumbers
+  fullName: PhoneNumbers
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.MemberwiseClone
+  commentId: M:System.Object.MemberwiseClone
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  name: MemberwiseClone()
+  nameWithType: object.MemberwiseClone()
+  fullName: object.MemberwiseClone()
+  nameWithType.vb: Object.MemberwiseClone()
+  fullName.vb: Object.MemberwiseClone()
+  spec.csharp:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.MemberwiseClone
+    name: MemberwiseClone
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: PhoneNumbers.AsYouTypeFormatter.#ctor*
+  commentId: Overload:PhoneNumbers.AsYouTypeFormatter.#ctor
+  href: PhoneNumbers.AsYouTypeFormatter.html#PhoneNumbers_AsYouTypeFormatter__ctor_System_String_PhoneNumbers_PhoneNumberUtil_
+  name: AsYouTypeFormatter
+  nameWithType: AsYouTypeFormatter.AsYouTypeFormatter
+  fullName: PhoneNumbers.AsYouTypeFormatter.AsYouTypeFormatter
+  nameWithType.vb: AsYouTypeFormatter.New
+  fullName.vb: PhoneNumbers.AsYouTypeFormatter.New
+  name.vb: New
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: string
+  nameWithType: string
+  fullName: string
+  nameWithType.vb: String
+  fullName.vb: String
+  name.vb: String
+- uid: PhoneNumbers.PhoneNumberUtil
+  commentId: T:PhoneNumbers.PhoneNumberUtil
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumberUtil.html
+  name: PhoneNumberUtil
+  nameWithType: PhoneNumberUtil
+  fullName: PhoneNumbers.PhoneNumberUtil
+- uid: PhoneNumbers.AsYouTypeFormatter.Clear*
+  commentId: Overload:PhoneNumbers.AsYouTypeFormatter.Clear
+  href: PhoneNumbers.AsYouTypeFormatter.html#PhoneNumbers_AsYouTypeFormatter_Clear
+  name: Clear
+  nameWithType: AsYouTypeFormatter.Clear
+  fullName: PhoneNumbers.AsYouTypeFormatter.Clear
+- uid: PhoneNumbers.AsYouTypeFormatter.InputDigit*
+  commentId: Overload:PhoneNumbers.AsYouTypeFormatter.InputDigit
+  href: PhoneNumbers.AsYouTypeFormatter.html#PhoneNumbers_AsYouTypeFormatter_InputDigit_System_Char_
+  name: InputDigit
+  nameWithType: AsYouTypeFormatter.InputDigit
+  fullName: PhoneNumbers.AsYouTypeFormatter.InputDigit
+- uid: System.Char
+  commentId: T:System.Char
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.char
+  name: char
+  nameWithType: char
+  fullName: char
+  nameWithType.vb: Char
+  fullName.vb: Char
+  name.vb: Char
+- uid: PhoneNumbers.AsYouTypeFormatter.GetRememberedPosition
+  commentId: M:PhoneNumbers.AsYouTypeFormatter.GetRememberedPosition
+  href: PhoneNumbers.AsYouTypeFormatter.html#PhoneNumbers_AsYouTypeFormatter_GetRememberedPosition
+  name: GetRememberedPosition()
+  nameWithType: AsYouTypeFormatter.GetRememberedPosition()
+  fullName: PhoneNumbers.AsYouTypeFormatter.GetRememberedPosition()
+  spec.csharp:
+  - uid: PhoneNumbers.AsYouTypeFormatter.GetRememberedPosition
+    name: GetRememberedPosition
+    href: PhoneNumbers.AsYouTypeFormatter.html#PhoneNumbers_AsYouTypeFormatter_GetRememberedPosition
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: PhoneNumbers.AsYouTypeFormatter.GetRememberedPosition
+    name: GetRememberedPosition
+    href: PhoneNumbers.AsYouTypeFormatter.html#PhoneNumbers_AsYouTypeFormatter_GetRememberedPosition
+  - name: (
+  - name: )
+- uid: PhoneNumbers.AsYouTypeFormatter.InputDigitAndRememberPosition*
+  commentId: Overload:PhoneNumbers.AsYouTypeFormatter.InputDigitAndRememberPosition
+  href: PhoneNumbers.AsYouTypeFormatter.html#PhoneNumbers_AsYouTypeFormatter_InputDigitAndRememberPosition_System_Char_
+  name: InputDigitAndRememberPosition
+  nameWithType: AsYouTypeFormatter.InputDigitAndRememberPosition
+  fullName: PhoneNumbers.AsYouTypeFormatter.InputDigitAndRememberPosition
+- uid: PhoneNumbers.AsYouTypeFormatter.GetRememberedPosition*
+  commentId: Overload:PhoneNumbers.AsYouTypeFormatter.GetRememberedPosition
+  href: PhoneNumbers.AsYouTypeFormatter.html#PhoneNumbers_AsYouTypeFormatter_GetRememberedPosition
+  name: GetRememberedPosition
+  nameWithType: AsYouTypeFormatter.GetRememberedPosition
+  fullName: PhoneNumbers.AsYouTypeFormatter.GetRememberedPosition
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int32
+  name: int
+  nameWithType: int
+  fullName: int
+  nameWithType.vb: Integer
+  fullName.vb: Integer
+  name.vb: Integer

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>API differences from upstream Java | libphonenumber-csharp API Reference </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="API differences from upstream Java | libphonenumber-csharp API Reference ">
+      
+      
+      <link rel="icon" href="../images/favicon.svg">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../images/logo.svg" alt="libphonenumber-csharp">
+            libphonenumber-csharp
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+<h1 id="api-differences-from-upstream-java">API differences from upstream Java</h1>
+
+<p>This port follows the upstream Java <code>libphonenumber</code> API closely — file names, class
+names, and method names generally match one-to-one (<code>PhoneNumberUtil.java</code> ↔
+<code>PhoneNumberUtil.cs</code>, <code>isValidNumber</code> ↔ <code>IsValidNumber</code>, etc.), and where behavior is in
+question the Java source is the source of truth. This page documents the places where the
+<em>shape</em> of the C# API is not what a straight Java-to-C# reading would suggest, or not what
+a C# developer would instinctively reach for. Every entry below was verified against the
+current source in this repository (file paths are given so you can check them yourself).</p>
+<p>Use this page two ways: as a contributor porting a new upstream Java change, to know where
+the port intentionally departs from a literal translation; and as a consumer, to avoid the
+specific mistakes documented here.</p>
+<h2 id="contents">Contents</h2>
+<ul>
+<li><a href="#locale-is-a-small-type-local-to-this-library-not-systemglobalizationcultureinfo"><code>Locale</code> is a small type local to this library, not <code>System.Globalization.CultureInfo</code></a></li>
+<li><a href="#phonenumbersextensionsphonenumber-and-phonenumbersphonenumber-share-a-simple-name"><code>PhoneNumbers.Extensions.PhoneNumber</code> and <code>PhoneNumbers.PhoneNumber</code> share a simple name</a></li>
+<li><a href="#enum-members-keep-javas-screaming_snake_case-not-net-pascalcase">Enum members keep Java's <code>SCREAMING_SNAKE_CASE</code>, not .NET <code>PascalCase</code></a></li>
+<li><a href="#phonenumber-looks-like-a-plain-settable-class-but-is-a-protobuf-style-immutable-message"><code>PhoneNumber</code> looks like a plain settable class but is a protobuf-style immutable message</a></li>
+<li><a href="#charsequence-parameters-become-string-not-a-comparable-abstraction"><code>CharSequence</code> parameters become <code>string</code>, not a comparable abstraction</a></li>
+<li><a href="#metadata-and-prefix-maps-are-a-custom-binary-format-not-protocol-buffers">Metadata and prefix maps are a custom binary format, not protocol buffers</a></li>
+</ul>
+<hr>
+<h2 id="locale-is-a-small-type-local-to-this-library-not-systemglobalizationcultureinfo"><code>Locale</code> is a small type local to this library, not <code>System.Globalization.CultureInfo</code></h2>
+<p><strong>Java:</strong> <code>PhoneNumberOfflineGeocoder.getDescriptionForNumber</code> and
+<code>PhoneNumberToCarrierMapper.getNameForNumber</code> take a <code>java.util.Locale</code>.</p>
+<p><strong>C# (this port):</strong> the equivalent parameter is <code>PhoneNumbers.Locale</code> — a small class
+defined in <a href="https://github.com/twcclegg/libphonenumber-csharp/blob/main/csharp/PhoneNumbers/PhoneNumberOfflineGeocoder.cs"><code>csharp/PhoneNumbers/PhoneNumberOfflineGeocoder.cs</code></a>
+(despite the file name, it is <em>not</em> nested inside <code>PhoneNumberOfflineGeocoder</code>; it's a
+top-level type in the <code>PhoneNumbers</code> namespace). It is constructed directly:</p>
+<pre><code class="lang-csharp">public class Locale
+{
+    public static readonly Locale English = new(&quot;en&quot;, &quot;GB&quot;);
+    public static readonly Locale French = new(&quot;fr&quot;, &quot;FR&quot;);
+    public static readonly Locale German = new(&quot;de&quot;, &quot;DE&quot;);
+    public static readonly Locale Italian = new(&quot;it&quot;, &quot;IT&quot;);
+    public static readonly Locale Korean = new(&quot;ko&quot;, &quot;KR&quot;);
+    public static readonly Locale SimplifiedChinese = new(&quot;zh&quot;, &quot;CN&quot;);
+
+    public readonly string Language;
+    public readonly string Country;
+
+    public Locale(string language, string countryCode) { ... }
+}
+</code></pre>
+<p><code>GetDescriptionForNumber(PhoneNumber, Locale)</code> and <code>GetNameForNumber(PhoneNumber, Locale)</code>
+both take this type — not <code>System.Globalization.CultureInfo</code>, which is what a C# developer
+would instinctively reach for given a parameter named <code>languageCode</code> next to a phone
+number API. Passing a <code>CultureInfo</code> will not compile; use one of the static presets
+(<code>Locale.English</code>, <code>Locale.French</code>, ...) or <code>new Locale(&quot;en&quot;, &quot;US&quot;)</code>.</p>
+<p><strong>Why:</strong> <code>java.util.Locale</code> has no direct BCL equivalent with the same two-part
+language/country shape, so the port ported the small pieces of <code>java.util.Locale</code> actually
+used (language + country, and <code>getDisplayCountry</code>) into a dedicated type instead of
+reshaping the API around <code>CultureInfo</code>. One known gap: <code>java.util.Locale.getScript()</code> has
+no equivalent here, so callers cannot express a script subtag — see the comment in
+<a href="https://github.com/twcclegg/libphonenumber-csharp/blob/main/csharp/PhoneNumbers/PhoneNumberToCarrierMapper.cs"><code>PhoneNumberToCarrierMapper.cs</code></a>
+(<code>GetNameForValidNumber</code>), which always passes an empty script to the underlying prefix
+reader.</p>
+<hr>
+<h2 id="phonenumbersextensionsphonenumber-and-phonenumbersphonenumber-share-a-simple-name"><code>PhoneNumbers.Extensions.PhoneNumber</code> and <code>PhoneNumbers.PhoneNumber</code> share a simple name</h2>
+<p><strong>Java:</strong> no equivalent — upstream Java ships a single artifact, so this situation cannot
+arise there.</p>
+<p><strong>C# (this port):</strong> the main package's data type is <code>PhoneNumbers.PhoneNumber</code> (the
+protobuf-derived phone number value — see
+<a href="https://github.com/twcclegg/libphonenumber-csharp/blob/main/csharp/PhoneNumbers/Phonenumber.cs"><code>csharp/PhoneNumbers/Phonenumber.cs</code></a>). The
+separate <code>libphonenumber-csharp.extensions</code> package adds a <em>static helper class</em> with the
+same simple name, <code>PhoneNumbers.Extensions.PhoneNumber</code>, exposing <code>TryParse</code> /
+<code>TryParseValid</code> (see
+<a href="https://github.com/twcclegg/libphonenumber-csharp/blob/main/csharp/PhoneNumbers.Extensions/PhoneNumber.cs"><code>csharp/PhoneNumbers.Extensions/PhoneNumber.cs</code></a>).</p>
+<p>If a file has both <code>using PhoneNumbers;</code> and <code>using PhoneNumbers.Extensions;</code>, an unqualified
+reference to <code>PhoneNumber</code> is genuinely ambiguous and fails to compile:</p>
+<pre><code>error CS0104: 'PhoneNumber' is an ambiguous reference between
+'PhoneNumbers.PhoneNumber' and 'PhoneNumbers.Extensions.PhoneNumber'
+</code></pre>
+<p>Work around it with a fully-qualified call, e.g.:</p>
+<pre><code class="lang-csharp">if (PhoneNumbers.Extensions.PhoneNumber.TryParse(input, out PhoneNumbers.PhoneNumber number))
+{
+    ...
+}
+</code></pre>
+<p>or a <code>using</code> alias (<code>using PhoneNumberHelper = PhoneNumbers.Extensions.PhoneNumber;</code>) if
+the ambiguity comes up often in one file.</p>
+<p><strong>Why:</strong> this is a naming collision incidental to how the Extensions package is organized
+— <code>PhoneNumber</code> reads naturally as &quot;the static helper for working with a <code>PhoneNumber</code>&quot;,
+mirroring the type it wraps, but that convenience is exactly what collides. It is not a
+Java/C# behavioral difference, just something worth knowing before it surprises you with a
+compiler error in code that otherwise looks correct.</p>
+<hr>
+<h2 id="enum-members-keep-javas-screaming_snake_case-not-net-pascalcase">Enum members keep Java's <code>SCREAMING_SNAKE_CASE</code>, not .NET <code>PascalCase</code></h2>
+<p><strong>Java:</strong> enum constants use Java's constant-naming convention, e.g.
+<code>PhoneNumberType.FIXED_LINE</code>, <code>PhoneNumberFormat.E164</code>, <code>ErrorType.INVALID_COUNTRY_CODE</code>.</p>
+<p><strong>C# (this port):</strong> the same spelling is kept as-is instead of being translated to the
+.NET-idiomatic <code>PascalCase</code> a C# developer would expect (<code>PhoneNumberType.FixedLine</code>, for
+example, does not exist — it's <code>PhoneNumberType.FIXED_LINE</code>). This is consistent across
+every public enum in the library, not just one:</p>
+<ul>
+<li><a href="https://github.com/twcclegg/libphonenumber-csharp/blob/main/csharp/PhoneNumbers/PhoneNumberType.cs"><code>PhoneNumberType</code></a> — <code>FIXED_LINE</code>, <code>MOBILE</code>, <code>TOLL_FREE</code>, <code>UNKNOWN</code>, ...</li>
+<li><a href="https://github.com/twcclegg/libphonenumber-csharp/blob/main/csharp/PhoneNumbers/PhoneNumberFormat.cs"><code>PhoneNumberFormat</code></a> — <code>E164</code>, <code>INTERNATIONAL</code>, <code>NATIONAL</code>, <code>RFC3966</code></li>
+<li><a href="https://github.com/twcclegg/libphonenumber-csharp/blob/main/csharp/PhoneNumbers/NumberParseException.cs"><code>NumberParseException.ErrorType</code></a> — <code>INVALID_COUNTRY_CODE</code>, <code>NOT_A_NUMBER</code>, ...</li>
+<li><code>PhoneNumberUtil.MatchType</code>, <code>PhoneNumberUtil.ValidationResult</code>, <code>PhoneNumberUtil.Leniency</code> (all in <a href="https://github.com/twcclegg/libphonenumber-csharp/blob/main/csharp/PhoneNumbers/PhoneNumberUtil.cs"><code>PhoneNumberUtil.cs</code></a>)</li>
+<li><a href="https://github.com/twcclegg/libphonenumber-csharp/blob/main/csharp/PhoneNumbers/ShortNumberInfo.cs"><code>ShortNumberInfo.ShortNumberCost</code></a></li>
+<li><code>PhoneNumber.Types.CountryCodeSource</code> (in <a href="https://github.com/twcclegg/libphonenumber-csharp/blob/main/csharp/PhoneNumbers/Phonenumber.cs"><code>Phonenumber.cs</code></a>)</li>
+</ul>
+<p><strong>Why:</strong> a straight rename to <code>PascalCase</code> would be a purely cosmetic diff against every
+Java release this port tracks, for no behavioral gain, and it's easy to keep matching
+Java exactly (<code>grep</code>-able) at the cost of a naming-convention violation IDEs and analyzers
+will flag. Worth knowing going in so <code>PhoneNumberType.FixedLine</code> doesn't cost you a
+&quot;did you mean&quot; compiler round-trip.</p>
+<hr>
+<h2 id="phonenumber-looks-like-a-plain-settable-class-but-is-a-protobuf-style-immutable-message"><code>PhoneNumber</code> looks like a plain settable class but is a protobuf-style immutable message</h2>
+<p><strong>Java:</strong> <code>com.google.i18n.phonenumbers.Phonenumber.PhoneNumber</code> is a generated protobuf
+message: private fields, <code>getXxx()</code>/<code>hasXxx()</code> accessors, and mutation only through a
+nested <code>Builder</code> (<code>PhoneNumber.newBuilder().setCountryCode(1)...build()</code>).</p>
+<p><strong>C# (this port):</strong> <a href="https://github.com/twcclegg/libphonenumber-csharp/blob/main/csharp/PhoneNumbers/Phonenumber.cs"><code>csharp/PhoneNumbers/Phonenumber.cs</code></a>
+mirrors that same protobuf shape rather than turning it into a plain C# POCO. <code>CountryCode</code>,
+<code>NationalNumber</code>, <code>Extension</code>, etc. are real public properties (so they read like an
+ordinary mutable class), but every setter is <code>internal</code>:</p>
+<pre><code class="lang-csharp">public int CountryCode { get; internal set; }
+public bool HasCountryCode =&gt; CountryCode != 0;
+</code></pre>
+<p>That means an object initializer that looks perfectly reasonable to a C# developer —</p>
+<pre><code class="lang-csharp">var number = new PhoneNumber { CountryCode = 1, NationalNumber = 4155551234 }; // CS0200
+</code></pre>
+<p>— fails to compile (the setters aren't accessible outside the assembly). The only ways to
+get a <code>PhoneNumber</code> are <code>PhoneNumberUtil.Parse(...)</code> or the protobuf-style builder:</p>
+<pre><code class="lang-csharp">var number = PhoneNumber.CreateBuilder()
+    .SetCountryCode(1)
+    .SetNationalNumber(4155551234)
+    .Build();
+</code></pre>
+<p><strong>Why:</strong> this one <em>does</em> match Java faithfully — Java's protobuf messages are equally
+immutable outside their builder, so a straight port preserves that. The trap is purely
+that C#'s auto-property syntax makes <code>PhoneNumber</code> <em>look</em> like an ordinary settable class
+at a glance (Java has no equivalent syntax to be misled by), so the internal setters come
+as a surprise the first time you reach for an object initializer instead of <code>Parse</code> or
+<code>CreateBuilder()</code>.</p>
+<hr>
+<h2 id="charsequence-parameters-become-string-not-a-comparable-abstraction"><code>CharSequence</code> parameters become <code>string</code>, not a comparable abstraction</h2>
+<p><strong>Java:</strong> several entry points accept <code>CharSequence</code> (e.g. <code>PhoneNumberMatcher</code>'s
+constructor, <code>isViablePhoneNumber</code>), letting callers pass a <code>String</code>, <code>StringBuilder</code>, or
+<code>StringBuffer</code> without copying.</p>
+<p><strong>C# (this port):</strong> the equivalent spots take <code>string</code> (<code>PhoneNumberMatcher(PhoneNumberUtil, string, ...)</code>,
+<code>PhoneNumberUtil.IsViablePhoneNumber(string)</code>) rather than a comparable abstraction such as
+<code>ReadOnlySpan&lt;char&gt;</code> or a generic <code>IEnumerable&lt;char&gt;</code>, so a caller building a number up in
+a <code>StringBuilder</code> has to call <code>.ToString()</code> first.</p>
+<p><strong>Why:</strong> <code>CharSequence</code> has no single natural .NET analogue that preserves both the
+zero-copy behavior and the API ergonomics — <code>ReadOnlySpan&lt;char&gt;</code> can't be a field or used
+across <code>async</code>/iterator boundaries the way this code is structured, and a generic
+interface would add an abstraction layer for a case (<code>StringBuilder</code> input) that is rare
+in practice. <code>string</code> was chosen as the pragmatic equivalent.</p>
+<hr>
+<h2 id="metadata-and-prefix-maps-are-a-custom-binary-format-not-protocol-buffers">Metadata and prefix maps are a custom binary format, not protocol buffers</h2>
+<p><strong>Java:</strong> metadata (<code>PhoneNumberMetadata.xml</code>, etc.) is compiled to protocol buffers and
+read from those at run time.</p>
+<p><strong>C# (this port):</strong> the XML source files in <code>resources/</code> are converted to a custom
+per-region binary format at build time by <code>PhoneNumbers.MetadataBuilder</code>; the published
+assembly embeds those binaries (gzip-compressed) and never reads XML or protocol buffers
+at run time. Geocoding, timezone, and carrier prefix maps go through the same
+build-time-binary-and-embed pipeline — no zip files or text files are needed to run the
+library or its tests. See <code>IMetadataLoader</code> / <code>EmbeddedResourceMetadataLoader</code> in
+<code>csharp/PhoneNumbers/</code> for the read side.</p>
+<p><strong>Why:</strong> avoids taking a runtime dependency on Google's protobuf C# library purely to
+deserialize static, build-time-known data, and keeps the library trim/AOT-friendly (no
+protobuf reflection at run time). This does not change any public method's behavior — it's
+an internal storage detail — but it does mean <code>PhoneNumber</code>'s protobuf-<em>shaped</em> API (see
+above) is not backed by actual protobuf serialization in this port, which can be confusing
+if you come from the Java side expecting <code>.proto</code>-generated wire compatibility.</p>
+
+</article>
+
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span><script>(function(){function sync(){var dark=document.documentElement.getAttribute('data-bs-theme')==='dark';var link=document.querySelector('link[rel="icon"]');if(!link)return;link.href=link.href.replace(/[^/]+$/,dark?'logo-dark.svg':'logo.svg');}sync();new MutationObserver(sync).observe(document.documentElement,{attributes:true,attributeFilter:['data-bs-theme']});})();</script>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

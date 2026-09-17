@@ -151,4 +151,54 @@ public class HomePageTests : BunitContext
         Assert.Contains("Find Numbers", titles);
         Assert.Contains("Geocoding & Timezone", titles);
     }
+
+    [Fact]
+    public void copy_button_puts_the_install_command_on_the_clipboard()
+    {
+        var copy = JSInterop.SetupVoid("phoneDemo.copyText", _ => true).SetVoidResult();
+        var cut = Render<Home>();
+
+        cut.FindAll("button[aria-label='Copy install command']")[0].Click();
+
+        var call = Assert.Single(copy.Invocations);
+        Assert.Equal("dotnet add package libphonenumber-csharp", call.Arguments[0]);
+    }
+
+    [Fact]
+    public void each_install_block_copies_its_own_command()
+    {
+        var copy = JSInterop.SetupVoid("phoneDemo.copyText", _ => true).SetVoidResult();
+        var cut = Render<Home>();
+
+        cut.FindAll("button[aria-label='Copy install command']")[1].Click();
+
+        var call = Assert.Single(copy.Invocations);
+        Assert.Equal("dotnet add package libphonenumber-csharp.extensions", call.Arguments[0]);
+    }
+
+    [Fact]
+    public void copy_button_confirms_with_a_copied_label()
+    {
+        JSInterop.SetupVoid("phoneDemo.copyText", _ => true).SetVoidResult();
+        var cut = Render<Home>();
+
+        cut.FindAll("button[aria-label='Copy install command']")[0].Click();
+
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("button[aria-label='Command copied']")));
+    }
+
+    [Fact]
+    public void confirming_one_command_leaves_the_other_button_alone()
+    {
+        JSInterop.SetupVoid("phoneDemo.copyText", _ => true).SetVoidResult();
+        var cut = Render<Home>();
+
+        cut.FindAll("button[aria-label='Copy install command']")[0].Click();
+
+        cut.WaitForAssertion(() =>
+        {
+            Assert.Single(cut.FindAll("button[aria-label='Command copied']"));
+            Assert.Single(cut.FindAll("button[aria-label='Copy install command']"));
+        });
+    }
 }

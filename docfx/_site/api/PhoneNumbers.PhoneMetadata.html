@@ -1,0 +1,3424 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Class PhoneMetadata | libphonenumber-csharp API Reference </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Class PhoneMetadata | libphonenumber-csharp API Reference ">
+      
+      
+      <link rel="icon" href="../images/favicon.svg">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../images/logo.svg" alt="libphonenumber-csharp">
+            libphonenumber-csharp
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="PhoneNumbers.PhoneMetadata">
+
+
+
+  <h1 id="PhoneNumbers_PhoneMetadata" data-uid="PhoneNumbers.PhoneMetadata" class="text-break">
+Class PhoneMetadata  
+  </h1>
+
+  <div class="facts text-secondary">
+    <dl><dt>Namespace</dt><dd><a class="xref" href="PhoneNumbers.html">PhoneNumbers</a></dd></dl>
+  <dl><dt>Assembly</dt><dd>PhoneNumbers.dll</dd></dl>
+  </div>
+
+  <div class="markdown summary"></div>
+  <div class="markdown conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class PhoneMetadata</code></pre>
+  </div>
+
+
+
+
+  <dl class="typelist inheritance">
+    <dt>Inheritance</dt>
+    <dd>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+      <div><span class="xref">PhoneMetadata</span></div>
+    </dd>
+  </dl>
+
+
+
+  <dl class="typelist inheritedMembers">
+    <dt>Inherited Members</dt>
+    <dd>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+  </dd></dl>
+
+
+
+
+
+
+  <h2 class="section" id="fields">Fields
+</h2>
+
+
+
+  <h3 id="PhoneNumbers_PhoneMetadata_CarrierSpecificFieldNumber" data-uid="PhoneNumbers.PhoneMetadata.CarrierSpecificFieldNumber">
+  CarrierSpecificFieldNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int CarrierSpecificFieldNumber = 31</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="PhoneNumbers_PhoneMetadata_CountryCodeFieldNumber" data-uid="PhoneNumbers.PhoneMetadata.CountryCodeFieldNumber">
+  CountryCodeFieldNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int CountryCodeFieldNumber = 10</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="PhoneNumbers_PhoneMetadata_EmergencyFieldNumber" data-uid="PhoneNumbers.PhoneMetadata.EmergencyFieldNumber">
+  EmergencyFieldNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int EmergencyFieldNumber = 27</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="PhoneNumbers_PhoneMetadata_FixedLineFieldNumber" data-uid="PhoneNumbers.PhoneMetadata.FixedLineFieldNumber">
+  FixedLineFieldNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int FixedLineFieldNumber = 2</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="PhoneNumbers_PhoneMetadata_GeneralDescFieldNumber" data-uid="PhoneNumbers.PhoneMetadata.GeneralDescFieldNumber">
+  GeneralDescFieldNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int GeneralDescFieldNumber = 1</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="PhoneNumbers_PhoneMetadata_IdFieldNumber" data-uid="PhoneNumbers.PhoneMetadata.IdFieldNumber">
+  IdFieldNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int IdFieldNumber = 9</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="PhoneNumbers_PhoneMetadata_InternationalPrefixFieldNumber" data-uid="PhoneNumbers.PhoneMetadata.InternationalPrefixFieldNumber">
+  InternationalPrefixFieldNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int InternationalPrefixFieldNumber = 11</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="PhoneNumbers_PhoneMetadata_IntlNumberFormatFieldNumber" data-uid="PhoneNumbers.PhoneMetadata.IntlNumberFormatFieldNumber">
+  IntlNumberFormatFieldNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int IntlNumberFormatFieldNumber = 20</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="PhoneNumbers_PhoneMetadata_LeadingDigitsFieldNumber" data-uid="PhoneNumbers.PhoneMetadata.LeadingDigitsFieldNumber">
+  LeadingDigitsFieldNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int LeadingDigitsFieldNumber = 23</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="PhoneNumbers_PhoneMetadata_LeadingZeroPossibleFieldNumber" data-uid="PhoneNumbers.PhoneMetadata.LeadingZeroPossibleFieldNumber">
+  LeadingZeroPossibleFieldNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int LeadingZeroPossibleFieldNumber = 26</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="PhoneNumbers_PhoneMetadata_MainCountryForCodeFieldNumber" data-uid="PhoneNumbers.PhoneMetadata.MainCountryForCodeFieldNumber">
+  MainCountryForCodeFieldNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int MainCountryForCodeFieldNumber = 22</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="PhoneNumbers_PhoneMetadata_MobileFieldNumber" data-uid="PhoneNumbers.PhoneMetadata.MobileFieldNumber">
+  MobileFieldNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int MobileFieldNumber = 3</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="PhoneNumbers_PhoneMetadata_MobileNumberPortableRegionFieldNumber" data-uid="PhoneNumbers.PhoneMetadata.MobileNumberPortableRegionFieldNumber">
+  MobileNumberPortableRegionFieldNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int MobileNumberPortableRegionFieldNumber = 32</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="PhoneNumbers_PhoneMetadata_NationalPrefixFieldNumber" data-uid="PhoneNumbers.PhoneMetadata.NationalPrefixFieldNumber">
+  NationalPrefixFieldNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int NationalPrefixFieldNumber = 12</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="PhoneNumbers_PhoneMetadata_NationalPrefixForParsingFieldNumber" data-uid="PhoneNumbers.PhoneMetadata.NationalPrefixForParsingFieldNumber">
+  NationalPrefixForParsingFieldNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int NationalPrefixForParsingFieldNumber = 15</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="PhoneNumbers_PhoneMetadata_NationalPrefixTransformRuleFieldNumber" data-uid="PhoneNumbers.PhoneMetadata.NationalPrefixTransformRuleFieldNumber">
+  NationalPrefixTransformRuleFieldNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int NationalPrefixTransformRuleFieldNumber = 16</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="PhoneNumbers_PhoneMetadata_NoInternationalDiallingFieldNumber" data-uid="PhoneNumbers.PhoneMetadata.NoInternationalDiallingFieldNumber">
+  NoInternationalDiallingFieldNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int NoInternationalDiallingFieldNumber = 24</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="PhoneNumbers_PhoneMetadata_NumberFormatFieldNumber" data-uid="PhoneNumbers.PhoneMetadata.NumberFormatFieldNumber">
+  NumberFormatFieldNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int NumberFormatFieldNumber = 19</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="PhoneNumbers_PhoneMetadata_PagerFieldNumber" data-uid="PhoneNumbers.PhoneMetadata.PagerFieldNumber">
+  PagerFieldNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int PagerFieldNumber = 21</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="PhoneNumbers_PhoneMetadata_PersonalNumberFieldNumber" data-uid="PhoneNumbers.PhoneMetadata.PersonalNumberFieldNumber">
+  PersonalNumberFieldNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int PersonalNumberFieldNumber = 7</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="PhoneNumbers_PhoneMetadata_PreferredExtnPrefixFieldNumber" data-uid="PhoneNumbers.PhoneMetadata.PreferredExtnPrefixFieldNumber">
+  PreferredExtnPrefixFieldNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int PreferredExtnPrefixFieldNumber = 13</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="PhoneNumbers_PhoneMetadata_PreferredInternationalPrefixFieldNumber" data-uid="PhoneNumbers.PhoneMetadata.PreferredInternationalPrefixFieldNumber">
+  PreferredInternationalPrefixFieldNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int PreferredInternationalPrefixFieldNumber = 17</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="PhoneNumbers_PhoneMetadata_PremiumRateFieldNumber" data-uid="PhoneNumbers.PhoneMetadata.PremiumRateFieldNumber">
+  PremiumRateFieldNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int PremiumRateFieldNumber = 5</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="PhoneNumbers_PhoneMetadata_SameMobileAndFixedLinePatternFieldNumber" data-uid="PhoneNumbers.PhoneMetadata.SameMobileAndFixedLinePatternFieldNumber">
+  SameMobileAndFixedLinePatternFieldNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int SameMobileAndFixedLinePatternFieldNumber = 18</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="PhoneNumbers_PhoneMetadata_SharedCostFieldNumber" data-uid="PhoneNumbers.PhoneMetadata.SharedCostFieldNumber">
+  SharedCostFieldNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int SharedCostFieldNumber = 6</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="PhoneNumbers_PhoneMetadata_ShortCodeFieldNumber" data-uid="PhoneNumbers.PhoneMetadata.ShortCodeFieldNumber">
+  ShortCodeFieldNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int ShortCodeFieldNumber = 29</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="PhoneNumbers_PhoneMetadata_SmsServicesFieldNumber" data-uid="PhoneNumbers.PhoneMetadata.SmsServicesFieldNumber">
+  SmsServicesFieldNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int SmsServicesFieldNumber = 33</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="PhoneNumbers_PhoneMetadata_StandardRateFieldNumber" data-uid="PhoneNumbers.PhoneMetadata.StandardRateFieldNumber">
+  StandardRateFieldNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int StandardRateFieldNumber = 30</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="PhoneNumbers_PhoneMetadata_TollFreeFieldNumber" data-uid="PhoneNumbers.PhoneMetadata.TollFreeFieldNumber">
+  TollFreeFieldNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int TollFreeFieldNumber = 4</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="PhoneNumbers_PhoneMetadata_UanFieldNumber" data-uid="PhoneNumbers.PhoneMetadata.UanFieldNumber">
+  UanFieldNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int UanFieldNumber = 25</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="PhoneNumbers_PhoneMetadata_VoicemailFieldNumber" data-uid="PhoneNumbers.PhoneMetadata.VoicemailFieldNumber">
+  VoicemailFieldNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int VoicemailFieldNumber = 28</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <h3 id="PhoneNumbers_PhoneMetadata_VoipFieldNumber" data-uid="PhoneNumbers.PhoneMetadata.VoipFieldNumber">
+  VoipFieldNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int VoipFieldNumber = 8</code></pre>
+  </div>
+
+
+
+
+  <h4 class="section">Field Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+  <h2 class="section" id="properties">Properties
+</h2>
+
+
+  <a id="PhoneNumbers_PhoneMetadata_CarrierSpecific_" data-uid="PhoneNumbers.PhoneMetadata.CarrierSpecific*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_CarrierSpecific" data-uid="PhoneNumbers.PhoneMetadata.CarrierSpecific">
+  CarrierSpecific
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PhoneNumberDesc CarrierSpecific { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="PhoneNumbers.PhoneNumberDesc.html">PhoneNumberDesc</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_CountryCode_" data-uid="PhoneNumbers.PhoneMetadata.CountryCode*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_CountryCode" data-uid="PhoneNumbers.PhoneMetadata.CountryCode">
+  CountryCode
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int CountryCode { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_DefaultInstance_" data-uid="PhoneNumbers.PhoneMetadata.DefaultInstance*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_DefaultInstance" data-uid="PhoneNumbers.PhoneMetadata.DefaultInstance">
+  DefaultInstance
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static PhoneMetadata DefaultInstance { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="PhoneNumbers.PhoneMetadata.html">PhoneMetadata</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_DefaultInstanceForType_" data-uid="PhoneNumbers.PhoneMetadata.DefaultInstanceForType*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_DefaultInstanceForType" data-uid="PhoneNumbers.PhoneMetadata.DefaultInstanceForType">
+  DefaultInstanceForType
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PhoneMetadata DefaultInstanceForType { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="PhoneNumbers.PhoneMetadata.html">PhoneMetadata</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_Emergency_" data-uid="PhoneNumbers.PhoneMetadata.Emergency*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_Emergency" data-uid="PhoneNumbers.PhoneMetadata.Emergency">
+  Emergency
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PhoneNumberDesc Emergency { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="PhoneNumbers.PhoneNumberDesc.html">PhoneNumberDesc</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_FixedLine_" data-uid="PhoneNumbers.PhoneMetadata.FixedLine*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_FixedLine" data-uid="PhoneNumbers.PhoneMetadata.FixedLine">
+  FixedLine
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PhoneNumberDesc FixedLine { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="PhoneNumbers.PhoneNumberDesc.html">PhoneNumberDesc</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_GeneralDesc_" data-uid="PhoneNumbers.PhoneMetadata.GeneralDesc*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_GeneralDesc" data-uid="PhoneNumbers.PhoneMetadata.GeneralDesc">
+  GeneralDesc
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PhoneNumberDesc GeneralDesc { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="PhoneNumbers.PhoneNumberDesc.html">PhoneNumberDesc</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_HasCarrierSpecific_" data-uid="PhoneNumbers.PhoneMetadata.HasCarrierSpecific*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_HasCarrierSpecific" data-uid="PhoneNumbers.PhoneMetadata.HasCarrierSpecific">
+  HasCarrierSpecific
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool HasCarrierSpecific { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_HasCountryCode_" data-uid="PhoneNumbers.PhoneMetadata.HasCountryCode*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_HasCountryCode" data-uid="PhoneNumbers.PhoneMetadata.HasCountryCode">
+  HasCountryCode
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool HasCountryCode { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_HasEmergency_" data-uid="PhoneNumbers.PhoneMetadata.HasEmergency*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_HasEmergency" data-uid="PhoneNumbers.PhoneMetadata.HasEmergency">
+  HasEmergency
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool HasEmergency { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_HasFixedLine_" data-uid="PhoneNumbers.PhoneMetadata.HasFixedLine*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_HasFixedLine" data-uid="PhoneNumbers.PhoneMetadata.HasFixedLine">
+  HasFixedLine
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool HasFixedLine { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_HasGeneralDesc_" data-uid="PhoneNumbers.PhoneMetadata.HasGeneralDesc*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_HasGeneralDesc" data-uid="PhoneNumbers.PhoneMetadata.HasGeneralDesc">
+  HasGeneralDesc
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool HasGeneralDesc { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_HasId_" data-uid="PhoneNumbers.PhoneMetadata.HasId*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_HasId" data-uid="PhoneNumbers.PhoneMetadata.HasId">
+  HasId
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool HasId { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_HasInternationalPrefix_" data-uid="PhoneNumbers.PhoneMetadata.HasInternationalPrefix*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_HasInternationalPrefix" data-uid="PhoneNumbers.PhoneMetadata.HasInternationalPrefix">
+  HasInternationalPrefix
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool HasInternationalPrefix { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_HasLeadingDigits_" data-uid="PhoneNumbers.PhoneMetadata.HasLeadingDigits*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_HasLeadingDigits" data-uid="PhoneNumbers.PhoneMetadata.HasLeadingDigits">
+  HasLeadingDigits
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool HasLeadingDigits { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_HasMainCountryForCode_" data-uid="PhoneNumbers.PhoneMetadata.HasMainCountryForCode*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_HasMainCountryForCode" data-uid="PhoneNumbers.PhoneMetadata.HasMainCountryForCode">
+  HasMainCountryForCode
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool HasMainCountryForCode { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_HasMobile_" data-uid="PhoneNumbers.PhoneMetadata.HasMobile*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_HasMobile" data-uid="PhoneNumbers.PhoneMetadata.HasMobile">
+  HasMobile
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool HasMobile { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_HasMobileNumberPortableRegion_" data-uid="PhoneNumbers.PhoneMetadata.HasMobileNumberPortableRegion*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_HasMobileNumberPortableRegion" data-uid="PhoneNumbers.PhoneMetadata.HasMobileNumberPortableRegion">
+  HasMobileNumberPortableRegion
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool HasMobileNumberPortableRegion { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_HasNationalPrefix_" data-uid="PhoneNumbers.PhoneMetadata.HasNationalPrefix*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_HasNationalPrefix" data-uid="PhoneNumbers.PhoneMetadata.HasNationalPrefix">
+  HasNationalPrefix
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool HasNationalPrefix { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_HasNationalPrefixForParsing_" data-uid="PhoneNumbers.PhoneMetadata.HasNationalPrefixForParsing*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_HasNationalPrefixForParsing" data-uid="PhoneNumbers.PhoneMetadata.HasNationalPrefixForParsing">
+  HasNationalPrefixForParsing
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool HasNationalPrefixForParsing { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_HasNationalPrefixTransformRule_" data-uid="PhoneNumbers.PhoneMetadata.HasNationalPrefixTransformRule*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_HasNationalPrefixTransformRule" data-uid="PhoneNumbers.PhoneMetadata.HasNationalPrefixTransformRule">
+  HasNationalPrefixTransformRule
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool HasNationalPrefixTransformRule { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_HasNoInternationalDialling_" data-uid="PhoneNumbers.PhoneMetadata.HasNoInternationalDialling*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_HasNoInternationalDialling" data-uid="PhoneNumbers.PhoneMetadata.HasNoInternationalDialling">
+  HasNoInternationalDialling
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool HasNoInternationalDialling { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_HasPager_" data-uid="PhoneNumbers.PhoneMetadata.HasPager*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_HasPager" data-uid="PhoneNumbers.PhoneMetadata.HasPager">
+  HasPager
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool HasPager { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_HasPersonalNumber_" data-uid="PhoneNumbers.PhoneMetadata.HasPersonalNumber*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_HasPersonalNumber" data-uid="PhoneNumbers.PhoneMetadata.HasPersonalNumber">
+  HasPersonalNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool HasPersonalNumber { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_HasPreferredExtnPrefix_" data-uid="PhoneNumbers.PhoneMetadata.HasPreferredExtnPrefix*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_HasPreferredExtnPrefix" data-uid="PhoneNumbers.PhoneMetadata.HasPreferredExtnPrefix">
+  HasPreferredExtnPrefix
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool HasPreferredExtnPrefix { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_HasPreferredInternationalPrefix_" data-uid="PhoneNumbers.PhoneMetadata.HasPreferredInternationalPrefix*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_HasPreferredInternationalPrefix" data-uid="PhoneNumbers.PhoneMetadata.HasPreferredInternationalPrefix">
+  HasPreferredInternationalPrefix
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool HasPreferredInternationalPrefix { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_HasPremiumRate_" data-uid="PhoneNumbers.PhoneMetadata.HasPremiumRate*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_HasPremiumRate" data-uid="PhoneNumbers.PhoneMetadata.HasPremiumRate">
+  HasPremiumRate
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool HasPremiumRate { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_HasSameMobileAndFixedLinePattern_" data-uid="PhoneNumbers.PhoneMetadata.HasSameMobileAndFixedLinePattern*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_HasSameMobileAndFixedLinePattern" data-uid="PhoneNumbers.PhoneMetadata.HasSameMobileAndFixedLinePattern">
+  HasSameMobileAndFixedLinePattern
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool HasSameMobileAndFixedLinePattern { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_HasSharedCost_" data-uid="PhoneNumbers.PhoneMetadata.HasSharedCost*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_HasSharedCost" data-uid="PhoneNumbers.PhoneMetadata.HasSharedCost">
+  HasSharedCost
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool HasSharedCost { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_HasShortCode_" data-uid="PhoneNumbers.PhoneMetadata.HasShortCode*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_HasShortCode" data-uid="PhoneNumbers.PhoneMetadata.HasShortCode">
+  HasShortCode
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool HasShortCode { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_HasSmsServices_" data-uid="PhoneNumbers.PhoneMetadata.HasSmsServices*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_HasSmsServices" data-uid="PhoneNumbers.PhoneMetadata.HasSmsServices">
+  HasSmsServices
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool HasSmsServices { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_HasStandardRate_" data-uid="PhoneNumbers.PhoneMetadata.HasStandardRate*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_HasStandardRate" data-uid="PhoneNumbers.PhoneMetadata.HasStandardRate">
+  HasStandardRate
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool HasStandardRate { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_HasTollFree_" data-uid="PhoneNumbers.PhoneMetadata.HasTollFree*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_HasTollFree" data-uid="PhoneNumbers.PhoneMetadata.HasTollFree">
+  HasTollFree
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool HasTollFree { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_HasUan_" data-uid="PhoneNumbers.PhoneMetadata.HasUan*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_HasUan" data-uid="PhoneNumbers.PhoneMetadata.HasUan">
+  HasUan
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool HasUan { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_HasVoicemail_" data-uid="PhoneNumbers.PhoneMetadata.HasVoicemail*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_HasVoicemail" data-uid="PhoneNumbers.PhoneMetadata.HasVoicemail">
+  HasVoicemail
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool HasVoicemail { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_HasVoip_" data-uid="PhoneNumbers.PhoneMetadata.HasVoip*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_HasVoip" data-uid="PhoneNumbers.PhoneMetadata.HasVoip">
+  HasVoip
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool HasVoip { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_Id_" data-uid="PhoneNumbers.PhoneMetadata.Id*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_Id" data-uid="PhoneNumbers.PhoneMetadata.Id">
+  Id
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string Id { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_InternationalPrefix_" data-uid="PhoneNumbers.PhoneMetadata.InternationalPrefix*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_InternationalPrefix" data-uid="PhoneNumbers.PhoneMetadata.InternationalPrefix">
+  InternationalPrefix
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string InternationalPrefix { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_IntlNumberFormatCount_" data-uid="PhoneNumbers.PhoneMetadata.IntlNumberFormatCount*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_IntlNumberFormatCount" data-uid="PhoneNumbers.PhoneMetadata.IntlNumberFormatCount">
+  IntlNumberFormatCount
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int IntlNumberFormatCount { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_IntlNumberFormatList_" data-uid="PhoneNumbers.PhoneMetadata.IntlNumberFormatList*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_IntlNumberFormatList" data-uid="PhoneNumbers.PhoneMetadata.IntlNumberFormatList">
+  IntlNumberFormatList
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IList&lt;NumberFormat&gt; IntlNumberFormatList { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ilist-1">IList</a>&lt;<a class="xref" href="PhoneNumbers.NumberFormat.html">NumberFormat</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_IsInitialized_" data-uid="PhoneNumbers.PhoneMetadata.IsInitialized*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_IsInitialized" data-uid="PhoneNumbers.PhoneMetadata.IsInitialized">
+  IsInitialized
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsInitialized { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_LeadingDigits_" data-uid="PhoneNumbers.PhoneMetadata.LeadingDigits*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_LeadingDigits" data-uid="PhoneNumbers.PhoneMetadata.LeadingDigits">
+  LeadingDigits
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string LeadingDigits { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_MainCountryForCode_" data-uid="PhoneNumbers.PhoneMetadata.MainCountryForCode*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_MainCountryForCode" data-uid="PhoneNumbers.PhoneMetadata.MainCountryForCode">
+  MainCountryForCode
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool MainCountryForCode { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_Mobile_" data-uid="PhoneNumbers.PhoneMetadata.Mobile*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_Mobile" data-uid="PhoneNumbers.PhoneMetadata.Mobile">
+  Mobile
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PhoneNumberDesc Mobile { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="PhoneNumbers.PhoneNumberDesc.html">PhoneNumberDesc</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_MobileNumberPortableRegion_" data-uid="PhoneNumbers.PhoneMetadata.MobileNumberPortableRegion*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_MobileNumberPortableRegion" data-uid="PhoneNumbers.PhoneMetadata.MobileNumberPortableRegion">
+  MobileNumberPortableRegion
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool MobileNumberPortableRegion { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_NationalPrefix_" data-uid="PhoneNumbers.PhoneMetadata.NationalPrefix*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_NationalPrefix" data-uid="PhoneNumbers.PhoneMetadata.NationalPrefix">
+  NationalPrefix
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string NationalPrefix { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_NationalPrefixForParsing_" data-uid="PhoneNumbers.PhoneMetadata.NationalPrefixForParsing*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_NationalPrefixForParsing" data-uid="PhoneNumbers.PhoneMetadata.NationalPrefixForParsing">
+  NationalPrefixForParsing
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string NationalPrefixForParsing { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_NationalPrefixTransformRule_" data-uid="PhoneNumbers.PhoneMetadata.NationalPrefixTransformRule*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_NationalPrefixTransformRule" data-uid="PhoneNumbers.PhoneMetadata.NationalPrefixTransformRule">
+  NationalPrefixTransformRule
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string NationalPrefixTransformRule { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_NoInternationalDialling_" data-uid="PhoneNumbers.PhoneMetadata.NoInternationalDialling*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_NoInternationalDialling" data-uid="PhoneNumbers.PhoneMetadata.NoInternationalDialling">
+  NoInternationalDialling
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PhoneNumberDesc NoInternationalDialling { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="PhoneNumbers.PhoneNumberDesc.html">PhoneNumberDesc</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_NumberFormatCount_" data-uid="PhoneNumbers.PhoneMetadata.NumberFormatCount*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_NumberFormatCount" data-uid="PhoneNumbers.PhoneMetadata.NumberFormatCount">
+  NumberFormatCount
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int NumberFormatCount { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_NumberFormatList_" data-uid="PhoneNumbers.PhoneMetadata.NumberFormatList*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_NumberFormatList" data-uid="PhoneNumbers.PhoneMetadata.NumberFormatList">
+  NumberFormatList
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IList&lt;NumberFormat&gt; NumberFormatList { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ilist-1">IList</a>&lt;<a class="xref" href="PhoneNumbers.NumberFormat.html">NumberFormat</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_Pager_" data-uid="PhoneNumbers.PhoneMetadata.Pager*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_Pager" data-uid="PhoneNumbers.PhoneMetadata.Pager">
+  Pager
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PhoneNumberDesc Pager { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="PhoneNumbers.PhoneNumberDesc.html">PhoneNumberDesc</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_PersonalNumber_" data-uid="PhoneNumbers.PhoneMetadata.PersonalNumber*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_PersonalNumber" data-uid="PhoneNumbers.PhoneMetadata.PersonalNumber">
+  PersonalNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PhoneNumberDesc PersonalNumber { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="PhoneNumbers.PhoneNumberDesc.html">PhoneNumberDesc</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_PreferredExtnPrefix_" data-uid="PhoneNumbers.PhoneMetadata.PreferredExtnPrefix*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_PreferredExtnPrefix" data-uid="PhoneNumbers.PhoneMetadata.PreferredExtnPrefix">
+  PreferredExtnPrefix
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string PreferredExtnPrefix { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_PreferredInternationalPrefix_" data-uid="PhoneNumbers.PhoneMetadata.PreferredInternationalPrefix*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_PreferredInternationalPrefix" data-uid="PhoneNumbers.PhoneMetadata.PreferredInternationalPrefix">
+  PreferredInternationalPrefix
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string PreferredInternationalPrefix { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_PremiumRate_" data-uid="PhoneNumbers.PhoneMetadata.PremiumRate*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_PremiumRate" data-uid="PhoneNumbers.PhoneMetadata.PremiumRate">
+  PremiumRate
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PhoneNumberDesc PremiumRate { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="PhoneNumbers.PhoneNumberDesc.html">PhoneNumberDesc</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_SameMobileAndFixedLinePattern_" data-uid="PhoneNumbers.PhoneMetadata.SameMobileAndFixedLinePattern*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_SameMobileAndFixedLinePattern" data-uid="PhoneNumbers.PhoneMetadata.SameMobileAndFixedLinePattern">
+  SameMobileAndFixedLinePattern
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool SameMobileAndFixedLinePattern { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_SharedCost_" data-uid="PhoneNumbers.PhoneMetadata.SharedCost*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_SharedCost" data-uid="PhoneNumbers.PhoneMetadata.SharedCost">
+  SharedCost
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PhoneNumberDesc SharedCost { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="PhoneNumbers.PhoneNumberDesc.html">PhoneNumberDesc</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_ShortCode_" data-uid="PhoneNumbers.PhoneMetadata.ShortCode*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_ShortCode" data-uid="PhoneNumbers.PhoneMetadata.ShortCode">
+  ShortCode
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PhoneNumberDesc ShortCode { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="PhoneNumbers.PhoneNumberDesc.html">PhoneNumberDesc</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_SmsServices_" data-uid="PhoneNumbers.PhoneMetadata.SmsServices*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_SmsServices" data-uid="PhoneNumbers.PhoneMetadata.SmsServices">
+  SmsServices
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PhoneNumberDesc SmsServices { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="PhoneNumbers.PhoneNumberDesc.html">PhoneNumberDesc</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_StandardRate_" data-uid="PhoneNumbers.PhoneMetadata.StandardRate*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_StandardRate" data-uid="PhoneNumbers.PhoneMetadata.StandardRate">
+  StandardRate
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PhoneNumberDesc StandardRate { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="PhoneNumbers.PhoneNumberDesc.html">PhoneNumberDesc</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_TollFree_" data-uid="PhoneNumbers.PhoneMetadata.TollFree*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_TollFree" data-uid="PhoneNumbers.PhoneMetadata.TollFree">
+  TollFree
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PhoneNumberDesc TollFree { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="PhoneNumbers.PhoneNumberDesc.html">PhoneNumberDesc</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_Uan_" data-uid="PhoneNumbers.PhoneMetadata.Uan*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_Uan" data-uid="PhoneNumbers.PhoneMetadata.Uan">
+  Uan
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PhoneNumberDesc Uan { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="PhoneNumbers.PhoneNumberDesc.html">PhoneNumberDesc</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_Voicemail_" data-uid="PhoneNumbers.PhoneMetadata.Voicemail*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_Voicemail" data-uid="PhoneNumbers.PhoneMetadata.Voicemail">
+  Voicemail
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PhoneNumberDesc Voicemail { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="PhoneNumbers.PhoneNumberDesc.html">PhoneNumberDesc</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_Voip_" data-uid="PhoneNumbers.PhoneMetadata.Voip*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_Voip" data-uid="PhoneNumbers.PhoneMetadata.Voip">
+  Voip
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PhoneNumberDesc Voip { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="PhoneNumbers.PhoneNumberDesc.html">PhoneNumberDesc</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h2 class="section" id="methods">Methods
+</h2>
+
+
+  <a id="PhoneNumbers_PhoneMetadata_CreateBuilder_" data-uid="PhoneNumbers.PhoneMetadata.CreateBuilder*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_CreateBuilder" data-uid="PhoneNumbers.PhoneMetadata.CreateBuilder">
+  CreateBuilder()
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static PhoneMetadata.Builder CreateBuilder()</code></pre>
+  </div>
+
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="PhoneNumbers.PhoneMetadata.html">PhoneMetadata</a>.<a class="xref" href="PhoneNumbers.PhoneMetadata.html">Builder</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_CreateBuilder_" data-uid="PhoneNumbers.PhoneMetadata.CreateBuilder*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_CreateBuilder_PhoneNumbers_PhoneMetadata_" data-uid="PhoneNumbers.PhoneMetadata.CreateBuilder(PhoneNumbers.PhoneMetadata)">
+  CreateBuilder(PhoneMetadata)
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static PhoneMetadata.Builder CreateBuilder(PhoneMetadata prototype)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>prototype</code> <a class="xref" href="PhoneNumbers.PhoneMetadata.html">PhoneMetadata</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="PhoneNumbers.PhoneMetadata.html">PhoneMetadata</a>.<a class="xref" href="PhoneNumbers.PhoneMetadata.html">Builder</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_CreateBuilderForType_" data-uid="PhoneNumbers.PhoneMetadata.CreateBuilderForType*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_CreateBuilderForType" data-uid="PhoneNumbers.PhoneMetadata.CreateBuilderForType">
+  CreateBuilderForType()
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PhoneMetadata.Builder CreateBuilderForType()</code></pre>
+  </div>
+
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="PhoneNumbers.PhoneMetadata.html">PhoneMetadata</a>.<a class="xref" href="PhoneNumbers.PhoneMetadata.html">Builder</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_Equals_" data-uid="PhoneNumbers.PhoneMetadata.Equals*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_Equals_System_Object_" data-uid="PhoneNumbers.PhoneMetadata.Equals(System.Object)">
+  Equals(object)
+  
+  </h3>
+
+  <div class="markdown level1 summary"><p>Determines whether the specified object is equal to the current object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override bool Equals(object obj)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>obj</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></dt>
+    <dd><p>The object to compare with the current object.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the specified object  is equal to the current object; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_GetHashCode_" data-uid="PhoneNumbers.PhoneMetadata.GetHashCode*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_GetHashCode" data-uid="PhoneNumbers.PhoneMetadata.GetHashCode">
+  GetHashCode()
+  
+  </h3>
+
+  <div class="markdown level1 summary"><p>Serves as the default hash function.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override int GetHashCode()</code></pre>
+  </div>
+
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd><p>A hash code for the current object.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_GetIntlNumberFormat_" data-uid="PhoneNumbers.PhoneMetadata.GetIntlNumberFormat*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_GetIntlNumberFormat_System_Int32_" data-uid="PhoneNumbers.PhoneMetadata.GetIntlNumberFormat(System.Int32)">
+  GetIntlNumberFormat(int)
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public NumberFormat GetIntlNumberFormat(int index)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>index</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="PhoneNumbers.NumberFormat.html">NumberFormat</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_GetNumberFormat_" data-uid="PhoneNumbers.PhoneMetadata.GetNumberFormat*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_GetNumberFormat_System_Int32_" data-uid="PhoneNumbers.PhoneMetadata.GetNumberFormat(System.Int32)">
+  GetNumberFormat(int)
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public NumberFormat GetNumberFormat(int index)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>index</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="PhoneNumbers.NumberFormat.html">NumberFormat</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_PhoneMetadata_ToBuilder_" data-uid="PhoneNumbers.PhoneMetadata.ToBuilder*"></a>
+
+  <h3 id="PhoneNumbers_PhoneMetadata_ToBuilder" data-uid="PhoneNumbers.PhoneMetadata.ToBuilder">
+  ToBuilder()
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PhoneMetadata.Builder ToBuilder()</code></pre>
+  </div>
+
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="PhoneNumbers.PhoneMetadata.html">PhoneMetadata</a>.<a class="xref" href="PhoneNumbers.PhoneMetadata.html">Builder</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+
+</article>
+
+
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span><script>(function(){function sync(){var dark=document.documentElement.getAttribute('data-bs-theme')==='dark';var link=document.querySelector('link[rel="icon"]');if(!link)return;link.href=link.href.replace(/[^/]+$/,dark?'logo-dark.svg':'logo.svg');}sync();new MutationObserver(sync).observe(document.documentElement,{attributes:true,attributeFilter:['data-bs-theme']});})();</script>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

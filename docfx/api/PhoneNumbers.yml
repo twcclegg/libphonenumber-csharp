@@ -1,0 +1,299 @@
+### YamlMime:ManagedReference
+items:
+- uid: PhoneNumbers
+  commentId: N:PhoneNumbers
+  id: PhoneNumbers
+  children:
+  - PhoneNumbers.AsYouTypeFormatter
+  - PhoneNumbers.ErrorType
+  - PhoneNumbers.LeniencyExtensions
+  - PhoneNumbers.Locale
+  - PhoneNumbers.LocaleData
+  - PhoneNumbers.MissingMetadataException
+  - PhoneNumbers.NumberFormat
+  - PhoneNumbers.NumberParseException
+  - PhoneNumbers.PhoneMetadata
+  - PhoneNumbers.PhoneNumber
+  - PhoneNumbers.PhoneNumberDesc
+  - PhoneNumbers.PhoneNumberFormat
+  - PhoneNumbers.PhoneNumberMatch
+  - PhoneNumbers.PhoneNumberMatcher
+  - PhoneNumbers.PhoneNumberMatcher.CheckGroups
+  - PhoneNumbers.PhoneNumberOfflineGeocoder
+  - PhoneNumbers.PhoneNumberToCarrierMapper
+  - PhoneNumbers.PhoneNumberToTimeZonesMapper
+  - PhoneNumbers.PhoneNumberType
+  - PhoneNumbers.PhoneNumberUtil
+  - PhoneNumbers.PhoneNumberUtil.Leniency
+  - PhoneNumbers.PhoneNumberUtil.MatchType
+  - PhoneNumbers.PhoneNumberUtil.ValidationResult
+  - PhoneNumbers.ShortNumberInfo
+  - PhoneNumbers.ShortNumberInfo.ShortNumberCost
+  langs:
+  - csharp
+  - vb
+  name: PhoneNumbers
+  nameWithType: PhoneNumbers
+  fullName: PhoneNumbers
+  type: Namespace
+  assemblies:
+  - PhoneNumbers
+references:
+- uid: PhoneNumbers.AsYouTypeFormatter
+  commentId: T:PhoneNumbers.AsYouTypeFormatter
+  parent: PhoneNumbers
+  href: PhoneNumbers.AsYouTypeFormatter.html
+  name: AsYouTypeFormatter
+  nameWithType: AsYouTypeFormatter
+  fullName: PhoneNumbers.AsYouTypeFormatter
+- uid: PhoneNumbers.LeniencyExtensions
+  commentId: T:PhoneNumbers.LeniencyExtensions
+  parent: PhoneNumbers
+  href: PhoneNumbers.LeniencyExtensions.html
+  name: LeniencyExtensions
+  nameWithType: LeniencyExtensions
+  fullName: PhoneNumbers.LeniencyExtensions
+- uid: PhoneNumbers.LocaleData
+  commentId: T:PhoneNumbers.LocaleData
+  href: PhoneNumbers.LocaleData.html
+  name: LocaleData
+  nameWithType: LocaleData
+  fullName: PhoneNumbers.LocaleData
+- uid: PhoneNumbers.MissingMetadataException
+  commentId: T:PhoneNumbers.MissingMetadataException
+  href: PhoneNumbers.MissingMetadataException.html
+  name: MissingMetadataException
+  nameWithType: MissingMetadataException
+  fullName: PhoneNumbers.MissingMetadataException
+- uid: PhoneNumbers.NumberFormat
+  commentId: T:PhoneNumbers.NumberFormat
+  parent: PhoneNumbers
+  href: PhoneNumbers.NumberFormat.html
+  name: NumberFormat
+  nameWithType: NumberFormat
+  fullName: PhoneNumbers.NumberFormat
+- uid: PhoneNumbers.ErrorType
+  commentId: T:PhoneNumbers.ErrorType
+  parent: PhoneNumbers
+  href: PhoneNumbers.ErrorType.html
+  name: ErrorType
+  nameWithType: ErrorType
+  fullName: PhoneNumbers.ErrorType
+- uid: PhoneNumbers.NumberParseException
+  commentId: T:PhoneNumbers.NumberParseException
+  href: PhoneNumbers.NumberParseException.html
+  name: NumberParseException
+  nameWithType: NumberParseException
+  fullName: PhoneNumbers.NumberParseException
+- uid: PhoneNumbers.PhoneMetadata
+  commentId: T:PhoneNumbers.PhoneMetadata
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneMetadata.html
+  name: PhoneMetadata
+  nameWithType: PhoneMetadata
+  fullName: PhoneNumbers.PhoneMetadata
+- uid: PhoneNumbers.PhoneNumber
+  commentId: T:PhoneNumbers.PhoneNumber
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumber.html
+  name: PhoneNumber
+  nameWithType: PhoneNumber
+  fullName: PhoneNumbers.PhoneNumber
+- uid: PhoneNumbers.PhoneNumberDesc
+  commentId: T:PhoneNumbers.PhoneNumberDesc
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumberDesc.html
+  name: PhoneNumberDesc
+  nameWithType: PhoneNumberDesc
+  fullName: PhoneNumbers.PhoneNumberDesc
+- uid: PhoneNumbers.PhoneNumberFormat
+  commentId: T:PhoneNumbers.PhoneNumberFormat
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumberFormat.html
+  name: PhoneNumberFormat
+  nameWithType: PhoneNumberFormat
+  fullName: PhoneNumbers.PhoneNumberFormat
+- uid: PhoneNumbers.PhoneNumberMatch
+  commentId: T:PhoneNumbers.PhoneNumberMatch
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumberMatch.html
+  name: PhoneNumberMatch
+  nameWithType: PhoneNumberMatch
+  fullName: PhoneNumbers.PhoneNumberMatch
+- uid: PhoneNumbers.PhoneNumberMatcher
+  commentId: T:PhoneNumbers.PhoneNumberMatcher
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumberMatcher.html
+  name: PhoneNumberMatcher
+  nameWithType: PhoneNumberMatcher
+  fullName: PhoneNumbers.PhoneNumberMatcher
+- uid: PhoneNumbers.PhoneNumberMatcher.CheckGroups
+  commentId: T:PhoneNumbers.PhoneNumberMatcher.CheckGroups
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumberMatcher.html
+  name: PhoneNumberMatcher.CheckGroups
+  nameWithType: PhoneNumberMatcher.CheckGroups
+  fullName: PhoneNumbers.PhoneNumberMatcher.CheckGroups
+  spec.csharp:
+  - uid: PhoneNumbers.PhoneNumberMatcher
+    name: PhoneNumberMatcher
+    href: PhoneNumbers.PhoneNumberMatcher.html
+  - name: .
+  - uid: PhoneNumbers.PhoneNumberMatcher.CheckGroups
+    name: CheckGroups
+    href: PhoneNumbers.PhoneNumberMatcher.CheckGroups.html
+  spec.vb:
+  - uid: PhoneNumbers.PhoneNumberMatcher
+    name: PhoneNumberMatcher
+    href: PhoneNumbers.PhoneNumberMatcher.html
+  - name: .
+  - uid: PhoneNumbers.PhoneNumberMatcher.CheckGroups
+    name: CheckGroups
+    href: PhoneNumbers.PhoneNumberMatcher.CheckGroups.html
+- uid: PhoneNumbers.Locale
+  commentId: T:PhoneNumbers.Locale
+  parent: PhoneNumbers
+  href: PhoneNumbers.Locale.html
+  name: Locale
+  nameWithType: Locale
+  fullName: PhoneNumbers.Locale
+- uid: PhoneNumbers.PhoneNumberOfflineGeocoder
+  commentId: T:PhoneNumbers.PhoneNumberOfflineGeocoder
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumberOfflineGeocoder.html
+  name: PhoneNumberOfflineGeocoder
+  nameWithType: PhoneNumberOfflineGeocoder
+  fullName: PhoneNumbers.PhoneNumberOfflineGeocoder
+- uid: PhoneNumbers.PhoneNumberToCarrierMapper
+  commentId: T:PhoneNumbers.PhoneNumberToCarrierMapper
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumberToCarrierMapper.html
+  name: PhoneNumberToCarrierMapper
+  nameWithType: PhoneNumberToCarrierMapper
+  fullName: PhoneNumbers.PhoneNumberToCarrierMapper
+- uid: PhoneNumbers.PhoneNumberToTimeZonesMapper
+  commentId: T:PhoneNumbers.PhoneNumberToTimeZonesMapper
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumberToTimeZonesMapper.html
+  name: PhoneNumberToTimeZonesMapper
+  nameWithType: PhoneNumberToTimeZonesMapper
+  fullName: PhoneNumbers.PhoneNumberToTimeZonesMapper
+- uid: PhoneNumbers.PhoneNumberType
+  commentId: T:PhoneNumbers.PhoneNumberType
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumberType.html
+  name: PhoneNumberType
+  nameWithType: PhoneNumberType
+  fullName: PhoneNumbers.PhoneNumberType
+- uid: PhoneNumbers.PhoneNumberUtil
+  commentId: T:PhoneNumbers.PhoneNumberUtil
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumberUtil.html
+  name: PhoneNumberUtil
+  nameWithType: PhoneNumberUtil
+  fullName: PhoneNumbers.PhoneNumberUtil
+- uid: PhoneNumbers.PhoneNumberUtil.MatchType
+  commentId: T:PhoneNumbers.PhoneNumberUtil.MatchType
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumberUtil.html
+  name: PhoneNumberUtil.MatchType
+  nameWithType: PhoneNumberUtil.MatchType
+  fullName: PhoneNumbers.PhoneNumberUtil.MatchType
+  spec.csharp:
+  - uid: PhoneNumbers.PhoneNumberUtil
+    name: PhoneNumberUtil
+    href: PhoneNumbers.PhoneNumberUtil.html
+  - name: .
+  - uid: PhoneNumbers.PhoneNumberUtil.MatchType
+    name: MatchType
+    href: PhoneNumbers.PhoneNumberUtil.MatchType.html
+  spec.vb:
+  - uid: PhoneNumbers.PhoneNumberUtil
+    name: PhoneNumberUtil
+    href: PhoneNumbers.PhoneNumberUtil.html
+  - name: .
+  - uid: PhoneNumbers.PhoneNumberUtil.MatchType
+    name: MatchType
+    href: PhoneNumbers.PhoneNumberUtil.MatchType.html
+- uid: PhoneNumbers.PhoneNumberUtil.ValidationResult
+  commentId: T:PhoneNumbers.PhoneNumberUtil.ValidationResult
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumberUtil.html
+  name: PhoneNumberUtil.ValidationResult
+  nameWithType: PhoneNumberUtil.ValidationResult
+  fullName: PhoneNumbers.PhoneNumberUtil.ValidationResult
+  spec.csharp:
+  - uid: PhoneNumbers.PhoneNumberUtil
+    name: PhoneNumberUtil
+    href: PhoneNumbers.PhoneNumberUtil.html
+  - name: .
+  - uid: PhoneNumbers.PhoneNumberUtil.ValidationResult
+    name: ValidationResult
+    href: PhoneNumbers.PhoneNumberUtil.ValidationResult.html
+  spec.vb:
+  - uid: PhoneNumbers.PhoneNumberUtil
+    name: PhoneNumberUtil
+    href: PhoneNumbers.PhoneNumberUtil.html
+  - name: .
+  - uid: PhoneNumbers.PhoneNumberUtil.ValidationResult
+    name: ValidationResult
+    href: PhoneNumbers.PhoneNumberUtil.ValidationResult.html
+- uid: PhoneNumbers.PhoneNumberUtil.Leniency
+  commentId: T:PhoneNumbers.PhoneNumberUtil.Leniency
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumberUtil.html
+  name: PhoneNumberUtil.Leniency
+  nameWithType: PhoneNumberUtil.Leniency
+  fullName: PhoneNumbers.PhoneNumberUtil.Leniency
+  spec.csharp:
+  - uid: PhoneNumbers.PhoneNumberUtil
+    name: PhoneNumberUtil
+    href: PhoneNumbers.PhoneNumberUtil.html
+  - name: .
+  - uid: PhoneNumbers.PhoneNumberUtil.Leniency
+    name: Leniency
+    href: PhoneNumbers.PhoneNumberUtil.Leniency.html
+  spec.vb:
+  - uid: PhoneNumbers.PhoneNumberUtil
+    name: PhoneNumberUtil
+    href: PhoneNumbers.PhoneNumberUtil.html
+  - name: .
+  - uid: PhoneNumbers.PhoneNumberUtil.Leniency
+    name: Leniency
+    href: PhoneNumbers.PhoneNumberUtil.Leniency.html
+- uid: PhoneNumbers.ShortNumberInfo
+  commentId: T:PhoneNumbers.ShortNumberInfo
+  parent: PhoneNumbers
+  href: PhoneNumbers.ShortNumberInfo.html
+  name: ShortNumberInfo
+  nameWithType: ShortNumberInfo
+  fullName: PhoneNumbers.ShortNumberInfo
+- uid: PhoneNumbers.ShortNumberInfo.ShortNumberCost
+  commentId: T:PhoneNumbers.ShortNumberInfo.ShortNumberCost
+  parent: PhoneNumbers
+  href: PhoneNumbers.ShortNumberInfo.html
+  name: ShortNumberInfo.ShortNumberCost
+  nameWithType: ShortNumberInfo.ShortNumberCost
+  fullName: PhoneNumbers.ShortNumberInfo.ShortNumberCost
+  spec.csharp:
+  - uid: PhoneNumbers.ShortNumberInfo
+    name: ShortNumberInfo
+    href: PhoneNumbers.ShortNumberInfo.html
+  - name: .
+  - uid: PhoneNumbers.ShortNumberInfo.ShortNumberCost
+    name: ShortNumberCost
+    href: PhoneNumbers.ShortNumberInfo.ShortNumberCost.html
+  spec.vb:
+  - uid: PhoneNumbers.ShortNumberInfo
+    name: ShortNumberInfo
+    href: PhoneNumbers.ShortNumberInfo.html
+  - name: .
+  - uid: PhoneNumbers.ShortNumberInfo.ShortNumberCost
+    name: ShortNumberCost
+    href: PhoneNumbers.ShortNumberInfo.ShortNumberCost.html
+- uid: PhoneNumbers
+  commentId: N:PhoneNumbers
+  href: PhoneNumbers.html
+  name: PhoneNumbers
+  nameWithType: PhoneNumbers
+  fullName: PhoneNumbers
