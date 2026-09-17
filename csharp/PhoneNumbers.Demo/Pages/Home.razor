@@ -157,7 +157,6 @@
         <div class="card__subtitle">Add to your .NET project via NuGet.</div>
     </div>
     <div class="install-block">
-        <span class="install-block__prompt" aria-hidden="true">$</span>@CoreInstall
         <button class="install-block__copy @(_copied == CoreInstall ? "install-block__copy--done" : "")"
                 @onclick="() => Copy(CoreInstall)"
                 aria-label="@(_copied == CoreInstall ? "Command copied" : "Copy install command")">
@@ -170,9 +169,9 @@
                 <CopyIcon />
             }
         </button>
+        <span class="install-block__prompt" aria-hidden="true">$</span>@CoreInstall
     </div>
     <div class="install-block mt-1">
-        <span class="install-block__prompt" aria-hidden="true">$</span>@ExtensionsInstall
         <button class="install-block__copy @(_copied == ExtensionsInstall ? "install-block__copy--done" : "")"
                 @onclick="() => Copy(ExtensionsInstall)"
                 aria-label="@(_copied == ExtensionsInstall ? "Command copied" : "Copy install command")">
@@ -185,6 +184,7 @@
                 <CopyIcon />
             }
         </button>
+        <span class="install-block__prompt" aria-hidden="true">$</span>@ExtensionsInstall
     </div>
 </div>
 </div>

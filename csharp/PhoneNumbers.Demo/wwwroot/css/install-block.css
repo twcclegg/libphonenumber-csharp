@@ -3,16 +3,17 @@
    ============================================================ */
 
 .install-block {
-    position: relative;
     font-family: var(--font-mono);
     font-size: var(--fs-base);
     background: var(--code-bg);
     color: var(--code-text);
     border-radius: var(--radius-sm);
-    /* The right inset clears the copy button, and it costs width on every
-       line of the command - not just the first - so keep it to what the
-       button's visual box actually needs, not its 44px hit area. */
-    padding: 0.8rem 2.1rem 0.8rem 0.9rem;
+    /* Symmetric: the copy button is floated, not inset with padding, so only
+       the line it actually sits on pays for its width. Reserving space with
+       padding-right charged every line, including ones below the button with
+       nothing but empty space to their right. */
+    padding: 0.8rem 0.9rem;
+    line-height: 1.5;
     /* Deliberately not display:flex. A flex row makes the command its own
        box starting after the "$", so a wrapped line hangs under the "d" of
        dotnet. Left in normal flow the "$" is just the first inline box on
@@ -29,16 +30,18 @@
 }
 
 .install-block__copy {
-    position: absolute;
-    top: 0.3rem;
-    right: 0.3rem;
+    /* Floated and a hair under one line-height tall, so it shortens the
+       command's first line and nothing below it - a continuation line runs
+       on under the button. First in source order because a right float is
+       placed on the line box where it appears. */
+    float: right;
+    position: relative;
+    width: 1.45em;
+    height: 1.45em;
+    margin-left: 0.5rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    /* The visual box stays small so it costs the command little width;
-       ::after below carries the 44x44 hit area this site holds to. */
-    width: 26px;
-    height: 26px;
     padding: 0;
     border: 0;
     border-radius: var(--radius-sm);
@@ -49,25 +52,10 @@
     transition: opacity 0.15s ease, background-color 0.15s ease;
 }
 
-.install-block__copy:hover,
-.install-block__copy:focus-visible {
-    opacity: 1;
-    background: rgba(255, 255, 255, 0.09);
-}
-
-.install-block__copy svg {
-    width: 16px;
-    height: 16px;
-    stroke: currentColor;
-    fill: none;
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
 /* 44x44 tap target (the size .sidebar__link and .feature-grid__icon use)
-   centred on the smaller visual box, so touch users get a full-size
-   target without the button reserving 44px of the command's width. */
+   centred on the smaller visual box. It lives on a pseudo-element because
+   sizing the button itself to 44px would make the float three lines tall
+   and shorten every one of them. */
 .install-block__copy::after {
     content: "";
     position: absolute;
@@ -76,6 +64,24 @@
     transform: translate(-50%, -50%);
     width: 44px;
     height: 44px;
+}
+
+.install-block__copy:hover,
+.install-block__copy:focus-visible {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.09);
+}
+
+.install-block__copy svg {
+    /* 14px in a ~19px box: the box is capped by the line-height (the float
+       has to stay under one line), so the glyph is what gives it padding. */
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 .install-block__copy--done {
