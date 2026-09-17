@@ -1,5 +1,6 @@
 @page "/"
 @inject NavigationManager Nav
+@inject IJSRuntime JS
 
 <PageTitle>libphonenumber-csharp Demo</PageTitle>
 
@@ -17,7 +18,7 @@
         </p>
         <div class="hero__badges">
             <span class="hero__badge">
-                <BoxIcon />
+                <NuGetIcon />
                 NuGet package
             </span>
             <span class="hero__badge">
@@ -156,15 +157,57 @@
         <div class="card__subtitle">Add to your .NET project via NuGet.</div>
     </div>
     <div class="install-block">
-        <span class="install-block__prompt" aria-hidden="true">$</span>dotnet add package libphonenumber-csharp
+        <span class="install-block__prompt" aria-hidden="true">$</span>@CoreInstall
+        <button class="install-block__copy @(_copied == CoreInstall ? "install-block__copy--done" : "")"
+                @onclick="() => Copy(CoreInstall)"
+                aria-label="@(_copied == CoreInstall ? "Command copied" : "Copy install command")">
+            @if (_copied == CoreInstall)
+            {
+                <CheckIcon />
+            }
+            else
+            {
+                <CopyIcon />
+            }
+        </button>
     </div>
     <div class="install-block mt-1">
-        <span class="install-block__prompt" aria-hidden="true">$</span>dotnet add package libphonenumber-csharp.extensions
+        <span class="install-block__prompt" aria-hidden="true">$</span>@ExtensionsInstall
+        <button class="install-block__copy @(_copied == ExtensionsInstall ? "install-block__copy--done" : "")"
+                @onclick="() => Copy(ExtensionsInstall)"
+                aria-label="@(_copied == ExtensionsInstall ? "Command copied" : "Copy install command")">
+            @if (_copied == ExtensionsInstall)
+            {
+                <CheckIcon />
+            }
+            else
+            {
+                <CopyIcon />
+            }
+        </button>
     </div>
 </div>
 </div>
 
 @code {
+    private const string CoreInstall = "dotnet add package libphonenumber-csharp";
+    private const string ExtensionsInstall = "dotnet add package libphonenumber-csharp.extensions";
+
+    // which command is currently showing its "copied" confirmation, if any
+    private string? _copied;
+
+    // Mirrors MainLayout's CopyLink: hand the text to the clipboard helper in
+    // index.html, show a check for a moment, then fall back to the copy glyph.
+    private async Task Copy(string command)
+    {
+        await JS.InvokeVoidAsync("phoneDemo.copyText", command);
+        _copied = command;
+        StateHasChanged();
+        await Task.Delay(1500);
+        _copied = null;
+        StateHasChanged();
+    }
+
     private readonly PhoneNumberUtil _phoneUtil = PhoneNumberUtil.GetInstance();
     private string _phoneInput = "+1 650 253 0000";
     private string _selectedRegion = "US";
