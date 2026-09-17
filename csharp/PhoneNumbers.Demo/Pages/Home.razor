@@ -17,15 +17,15 @@
         </p>
         <div class="hero__badges">
             <span class="hero__badge">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                <BoxIcon />
                 NuGet package
             </span>
             <span class="hero__badge">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                <GlobeIcon />
                 @(_regionCount) regions
             </span>
             <span class="hero__badge">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                <ZapIcon />
                 WebAssembly
             </span>
         </div>
@@ -110,43 +110,43 @@
 <div class="feature-grid">
     <a href="parse" class="feature-grid__card">
         <div class="feature-grid__icon feature-grid__icon--primary" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <SearchIcon />
         </div>
         <h3 class="feature-grid__card-title">Parse &amp; Validate</h3>
         <p class="feature-grid__card-description">Parse phone numbers from text, validate them, and inspect every property including type, region, and country code.</p>
-        <span class="feature-grid__go" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        <span class="feature-grid__go" aria-hidden="true"><ArrowRightIcon /></span>
     </a>
     <a href="format" class="feature-grid__card">
         <div class="feature-grid__icon feature-grid__icon--success" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            <ListIcon />
         </div>
         <h3 class="feature-grid__card-title">Formatting</h3>
         <p class="feature-grid__card-description">Format numbers as E.164, international, national, RFC 3966, and for out-of-country or mobile dialing.</p>
-        <span class="feature-grid__go" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        <span class="feature-grid__go" aria-hidden="true"><ArrowRightIcon /></span>
     </a>
     <a href="live" class="feature-grid__card">
         <div class="feature-grid__icon feature-grid__icon--warning" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+            <TerminalIcon />
         </div>
         <h3 class="feature-grid__card-title">Live Formatter</h3>
         <p class="feature-grid__card-description">Type digits and see them formatted in real-time using the as-you-type formatter, just like a phone dialer.</p>
-        <span class="feature-grid__go" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        <span class="feature-grid__go" aria-hidden="true"><ArrowRightIcon /></span>
     </a>
     <a href="find" class="feature-grid__card">
         <div class="feature-grid__icon feature-grid__icon--pink" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            <FileTextIcon />
         </div>
         <h3 class="feature-grid__card-title">Find Numbers</h3>
         <p class="feature-grid__card-description">Extract and parse phone numbers embedded in free-form text with configurable matching leniency.</p>
-        <span class="feature-grid__go" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        <span class="feature-grid__go" aria-hidden="true"><ArrowRightIcon /></span>
     </a>
     <a href="geo" class="feature-grid__card">
         <div class="feature-grid__icon feature-grid__icon--accent" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <GlobeIcon />
         </div>
         <h3 class="feature-grid__card-title">Geocoding &amp; Timezone</h3>
         <p class="feature-grid__card-description">Look up geographic descriptions, time zones, and carrier information for any phone number.</p>
-        <span class="feature-grid__go" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        <span class="feature-grid__go" aria-hidden="true"><ArrowRightIcon /></span>
     </a>
 </div>
 
