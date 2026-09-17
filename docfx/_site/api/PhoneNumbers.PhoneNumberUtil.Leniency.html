@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Enum PhoneNumberUtil.Leniency | libphonenumber-csharp API Reference </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Enum PhoneNumberUtil.Leniency | libphonenumber-csharp API Reference ">
+      
+      <meta name="description" content="Leniency when  finding potential phone numbers in text segments. The levels here are ordered in increasing strictness.">
+      <link rel="icon" href="../images/favicon.svg">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../images/logo.svg" alt="libphonenumber-csharp">
+            libphonenumber-csharp
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="PhoneNumbers.PhoneNumberUtil.Leniency">
+
+
+
+
+  <h1 id="PhoneNumbers_PhoneNumberUtil_Leniency" data-uid="PhoneNumbers.PhoneNumberUtil.Leniency" class="text-break">
+Enum PhoneNumberUtil.Leniency  
+  </h1>
+
+  <div class="facts text-secondary">
+    <dl><dt>Namespace</dt><dd><a class="xref" href="PhoneNumbers.html">PhoneNumbers</a></dd></dl>
+  <dl><dt>Assembly</dt><dd>PhoneNumbers.dll</dd></dl>
+  </div>
+
+  <div class="markdown summary"><p>Leniency when <a class="xref" href="PhoneNumbers.PhoneNumberUtil.html#PhoneNumbers_PhoneNumberUtil_FindNumbers_System_String_System_String_">FindNumbers(string, string)</a> finding potential phone numbers in text
+segments. The levels here are ordered in increasing strictness.</p>
+</div>
+  <div class="markdown conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public enum PhoneNumberUtil.Leniency</code></pre>
+  </div>
+
+
+
+
+
+
+
+
+  <dl class="typelist extensionMethods">
+    <dt>Extension Methods</dt>
+    <dd>
+  <div>
+      <a class="xref" href="PhoneNumbers.LeniencyExtensions.html#PhoneNumbers_LeniencyExtensions_Verify_PhoneNumbers_PhoneNumberUtil_Leniency_PhoneNumbers_PhoneNumber_System_String_PhoneNumbers_PhoneNumberUtil_PhoneNumbers_PhoneNumberMatcher_">LeniencyExtensions.Verify(PhoneNumberUtil.Leniency, PhoneNumber, string, PhoneNumberUtil, PhoneNumberMatcher)</a>
+  </div>
+  </dd></dl>
+
+  <h2 id="fields">Fields
+</h2>
+  <dl class="parameters">
+    <dt id="PhoneNumbers_PhoneNumberUtil_Leniency_EXACT_GROUPING"><code>EXACT_GROUPING = 3</code></dt>
+  
+  <dd><p>Phone numbers accepted are <a class="xref" href="PhoneNumbers.PhoneNumberUtil.html#PhoneNumbers_PhoneNumberUtil_IsValidNumber_PhoneNumbers_PhoneNumber_">IsValidNumber(PhoneNumber)</a> valid and
+are grouped in the same way that we would have formatted it, or as a single block. For
+example, a US number written as &quot;650 2530000&quot; is not accepted at this leniency level, whereas
+&quot;650 253 0000&quot; or &quot;6502530000&quot; are.
+Numbers with more than one '/' symbol are also dropped at this level.</p>
+<p>
+Warning: This level might result in lower coverage especially for regions outside of country
+code "+1". If you are not sure about which level to use, email the discussion group
+libphonenumber-discuss@googlegroups.com.
+</p>
+</dd>
+    <dt id="PhoneNumbers_PhoneNumberUtil_Leniency_POSSIBLE"><code>POSSIBLE = 0</code></dt>
+  
+  <dd><p>Phone numbers accepted are <a class="xref" href="PhoneNumbers.PhoneNumberUtil.html#PhoneNumbers_PhoneNumberUtil_IsPossibleNumber_PhoneNumbers_PhoneNumber_">IsPossibleNumber(PhoneNumber)</a>
+possible, but not necessarily <a class="xref" href="PhoneNumbers.PhoneNumberUtil.html#PhoneNumbers_PhoneNumberUtil_IsValidNumber_PhoneNumbers_PhoneNumber_">IsValidNumber(PhoneNumber)</a> valid.</p>
+</dd>
+    <dt id="PhoneNumbers_PhoneNumberUtil_Leniency_STRICT_GROUPING"><code>STRICT_GROUPING = 2</code></dt>
+  
+  <dd><p>Phone numbers accepted are <a class="xref" href="PhoneNumbers.PhoneNumberUtil.html#PhoneNumbers_PhoneNumberUtil_IsValidNumber_PhoneNumbers_PhoneNumber_">IsValidNumber(PhoneNumber)</a> valid and
+are grouped in a possible way for this locale. For example, a US number written as
+&quot;65 02 53 00 00&quot; and &quot;650253 0000&quot; are not accepted at this leniency level, whereas
+&quot;650 253 0000&quot;, &quot;650 2530000&quot; or &quot;6502530000&quot; are.
+Numbers with more than one '/' symbol are also dropped at this level.</p>
+<p>
+Warning: This level might result in lower coverage especially for regions outside of country
+code "+1". If you are not sure about which level to use, email the discussion group
+libphonenumber-discuss@googlegroups.com.
+</p>
+</dd>
+    <dt id="PhoneNumbers_PhoneNumberUtil_Leniency_VALID"><code>VALID = 1</code></dt>
+  
+  <dd><p>Phone numbers accepted are <a class="xref" href="PhoneNumbers.PhoneNumberUtil.html#PhoneNumbers_PhoneNumberUtil_IsPossibleNumber_PhoneNumbers_PhoneNumber_">IsPossibleNumber(PhoneNumber)</a>
+possible and <a class="xref" href="PhoneNumbers.PhoneNumberUtil.html#PhoneNumbers_PhoneNumberUtil_IsValidNumber_PhoneNumbers_PhoneNumber_">IsValidNumber(PhoneNumber)</a> valid. Numbers written
+in national format must have their national-prefix present if it is usually written for a
+number of this type.</p>
+</dd>
+  </dl>
+
+
+
+</article>
+
+
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span><script>(function(){function sync(){var dark=document.documentElement.getAttribute('data-bs-theme')==='dark';var link=document.querySelector('link[rel="icon"]');if(!link)return;link.href=link.href.replace(/[^/]+$/,dark?'logo-dark.svg':'logo.svg');}sync();new MutationObserver(sync).observe(document.documentElement,{attributes:true,attributeFilter:['data-bs-theme']});})();</script>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

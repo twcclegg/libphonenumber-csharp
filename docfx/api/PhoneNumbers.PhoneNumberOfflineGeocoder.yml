@@ -1,0 +1,657 @@
+### YamlMime:ManagedReference
+items:
+- uid: PhoneNumbers.PhoneNumberOfflineGeocoder
+  commentId: T:PhoneNumbers.PhoneNumberOfflineGeocoder
+  id: PhoneNumberOfflineGeocoder
+  parent: PhoneNumbers
+  children:
+  - PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale)
+  - PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale,System.String)
+  - PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale)
+  - PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale,System.String)
+  - PhoneNumbers.PhoneNumberOfflineGeocoder.GetInstance
+  - PhoneNumbers.PhoneNumberOfflineGeocoder.LoadDataFile(PhoneNumbers.Locale,System.Int32)
+  langs:
+  - csharp
+  - vb
+  name: PhoneNumberOfflineGeocoder
+  nameWithType: PhoneNumberOfflineGeocoder
+  fullName: PhoneNumbers.PhoneNumberOfflineGeocoder
+  type: Class
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: An offline geocoder which provides geographical information related to a phone number.
+  remarks: "    Author: Shaopeng Jia. \n<p></p>\n\n    Loads phone-prefix → location-string mappings from per-(language, country-code) binary\n    files generated at build time by <code>PhoneNumbers.MetadataBuilder</code>, via\n    <xref href=\"PhoneNumbers.PrefixFileReader\" data-throw-if-not-resolved=\"false\"></xref>."
+  example: []
+  syntax:
+    content: public sealed class PhoneNumberOfflineGeocoder
+    content.vb: Public NotInheritable Class PhoneNumberOfflineGeocoder
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: PhoneNumbers.PhoneNumberOfflineGeocoder.GetInstance
+  commentId: M:PhoneNumbers.PhoneNumberOfflineGeocoder.GetInstance
+  id: GetInstance
+  parent: PhoneNumbers.PhoneNumberOfflineGeocoder
+  langs:
+  - csharp
+  - vb
+  name: GetInstance()
+  nameWithType: PhoneNumberOfflineGeocoder.GetInstance()
+  fullName: PhoneNumbers.PhoneNumberOfflineGeocoder.GetInstance()
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    Gets a <xref href="PhoneNumbers.PhoneNumberOfflineGeocoder" data-throw-if-not-resolved="false"></xref> instance to carry out international phone number
+
+    geocoding.
+
+
+    <p>The <xref href="PhoneNumbers.PhoneNumberOfflineGeocoder" data-throw-if-not-resolved="false"></xref> is implemented as a singleton. Therefore, calling
+
+    this method multiple times will only result in one instance being created.</p>
+  example: []
+  syntax:
+    content: public static PhoneNumberOfflineGeocoder GetInstance()
+    return:
+      type: PhoneNumbers.PhoneNumberOfflineGeocoder
+      description: a <xref href="PhoneNumbers.PhoneNumberOfflineGeocoder" data-throw-if-not-resolved="false"></xref> instance
+    content.vb: Public Shared Function GetInstance() As PhoneNumberOfflineGeocoder
+  overload: PhoneNumbers.PhoneNumberOfflineGeocoder.GetInstance*
+- uid: PhoneNumbers.PhoneNumberOfflineGeocoder.LoadDataFile(PhoneNumbers.Locale,System.Int32)
+  commentId: M:PhoneNumbers.PhoneNumberOfflineGeocoder.LoadDataFile(PhoneNumbers.Locale,System.Int32)
+  id: LoadDataFile(PhoneNumbers.Locale,System.Int32)
+  parent: PhoneNumbers.PhoneNumberOfflineGeocoder
+  langs:
+  - csharp
+  - vb
+  name: LoadDataFile(Locale, int)
+  nameWithType: PhoneNumberOfflineGeocoder.LoadDataFile(Locale, int)
+  fullName: PhoneNumbers.PhoneNumberOfflineGeocoder.LoadDataFile(PhoneNumbers.Locale, int)
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    Preload the data file for the given language and country calling code, so that a future lookup
+
+    for this language and country calling code will not incur any file loading.
+  example: []
+  syntax:
+    content: public void LoadDataFile(Locale locale, int countryCallingCode)
+    parameters:
+    - id: locale
+      type: PhoneNumbers.Locale
+      description: specifies the language of the data file to load
+    - id: countryCallingCode
+      type: System.Int32
+      description: specifies the country calling code of phone numbers that are contained by the file to be loaded
+    content.vb: Public Sub LoadDataFile(locale As Locale, countryCallingCode As Integer)
+  overload: PhoneNumbers.PhoneNumberOfflineGeocoder.LoadDataFile*
+  nameWithType.vb: PhoneNumberOfflineGeocoder.LoadDataFile(Locale, Integer)
+  fullName.vb: PhoneNumbers.PhoneNumberOfflineGeocoder.LoadDataFile(PhoneNumbers.Locale, Integer)
+  name.vb: LoadDataFile(Locale, Integer)
+- uid: PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale)
+  commentId: M:PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale)
+  id: GetDescriptionForValidNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale)
+  parent: PhoneNumbers.PhoneNumberOfflineGeocoder
+  langs:
+  - csharp
+  - vb
+  name: GetDescriptionForValidNumber(PhoneNumber, Locale)
+  nameWithType: PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber(PhoneNumber, Locale)
+  fullName: PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber(PhoneNumbers.PhoneNumber, PhoneNumbers.Locale)
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    Returns a text description for the given phone number, in the language provided. The
+
+    description might consist of the name of the country where the phone number is from, or the
+
+    name of the geographical area the phone number is from if more detailed information is
+
+    available.
+
+
+    <p>This method assumes the validity of the number passed in has already been checked, and that
+
+    the number is suitable for geocoding. We consider fixed-line and mobile numbers possible
+
+    candidates for geocoding.</p>
+  example: []
+  syntax:
+    content: public string GetDescriptionForValidNumber(PhoneNumber number, Locale languageCode)
+    parameters:
+    - id: number
+      type: PhoneNumbers.PhoneNumber
+      description: a valid phone number for which we want to get a text description
+    - id: languageCode
+      type: PhoneNumbers.Locale
+      description: the language code for which the description should be written
+    return:
+      type: System.String
+      description: >-
+        a text description for the given language code for the given phone number, or an
+            empty string if the number could come from multiple countries, or the country code is in fact invalid
+    content.vb: Public Function GetDescriptionForValidNumber(number As PhoneNumber, languageCode As Locale) As String
+  overload: PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber*
+- uid: PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale,System.String)
+  commentId: M:PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale,System.String)
+  id: GetDescriptionForValidNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale,System.String)
+  parent: PhoneNumbers.PhoneNumberOfflineGeocoder
+  langs:
+  - csharp
+  - vb
+  name: GetDescriptionForValidNumber(PhoneNumber, Locale, string)
+  nameWithType: PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber(PhoneNumber, Locale, string)
+  fullName: PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber(PhoneNumbers.PhoneNumber, PhoneNumbers.Locale, string)
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    As per <xref href="PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber(PhoneNumbers.PhoneNumber%2cPhoneNumbers.Locale)" data-throw-if-not-resolved="false"></xref> but also considers the
+
+    region of the user. If the phone number is from the same region as the user, only a lower-level
+
+    description will be returned, if one exists. Otherwise, the phone number's region will be
+
+    returned, with optionally some more detailed information.
+
+
+    <p>For example, for a user from the region "US" (United States), we would show "Mountain View,
+
+    CA" for a particular number, omitting the United States from the description. For a user from
+
+    the United Kingdom (region "GB"), for the same number we may show "Mountain View, CA, United
+
+    States" or even just "United States".</p>
+
+
+    This method assumes the validity of the number passed in has already been checked.
+  example: []
+  syntax:
+    content: public string GetDescriptionForValidNumber(PhoneNumber number, Locale languageCode, string userRegion)
+    parameters:
+    - id: number
+      type: PhoneNumbers.PhoneNumber
+      description: the phone number for which we want to get a text description
+    - id: languageCode
+      type: PhoneNumbers.Locale
+      description: the language code for which the description should be written
+    - id: userRegion
+      type: System.String
+      description: the region code for a given user. This region will be omitted from the description if the phone number comes from this region. It should be a two-letter upper-case CLDR region code.
+    return:
+      type: System.String
+      description: >-
+        a text description for the given language code for the given phone number, or an
+             empty string if the number could come from multiple countries, or the country code is in fact invalid
+    content.vb: Public Function GetDescriptionForValidNumber(number As PhoneNumber, languageCode As Locale, userRegion As String) As String
+  overload: PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber*
+  nameWithType.vb: PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber(PhoneNumber, Locale, String)
+  fullName.vb: PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber(PhoneNumbers.PhoneNumber, PhoneNumbers.Locale, String)
+  name.vb: GetDescriptionForValidNumber(PhoneNumber, Locale, String)
+- uid: PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale)
+  commentId: M:PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale)
+  id: GetDescriptionForNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale)
+  parent: PhoneNumbers.PhoneNumberOfflineGeocoder
+  langs:
+  - csharp
+  - vb
+  name: GetDescriptionForNumber(PhoneNumber, Locale)
+  nameWithType: PhoneNumberOfflineGeocoder.GetDescriptionForNumber(PhoneNumber, Locale)
+  fullName: PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForNumber(PhoneNumbers.PhoneNumber, PhoneNumbers.Locale)
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    As per <xref href="PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber(PhoneNumbers.PhoneNumber%2cPhoneNumbers.Locale)" data-throw-if-not-resolved="false"></xref> but explicitly checks
+
+    the validity of the number passed in.
+  example: []
+  syntax:
+    content: public string GetDescriptionForNumber(PhoneNumber number, Locale languageCode)
+    parameters:
+    - id: number
+      type: PhoneNumbers.PhoneNumber
+      description: the phone number for which we want to get a text description
+    - id: languageCode
+      type: PhoneNumbers.Locale
+      description: the language code for which the description should be written
+    return:
+      type: System.String
+      description: >-
+        a text description for the given language code for the given phone number, or empty
+            string if the number passed in is invalid or could belong to multiple countries
+    content.vb: Public Function GetDescriptionForNumber(number As PhoneNumber, languageCode As Locale) As String
+  overload: PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForNumber*
+- uid: PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale,System.String)
+  commentId: M:PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale,System.String)
+  id: GetDescriptionForNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale,System.String)
+  parent: PhoneNumbers.PhoneNumberOfflineGeocoder
+  langs:
+  - csharp
+  - vb
+  name: GetDescriptionForNumber(PhoneNumber, Locale, string)
+  nameWithType: PhoneNumberOfflineGeocoder.GetDescriptionForNumber(PhoneNumber, Locale, string)
+  fullName: PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForNumber(PhoneNumbers.PhoneNumber, PhoneNumbers.Locale, string)
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    As per <xref href="PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber(PhoneNumbers.PhoneNumber%2cPhoneNumbers.Locale%2cSystem.String)" data-throw-if-not-resolved="false"></xref> but
+
+    explicitly checks the validity of the number passed in.
+  example: []
+  syntax:
+    content: public string GetDescriptionForNumber(PhoneNumber number, Locale languageCode, string userRegion)
+    parameters:
+    - id: number
+      type: PhoneNumbers.PhoneNumber
+      description: the phone number for which we want to get a text description
+    - id: languageCode
+      type: PhoneNumbers.Locale
+      description: the language code for which the description should be written
+    - id: userRegion
+      type: System.String
+      description: the region code for a given user. This region will be omitted from the description if the phone number comes from this region. It should be a two-letter upper-case CLDR region code.
+    return:
+      type: System.String
+      description: >-
+        a text description for the given language code for the given phone number, or empty
+            string if the number passed in is invalid or could belong to multiple countries
+    content.vb: Public Function GetDescriptionForNumber(number As PhoneNumber, languageCode As Locale, userRegion As String) As String
+  overload: PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForNumber*
+  nameWithType.vb: PhoneNumberOfflineGeocoder.GetDescriptionForNumber(PhoneNumber, Locale, String)
+  fullName.vb: PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForNumber(PhoneNumbers.PhoneNumber, PhoneNumbers.Locale, String)
+  name.vb: GetDescriptionForNumber(PhoneNumber, Locale, String)
+references:
+- uid: PhoneNumbers.PrefixFileReader
+  commentId: T:PhoneNumbers.PrefixFileReader
+  name: PrefixFileReader
+  nameWithType: PrefixFileReader
+  fullName: PhoneNumbers.PrefixFileReader
+- uid: PhoneNumbers
+  commentId: N:PhoneNumbers
+  href: PhoneNumbers.html
+  name: PhoneNumbers
+  nameWithType: PhoneNumbers
+  fullName: PhoneNumbers
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: PhoneNumbers.PhoneNumberOfflineGeocoder
+  commentId: T:PhoneNumbers.PhoneNumberOfflineGeocoder
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumberOfflineGeocoder.html
+  name: PhoneNumberOfflineGeocoder
+  nameWithType: PhoneNumberOfflineGeocoder
+  fullName: PhoneNumbers.PhoneNumberOfflineGeocoder
+- uid: PhoneNumbers.PhoneNumberOfflineGeocoder.GetInstance*
+  commentId: Overload:PhoneNumbers.PhoneNumberOfflineGeocoder.GetInstance
+  href: PhoneNumbers.PhoneNumberOfflineGeocoder.html#PhoneNumbers_PhoneNumberOfflineGeocoder_GetInstance
+  name: GetInstance
+  nameWithType: PhoneNumberOfflineGeocoder.GetInstance
+  fullName: PhoneNumbers.PhoneNumberOfflineGeocoder.GetInstance
+- uid: PhoneNumbers.PhoneNumberOfflineGeocoder.LoadDataFile*
+  commentId: Overload:PhoneNumbers.PhoneNumberOfflineGeocoder.LoadDataFile
+  href: PhoneNumbers.PhoneNumberOfflineGeocoder.html#PhoneNumbers_PhoneNumberOfflineGeocoder_LoadDataFile_PhoneNumbers_Locale_System_Int32_
+  name: LoadDataFile
+  nameWithType: PhoneNumberOfflineGeocoder.LoadDataFile
+  fullName: PhoneNumbers.PhoneNumberOfflineGeocoder.LoadDataFile
+- uid: PhoneNumbers.Locale
+  commentId: T:PhoneNumbers.Locale
+  parent: PhoneNumbers
+  href: PhoneNumbers.Locale.html
+  name: Locale
+  nameWithType: Locale
+  fullName: PhoneNumbers.Locale
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int32
+  name: int
+  nameWithType: int
+  fullName: int
+  nameWithType.vb: Integer
+  fullName.vb: Integer
+  name.vb: Integer
+- uid: PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber*
+  commentId: Overload:PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber
+  href: PhoneNumbers.PhoneNumberOfflineGeocoder.html#PhoneNumbers_PhoneNumberOfflineGeocoder_GetDescriptionForValidNumber_PhoneNumbers_PhoneNumber_PhoneNumbers_Locale_
+  name: GetDescriptionForValidNumber
+  nameWithType: PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber
+  fullName: PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber
+- uid: PhoneNumbers.PhoneNumber
+  commentId: T:PhoneNumbers.PhoneNumber
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumber.html
+  name: PhoneNumber
+  nameWithType: PhoneNumber
+  fullName: PhoneNumbers.PhoneNumber
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: string
+  nameWithType: string
+  fullName: string
+  nameWithType.vb: String
+  fullName.vb: String
+  name.vb: String
+- uid: PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale)
+  commentId: M:PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale)
+  href: PhoneNumbers.PhoneNumberOfflineGeocoder.html#PhoneNumbers_PhoneNumberOfflineGeocoder_GetDescriptionForValidNumber_PhoneNumbers_PhoneNumber_PhoneNumbers_Locale_
+  name: GetDescriptionForValidNumber(PhoneNumber, Locale)
+  nameWithType: PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber(PhoneNumber, Locale)
+  fullName: PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber(PhoneNumbers.PhoneNumber, PhoneNumbers.Locale)
+  spec.csharp:
+  - uid: PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale)
+    name: GetDescriptionForValidNumber
+    href: PhoneNumbers.PhoneNumberOfflineGeocoder.html#PhoneNumbers_PhoneNumberOfflineGeocoder_GetDescriptionForValidNumber_PhoneNumbers_PhoneNumber_PhoneNumbers_Locale_
+  - name: (
+  - uid: PhoneNumbers.PhoneNumber
+    name: PhoneNumber
+    href: PhoneNumbers.PhoneNumber.html
+  - name: ','
+  - name: " "
+  - uid: PhoneNumbers.Locale
+    name: Locale
+    href: PhoneNumbers.Locale.html
+  - name: )
+  spec.vb:
+  - uid: PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale)
+    name: GetDescriptionForValidNumber
+    href: PhoneNumbers.PhoneNumberOfflineGeocoder.html#PhoneNumbers_PhoneNumberOfflineGeocoder_GetDescriptionForValidNumber_PhoneNumbers_PhoneNumber_PhoneNumbers_Locale_
+  - name: (
+  - uid: PhoneNumbers.PhoneNumber
+    name: PhoneNumber
+    href: PhoneNumbers.PhoneNumber.html
+  - name: ','
+  - name: " "
+  - uid: PhoneNumbers.Locale
+    name: Locale
+    href: PhoneNumbers.Locale.html
+  - name: )
+- uid: PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForNumber*
+  commentId: Overload:PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForNumber
+  href: PhoneNumbers.PhoneNumberOfflineGeocoder.html#PhoneNumbers_PhoneNumberOfflineGeocoder_GetDescriptionForNumber_PhoneNumbers_PhoneNumber_PhoneNumbers_Locale_
+  name: GetDescriptionForNumber
+  nameWithType: PhoneNumberOfflineGeocoder.GetDescriptionForNumber
+  fullName: PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForNumber
+- uid: PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale,System.String)
+  commentId: M:PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale,System.String)
+  isExternal: true
+  href: PhoneNumbers.PhoneNumberOfflineGeocoder.html#PhoneNumbers_PhoneNumberOfflineGeocoder_GetDescriptionForValidNumber_PhoneNumbers_PhoneNumber_PhoneNumbers_Locale_System_String_
+  name: GetDescriptionForValidNumber(PhoneNumber, Locale, string)
+  nameWithType: PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber(PhoneNumber, Locale, string)
+  fullName: PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber(PhoneNumbers.PhoneNumber, PhoneNumbers.Locale, string)
+  nameWithType.vb: PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber(PhoneNumber, Locale, String)
+  fullName.vb: PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber(PhoneNumbers.PhoneNumber, PhoneNumbers.Locale, String)
+  name.vb: GetDescriptionForValidNumber(PhoneNumber, Locale, String)
+  spec.csharp:
+  - uid: PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale,System.String)
+    name: GetDescriptionForValidNumber
+    href: PhoneNumbers.PhoneNumberOfflineGeocoder.html#PhoneNumbers_PhoneNumberOfflineGeocoder_GetDescriptionForValidNumber_PhoneNumbers_PhoneNumber_PhoneNumbers_Locale_System_String_
+  - name: (
+  - uid: PhoneNumbers.PhoneNumber
+    name: PhoneNumber
+    href: PhoneNumbers.PhoneNumber.html
+  - name: ','
+  - name: " "
+  - uid: PhoneNumbers.Locale
+    name: Locale
+    href: PhoneNumbers.Locale.html
+  - name: ','
+  - name: " "
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: )
+  spec.vb:
+  - uid: PhoneNumbers.PhoneNumberOfflineGeocoder.GetDescriptionForValidNumber(PhoneNumbers.PhoneNumber,PhoneNumbers.Locale,System.String)
+    name: GetDescriptionForValidNumber
+    href: PhoneNumbers.PhoneNumberOfflineGeocoder.html#PhoneNumbers_PhoneNumberOfflineGeocoder_GetDescriptionForValidNumber_PhoneNumbers_PhoneNumber_PhoneNumbers_Locale_System_String_
+  - name: (
+  - uid: PhoneNumbers.PhoneNumber
+    name: PhoneNumber
+    href: PhoneNumbers.PhoneNumber.html
+  - name: ','
+  - name: " "
+  - uid: PhoneNumbers.Locale
+    name: Locale
+    href: PhoneNumbers.Locale.html
+  - name: ','
+  - name: " "
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: )

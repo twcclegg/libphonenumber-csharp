@@ -1,0 +1,142 @@
+### YamlMime:ManagedReference
+items:
+- uid: PhoneNumbers.ErrorType
+  commentId: T:PhoneNumbers.ErrorType
+  id: ErrorType
+  parent: PhoneNumbers
+  children:
+  - PhoneNumbers.ErrorType.INVALID_COUNTRY_CODE
+  - PhoneNumbers.ErrorType.NOT_A_NUMBER
+  - PhoneNumbers.ErrorType.TOO_LONG
+  - PhoneNumbers.ErrorType.TOO_SHORT_AFTER_IDD
+  - PhoneNumbers.ErrorType.TOO_SHORT_NSN
+  langs:
+  - csharp
+  - vb
+  name: ErrorType
+  nameWithType: ErrorType
+  fullName: PhoneNumbers.ErrorType
+  type: Enum
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: The reason that a string could not be interpreted as a phone number.
+  example: []
+  syntax:
+    content: public enum ErrorType
+    content.vb: Public Enum ErrorType
+- uid: PhoneNumbers.ErrorType.INVALID_COUNTRY_CODE
+  commentId: F:PhoneNumbers.ErrorType.INVALID_COUNTRY_CODE
+  id: INVALID_COUNTRY_CODE
+  parent: PhoneNumbers.ErrorType
+  langs:
+  - csharp
+  - vb
+  name: INVALID_COUNTRY_CODE
+  nameWithType: ErrorType.INVALID_COUNTRY_CODE
+  fullName: PhoneNumbers.ErrorType.INVALID_COUNTRY_CODE
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: The country code supplied did not belong to a supported country or non-geographical entity.
+  example: []
+  syntax:
+    content: INVALID_COUNTRY_CODE = 0
+    return:
+      type: PhoneNumbers.ErrorType
+- uid: PhoneNumbers.ErrorType.NOT_A_NUMBER
+  commentId: F:PhoneNumbers.ErrorType.NOT_A_NUMBER
+  id: NOT_A_NUMBER
+  parent: PhoneNumbers.ErrorType
+  langs:
+  - csharp
+  - vb
+  name: NOT_A_NUMBER
+  nameWithType: ErrorType.NOT_A_NUMBER
+  fullName: PhoneNumbers.ErrorType.NOT_A_NUMBER
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    This indicates the string passed is not a valid number. Either the string had less than 3
+
+    digits in it or had an invalid phone-context parameter. More specifically, the number failed
+
+    to match the regular expression VALID_PHONE_NUMBER, RFC3966_GLOBAL_NUMBER_DIGITS, or
+
+    RFC3966_DOMAINNAME in PhoneNumberUtil.cs.
+  example: []
+  syntax:
+    content: NOT_A_NUMBER = 1
+    return:
+      type: PhoneNumbers.ErrorType
+- uid: PhoneNumbers.ErrorType.TOO_SHORT_AFTER_IDD
+  commentId: F:PhoneNumbers.ErrorType.TOO_SHORT_AFTER_IDD
+  id: TOO_SHORT_AFTER_IDD
+  parent: PhoneNumbers.ErrorType
+  langs:
+  - csharp
+  - vb
+  name: TOO_SHORT_AFTER_IDD
+  nameWithType: ErrorType.TOO_SHORT_AFTER_IDD
+  fullName: PhoneNumbers.ErrorType.TOO_SHORT_AFTER_IDD
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: TOO_SHORT_AFTER_IDD = 2
+    return:
+      type: PhoneNumbers.ErrorType
+- uid: PhoneNumbers.ErrorType.TOO_SHORT_NSN
+  commentId: F:PhoneNumbers.ErrorType.TOO_SHORT_NSN
+  id: TOO_SHORT_NSN
+  parent: PhoneNumbers.ErrorType
+  langs:
+  - csharp
+  - vb
+  name: TOO_SHORT_NSN
+  nameWithType: ErrorType.TOO_SHORT_NSN
+  fullName: PhoneNumbers.ErrorType.TOO_SHORT_NSN
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: TOO_SHORT_NSN = 3
+    return:
+      type: PhoneNumbers.ErrorType
+- uid: PhoneNumbers.ErrorType.TOO_LONG
+  commentId: F:PhoneNumbers.ErrorType.TOO_LONG
+  id: TOO_LONG
+  parent: PhoneNumbers.ErrorType
+  langs:
+  - csharp
+  - vb
+  name: TOO_LONG
+  nameWithType: ErrorType.TOO_LONG
+  fullName: PhoneNumbers.ErrorType.TOO_LONG
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: TOO_LONG = 4
+    return:
+      type: PhoneNumbers.ErrorType
+references:
+- uid: PhoneNumbers
+  commentId: N:PhoneNumbers
+  href: PhoneNumbers.html
+  name: PhoneNumbers
+  nameWithType: PhoneNumbers
+  fullName: PhoneNumbers
+- uid: PhoneNumbers.ErrorType
+  commentId: T:PhoneNumbers.ErrorType
+  parent: PhoneNumbers
+  href: PhoneNumbers.ErrorType.html
+  name: ErrorType
+  nameWithType: ErrorType
+  fullName: PhoneNumbers.ErrorType

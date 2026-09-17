@@ -1,0 +1,130 @@
+### YamlMime:ManagedReference
+items:
+- uid: PhoneNumbers.PhoneNumberFormat
+  commentId: T:PhoneNumbers.PhoneNumberFormat
+  id: PhoneNumberFormat
+  parent: PhoneNumbers
+  children:
+  - PhoneNumbers.PhoneNumberFormat.E164
+  - PhoneNumbers.PhoneNumberFormat.INTERNATIONAL
+  - PhoneNumbers.PhoneNumberFormat.NATIONAL
+  - PhoneNumbers.PhoneNumberFormat.RFC3966
+  langs:
+  - csharp
+  - vb
+  name: PhoneNumberFormat
+  nameWithType: PhoneNumberFormat
+  fullName: PhoneNumbers.PhoneNumberFormat
+  type: Enum
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    INTERNATIONAL and NATIONAL formats are consistent with the definition in ITU-T Recommendation
+
+    E123. For example, the number of the Google Switzerland office will be written as
+
+    "+41 44 668 1800" in INTERNATIONAL format, and as "044 668 1800" in NATIONAL format.
+
+    E164 format is as per INTERNATIONAL format but with no formatting applied, e.g.
+
+    "+41446681800". RFC3966 is as per INTERNATIONAL format, but with all spaces and other
+
+    separating symbols replaced with a hyphen, and with any phone number extension appended with
+
+    ";ext=". It also will have a prefix of "tel:" added, e.g. "tel:+41-44-668-1800".
+
+
+    Note: If you are considering storing the number in a neutral format, you are highly advised to
+
+    use the PhoneNumber class.
+  example: []
+  syntax:
+    content: public enum PhoneNumberFormat
+    content.vb: Public Enum PhoneNumberFormat
+- uid: PhoneNumbers.PhoneNumberFormat.E164
+  commentId: F:PhoneNumbers.PhoneNumberFormat.E164
+  id: E164
+  parent: PhoneNumbers.PhoneNumberFormat
+  langs:
+  - csharp
+  - vb
+  name: E164
+  nameWithType: PhoneNumberFormat.E164
+  fullName: PhoneNumbers.PhoneNumberFormat.E164
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: E164 = 0
+    return:
+      type: PhoneNumbers.PhoneNumberFormat
+- uid: PhoneNumbers.PhoneNumberFormat.INTERNATIONAL
+  commentId: F:PhoneNumbers.PhoneNumberFormat.INTERNATIONAL
+  id: INTERNATIONAL
+  parent: PhoneNumbers.PhoneNumberFormat
+  langs:
+  - csharp
+  - vb
+  name: INTERNATIONAL
+  nameWithType: PhoneNumberFormat.INTERNATIONAL
+  fullName: PhoneNumbers.PhoneNumberFormat.INTERNATIONAL
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: INTERNATIONAL = 1
+    return:
+      type: PhoneNumbers.PhoneNumberFormat
+- uid: PhoneNumbers.PhoneNumberFormat.NATIONAL
+  commentId: F:PhoneNumbers.PhoneNumberFormat.NATIONAL
+  id: NATIONAL
+  parent: PhoneNumbers.PhoneNumberFormat
+  langs:
+  - csharp
+  - vb
+  name: NATIONAL
+  nameWithType: PhoneNumberFormat.NATIONAL
+  fullName: PhoneNumbers.PhoneNumberFormat.NATIONAL
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: NATIONAL = 2
+    return:
+      type: PhoneNumbers.PhoneNumberFormat
+- uid: PhoneNumbers.PhoneNumberFormat.RFC3966
+  commentId: F:PhoneNumbers.PhoneNumberFormat.RFC3966
+  id: RFC3966
+  parent: PhoneNumbers.PhoneNumberFormat
+  langs:
+  - csharp
+  - vb
+  name: RFC3966
+  nameWithType: PhoneNumberFormat.RFC3966
+  fullName: PhoneNumbers.PhoneNumberFormat.RFC3966
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: RFC3966 = 3
+    return:
+      type: PhoneNumbers.PhoneNumberFormat
+references:
+- uid: PhoneNumbers
+  commentId: N:PhoneNumbers
+  href: PhoneNumbers.html
+  name: PhoneNumbers
+  nameWithType: PhoneNumbers
+  fullName: PhoneNumbers
+- uid: PhoneNumbers.PhoneNumberFormat
+  commentId: T:PhoneNumbers.PhoneNumberFormat
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumberFormat.html
+  name: PhoneNumberFormat
+  nameWithType: PhoneNumberFormat
+  fullName: PhoneNumbers.PhoneNumberFormat

@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Class PhoneNumberJsonContext | libphonenumber-csharp API Reference </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Class PhoneNumberJsonContext | libphonenumber-csharp API Reference ">
+      
+      <meta name="description" content="Source-generated  for , so consumers building trimmed or Native AOT apps do not need to hand-write one.">
+      <link rel="icon" href="../images/favicon.svg">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../images/logo.svg" alt="libphonenumber-csharp">
+            libphonenumber-csharp
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="PhoneNumbers.Extensions.PhoneNumberJsonContext">
+
+
+
+  <h1 id="PhoneNumbers_Extensions_PhoneNumberJsonContext" data-uid="PhoneNumbers.Extensions.PhoneNumberJsonContext" class="text-break">
+Class PhoneNumberJsonContext  
+  </h1>
+
+  <div class="facts text-secondary">
+    <dl><dt>Namespace</dt><dd><a class="xref" href="PhoneNumbers.html">PhoneNumbers</a>.<a class="xref" href="PhoneNumbers.Extensions.html">Extensions</a></dd></dl>
+  <dl><dt>Assembly</dt><dd>PhoneNumbers.Extensions.dll</dd></dl>
+  </div>
+
+  <div class="markdown summary"><p>Source-generated <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.jsonserializercontext">JsonSerializerContext</a> for <a class="xref" href="PhoneNumbers.PhoneNumber.html">PhoneNumber</a>,
+so consumers building trimmed or Native AOT apps do not need to hand-write one.</p>
+</div>
+  <div class="markdown conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[JsonSourceGenerationOptions]
+[JsonSerializable(typeof(PhoneNumber))]
+public class PhoneNumberJsonContext : JsonSerializerContext, IJsonTypeInfoResolver</code></pre>
+  </div>
+
+
+
+
+  <dl class="typelist inheritance">
+    <dt>Inheritance</dt>
+    <dd>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.jsonserializercontext">JsonSerializerContext</a></div>
+      <div><span class="xref">PhoneNumberJsonContext</span></div>
+    </dd>
+  </dl>
+
+  <dl class="typelist implements">
+    <dt>Implements</dt>
+    <dd>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.ijsontypeinforesolver">IJsonTypeInfoResolver</a></div>
+    </dd>
+  </dl>
+
+
+  <dl class="typelist inheritedMembers">
+    <dt>Inherited Members</dt>
+    <dd>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.jsonserializercontext.options">JsonSerializerContext.Options</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+  </dd></dl>
+
+
+
+
+  <h2 id="PhoneNumbers_Extensions_PhoneNumberJsonContext_remarks">Remarks</h2>
+  <div class="markdown level0 remarks"><p>
+The metadata this context generates for <a class="xref" href="PhoneNumbers.PhoneNumber.html">PhoneNumber</a> is a plain,
+member-based (reflection-free) serializer — it knows nothing about
+<a class="xref" href="PhoneNumbers.Extensions.PhoneNumberConverter.html">PhoneNumberConverter</a>. Do not use it to actually serialize a
+<a class="xref" href="PhoneNumbers.PhoneNumber.html">PhoneNumber</a>: <a class="xref" href="PhoneNumbers.PhoneNumber.html">PhoneNumber</a>.DefaultInstanceForType is a
+public get-only property that returns the type's static default instance, which is itself a
+<a class="xref" href="PhoneNumbers.PhoneNumber.html">PhoneNumber</a> exposing the same DefaultInstanceForType property, so
+member-based serialization walks straight into infinite recursion (a
+<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a> for exceeding the writer's max depth, or a real
+stack overflow at larger depth limits) instead of ever producing JSON. This context exists only
+so <a class="xref" href="PhoneNumbers.PhoneNumber.html">PhoneNumber</a> can be *resolved*
+(given a <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo">JsonTypeInfo</a> to satisfy the type
+graph) when it appears as a member of another type covered by source generation — e.g. a
+consumer's own <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.jsonserializercontext">JsonSerializerContext</a> combined with this one via
+<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinforesolver">JsonTypeInfoResolver</a>.Combine — provided a converter is also registered so that
+resolved-but-broken metadata is never actually invoked.
+</p>
+<p>
+<b>Actual serialization always goes through <a class="xref" href="PhoneNumbers.Extensions.PhoneNumberConverter.html">PhoneNumberConverter</a>, never through
+the metadata generated here.</b> Prefer <a class="xref" href="PhoneNumbers.Extensions.PhoneNumberJsonOptions.html#PhoneNumbers_Extensions_PhoneNumberJsonOptions_Default">Default</a> (or
+<a class="xref" href="PhoneNumbers.Extensions.PhoneNumberJsonOptions.html#PhoneNumbers_Extensions_PhoneNumberJsonOptions_Create_System_Text_Json_JsonSerializerOptions_">Create(JsonSerializerOptions)</a>), which wires both together correctly. If you build
+your own <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.jsonserializeroptions">JsonSerializerOptions</a> instead, you must set both:
+<pre><code class="lang-csharp">options.TypeInfoResolver = PhoneNumberJsonContext.Default;
+options.Converters.Add(new PhoneNumberConverter());</code></pre>
+<p>and always serialize via <code>JsonSerializer.Serialize(value, options)</code> /
+<code>JsonSerializer.Deserialize(json, typeof(T), options)</code> — never via the raw
+<code>PhoneNumberJsonContext.Default.PhoneNumber</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1">JsonTypeInfo&lt;T&gt;</a> directly. That
+overload uses the <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1">JsonTypeInfo&lt;T&gt;</a>'s own baked-in (member-based) converter and
+bypasses <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.jsonserializeroptions.converters">Converters</a> entirely, hitting the recursion above.</p>
+
+</div>
+
+
+  <h2 class="section" id="constructors">Constructors
+</h2>
+
+
+  <a id="PhoneNumbers_Extensions_PhoneNumberJsonContext__ctor_" data-uid="PhoneNumbers.Extensions.PhoneNumberJsonContext.#ctor*"></a>
+
+  <h3 id="PhoneNumbers_Extensions_PhoneNumberJsonContext__ctor" data-uid="PhoneNumbers.Extensions.PhoneNumberJsonContext.#ctor">
+  PhoneNumberJsonContext()
+  
+  </h3>
+
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PhoneNumberJsonContext()</code></pre>
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_Extensions_PhoneNumberJsonContext__ctor_" data-uid="PhoneNumbers.Extensions.PhoneNumberJsonContext.#ctor*"></a>
+
+  <h3 id="PhoneNumbers_Extensions_PhoneNumberJsonContext__ctor_System_Text_Json_JsonSerializerOptions_" data-uid="PhoneNumbers.Extensions.PhoneNumberJsonContext.#ctor(System.Text.Json.JsonSerializerOptions)">
+  PhoneNumberJsonContext(JsonSerializerOptions)
+  
+  </h3>
+
+  <div class="markdown level1 summary"><p>Creates an instance of <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.jsonserializercontext">JsonSerializerContext</a> and binds it with the indicated <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.jsonserializeroptions">JsonSerializerOptions</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PhoneNumberJsonContext(JsonSerializerOptions options)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>options</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.jsonserializeroptions">JsonSerializerOptions</a></dt>
+    <dd><p>The run time provided options for the context instance.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+
+  <h2 class="section" id="properties">Properties
+</h2>
+
+
+  <a id="PhoneNumbers_Extensions_PhoneNumberJsonContext_Boolean_" data-uid="PhoneNumbers.Extensions.PhoneNumberJsonContext.Boolean*"></a>
+
+  <h3 id="PhoneNumbers_Extensions_PhoneNumberJsonContext_Boolean" data-uid="PhoneNumbers.Extensions.PhoneNumberJsonContext.Boolean">
+  Boolean
+  
+  </h3>
+
+  <div class="markdown level1 summary"><p>Defines the source generated JSON serialization contract metadata for a given type.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public JsonTypeInfo&lt;bool&gt; Boolean { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1">JsonTypeInfo</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_Extensions_PhoneNumberJsonContext_CountryCodeSource_" data-uid="PhoneNumbers.Extensions.PhoneNumberJsonContext.CountryCodeSource*"></a>
+
+  <h3 id="PhoneNumbers_Extensions_PhoneNumberJsonContext_CountryCodeSource" data-uid="PhoneNumbers.Extensions.PhoneNumberJsonContext.CountryCodeSource">
+  CountryCodeSource
+  
+  </h3>
+
+  <div class="markdown level1 summary"><p>Defines the source generated JSON serialization contract metadata for a given type.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public JsonTypeInfo&lt;PhoneNumber.Types.CountryCodeSource&gt; CountryCodeSource { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1">JsonTypeInfo</a>&lt;<a class="xref" href="PhoneNumbers.PhoneNumber.html">PhoneNumber</a>.<span class="xref">Types</span>.<a class="xref" href="PhoneNumbers.PhoneNumber.html">CountryCodeSource</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_Extensions_PhoneNumberJsonContext_Default_" data-uid="PhoneNumbers.Extensions.PhoneNumberJsonContext.Default*"></a>
+
+  <h3 id="PhoneNumbers_Extensions_PhoneNumberJsonContext_Default" data-uid="PhoneNumbers.Extensions.PhoneNumberJsonContext.Default">
+  Default
+  
+  </h3>
+
+  <div class="markdown level1 summary"><p>The default <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.jsonserializercontext">JsonSerializerContext</a> associated with a default <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.jsonserializeroptions">JsonSerializerOptions</a> instance.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static PhoneNumberJsonContext Default { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="PhoneNumbers.Extensions.PhoneNumberJsonContext.html">PhoneNumberJsonContext</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_Extensions_PhoneNumberJsonContext_GeneratedSerializerOptions_" data-uid="PhoneNumbers.Extensions.PhoneNumberJsonContext.GeneratedSerializerOptions*"></a>
+
+  <h3 id="PhoneNumbers_Extensions_PhoneNumberJsonContext_GeneratedSerializerOptions" data-uid="PhoneNumbers.Extensions.PhoneNumberJsonContext.GeneratedSerializerOptions">
+  GeneratedSerializerOptions
+  
+  </h3>
+
+  <div class="markdown level1 summary"><p>The source-generated options associated with this context.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override JsonSerializerOptions? GeneratedSerializerOptions { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.jsonserializeroptions">JsonSerializerOptions</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_Extensions_PhoneNumberJsonContext_Int32_" data-uid="PhoneNumbers.Extensions.PhoneNumberJsonContext.Int32*"></a>
+
+  <h3 id="PhoneNumbers_Extensions_PhoneNumberJsonContext_Int32" data-uid="PhoneNumbers.Extensions.PhoneNumberJsonContext.Int32">
+  Int32
+  
+  </h3>
+
+  <div class="markdown level1 summary"><p>Defines the source generated JSON serialization contract metadata for a given type.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public JsonTypeInfo&lt;int&gt; Int32 { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1">JsonTypeInfo</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_Extensions_PhoneNumberJsonContext_PhoneNumber_" data-uid="PhoneNumbers.Extensions.PhoneNumberJsonContext.PhoneNumber*"></a>
+
+  <h3 id="PhoneNumbers_Extensions_PhoneNumberJsonContext_PhoneNumber" data-uid="PhoneNumbers.Extensions.PhoneNumberJsonContext.PhoneNumber">
+  PhoneNumber
+  
+  </h3>
+
+  <div class="markdown level1 summary"><p>Defines the source generated JSON serialization contract metadata for a given type.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public JsonTypeInfo&lt;PhoneNumber&gt; PhoneNumber { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1">JsonTypeInfo</a>&lt;<a class="xref" href="PhoneNumbers.PhoneNumber.html">PhoneNumber</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_Extensions_PhoneNumberJsonContext_String_" data-uid="PhoneNumbers.Extensions.PhoneNumberJsonContext.String*"></a>
+
+  <h3 id="PhoneNumbers_Extensions_PhoneNumberJsonContext_String" data-uid="PhoneNumbers.Extensions.PhoneNumberJsonContext.String">
+  String
+  
+  </h3>
+
+  <div class="markdown level1 summary"><p>Defines the source generated JSON serialization contract metadata for a given type.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public JsonTypeInfo&lt;string&gt; String { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1">JsonTypeInfo</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_Extensions_PhoneNumberJsonContext_UInt64_" data-uid="PhoneNumbers.Extensions.PhoneNumberJsonContext.UInt64*"></a>
+
+  <h3 id="PhoneNumbers_Extensions_PhoneNumberJsonContext_UInt64" data-uid="PhoneNumbers.Extensions.PhoneNumberJsonContext.UInt64">
+  UInt64
+  
+  </h3>
+
+  <div class="markdown level1 summary"><p>Defines the source generated JSON serialization contract metadata for a given type.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public JsonTypeInfo&lt;ulong&gt; UInt64 { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1">JsonTypeInfo</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint64">ulong</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h2 class="section" id="methods">Methods
+</h2>
+
+
+  <a id="PhoneNumbers_Extensions_PhoneNumberJsonContext_GetTypeInfo_" data-uid="PhoneNumbers.Extensions.PhoneNumberJsonContext.GetTypeInfo*"></a>
+
+  <h3 id="PhoneNumbers_Extensions_PhoneNumberJsonContext_GetTypeInfo_System_Type_" data-uid="PhoneNumbers.Extensions.PhoneNumberJsonContext.GetTypeInfo(System.Type)">
+  GetTypeInfo(Type)
+  
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets metadata for the specified type.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override JsonTypeInfo? GetTypeInfo(Type type)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>type</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.type">Type</a></dt>
+    <dd><p>The type to fetch metadata for.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo">JsonTypeInfo</a></dt>
+    <dd><p>The metadata for the specified type, or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> if the context has no metadata for the type.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+
+</article>
+
+
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span><script>(function(){function sync(){var dark=document.documentElement.getAttribute('data-bs-theme')==='dark';var link=document.querySelector('link[rel="icon"]');if(!link)return;link.href=link.href.replace(/[^/]+$/,dark?'logo-dark.svg':'logo.svg');}sync();new MutationObserver(sync).observe(document.documentElement,{attributes:true,attributeFilter:['data-bs-theme']});})();</script>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

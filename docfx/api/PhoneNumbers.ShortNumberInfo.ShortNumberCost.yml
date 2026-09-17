@@ -1,0 +1,128 @@
+### YamlMime:ManagedReference
+items:
+- uid: PhoneNumbers.ShortNumberInfo.ShortNumberCost
+  commentId: T:PhoneNumbers.ShortNumberInfo.ShortNumberCost
+  id: ShortNumberInfo.ShortNumberCost
+  parent: PhoneNumbers
+  children:
+  - PhoneNumbers.ShortNumberInfo.ShortNumberCost.PREMIUM_RATE
+  - PhoneNumbers.ShortNumberInfo.ShortNumberCost.STANDARD_RATE
+  - PhoneNumbers.ShortNumberInfo.ShortNumberCost.TOLL_FREE
+  - PhoneNumbers.ShortNumberInfo.ShortNumberCost.UNKNOWN_COST
+  langs:
+  - csharp
+  - vb
+  name: ShortNumberInfo.ShortNumberCost
+  nameWithType: ShortNumberInfo.ShortNumberCost
+  fullName: PhoneNumbers.ShortNumberInfo.ShortNumberCost
+  type: Enum
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: Cost categories of short numbers.
+  example: []
+  syntax:
+    content: public enum ShortNumberInfo.ShortNumberCost
+    content.vb: Public Enum ShortNumberInfo.ShortNumberCost
+- uid: PhoneNumbers.ShortNumberInfo.ShortNumberCost.TOLL_FREE
+  commentId: F:PhoneNumbers.ShortNumberInfo.ShortNumberCost.TOLL_FREE
+  id: TOLL_FREE
+  parent: PhoneNumbers.ShortNumberInfo.ShortNumberCost
+  langs:
+  - csharp
+  - vb
+  name: TOLL_FREE
+  nameWithType: ShortNumberInfo.ShortNumberCost.TOLL_FREE
+  fullName: PhoneNumbers.ShortNumberInfo.ShortNumberCost.TOLL_FREE
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: TOLL_FREE = 0
+    return:
+      type: PhoneNumbers.ShortNumberInfo.ShortNumberCost
+- uid: PhoneNumbers.ShortNumberInfo.ShortNumberCost.STANDARD_RATE
+  commentId: F:PhoneNumbers.ShortNumberInfo.ShortNumberCost.STANDARD_RATE
+  id: STANDARD_RATE
+  parent: PhoneNumbers.ShortNumberInfo.ShortNumberCost
+  langs:
+  - csharp
+  - vb
+  name: STANDARD_RATE
+  nameWithType: ShortNumberInfo.ShortNumberCost.STANDARD_RATE
+  fullName: PhoneNumbers.ShortNumberInfo.ShortNumberCost.STANDARD_RATE
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: STANDARD_RATE = 1
+    return:
+      type: PhoneNumbers.ShortNumberInfo.ShortNumberCost
+- uid: PhoneNumbers.ShortNumberInfo.ShortNumberCost.PREMIUM_RATE
+  commentId: F:PhoneNumbers.ShortNumberInfo.ShortNumberCost.PREMIUM_RATE
+  id: PREMIUM_RATE
+  parent: PhoneNumbers.ShortNumberInfo.ShortNumberCost
+  langs:
+  - csharp
+  - vb
+  name: PREMIUM_RATE
+  nameWithType: ShortNumberInfo.ShortNumberCost.PREMIUM_RATE
+  fullName: PhoneNumbers.ShortNumberInfo.ShortNumberCost.PREMIUM_RATE
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: PREMIUM_RATE = 2
+    return:
+      type: PhoneNumbers.ShortNumberInfo.ShortNumberCost
+- uid: PhoneNumbers.ShortNumberInfo.ShortNumberCost.UNKNOWN_COST
+  commentId: F:PhoneNumbers.ShortNumberInfo.ShortNumberCost.UNKNOWN_COST
+  id: UNKNOWN_COST
+  parent: PhoneNumbers.ShortNumberInfo.ShortNumberCost
+  langs:
+  - csharp
+  - vb
+  name: UNKNOWN_COST
+  nameWithType: ShortNumberInfo.ShortNumberCost.UNKNOWN_COST
+  fullName: PhoneNumbers.ShortNumberInfo.ShortNumberCost.UNKNOWN_COST
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: UNKNOWN_COST = 3
+    return:
+      type: PhoneNumbers.ShortNumberInfo.ShortNumberCost
+references:
+- uid: PhoneNumbers
+  commentId: N:PhoneNumbers
+  href: PhoneNumbers.html
+  name: PhoneNumbers
+  nameWithType: PhoneNumbers
+  fullName: PhoneNumbers
+- uid: PhoneNumbers.ShortNumberInfo.ShortNumberCost
+  commentId: T:PhoneNumbers.ShortNumberInfo.ShortNumberCost
+  parent: PhoneNumbers
+  href: PhoneNumbers.ShortNumberInfo.html
+  name: ShortNumberInfo.ShortNumberCost
+  nameWithType: ShortNumberInfo.ShortNumberCost
+  fullName: PhoneNumbers.ShortNumberInfo.ShortNumberCost
+  spec.csharp:
+  - uid: PhoneNumbers.ShortNumberInfo
+    name: ShortNumberInfo
+    href: PhoneNumbers.ShortNumberInfo.html
+  - name: .
+  - uid: PhoneNumbers.ShortNumberInfo.ShortNumberCost
+    name: ShortNumberCost
+    href: PhoneNumbers.ShortNumberInfo.ShortNumberCost.html
+  spec.vb:
+  - uid: PhoneNumbers.ShortNumberInfo
+    name: ShortNumberInfo
+    href: PhoneNumbers.ShortNumberInfo.html
+  - name: .
+  - uid: PhoneNumbers.ShortNumberInfo.ShortNumberCost
+    name: ShortNumberCost
+    href: PhoneNumbers.ShortNumberInfo.ShortNumberCost.html

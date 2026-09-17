@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Namespace PhoneNumbers | libphonenumber-csharp API Reference </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Namespace PhoneNumbers | libphonenumber-csharp API Reference ">
+      
+      
+      <link rel="icon" href="../images/favicon.svg">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../images/logo.svg" alt="libphonenumber-csharp">
+            libphonenumber-csharp
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="PhoneNumbers">
+
+  <h1 id="PhoneNumbers" data-uid="PhoneNumbers" class="text-break">Namespace PhoneNumbers</h1>
+  <div class="markdown level0 summary"></div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="markdown level0 remarks"></div>
+
+    <h3 id="classes">
+Classes
+</h3>
+    <dl class="jumplist">
+      <dt><a class="xref" href="PhoneNumbers.AsYouTypeFormatter.html">AsYouTypeFormatter</a></dt>
+      <dd><p>A formatter which formats phone numbers as they are entered.</p>
+<p>
+An AsYouTypeFormatter can be created by invoking
+<a class="xref" href="PhoneNumbers.PhoneNumberUtil.html#PhoneNumbers_PhoneNumberUtil_GetAsYouTypeFormatter_System_String_">GetAsYouTypeFormatter(string)</a>. After that, digits can be added by invoking
+<a class="xref" href="PhoneNumbers.AsYouTypeFormatter.html#PhoneNumbers_AsYouTypeFormatter_InputDigit_System_Char_">InputDigit(char)</a> on the formatter instance, and the partially formatted phone number will be
+returned each time a digit is added. {@link #clear} can be invoked before formatting a new
+number.
+</p>
+<p>See the unittests for more details on how the formatter is to be used.</p>
+<!-- @author Shaopeng Jia -->
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="PhoneNumbers.LeniencyExtensions.html">LeniencyExtensions</a></dt>
+      <dd></dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="PhoneNumbers.Locale.html">Locale</a></dt>
+      <dd></dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="PhoneNumbers.LocaleData.html">LocaleData</a></dt>
+      <dd><p>Holds a map from ISO 3166-1 country code (e.g. GB) to a dict. Each dict maps from an
+ISO 639-1 language code (e.g. ja) to the country's name in that language.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="PhoneNumbers.MissingMetadataException.html">MissingMetadataException</a></dt>
+      <dd><p>Thrown when metadata for a region or country calling code that is expected to exist cannot
+be loaded (resource missing, stream truncated, etc.). Mirrors
+<code>com.google.i18n.phonenumbers.MissingMetadataException</code> in the Java upstream.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="PhoneNumbers.NumberFormat.html">NumberFormat</a></dt>
+      <dd></dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="PhoneNumbers.NumberParseException.html">NumberParseException</a></dt>
+      <dd></dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="PhoneNumbers.PhoneMetadata.html">PhoneMetadata</a></dt>
+      <dd></dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="PhoneNumbers.PhoneNumber.html">PhoneNumber</a></dt>
+      <dd></dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="PhoneNumbers.PhoneNumberDesc.html">PhoneNumberDesc</a></dt>
+      <dd></dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="PhoneNumbers.PhoneNumberMatch.html">PhoneNumberMatch</a></dt>
+      <dd></dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="PhoneNumbers.PhoneNumberMatcher.html">PhoneNumberMatcher</a></dt>
+      <dd><p>The phone number pattern used by {@link #find}, similar to
+<code> PhoneNumberUtil.VALID_PHONE_NUMBER</code>, but with the following differences:</p>
+<ul>
+  <li>All captures are limited in order to place an upper bound to the text matched by the pattern. </li>
+</ul>
+<ul>
+  <li>Leading punctuation / plus signs are limited. </li>
+  <li>Consecutive occurrences of punctuation are limited. </li>
+  <li>Number of digits is limited. </li>
+</ul>
+<ul>
+  <li>No whitespace is allowed at the start or end. </li>
+  <li>No alpha digits (vanity numbers such as 1-800-SIX-FLAGS) are currently supported. </li>
+</ul>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="PhoneNumbers.PhoneNumberOfflineGeocoder.html">PhoneNumberOfflineGeocoder</a></dt>
+      <dd><p>An offline geocoder which provides geographical information related to a phone number.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="PhoneNumbers.PhoneNumberToCarrierMapper.html">PhoneNumberToCarrierMapper</a></dt>
+      <dd><p>A phone prefix mapper which provides carrier information related to a phone number.</p>
+<p>
+Carrier data is the one the number was originally allocated to. If the country supports mobile
+number portability the number might not belong to the returned carrier anymore.
+</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="PhoneNumbers.PhoneNumberToTimeZonesMapper.html">PhoneNumberToTimeZonesMapper</a></dt>
+      <dd></dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="PhoneNumbers.PhoneNumberUtil.html">PhoneNumberUtil</a></dt>
+      <dd><p>Utility for international phone numbers. Functionality includes formatting, parsing and
+validation.</p>
+<p>
+If you use this library, and want to be notified about important changes, please sign up to
+our mailing list: http://groups.google.com/group/libphonenumber-discuss/about
+</p>
+<p>NOTE: A lot of methods in this class require Region Code strings.These must be provided using
+ISO 3166-1 two-letter country-code format.These should be in upper-case. The list of the codes
+can be found here:
+<a href="http://www.iso.org/iso/country_codes/iso_3166_code_lists/country_names_and_code_elements.htm">http://www.iso.org/iso/country_codes/iso_3166_code_lists/country_names_and_code_elements.htm</a></p>
+<!--
+@author Shaopeng Jia
+@author Lara Rennie
+-->
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="PhoneNumbers.ShortNumberInfo.html">ShortNumberInfo</a></dt>
+      <dd><p>Methods for getting information about short phone numbers, such as short codes and emergency
+numbers. Note that most commercial short numbers are not handled here, but by the
+<a class="xref" href="PhoneNumbers.PhoneNumberUtil.html">PhoneNumberUtil</a>.</p>
+<p>@author Shaopeng Jia
+@author David Yonge-Mallo</p>
+</dd>
+    </dl>
+    <h3 id="enums">
+Enums
+</h3>
+    <dl class="jumplist">
+      <dt><a class="xref" href="PhoneNumbers.ErrorType.html">ErrorType</a></dt>
+      <dd><p>The reason that a string could not be interpreted as a phone number.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="PhoneNumbers.PhoneNumberFormat.html">PhoneNumberFormat</a></dt>
+      <dd><p>INTERNATIONAL and NATIONAL formats are consistent with the definition in ITU-T Recommendation
+E123. For example, the number of the Google Switzerland office will be written as
+&quot;+41 44 668 1800&quot; in INTERNATIONAL format, and as &quot;044 668 1800&quot; in NATIONAL format.
+E164 format is as per INTERNATIONAL format but with no formatting applied, e.g.
+&quot;+41446681800&quot;. RFC3966 is as per INTERNATIONAL format, but with all spaces and other
+separating symbols replaced with a hyphen, and with any phone number extension appended with
+&quot;;ext=&quot;. It also will have a prefix of &quot;tel:&quot; added, e.g. &quot;tel:+41-44-668-1800&quot;.</p>
+<p>Note: If you are considering storing the number in a neutral format, you are highly advised to
+use the PhoneNumber class.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="PhoneNumbers.PhoneNumberType.html">PhoneNumberType</a></dt>
+      <dd></dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="PhoneNumbers.PhoneNumberUtil.Leniency.html">PhoneNumberUtil.Leniency</a></dt>
+      <dd><p>Leniency when <a class="xref" href="PhoneNumbers.PhoneNumberUtil.html#PhoneNumbers_PhoneNumberUtil_FindNumbers_System_String_System_String_">FindNumbers(string, string)</a> finding potential phone numbers in text
+segments. The levels here are ordered in increasing strictness.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="PhoneNumbers.PhoneNumberUtil.MatchType.html">PhoneNumberUtil.MatchType</a></dt>
+      <dd><p>Types of phone number matches. See detailed description beside the isNumberMatch() method.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="PhoneNumbers.PhoneNumberUtil.ValidationResult.html">PhoneNumberUtil.ValidationResult</a></dt>
+      <dd><p>Possible outcomes when testing if a PhoneNumber is possible.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="PhoneNumbers.ShortNumberInfo.ShortNumberCost.html">ShortNumberInfo.ShortNumberCost</a></dt>
+      <dd><p>Cost categories of short numbers.</p>
+</dd>
+    </dl>
+    <h3 id="delegates">
+Delegates
+</h3>
+    <dl class="jumplist">
+      <dt><a class="xref" href="PhoneNumbers.PhoneNumberMatcher.CheckGroups.html">PhoneNumberMatcher.CheckGroups</a></dt>
+      <dd><p>Returns true if the groups of digits found in our candidate phone number match our
+expectations.</p>
+</dd>
+    </dl>
+
+
+</article>
+
+
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span><script>(function(){function sync(){var dark=document.documentElement.getAttribute('data-bs-theme')==='dark';var link=document.querySelector('link[rel="icon"]');if(!link)return;link.href=link.href.replace(/[^/]+$/,dark?'logo-dark.svg':'logo.svg');}sync();new MutationObserver(sync).observe(document.documentElement,{attributes:true,attributeFilter:['data-bs-theme']});})();</script>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

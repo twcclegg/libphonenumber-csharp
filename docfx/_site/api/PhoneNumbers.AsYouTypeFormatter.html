@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Class AsYouTypeFormatter | libphonenumber-csharp API Reference </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Class AsYouTypeFormatter | libphonenumber-csharp API Reference ">
+      
+      <meta name="description" content="A formatter which formats phone numbers as they are entered.  An AsYouTypeFormatter can be created by invoking . After that, digits can be added by invoking  on the formatter instance, and the partially formatted phone number will be returned each time a digit is added. {@link #clear} can be invoked before formatting a new number.  See the unittests for more details on how the formatter is to be used.">
+      <link rel="icon" href="../images/favicon.svg">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../images/logo.svg" alt="libphonenumber-csharp">
+            libphonenumber-csharp
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="PhoneNumbers.AsYouTypeFormatter">
+
+
+
+  <h1 id="PhoneNumbers_AsYouTypeFormatter" data-uid="PhoneNumbers.AsYouTypeFormatter" class="text-break">
+Class AsYouTypeFormatter  
+  </h1>
+
+  <div class="facts text-secondary">
+    <dl><dt>Namespace</dt><dd><a class="xref" href="PhoneNumbers.html">PhoneNumbers</a></dd></dl>
+  <dl><dt>Assembly</dt><dd>PhoneNumbers.dll</dd></dl>
+  </div>
+
+  <div class="markdown summary"><p>A formatter which formats phone numbers as they are entered.</p>
+<p>
+An AsYouTypeFormatter can be created by invoking
+<a class="xref" href="PhoneNumbers.PhoneNumberUtil.html#PhoneNumbers_PhoneNumberUtil_GetAsYouTypeFormatter_System_String_">GetAsYouTypeFormatter(string)</a>. After that, digits can be added by invoking
+<a class="xref" href="PhoneNumbers.AsYouTypeFormatter.html#PhoneNumbers_AsYouTypeFormatter_InputDigit_System_Char_">InputDigit(char)</a> on the formatter instance, and the partially formatted phone number will be
+returned each time a digit is added. {@link #clear} can be invoked before formatting a new
+number.
+</p>
+<p>See the unittests for more details on how the formatter is to be used.</p>
+<!-- @author Shaopeng Jia -->
+</div>
+  <div class="markdown conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class AsYouTypeFormatter</code></pre>
+  </div>
+
+
+
+
+  <dl class="typelist inheritance">
+    <dt>Inheritance</dt>
+    <dd>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+      <div><span class="xref">AsYouTypeFormatter</span></div>
+    </dd>
+  </dl>
+
+
+
+  <dl class="typelist inheritedMembers">
+    <dt>Inherited Members</dt>
+    <dd>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+  </dd></dl>
+
+
+
+
+
+
+  <h2 class="section" id="constructors">Constructors
+</h2>
+
+
+  <a id="PhoneNumbers_AsYouTypeFormatter__ctor_" data-uid="PhoneNumbers.AsYouTypeFormatter.#ctor*"></a>
+
+  <h3 id="PhoneNumbers_AsYouTypeFormatter__ctor_System_String_PhoneNumbers_PhoneNumberUtil_" data-uid="PhoneNumbers.AsYouTypeFormatter.#ctor(System.String,PhoneNumbers.PhoneNumberUtil)">
+  AsYouTypeFormatter(string, PhoneNumberUtil)
+  
+  </h3>
+
+  <div class="markdown level1 summary"><p>Constructs an as-you-type formatter. Should be obtained from
+<a class="xref" href="PhoneNumbers.PhoneNumberUtil.html#PhoneNumbers_PhoneNumberUtil_GetAsYouTypeFormatter_System_String_">GetAsYouTypeFormatter(string)</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public AsYouTypeFormatter(string regionCode, PhoneNumberUtil phoneUtil)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>regionCode</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd><p>The country/region where the phone number is being entered.</p>
+</dd>
+    <dt><code>phoneUtil</code> <a class="xref" href="PhoneNumbers.PhoneNumberUtil.html">PhoneNumberUtil</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+
+  <h2 class="section" id="methods">Methods
+</h2>
+
+
+  <a id="PhoneNumbers_AsYouTypeFormatter_Clear_" data-uid="PhoneNumbers.AsYouTypeFormatter.Clear*"></a>
+
+  <h3 id="PhoneNumbers_AsYouTypeFormatter_Clear" data-uid="PhoneNumbers.AsYouTypeFormatter.Clear">
+  Clear()
+  
+  </h3>
+
+  <div class="markdown level1 summary"><p>Clears the internal state of the formatter, so it can be reused.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Clear()</code></pre>
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_AsYouTypeFormatter_GetRememberedPosition_" data-uid="PhoneNumbers.AsYouTypeFormatter.GetRememberedPosition*"></a>
+
+  <h3 id="PhoneNumbers_AsYouTypeFormatter_GetRememberedPosition" data-uid="PhoneNumbers.AsYouTypeFormatter.GetRememberedPosition">
+  GetRememberedPosition()
+  
+  </h3>
+
+  <div class="markdown level1 summary"><p>Returns the current position in the partially formatted phone number of the character which was
+previously passed in as the parameter of {@link #inputDigitAndRememberPosition}.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int GetRememberedPosition()</code></pre>
+  </div>
+
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_AsYouTypeFormatter_InputDigit_" data-uid="PhoneNumbers.AsYouTypeFormatter.InputDigit*"></a>
+
+  <h3 id="PhoneNumbers_AsYouTypeFormatter_InputDigit_System_Char_" data-uid="PhoneNumbers.AsYouTypeFormatter.InputDigit(System.Char)">
+  InputDigit(char)
+  
+  </h3>
+
+  <div class="markdown level1 summary"><p>Formats a phone number on-the-fly as each digit is entered.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string InputDigit(char nextChar)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>nextChar</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a></dt>
+    <dd><p>The most recently entered digit of a phone number. Formatting characters are
+allowed, but as soon as they are encountered this method formats the number as entered and
+not &quot;as you type&quot; anymore. Full width digits and Arabic-indic digits are allowed, and will
+be shown as they are.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd><p>The partially formatted phone number.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="PhoneNumbers_AsYouTypeFormatter_InputDigitAndRememberPosition_" data-uid="PhoneNumbers.AsYouTypeFormatter.InputDigitAndRememberPosition*"></a>
+
+  <h3 id="PhoneNumbers_AsYouTypeFormatter_InputDigitAndRememberPosition_System_Char_" data-uid="PhoneNumbers.AsYouTypeFormatter.InputDigitAndRememberPosition(System.Char)">
+  InputDigitAndRememberPosition(char)
+  
+  </h3>
+
+  <div class="markdown level1 summary"><p>Same as <a class="xref" href="PhoneNumbers.AsYouTypeFormatter.html#PhoneNumbers_AsYouTypeFormatter_InputDigit_System_Char_">InputDigit(char)</a>, but remembers the position where nextChar is inserted, so
+that it can be retrieved later by using <a class="xref" href="PhoneNumbers.AsYouTypeFormatter.html#PhoneNumbers_AsYouTypeFormatter_GetRememberedPosition">GetRememberedPosition()</a>. The remembered
+position will be automatically adjusted if additional formatting characters are later
+inserted/removed in front of nextChar.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string InputDigitAndRememberPosition(char nextChar)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>nextChar</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a></dt>
+    <dd></dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+
+</article>
+
+
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span><script>(function(){function sync(){var dark=document.documentElement.getAttribute('data-bs-theme')==='dark';var link=document.querySelector('link[rel="icon"]');if(!link)return;link.href=link.href.replace(/[^/]+$/,dark?'logo-dark.svg':'logo.svg');}sync();new MutationObserver(sync).observe(document.documentElement,{attributes:true,attributeFilter:['data-bs-theme']});})();</script>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

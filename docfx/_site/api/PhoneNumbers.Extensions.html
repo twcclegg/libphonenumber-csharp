@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Namespace PhoneNumbers.Extensions | libphonenumber-csharp API Reference </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Namespace PhoneNumbers.Extensions | libphonenumber-csharp API Reference ">
+      
+      
+      <link rel="icon" href="../images/favicon.svg">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../images/logo.svg" alt="libphonenumber-csharp">
+            libphonenumber-csharp
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="PhoneNumbers.Extensions">
+
+  <h1 id="PhoneNumbers_Extensions" data-uid="PhoneNumbers.Extensions" class="text-break">Namespace PhoneNumbers.Extensions</h1>
+  <div class="markdown level0 summary"></div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="markdown level0 remarks"></div>
+
+    <h3 id="classes">
+Classes
+</h3>
+    <dl class="jumplist">
+      <dt><a class="xref" href="PhoneNumbers.Extensions.PhoneNumber.html">PhoneNumber</a></dt>
+      <dd></dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="PhoneNumbers.Extensions.PhoneNumberAttribute.html">PhoneNumberAttribute</a></dt>
+      <dd><p>Validates that a property, field, or parameter is a valid phone number, using the same
+validity check as <a class="xref" href="PhoneNumbers.PhoneNumberUtil.html#PhoneNumbers_PhoneNumberUtil_IsValidNumber_PhoneNumbers_PhoneNumber_">IsValidNumber(PhoneNumber)</a> rather than a loose format
+regex. Accepts a <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a> (parsed via <a class="xref" href="PhoneNumbers.Extensions.PhoneNumberAttribute.html#PhoneNumbers_Extensions_PhoneNumberAttribute_Region">Region</a>) or an already-parsed
+<a class="xref" href="PhoneNumbers.PhoneNumber.html">PhoneNumber</a>.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="PhoneNumbers.Extensions.PhoneNumberConverter.html">PhoneNumberConverter</a></dt>
+      <dd></dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="PhoneNumbers.Extensions.PhoneNumberExtensions.html">PhoneNumberExtensions</a></dt>
+      <dd><p>C#-idiomatic extension methods over <a class="xref" href="PhoneNumbers.PhoneNumber.html">PhoneNumber</a> for the formatting
+and validity checks callers reach for most often, so they read as
+<code>number.ToE164()</code> / <code>number.IsValid()</code> instead of
+<code>PhoneNumberUtil.GetInstance().Format(number, PhoneNumberFormat.E164)</code>.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="PhoneNumbers.Extensions.PhoneNumberJsonContext.html">PhoneNumberJsonContext</a></dt>
+      <dd><p>Source-generated <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.jsonserializercontext">JsonSerializerContext</a> for <a class="xref" href="PhoneNumbers.PhoneNumber.html">PhoneNumber</a>,
+so consumers building trimmed or Native AOT apps do not need to hand-write one.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="PhoneNumbers.Extensions.PhoneNumberJsonOptions.html">PhoneNumberJsonOptions</a></dt>
+      <dd><p>Ready-made <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.jsonserializeroptions">JsonSerializerOptions</a> for serializing <a class="xref" href="PhoneNumbers.PhoneNumber.html">PhoneNumber</a>
+under Native AOT / trimming, where the reflection-based default resolver is unavailable.
+Combines <a class="xref" href="PhoneNumbers.Extensions.PhoneNumberJsonContext.html">PhoneNumberJsonContext</a> (source-generated type metadata) with
+<a class="xref" href="PhoneNumbers.Extensions.PhoneNumberConverter.html">PhoneNumberConverter</a> (the actual read/write logic) so callers cannot wire the two
+together incorrectly — see the remarks on <a class="xref" href="PhoneNumbers.Extensions.PhoneNumberJsonContext.html">PhoneNumberJsonContext</a> for why doing it
+by hand is easy to get wrong.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="PhoneNumbers.Extensions.PhoneNumberTypeConverter.html">PhoneNumberTypeConverter</a></dt>
+      <dd><p>Converts a <a class="xref" href="PhoneNumbers.PhoneNumber.html">PhoneNumber</a> to and from its E.164 string
+representation. Not applied automatically — register it where needed, e.g.
+<code>TypeDescriptor.AddAttributes(typeof(PhoneNumbers.PhoneNumber), new TypeConverterAttribute(typeof(PhoneNumberTypeConverter)));</code></p>
+</dd>
+    </dl>
+
+
+</article>
+
+
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span><script>(function(){function sync(){var dark=document.documentElement.getAttribute('data-bs-theme')==='dark';var link=document.querySelector('link[rel="icon"]');if(!link)return;link.href=link.href.replace(/[^/]+$/,dark?'logo-dark.svg':'logo.svg');}sync();new MutationObserver(sync).observe(document.documentElement,{attributes:true,attributeFilter:['data-bs-theme']});})();</script>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

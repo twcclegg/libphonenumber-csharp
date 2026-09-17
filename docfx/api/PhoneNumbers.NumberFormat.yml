@@ -1,0 +1,1155 @@
+### YamlMime:ManagedReference
+items:
+- uid: PhoneNumbers.NumberFormat
+  commentId: T:PhoneNumbers.NumberFormat
+  id: NumberFormat
+  parent: PhoneNumbers
+  children:
+  - PhoneNumbers.NumberFormat.CreateBuilder
+  - PhoneNumbers.NumberFormat.CreateBuilder(PhoneNumbers.NumberFormat)
+  - PhoneNumbers.NumberFormat.CreateBuilderForType
+  - PhoneNumbers.NumberFormat.DefaultInstance
+  - PhoneNumbers.NumberFormat.DefaultInstanceForType
+  - PhoneNumbers.NumberFormat.DomesticCarrierCodeFormattingRule
+  - PhoneNumbers.NumberFormat.DomesticCarrierCodeFormattingRuleFieldNumber
+  - PhoneNumbers.NumberFormat.Equals(System.Object)
+  - PhoneNumbers.NumberFormat.Format
+  - PhoneNumbers.NumberFormat.FormatFieldNumber
+  - PhoneNumbers.NumberFormat.GetHashCode
+  - PhoneNumbers.NumberFormat.GetLeadingDigitsPattern(System.Int32)
+  - PhoneNumbers.NumberFormat.HasDomesticCarrierCodeFormattingRule
+  - PhoneNumbers.NumberFormat.HasFormat
+  - PhoneNumbers.NumberFormat.HasNationalPrefixFormattingRule
+  - PhoneNumbers.NumberFormat.HasNationalPrefixOptionalWhenFormatting
+  - PhoneNumbers.NumberFormat.HasPattern
+  - PhoneNumbers.NumberFormat.IsInitialized
+  - PhoneNumbers.NumberFormat.LeadingDigitsPatternCount
+  - PhoneNumbers.NumberFormat.LeadingDigitsPatternFieldNumber
+  - PhoneNumbers.NumberFormat.LeadingDigitsPatternList
+  - PhoneNumbers.NumberFormat.NationalPrefixFormattingRule
+  - PhoneNumbers.NumberFormat.NationalPrefixFormattingRuleFieldNumber
+  - PhoneNumbers.NumberFormat.NationalPrefixOptionalWhenFormatting
+  - PhoneNumbers.NumberFormat.NationalPrefixOptionalWhenFormattingFieldNumber
+  - PhoneNumbers.NumberFormat.Pattern
+  - PhoneNumbers.NumberFormat.PatternFieldNumber
+  - PhoneNumbers.NumberFormat.ToBuilder
+  langs:
+  - csharp
+  - vb
+  name: NumberFormat
+  nameWithType: NumberFormat
+  fullName: PhoneNumbers.NumberFormat
+  type: Class
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public sealed class NumberFormat
+    content.vb: Public NotInheritable Class NumberFormat
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetType
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: PhoneNumbers.NumberFormat.PatternFieldNumber
+  commentId: F:PhoneNumbers.NumberFormat.PatternFieldNumber
+  id: PatternFieldNumber
+  parent: PhoneNumbers.NumberFormat
+  langs:
+  - csharp
+  - vb
+  name: PatternFieldNumber
+  nameWithType: NumberFormat.PatternFieldNumber
+  fullName: PhoneNumbers.NumberFormat.PatternFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int PatternFieldNumber = 1
+    return:
+      type: System.Int32
+    content.vb: Public Const PatternFieldNumber As Integer = 1
+- uid: PhoneNumbers.NumberFormat.FormatFieldNumber
+  commentId: F:PhoneNumbers.NumberFormat.FormatFieldNumber
+  id: FormatFieldNumber
+  parent: PhoneNumbers.NumberFormat
+  langs:
+  - csharp
+  - vb
+  name: FormatFieldNumber
+  nameWithType: NumberFormat.FormatFieldNumber
+  fullName: PhoneNumbers.NumberFormat.FormatFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int FormatFieldNumber = 2
+    return:
+      type: System.Int32
+    content.vb: Public Const FormatFieldNumber As Integer = 2
+- uid: PhoneNumbers.NumberFormat.LeadingDigitsPatternFieldNumber
+  commentId: F:PhoneNumbers.NumberFormat.LeadingDigitsPatternFieldNumber
+  id: LeadingDigitsPatternFieldNumber
+  parent: PhoneNumbers.NumberFormat
+  langs:
+  - csharp
+  - vb
+  name: LeadingDigitsPatternFieldNumber
+  nameWithType: NumberFormat.LeadingDigitsPatternFieldNumber
+  fullName: PhoneNumbers.NumberFormat.LeadingDigitsPatternFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int LeadingDigitsPatternFieldNumber = 3
+    return:
+      type: System.Int32
+    content.vb: Public Const LeadingDigitsPatternFieldNumber As Integer = 3
+- uid: PhoneNumbers.NumberFormat.NationalPrefixFormattingRuleFieldNumber
+  commentId: F:PhoneNumbers.NumberFormat.NationalPrefixFormattingRuleFieldNumber
+  id: NationalPrefixFormattingRuleFieldNumber
+  parent: PhoneNumbers.NumberFormat
+  langs:
+  - csharp
+  - vb
+  name: NationalPrefixFormattingRuleFieldNumber
+  nameWithType: NumberFormat.NationalPrefixFormattingRuleFieldNumber
+  fullName: PhoneNumbers.NumberFormat.NationalPrefixFormattingRuleFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int NationalPrefixFormattingRuleFieldNumber = 4
+    return:
+      type: System.Int32
+    content.vb: Public Const NationalPrefixFormattingRuleFieldNumber As Integer = 4
+- uid: PhoneNumbers.NumberFormat.NationalPrefixOptionalWhenFormattingFieldNumber
+  commentId: F:PhoneNumbers.NumberFormat.NationalPrefixOptionalWhenFormattingFieldNumber
+  id: NationalPrefixOptionalWhenFormattingFieldNumber
+  parent: PhoneNumbers.NumberFormat
+  langs:
+  - csharp
+  - vb
+  name: NationalPrefixOptionalWhenFormattingFieldNumber
+  nameWithType: NumberFormat.NationalPrefixOptionalWhenFormattingFieldNumber
+  fullName: PhoneNumbers.NumberFormat.NationalPrefixOptionalWhenFormattingFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int NationalPrefixOptionalWhenFormattingFieldNumber = 6
+    return:
+      type: System.Int32
+    content.vb: Public Const NationalPrefixOptionalWhenFormattingFieldNumber As Integer = 6
+- uid: PhoneNumbers.NumberFormat.DomesticCarrierCodeFormattingRuleFieldNumber
+  commentId: F:PhoneNumbers.NumberFormat.DomesticCarrierCodeFormattingRuleFieldNumber
+  id: DomesticCarrierCodeFormattingRuleFieldNumber
+  parent: PhoneNumbers.NumberFormat
+  langs:
+  - csharp
+  - vb
+  name: DomesticCarrierCodeFormattingRuleFieldNumber
+  nameWithType: NumberFormat.DomesticCarrierCodeFormattingRuleFieldNumber
+  fullName: PhoneNumbers.NumberFormat.DomesticCarrierCodeFormattingRuleFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int DomesticCarrierCodeFormattingRuleFieldNumber = 5
+    return:
+      type: System.Int32
+    content.vb: Public Const DomesticCarrierCodeFormattingRuleFieldNumber As Integer = 5
+- uid: PhoneNumbers.NumberFormat.DefaultInstance
+  commentId: P:PhoneNumbers.NumberFormat.DefaultInstance
+  id: DefaultInstance
+  parent: PhoneNumbers.NumberFormat
+  langs:
+  - csharp
+  - vb
+  name: DefaultInstance
+  nameWithType: NumberFormat.DefaultInstance
+  fullName: PhoneNumbers.NumberFormat.DefaultInstance
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public static NumberFormat DefaultInstance { get; }
+    parameters: []
+    return:
+      type: PhoneNumbers.NumberFormat
+    content.vb: Public Shared ReadOnly Property DefaultInstance As NumberFormat
+  overload: PhoneNumbers.NumberFormat.DefaultInstance*
+- uid: PhoneNumbers.NumberFormat.DefaultInstanceForType
+  commentId: P:PhoneNumbers.NumberFormat.DefaultInstanceForType
+  id: DefaultInstanceForType
+  parent: PhoneNumbers.NumberFormat
+  langs:
+  - csharp
+  - vb
+  name: DefaultInstanceForType
+  nameWithType: NumberFormat.DefaultInstanceForType
+  fullName: PhoneNumbers.NumberFormat.DefaultInstanceForType
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public NumberFormat DefaultInstanceForType { get; }
+    parameters: []
+    return:
+      type: PhoneNumbers.NumberFormat
+    content.vb: Public ReadOnly Property DefaultInstanceForType As NumberFormat
+  overload: PhoneNumbers.NumberFormat.DefaultInstanceForType*
+- uid: PhoneNumbers.NumberFormat.HasPattern
+  commentId: P:PhoneNumbers.NumberFormat.HasPattern
+  id: HasPattern
+  parent: PhoneNumbers.NumberFormat
+  langs:
+  - csharp
+  - vb
+  name: HasPattern
+  nameWithType: NumberFormat.HasPattern
+  fullName: PhoneNumbers.NumberFormat.HasPattern
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasPattern { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasPattern As Boolean
+  overload: PhoneNumbers.NumberFormat.HasPattern*
+- uid: PhoneNumbers.NumberFormat.Pattern
+  commentId: P:PhoneNumbers.NumberFormat.Pattern
+  id: Pattern
+  parent: PhoneNumbers.NumberFormat
+  langs:
+  - csharp
+  - vb
+  name: Pattern
+  nameWithType: NumberFormat.Pattern
+  fullName: PhoneNumbers.NumberFormat.Pattern
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public string Pattern { get; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property Pattern As String
+  overload: PhoneNumbers.NumberFormat.Pattern*
+- uid: PhoneNumbers.NumberFormat.HasFormat
+  commentId: P:PhoneNumbers.NumberFormat.HasFormat
+  id: HasFormat
+  parent: PhoneNumbers.NumberFormat
+  langs:
+  - csharp
+  - vb
+  name: HasFormat
+  nameWithType: NumberFormat.HasFormat
+  fullName: PhoneNumbers.NumberFormat.HasFormat
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasFormat { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasFormat As Boolean
+  overload: PhoneNumbers.NumberFormat.HasFormat*
+- uid: PhoneNumbers.NumberFormat.Format
+  commentId: P:PhoneNumbers.NumberFormat.Format
+  id: Format
+  parent: PhoneNumbers.NumberFormat
+  langs:
+  - csharp
+  - vb
+  name: Format
+  nameWithType: NumberFormat.Format
+  fullName: PhoneNumbers.NumberFormat.Format
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public string Format { get; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property Format As String
+  overload: PhoneNumbers.NumberFormat.Format*
+- uid: PhoneNumbers.NumberFormat.LeadingDigitsPatternList
+  commentId: P:PhoneNumbers.NumberFormat.LeadingDigitsPatternList
+  id: LeadingDigitsPatternList
+  parent: PhoneNumbers.NumberFormat
+  langs:
+  - csharp
+  - vb
+  name: LeadingDigitsPatternList
+  nameWithType: NumberFormat.LeadingDigitsPatternList
+  fullName: PhoneNumbers.NumberFormat.LeadingDigitsPatternList
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public IList<string> LeadingDigitsPatternList { get; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.IList{System.String}
+    content.vb: Public ReadOnly Property LeadingDigitsPatternList As IList(Of String)
+  overload: PhoneNumbers.NumberFormat.LeadingDigitsPatternList*
+- uid: PhoneNumbers.NumberFormat.LeadingDigitsPatternCount
+  commentId: P:PhoneNumbers.NumberFormat.LeadingDigitsPatternCount
+  id: LeadingDigitsPatternCount
+  parent: PhoneNumbers.NumberFormat
+  langs:
+  - csharp
+  - vb
+  name: LeadingDigitsPatternCount
+  nameWithType: NumberFormat.LeadingDigitsPatternCount
+  fullName: PhoneNumbers.NumberFormat.LeadingDigitsPatternCount
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public int LeadingDigitsPatternCount { get; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public ReadOnly Property LeadingDigitsPatternCount As Integer
+  overload: PhoneNumbers.NumberFormat.LeadingDigitsPatternCount*
+- uid: PhoneNumbers.NumberFormat.HasNationalPrefixFormattingRule
+  commentId: P:PhoneNumbers.NumberFormat.HasNationalPrefixFormattingRule
+  id: HasNationalPrefixFormattingRule
+  parent: PhoneNumbers.NumberFormat
+  langs:
+  - csharp
+  - vb
+  name: HasNationalPrefixFormattingRule
+  nameWithType: NumberFormat.HasNationalPrefixFormattingRule
+  fullName: PhoneNumbers.NumberFormat.HasNationalPrefixFormattingRule
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasNationalPrefixFormattingRule { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasNationalPrefixFormattingRule As Boolean
+  overload: PhoneNumbers.NumberFormat.HasNationalPrefixFormattingRule*
+- uid: PhoneNumbers.NumberFormat.NationalPrefixFormattingRule
+  commentId: P:PhoneNumbers.NumberFormat.NationalPrefixFormattingRule
+  id: NationalPrefixFormattingRule
+  parent: PhoneNumbers.NumberFormat
+  langs:
+  - csharp
+  - vb
+  name: NationalPrefixFormattingRule
+  nameWithType: NumberFormat.NationalPrefixFormattingRule
+  fullName: PhoneNumbers.NumberFormat.NationalPrefixFormattingRule
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public string NationalPrefixFormattingRule { get; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property NationalPrefixFormattingRule As String
+  overload: PhoneNumbers.NumberFormat.NationalPrefixFormattingRule*
+- uid: PhoneNumbers.NumberFormat.HasNationalPrefixOptionalWhenFormatting
+  commentId: P:PhoneNumbers.NumberFormat.HasNationalPrefixOptionalWhenFormatting
+  id: HasNationalPrefixOptionalWhenFormatting
+  parent: PhoneNumbers.NumberFormat
+  langs:
+  - csharp
+  - vb
+  name: HasNationalPrefixOptionalWhenFormatting
+  nameWithType: NumberFormat.HasNationalPrefixOptionalWhenFormatting
+  fullName: PhoneNumbers.NumberFormat.HasNationalPrefixOptionalWhenFormatting
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasNationalPrefixOptionalWhenFormatting { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasNationalPrefixOptionalWhenFormatting As Boolean
+  overload: PhoneNumbers.NumberFormat.HasNationalPrefixOptionalWhenFormatting*
+- uid: PhoneNumbers.NumberFormat.NationalPrefixOptionalWhenFormatting
+  commentId: P:PhoneNumbers.NumberFormat.NationalPrefixOptionalWhenFormatting
+  id: NationalPrefixOptionalWhenFormatting
+  parent: PhoneNumbers.NumberFormat
+  langs:
+  - csharp
+  - vb
+  name: NationalPrefixOptionalWhenFormatting
+  nameWithType: NumberFormat.NationalPrefixOptionalWhenFormatting
+  fullName: PhoneNumbers.NumberFormat.NationalPrefixOptionalWhenFormatting
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool NationalPrefixOptionalWhenFormatting { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public Property NationalPrefixOptionalWhenFormatting As Boolean
+  overload: PhoneNumbers.NumberFormat.NationalPrefixOptionalWhenFormatting*
+- uid: PhoneNumbers.NumberFormat.HasDomesticCarrierCodeFormattingRule
+  commentId: P:PhoneNumbers.NumberFormat.HasDomesticCarrierCodeFormattingRule
+  id: HasDomesticCarrierCodeFormattingRule
+  parent: PhoneNumbers.NumberFormat
+  langs:
+  - csharp
+  - vb
+  name: HasDomesticCarrierCodeFormattingRule
+  nameWithType: NumberFormat.HasDomesticCarrierCodeFormattingRule
+  fullName: PhoneNumbers.NumberFormat.HasDomesticCarrierCodeFormattingRule
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasDomesticCarrierCodeFormattingRule { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasDomesticCarrierCodeFormattingRule As Boolean
+  overload: PhoneNumbers.NumberFormat.HasDomesticCarrierCodeFormattingRule*
+- uid: PhoneNumbers.NumberFormat.DomesticCarrierCodeFormattingRule
+  commentId: P:PhoneNumbers.NumberFormat.DomesticCarrierCodeFormattingRule
+  id: DomesticCarrierCodeFormattingRule
+  parent: PhoneNumbers.NumberFormat
+  langs:
+  - csharp
+  - vb
+  name: DomesticCarrierCodeFormattingRule
+  nameWithType: NumberFormat.DomesticCarrierCodeFormattingRule
+  fullName: PhoneNumbers.NumberFormat.DomesticCarrierCodeFormattingRule
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public string DomesticCarrierCodeFormattingRule { get; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property DomesticCarrierCodeFormattingRule As String
+  overload: PhoneNumbers.NumberFormat.DomesticCarrierCodeFormattingRule*
+- uid: PhoneNumbers.NumberFormat.IsInitialized
+  commentId: P:PhoneNumbers.NumberFormat.IsInitialized
+  id: IsInitialized
+  parent: PhoneNumbers.NumberFormat
+  langs:
+  - csharp
+  - vb
+  name: IsInitialized
+  nameWithType: NumberFormat.IsInitialized
+  fullName: PhoneNumbers.NumberFormat.IsInitialized
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool IsInitialized { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property IsInitialized As Boolean
+  overload: PhoneNumbers.NumberFormat.IsInitialized*
+- uid: PhoneNumbers.NumberFormat.GetLeadingDigitsPattern(System.Int32)
+  commentId: M:PhoneNumbers.NumberFormat.GetLeadingDigitsPattern(System.Int32)
+  id: GetLeadingDigitsPattern(System.Int32)
+  parent: PhoneNumbers.NumberFormat
+  langs:
+  - csharp
+  - vb
+  name: GetLeadingDigitsPattern(int)
+  nameWithType: NumberFormat.GetLeadingDigitsPattern(int)
+  fullName: PhoneNumbers.NumberFormat.GetLeadingDigitsPattern(int)
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public string GetLeadingDigitsPattern(int index)
+    parameters:
+    - id: index
+      type: System.Int32
+    return:
+      type: System.String
+    content.vb: Public Function GetLeadingDigitsPattern(index As Integer) As String
+  overload: PhoneNumbers.NumberFormat.GetLeadingDigitsPattern*
+  nameWithType.vb: NumberFormat.GetLeadingDigitsPattern(Integer)
+  fullName.vb: PhoneNumbers.NumberFormat.GetLeadingDigitsPattern(Integer)
+  name.vb: GetLeadingDigitsPattern(Integer)
+- uid: PhoneNumbers.NumberFormat.CreateBuilder
+  commentId: M:PhoneNumbers.NumberFormat.CreateBuilder
+  id: CreateBuilder
+  parent: PhoneNumbers.NumberFormat
+  langs:
+  - csharp
+  - vb
+  name: CreateBuilder()
+  nameWithType: NumberFormat.CreateBuilder()
+  fullName: PhoneNumbers.NumberFormat.CreateBuilder()
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public static NumberFormat.Builder CreateBuilder()
+    return:
+      type: PhoneNumbers.NumberFormat.Builder
+    content.vb: Public Shared Function CreateBuilder() As NumberFormat.Builder
+  overload: PhoneNumbers.NumberFormat.CreateBuilder*
+- uid: PhoneNumbers.NumberFormat.ToBuilder
+  commentId: M:PhoneNumbers.NumberFormat.ToBuilder
+  id: ToBuilder
+  parent: PhoneNumbers.NumberFormat
+  langs:
+  - csharp
+  - vb
+  name: ToBuilder()
+  nameWithType: NumberFormat.ToBuilder()
+  fullName: PhoneNumbers.NumberFormat.ToBuilder()
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public NumberFormat.Builder ToBuilder()
+    return:
+      type: PhoneNumbers.NumberFormat.Builder
+    content.vb: Public Function ToBuilder() As NumberFormat.Builder
+  overload: PhoneNumbers.NumberFormat.ToBuilder*
+- uid: PhoneNumbers.NumberFormat.CreateBuilderForType
+  commentId: M:PhoneNumbers.NumberFormat.CreateBuilderForType
+  id: CreateBuilderForType
+  parent: PhoneNumbers.NumberFormat
+  langs:
+  - csharp
+  - vb
+  name: CreateBuilderForType()
+  nameWithType: NumberFormat.CreateBuilderForType()
+  fullName: PhoneNumbers.NumberFormat.CreateBuilderForType()
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public NumberFormat.Builder CreateBuilderForType()
+    return:
+      type: PhoneNumbers.NumberFormat.Builder
+    content.vb: Public Function CreateBuilderForType() As NumberFormat.Builder
+  overload: PhoneNumbers.NumberFormat.CreateBuilderForType*
+- uid: PhoneNumbers.NumberFormat.CreateBuilder(PhoneNumbers.NumberFormat)
+  commentId: M:PhoneNumbers.NumberFormat.CreateBuilder(PhoneNumbers.NumberFormat)
+  id: CreateBuilder(PhoneNumbers.NumberFormat)
+  parent: PhoneNumbers.NumberFormat
+  langs:
+  - csharp
+  - vb
+  name: CreateBuilder(NumberFormat)
+  nameWithType: NumberFormat.CreateBuilder(NumberFormat)
+  fullName: PhoneNumbers.NumberFormat.CreateBuilder(PhoneNumbers.NumberFormat)
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public static NumberFormat.Builder CreateBuilder(NumberFormat prototype)
+    parameters:
+    - id: prototype
+      type: PhoneNumbers.NumberFormat
+    return:
+      type: PhoneNumbers.NumberFormat.Builder
+    content.vb: Public Shared Function CreateBuilder(prototype As NumberFormat) As NumberFormat.Builder
+  overload: PhoneNumbers.NumberFormat.CreateBuilder*
+- uid: PhoneNumbers.NumberFormat.GetHashCode
+  commentId: M:PhoneNumbers.NumberFormat.GetHashCode
+  id: GetHashCode
+  parent: PhoneNumbers.NumberFormat
+  langs:
+  - csharp
+  - vb
+  name: GetHashCode()
+  nameWithType: NumberFormat.GetHashCode()
+  fullName: PhoneNumbers.NumberFormat.GetHashCode()
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: Serves as the default hash function.
+  example: []
+  syntax:
+    content: public override int GetHashCode()
+    return:
+      type: System.Int32
+      description: A hash code for the current object.
+    content.vb: Public Overrides Function GetHashCode() As Integer
+  overridden: System.Object.GetHashCode
+  overload: PhoneNumbers.NumberFormat.GetHashCode*
+- uid: PhoneNumbers.NumberFormat.Equals(System.Object)
+  commentId: M:PhoneNumbers.NumberFormat.Equals(System.Object)
+  id: Equals(System.Object)
+  parent: PhoneNumbers.NumberFormat
+  langs:
+  - csharp
+  - vb
+  name: Equals(object)
+  nameWithType: NumberFormat.Equals(object)
+  fullName: PhoneNumbers.NumberFormat.Equals(object)
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: Determines whether the specified object is equal to the current object.
+  example: []
+  syntax:
+    content: public override bool Equals(object obj)
+    parameters:
+    - id: obj
+      type: System.Object
+      description: The object to compare with the current object.
+    return:
+      type: System.Boolean
+      description: <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the specified object  is equal to the current object; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.
+    content.vb: Public Overrides Function Equals(obj As Object) As Boolean
+  overridden: System.Object.Equals(System.Object)
+  overload: PhoneNumbers.NumberFormat.Equals*
+  nameWithType.vb: NumberFormat.Equals(Object)
+  fullName.vb: PhoneNumbers.NumberFormat.Equals(Object)
+  name.vb: Equals(Object)
+references:
+- uid: PhoneNumbers
+  commentId: N:PhoneNumbers
+  href: PhoneNumbers.html
+  name: PhoneNumbers
+  nameWithType: PhoneNumbers
+  fullName: PhoneNumbers
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int32
+  name: int
+  nameWithType: int
+  fullName: int
+  nameWithType.vb: Integer
+  fullName.vb: Integer
+  name.vb: Integer
+- uid: PhoneNumbers.NumberFormat.DefaultInstance*
+  commentId: Overload:PhoneNumbers.NumberFormat.DefaultInstance
+  href: PhoneNumbers.NumberFormat.html#PhoneNumbers_NumberFormat_DefaultInstance
+  name: DefaultInstance
+  nameWithType: NumberFormat.DefaultInstance
+  fullName: PhoneNumbers.NumberFormat.DefaultInstance
+- uid: PhoneNumbers.NumberFormat
+  commentId: T:PhoneNumbers.NumberFormat
+  parent: PhoneNumbers
+  href: PhoneNumbers.NumberFormat.html
+  name: NumberFormat
+  nameWithType: NumberFormat
+  fullName: PhoneNumbers.NumberFormat
+- uid: PhoneNumbers.NumberFormat.DefaultInstanceForType*
+  commentId: Overload:PhoneNumbers.NumberFormat.DefaultInstanceForType
+  href: PhoneNumbers.NumberFormat.html#PhoneNumbers_NumberFormat_DefaultInstanceForType
+  name: DefaultInstanceForType
+  nameWithType: NumberFormat.DefaultInstanceForType
+  fullName: PhoneNumbers.NumberFormat.DefaultInstanceForType
+- uid: PhoneNumbers.NumberFormat.HasPattern*
+  commentId: Overload:PhoneNumbers.NumberFormat.HasPattern
+  href: PhoneNumbers.NumberFormat.html#PhoneNumbers_NumberFormat_HasPattern
+  name: HasPattern
+  nameWithType: NumberFormat.HasPattern
+  fullName: PhoneNumbers.NumberFormat.HasPattern
+- uid: System.Boolean
+  commentId: T:System.Boolean
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.boolean
+  name: bool
+  nameWithType: bool
+  fullName: bool
+  nameWithType.vb: Boolean
+  fullName.vb: Boolean
+  name.vb: Boolean
+- uid: PhoneNumbers.NumberFormat.Pattern*
+  commentId: Overload:PhoneNumbers.NumberFormat.Pattern
+  href: PhoneNumbers.NumberFormat.html#PhoneNumbers_NumberFormat_Pattern
+  name: Pattern
+  nameWithType: NumberFormat.Pattern
+  fullName: PhoneNumbers.NumberFormat.Pattern
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: string
+  nameWithType: string
+  fullName: string
+  nameWithType.vb: String
+  fullName.vb: String
+  name.vb: String
+- uid: PhoneNumbers.NumberFormat.HasFormat*
+  commentId: Overload:PhoneNumbers.NumberFormat.HasFormat
+  href: PhoneNumbers.NumberFormat.html#PhoneNumbers_NumberFormat_HasFormat
+  name: HasFormat
+  nameWithType: NumberFormat.HasFormat
+  fullName: PhoneNumbers.NumberFormat.HasFormat
+- uid: PhoneNumbers.NumberFormat.Format*
+  commentId: Overload:PhoneNumbers.NumberFormat.Format
+  href: PhoneNumbers.NumberFormat.html#PhoneNumbers_NumberFormat_Format
+  name: Format
+  nameWithType: NumberFormat.Format
+  fullName: PhoneNumbers.NumberFormat.Format
+- uid: PhoneNumbers.NumberFormat.LeadingDigitsPatternList*
+  commentId: Overload:PhoneNumbers.NumberFormat.LeadingDigitsPatternList
+  href: PhoneNumbers.NumberFormat.html#PhoneNumbers_NumberFormat_LeadingDigitsPatternList
+  name: LeadingDigitsPatternList
+  nameWithType: NumberFormat.LeadingDigitsPatternList
+  fullName: PhoneNumbers.NumberFormat.LeadingDigitsPatternList
+- uid: System.Collections.Generic.IList{System.String}
+  commentId: T:System.Collections.Generic.IList{System.String}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.IList`1
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ilist-1
+  name: IList<string>
+  nameWithType: IList<string>
+  fullName: System.Collections.Generic.IList<string>
+  nameWithType.vb: IList(Of String)
+  fullName.vb: System.Collections.Generic.IList(Of String)
+  name.vb: IList(Of String)
+  spec.csharp:
+  - uid: System.Collections.Generic.IList`1
+    name: IList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ilist-1
+  - name: <
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IList`1
+    name: IList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ilist-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: )
+- uid: System.Collections.Generic.IList`1
+  commentId: T:System.Collections.Generic.IList`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ilist-1
+  name: IList<T>
+  nameWithType: IList<T>
+  fullName: System.Collections.Generic.IList<T>
+  nameWithType.vb: IList(Of T)
+  fullName.vb: System.Collections.Generic.IList(Of T)
+  name.vb: IList(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.IList`1
+    name: IList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ilist-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IList`1
+    name: IList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ilist-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: System.Collections.Generic
+  commentId: N:System.Collections.Generic
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Collections.Generic
+  nameWithType: System.Collections.Generic
+  fullName: System.Collections.Generic
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+- uid: PhoneNumbers.NumberFormat.LeadingDigitsPatternCount*
+  commentId: Overload:PhoneNumbers.NumberFormat.LeadingDigitsPatternCount
+  href: PhoneNumbers.NumberFormat.html#PhoneNumbers_NumberFormat_LeadingDigitsPatternCount
+  name: LeadingDigitsPatternCount
+  nameWithType: NumberFormat.LeadingDigitsPatternCount
+  fullName: PhoneNumbers.NumberFormat.LeadingDigitsPatternCount
+- uid: PhoneNumbers.NumberFormat.HasNationalPrefixFormattingRule*
+  commentId: Overload:PhoneNumbers.NumberFormat.HasNationalPrefixFormattingRule
+  href: PhoneNumbers.NumberFormat.html#PhoneNumbers_NumberFormat_HasNationalPrefixFormattingRule
+  name: HasNationalPrefixFormattingRule
+  nameWithType: NumberFormat.HasNationalPrefixFormattingRule
+  fullName: PhoneNumbers.NumberFormat.HasNationalPrefixFormattingRule
+- uid: PhoneNumbers.NumberFormat.NationalPrefixFormattingRule*
+  commentId: Overload:PhoneNumbers.NumberFormat.NationalPrefixFormattingRule
+  href: PhoneNumbers.NumberFormat.html#PhoneNumbers_NumberFormat_NationalPrefixFormattingRule
+  name: NationalPrefixFormattingRule
+  nameWithType: NumberFormat.NationalPrefixFormattingRule
+  fullName: PhoneNumbers.NumberFormat.NationalPrefixFormattingRule
+- uid: PhoneNumbers.NumberFormat.HasNationalPrefixOptionalWhenFormatting*
+  commentId: Overload:PhoneNumbers.NumberFormat.HasNationalPrefixOptionalWhenFormatting
+  href: PhoneNumbers.NumberFormat.html#PhoneNumbers_NumberFormat_HasNationalPrefixOptionalWhenFormatting
+  name: HasNationalPrefixOptionalWhenFormatting
+  nameWithType: NumberFormat.HasNationalPrefixOptionalWhenFormatting
+  fullName: PhoneNumbers.NumberFormat.HasNationalPrefixOptionalWhenFormatting
+- uid: PhoneNumbers.NumberFormat.NationalPrefixOptionalWhenFormatting*
+  commentId: Overload:PhoneNumbers.NumberFormat.NationalPrefixOptionalWhenFormatting
+  href: PhoneNumbers.NumberFormat.html#PhoneNumbers_NumberFormat_NationalPrefixOptionalWhenFormatting
+  name: NationalPrefixOptionalWhenFormatting
+  nameWithType: NumberFormat.NationalPrefixOptionalWhenFormatting
+  fullName: PhoneNumbers.NumberFormat.NationalPrefixOptionalWhenFormatting
+- uid: PhoneNumbers.NumberFormat.HasDomesticCarrierCodeFormattingRule*
+  commentId: Overload:PhoneNumbers.NumberFormat.HasDomesticCarrierCodeFormattingRule
+  href: PhoneNumbers.NumberFormat.html#PhoneNumbers_NumberFormat_HasDomesticCarrierCodeFormattingRule
+  name: HasDomesticCarrierCodeFormattingRule
+  nameWithType: NumberFormat.HasDomesticCarrierCodeFormattingRule
+  fullName: PhoneNumbers.NumberFormat.HasDomesticCarrierCodeFormattingRule
+- uid: PhoneNumbers.NumberFormat.DomesticCarrierCodeFormattingRule*
+  commentId: Overload:PhoneNumbers.NumberFormat.DomesticCarrierCodeFormattingRule
+  href: PhoneNumbers.NumberFormat.html#PhoneNumbers_NumberFormat_DomesticCarrierCodeFormattingRule
+  name: DomesticCarrierCodeFormattingRule
+  nameWithType: NumberFormat.DomesticCarrierCodeFormattingRule
+  fullName: PhoneNumbers.NumberFormat.DomesticCarrierCodeFormattingRule
+- uid: PhoneNumbers.NumberFormat.IsInitialized*
+  commentId: Overload:PhoneNumbers.NumberFormat.IsInitialized
+  href: PhoneNumbers.NumberFormat.html#PhoneNumbers_NumberFormat_IsInitialized
+  name: IsInitialized
+  nameWithType: NumberFormat.IsInitialized
+  fullName: PhoneNumbers.NumberFormat.IsInitialized
+- uid: PhoneNumbers.NumberFormat.GetLeadingDigitsPattern*
+  commentId: Overload:PhoneNumbers.NumberFormat.GetLeadingDigitsPattern
+  href: PhoneNumbers.NumberFormat.html#PhoneNumbers_NumberFormat_GetLeadingDigitsPattern_System_Int32_
+  name: GetLeadingDigitsPattern
+  nameWithType: NumberFormat.GetLeadingDigitsPattern
+  fullName: PhoneNumbers.NumberFormat.GetLeadingDigitsPattern
+- uid: PhoneNumbers.NumberFormat.CreateBuilder*
+  commentId: Overload:PhoneNumbers.NumberFormat.CreateBuilder
+  href: PhoneNumbers.NumberFormat.html#PhoneNumbers_NumberFormat_CreateBuilder
+  name: CreateBuilder
+  nameWithType: NumberFormat.CreateBuilder
+  fullName: PhoneNumbers.NumberFormat.CreateBuilder
+- uid: PhoneNumbers.NumberFormat.Builder
+  commentId: T:PhoneNumbers.NumberFormat.Builder
+  parent: PhoneNumbers
+  href: PhoneNumbers.NumberFormat.html
+  name: NumberFormat.Builder
+  nameWithType: NumberFormat.Builder
+  fullName: PhoneNumbers.NumberFormat.Builder
+  spec.csharp:
+  - uid: PhoneNumbers.NumberFormat
+    name: NumberFormat
+    href: PhoneNumbers.NumberFormat.html
+  - name: .
+  - uid: PhoneNumbers.NumberFormat.Builder
+    name: Builder
+  spec.vb:
+  - uid: PhoneNumbers.NumberFormat
+    name: NumberFormat
+    href: PhoneNumbers.NumberFormat.html
+  - name: .
+  - uid: PhoneNumbers.NumberFormat.Builder
+    name: Builder
+- uid: PhoneNumbers.NumberFormat.ToBuilder*
+  commentId: Overload:PhoneNumbers.NumberFormat.ToBuilder
+  href: PhoneNumbers.NumberFormat.html#PhoneNumbers_NumberFormat_ToBuilder
+  name: ToBuilder
+  nameWithType: NumberFormat.ToBuilder
+  fullName: PhoneNumbers.NumberFormat.ToBuilder
+- uid: PhoneNumbers.NumberFormat.CreateBuilderForType*
+  commentId: Overload:PhoneNumbers.NumberFormat.CreateBuilderForType
+  href: PhoneNumbers.NumberFormat.html#PhoneNumbers_NumberFormat_CreateBuilderForType
+  name: CreateBuilderForType
+  nameWithType: NumberFormat.CreateBuilderForType
+  fullName: PhoneNumbers.NumberFormat.CreateBuilderForType
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: PhoneNumbers.NumberFormat.GetHashCode*
+  commentId: Overload:PhoneNumbers.NumberFormat.GetHashCode
+  href: PhoneNumbers.NumberFormat.html#PhoneNumbers_NumberFormat_GetHashCode
+  name: GetHashCode
+  nameWithType: NumberFormat.GetHashCode
+  fullName: PhoneNumbers.NumberFormat.GetHashCode
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: PhoneNumbers.NumberFormat.Equals*
+  commentId: Overload:PhoneNumbers.NumberFormat.Equals
+  href: PhoneNumbers.NumberFormat.html#PhoneNumbers_NumberFormat_Equals_System_Object_
+  name: Equals
+  nameWithType: NumberFormat.Equals
+  fullName: PhoneNumbers.NumberFormat.Equals

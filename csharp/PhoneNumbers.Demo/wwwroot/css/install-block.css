@@ -9,8 +9,10 @@
     background: var(--code-bg);
     color: var(--code-text);
     border-radius: var(--radius-sm);
-    /* right padding keeps a wrapped command clear of the copy button */
-    padding: 0.8rem 3.4rem 0.8rem 1rem;
+    /* The right inset clears the copy button, and it costs width on every
+       line of the command - not just the first - so keep it to what the
+       button's visual box actually needs, not its 44px hit area. */
+    padding: 0.8rem 2.1rem 0.8rem 0.9rem;
     /* Deliberately not display:flex. A flex row makes the command its own
        box starting after the "$", so a wrapped line hangs under the "d" of
        dotnet. Left in normal flow the "$" is just the first inline box on
@@ -28,15 +30,15 @@
 
 .install-block__copy {
     position: absolute;
-    top: 0.25rem;
-    right: 0.25rem;
+    top: 0.3rem;
+    right: 0.3rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    /* 44x44 hit area (the WCAG target size this site holds to, same literal
-       as .sidebar__link and .feature-grid__icon); the glyph stays small */
-    width: 44px;
-    height: 44px;
+    /* The visual box stays small so it costs the command little width;
+       ::after below carries the 44x44 hit area this site holds to. */
+    width: 26px;
+    height: 26px;
     padding: 0;
     border: 0;
     border-radius: var(--radius-sm);
@@ -61,6 +63,19 @@
     stroke-width: 2;
     stroke-linecap: round;
     stroke-linejoin: round;
+}
+
+/* 44x44 tap target (the size .sidebar__link and .feature-grid__icon use)
+   centred on the smaller visual box, so touch users get a full-size
+   target without the button reserving 44px of the command's width. */
+.install-block__copy::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 44px;
+    height: 44px;
 }
 
 .install-block__copy--done {

@@ -1,0 +1,3120 @@
+### YamlMime:ManagedReference
+items:
+- uid: PhoneNumbers.PhoneMetadata
+  commentId: T:PhoneNumbers.PhoneMetadata
+  id: PhoneMetadata
+  parent: PhoneNumbers
+  children:
+  - PhoneNumbers.PhoneMetadata.CarrierSpecific
+  - PhoneNumbers.PhoneMetadata.CarrierSpecificFieldNumber
+  - PhoneNumbers.PhoneMetadata.CountryCode
+  - PhoneNumbers.PhoneMetadata.CountryCodeFieldNumber
+  - PhoneNumbers.PhoneMetadata.CreateBuilder
+  - PhoneNumbers.PhoneMetadata.CreateBuilder(PhoneNumbers.PhoneMetadata)
+  - PhoneNumbers.PhoneMetadata.CreateBuilderForType
+  - PhoneNumbers.PhoneMetadata.DefaultInstance
+  - PhoneNumbers.PhoneMetadata.DefaultInstanceForType
+  - PhoneNumbers.PhoneMetadata.Emergency
+  - PhoneNumbers.PhoneMetadata.EmergencyFieldNumber
+  - PhoneNumbers.PhoneMetadata.Equals(System.Object)
+  - PhoneNumbers.PhoneMetadata.FixedLine
+  - PhoneNumbers.PhoneMetadata.FixedLineFieldNumber
+  - PhoneNumbers.PhoneMetadata.GeneralDesc
+  - PhoneNumbers.PhoneMetadata.GeneralDescFieldNumber
+  - PhoneNumbers.PhoneMetadata.GetHashCode
+  - PhoneNumbers.PhoneMetadata.GetIntlNumberFormat(System.Int32)
+  - PhoneNumbers.PhoneMetadata.GetNumberFormat(System.Int32)
+  - PhoneNumbers.PhoneMetadata.HasCarrierSpecific
+  - PhoneNumbers.PhoneMetadata.HasCountryCode
+  - PhoneNumbers.PhoneMetadata.HasEmergency
+  - PhoneNumbers.PhoneMetadata.HasFixedLine
+  - PhoneNumbers.PhoneMetadata.HasGeneralDesc
+  - PhoneNumbers.PhoneMetadata.HasId
+  - PhoneNumbers.PhoneMetadata.HasInternationalPrefix
+  - PhoneNumbers.PhoneMetadata.HasLeadingDigits
+  - PhoneNumbers.PhoneMetadata.HasMainCountryForCode
+  - PhoneNumbers.PhoneMetadata.HasMobile
+  - PhoneNumbers.PhoneMetadata.HasMobileNumberPortableRegion
+  - PhoneNumbers.PhoneMetadata.HasNationalPrefix
+  - PhoneNumbers.PhoneMetadata.HasNationalPrefixForParsing
+  - PhoneNumbers.PhoneMetadata.HasNationalPrefixTransformRule
+  - PhoneNumbers.PhoneMetadata.HasNoInternationalDialling
+  - PhoneNumbers.PhoneMetadata.HasPager
+  - PhoneNumbers.PhoneMetadata.HasPersonalNumber
+  - PhoneNumbers.PhoneMetadata.HasPreferredExtnPrefix
+  - PhoneNumbers.PhoneMetadata.HasPreferredInternationalPrefix
+  - PhoneNumbers.PhoneMetadata.HasPremiumRate
+  - PhoneNumbers.PhoneMetadata.HasSameMobileAndFixedLinePattern
+  - PhoneNumbers.PhoneMetadata.HasSharedCost
+  - PhoneNumbers.PhoneMetadata.HasShortCode
+  - PhoneNumbers.PhoneMetadata.HasSmsServices
+  - PhoneNumbers.PhoneMetadata.HasStandardRate
+  - PhoneNumbers.PhoneMetadata.HasTollFree
+  - PhoneNumbers.PhoneMetadata.HasUan
+  - PhoneNumbers.PhoneMetadata.HasVoicemail
+  - PhoneNumbers.PhoneMetadata.HasVoip
+  - PhoneNumbers.PhoneMetadata.Id
+  - PhoneNumbers.PhoneMetadata.IdFieldNumber
+  - PhoneNumbers.PhoneMetadata.InternationalPrefix
+  - PhoneNumbers.PhoneMetadata.InternationalPrefixFieldNumber
+  - PhoneNumbers.PhoneMetadata.IntlNumberFormatCount
+  - PhoneNumbers.PhoneMetadata.IntlNumberFormatFieldNumber
+  - PhoneNumbers.PhoneMetadata.IntlNumberFormatList
+  - PhoneNumbers.PhoneMetadata.IsInitialized
+  - PhoneNumbers.PhoneMetadata.LeadingDigits
+  - PhoneNumbers.PhoneMetadata.LeadingDigitsFieldNumber
+  - PhoneNumbers.PhoneMetadata.LeadingZeroPossibleFieldNumber
+  - PhoneNumbers.PhoneMetadata.MainCountryForCode
+  - PhoneNumbers.PhoneMetadata.MainCountryForCodeFieldNumber
+  - PhoneNumbers.PhoneMetadata.Mobile
+  - PhoneNumbers.PhoneMetadata.MobileFieldNumber
+  - PhoneNumbers.PhoneMetadata.MobileNumberPortableRegion
+  - PhoneNumbers.PhoneMetadata.MobileNumberPortableRegionFieldNumber
+  - PhoneNumbers.PhoneMetadata.NationalPrefix
+  - PhoneNumbers.PhoneMetadata.NationalPrefixFieldNumber
+  - PhoneNumbers.PhoneMetadata.NationalPrefixForParsing
+  - PhoneNumbers.PhoneMetadata.NationalPrefixForParsingFieldNumber
+  - PhoneNumbers.PhoneMetadata.NationalPrefixTransformRule
+  - PhoneNumbers.PhoneMetadata.NationalPrefixTransformRuleFieldNumber
+  - PhoneNumbers.PhoneMetadata.NoInternationalDialling
+  - PhoneNumbers.PhoneMetadata.NoInternationalDiallingFieldNumber
+  - PhoneNumbers.PhoneMetadata.NumberFormatCount
+  - PhoneNumbers.PhoneMetadata.NumberFormatFieldNumber
+  - PhoneNumbers.PhoneMetadata.NumberFormatList
+  - PhoneNumbers.PhoneMetadata.Pager
+  - PhoneNumbers.PhoneMetadata.PagerFieldNumber
+  - PhoneNumbers.PhoneMetadata.PersonalNumber
+  - PhoneNumbers.PhoneMetadata.PersonalNumberFieldNumber
+  - PhoneNumbers.PhoneMetadata.PreferredExtnPrefix
+  - PhoneNumbers.PhoneMetadata.PreferredExtnPrefixFieldNumber
+  - PhoneNumbers.PhoneMetadata.PreferredInternationalPrefix
+  - PhoneNumbers.PhoneMetadata.PreferredInternationalPrefixFieldNumber
+  - PhoneNumbers.PhoneMetadata.PremiumRate
+  - PhoneNumbers.PhoneMetadata.PremiumRateFieldNumber
+  - PhoneNumbers.PhoneMetadata.SameMobileAndFixedLinePattern
+  - PhoneNumbers.PhoneMetadata.SameMobileAndFixedLinePatternFieldNumber
+  - PhoneNumbers.PhoneMetadata.SharedCost
+  - PhoneNumbers.PhoneMetadata.SharedCostFieldNumber
+  - PhoneNumbers.PhoneMetadata.ShortCode
+  - PhoneNumbers.PhoneMetadata.ShortCodeFieldNumber
+  - PhoneNumbers.PhoneMetadata.SmsServices
+  - PhoneNumbers.PhoneMetadata.SmsServicesFieldNumber
+  - PhoneNumbers.PhoneMetadata.StandardRate
+  - PhoneNumbers.PhoneMetadata.StandardRateFieldNumber
+  - PhoneNumbers.PhoneMetadata.ToBuilder
+  - PhoneNumbers.PhoneMetadata.TollFree
+  - PhoneNumbers.PhoneMetadata.TollFreeFieldNumber
+  - PhoneNumbers.PhoneMetadata.Uan
+  - PhoneNumbers.PhoneMetadata.UanFieldNumber
+  - PhoneNumbers.PhoneMetadata.Voicemail
+  - PhoneNumbers.PhoneMetadata.VoicemailFieldNumber
+  - PhoneNumbers.PhoneMetadata.Voip
+  - PhoneNumbers.PhoneMetadata.VoipFieldNumber
+  langs:
+  - csharp
+  - vb
+  name: PhoneMetadata
+  nameWithType: PhoneMetadata
+  fullName: PhoneNumbers.PhoneMetadata
+  type: Class
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public sealed class PhoneMetadata
+    content.vb: Public NotInheritable Class PhoneMetadata
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetType
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: PhoneNumbers.PhoneMetadata.GeneralDescFieldNumber
+  commentId: F:PhoneNumbers.PhoneMetadata.GeneralDescFieldNumber
+  id: GeneralDescFieldNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: GeneralDescFieldNumber
+  nameWithType: PhoneMetadata.GeneralDescFieldNumber
+  fullName: PhoneNumbers.PhoneMetadata.GeneralDescFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int GeneralDescFieldNumber = 1
+    return:
+      type: System.Int32
+    content.vb: Public Const GeneralDescFieldNumber As Integer = 1
+- uid: PhoneNumbers.PhoneMetadata.FixedLineFieldNumber
+  commentId: F:PhoneNumbers.PhoneMetadata.FixedLineFieldNumber
+  id: FixedLineFieldNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: FixedLineFieldNumber
+  nameWithType: PhoneMetadata.FixedLineFieldNumber
+  fullName: PhoneNumbers.PhoneMetadata.FixedLineFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int FixedLineFieldNumber = 2
+    return:
+      type: System.Int32
+    content.vb: Public Const FixedLineFieldNumber As Integer = 2
+- uid: PhoneNumbers.PhoneMetadata.MobileFieldNumber
+  commentId: F:PhoneNumbers.PhoneMetadata.MobileFieldNumber
+  id: MobileFieldNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: MobileFieldNumber
+  nameWithType: PhoneMetadata.MobileFieldNumber
+  fullName: PhoneNumbers.PhoneMetadata.MobileFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int MobileFieldNumber = 3
+    return:
+      type: System.Int32
+    content.vb: Public Const MobileFieldNumber As Integer = 3
+- uid: PhoneNumbers.PhoneMetadata.TollFreeFieldNumber
+  commentId: F:PhoneNumbers.PhoneMetadata.TollFreeFieldNumber
+  id: TollFreeFieldNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: TollFreeFieldNumber
+  nameWithType: PhoneMetadata.TollFreeFieldNumber
+  fullName: PhoneNumbers.PhoneMetadata.TollFreeFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int TollFreeFieldNumber = 4
+    return:
+      type: System.Int32
+    content.vb: Public Const TollFreeFieldNumber As Integer = 4
+- uid: PhoneNumbers.PhoneMetadata.PremiumRateFieldNumber
+  commentId: F:PhoneNumbers.PhoneMetadata.PremiumRateFieldNumber
+  id: PremiumRateFieldNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: PremiumRateFieldNumber
+  nameWithType: PhoneMetadata.PremiumRateFieldNumber
+  fullName: PhoneNumbers.PhoneMetadata.PremiumRateFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int PremiumRateFieldNumber = 5
+    return:
+      type: System.Int32
+    content.vb: Public Const PremiumRateFieldNumber As Integer = 5
+- uid: PhoneNumbers.PhoneMetadata.SharedCostFieldNumber
+  commentId: F:PhoneNumbers.PhoneMetadata.SharedCostFieldNumber
+  id: SharedCostFieldNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: SharedCostFieldNumber
+  nameWithType: PhoneMetadata.SharedCostFieldNumber
+  fullName: PhoneNumbers.PhoneMetadata.SharedCostFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int SharedCostFieldNumber = 6
+    return:
+      type: System.Int32
+    content.vb: Public Const SharedCostFieldNumber As Integer = 6
+- uid: PhoneNumbers.PhoneMetadata.PersonalNumberFieldNumber
+  commentId: F:PhoneNumbers.PhoneMetadata.PersonalNumberFieldNumber
+  id: PersonalNumberFieldNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: PersonalNumberFieldNumber
+  nameWithType: PhoneMetadata.PersonalNumberFieldNumber
+  fullName: PhoneNumbers.PhoneMetadata.PersonalNumberFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int PersonalNumberFieldNumber = 7
+    return:
+      type: System.Int32
+    content.vb: Public Const PersonalNumberFieldNumber As Integer = 7
+- uid: PhoneNumbers.PhoneMetadata.VoipFieldNumber
+  commentId: F:PhoneNumbers.PhoneMetadata.VoipFieldNumber
+  id: VoipFieldNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: VoipFieldNumber
+  nameWithType: PhoneMetadata.VoipFieldNumber
+  fullName: PhoneNumbers.PhoneMetadata.VoipFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int VoipFieldNumber = 8
+    return:
+      type: System.Int32
+    content.vb: Public Const VoipFieldNumber As Integer = 8
+- uid: PhoneNumbers.PhoneMetadata.PagerFieldNumber
+  commentId: F:PhoneNumbers.PhoneMetadata.PagerFieldNumber
+  id: PagerFieldNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: PagerFieldNumber
+  nameWithType: PhoneMetadata.PagerFieldNumber
+  fullName: PhoneNumbers.PhoneMetadata.PagerFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int PagerFieldNumber = 21
+    return:
+      type: System.Int32
+    content.vb: Public Const PagerFieldNumber As Integer = 21
+- uid: PhoneNumbers.PhoneMetadata.UanFieldNumber
+  commentId: F:PhoneNumbers.PhoneMetadata.UanFieldNumber
+  id: UanFieldNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: UanFieldNumber
+  nameWithType: PhoneMetadata.UanFieldNumber
+  fullName: PhoneNumbers.PhoneMetadata.UanFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int UanFieldNumber = 25
+    return:
+      type: System.Int32
+    content.vb: Public Const UanFieldNumber As Integer = 25
+- uid: PhoneNumbers.PhoneMetadata.EmergencyFieldNumber
+  commentId: F:PhoneNumbers.PhoneMetadata.EmergencyFieldNumber
+  id: EmergencyFieldNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: EmergencyFieldNumber
+  nameWithType: PhoneMetadata.EmergencyFieldNumber
+  fullName: PhoneNumbers.PhoneMetadata.EmergencyFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int EmergencyFieldNumber = 27
+    return:
+      type: System.Int32
+    content.vb: Public Const EmergencyFieldNumber As Integer = 27
+- uid: PhoneNumbers.PhoneMetadata.VoicemailFieldNumber
+  commentId: F:PhoneNumbers.PhoneMetadata.VoicemailFieldNumber
+  id: VoicemailFieldNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: VoicemailFieldNumber
+  nameWithType: PhoneMetadata.VoicemailFieldNumber
+  fullName: PhoneNumbers.PhoneMetadata.VoicemailFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int VoicemailFieldNumber = 28
+    return:
+      type: System.Int32
+    content.vb: Public Const VoicemailFieldNumber As Integer = 28
+- uid: PhoneNumbers.PhoneMetadata.ShortCodeFieldNumber
+  commentId: F:PhoneNumbers.PhoneMetadata.ShortCodeFieldNumber
+  id: ShortCodeFieldNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: ShortCodeFieldNumber
+  nameWithType: PhoneMetadata.ShortCodeFieldNumber
+  fullName: PhoneNumbers.PhoneMetadata.ShortCodeFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int ShortCodeFieldNumber = 29
+    return:
+      type: System.Int32
+    content.vb: Public Const ShortCodeFieldNumber As Integer = 29
+- uid: PhoneNumbers.PhoneMetadata.StandardRateFieldNumber
+  commentId: F:PhoneNumbers.PhoneMetadata.StandardRateFieldNumber
+  id: StandardRateFieldNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: StandardRateFieldNumber
+  nameWithType: PhoneMetadata.StandardRateFieldNumber
+  fullName: PhoneNumbers.PhoneMetadata.StandardRateFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int StandardRateFieldNumber = 30
+    return:
+      type: System.Int32
+    content.vb: Public Const StandardRateFieldNumber As Integer = 30
+- uid: PhoneNumbers.PhoneMetadata.CarrierSpecificFieldNumber
+  commentId: F:PhoneNumbers.PhoneMetadata.CarrierSpecificFieldNumber
+  id: CarrierSpecificFieldNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: CarrierSpecificFieldNumber
+  nameWithType: PhoneMetadata.CarrierSpecificFieldNumber
+  fullName: PhoneNumbers.PhoneMetadata.CarrierSpecificFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int CarrierSpecificFieldNumber = 31
+    return:
+      type: System.Int32
+    content.vb: Public Const CarrierSpecificFieldNumber As Integer = 31
+- uid: PhoneNumbers.PhoneMetadata.SmsServicesFieldNumber
+  commentId: F:PhoneNumbers.PhoneMetadata.SmsServicesFieldNumber
+  id: SmsServicesFieldNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: SmsServicesFieldNumber
+  nameWithType: PhoneMetadata.SmsServicesFieldNumber
+  fullName: PhoneNumbers.PhoneMetadata.SmsServicesFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int SmsServicesFieldNumber = 33
+    return:
+      type: System.Int32
+    content.vb: Public Const SmsServicesFieldNumber As Integer = 33
+- uid: PhoneNumbers.PhoneMetadata.NoInternationalDiallingFieldNumber
+  commentId: F:PhoneNumbers.PhoneMetadata.NoInternationalDiallingFieldNumber
+  id: NoInternationalDiallingFieldNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: NoInternationalDiallingFieldNumber
+  nameWithType: PhoneMetadata.NoInternationalDiallingFieldNumber
+  fullName: PhoneNumbers.PhoneMetadata.NoInternationalDiallingFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int NoInternationalDiallingFieldNumber = 24
+    return:
+      type: System.Int32
+    content.vb: Public Const NoInternationalDiallingFieldNumber As Integer = 24
+- uid: PhoneNumbers.PhoneMetadata.IdFieldNumber
+  commentId: F:PhoneNumbers.PhoneMetadata.IdFieldNumber
+  id: IdFieldNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: IdFieldNumber
+  nameWithType: PhoneMetadata.IdFieldNumber
+  fullName: PhoneNumbers.PhoneMetadata.IdFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int IdFieldNumber = 9
+    return:
+      type: System.Int32
+    content.vb: Public Const IdFieldNumber As Integer = 9
+- uid: PhoneNumbers.PhoneMetadata.CountryCodeFieldNumber
+  commentId: F:PhoneNumbers.PhoneMetadata.CountryCodeFieldNumber
+  id: CountryCodeFieldNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: CountryCodeFieldNumber
+  nameWithType: PhoneMetadata.CountryCodeFieldNumber
+  fullName: PhoneNumbers.PhoneMetadata.CountryCodeFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int CountryCodeFieldNumber = 10
+    return:
+      type: System.Int32
+    content.vb: Public Const CountryCodeFieldNumber As Integer = 10
+- uid: PhoneNumbers.PhoneMetadata.InternationalPrefixFieldNumber
+  commentId: F:PhoneNumbers.PhoneMetadata.InternationalPrefixFieldNumber
+  id: InternationalPrefixFieldNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: InternationalPrefixFieldNumber
+  nameWithType: PhoneMetadata.InternationalPrefixFieldNumber
+  fullName: PhoneNumbers.PhoneMetadata.InternationalPrefixFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int InternationalPrefixFieldNumber = 11
+    return:
+      type: System.Int32
+    content.vb: Public Const InternationalPrefixFieldNumber As Integer = 11
+- uid: PhoneNumbers.PhoneMetadata.PreferredInternationalPrefixFieldNumber
+  commentId: F:PhoneNumbers.PhoneMetadata.PreferredInternationalPrefixFieldNumber
+  id: PreferredInternationalPrefixFieldNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: PreferredInternationalPrefixFieldNumber
+  nameWithType: PhoneMetadata.PreferredInternationalPrefixFieldNumber
+  fullName: PhoneNumbers.PhoneMetadata.PreferredInternationalPrefixFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int PreferredInternationalPrefixFieldNumber = 17
+    return:
+      type: System.Int32
+    content.vb: Public Const PreferredInternationalPrefixFieldNumber As Integer = 17
+- uid: PhoneNumbers.PhoneMetadata.NationalPrefixFieldNumber
+  commentId: F:PhoneNumbers.PhoneMetadata.NationalPrefixFieldNumber
+  id: NationalPrefixFieldNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: NationalPrefixFieldNumber
+  nameWithType: PhoneMetadata.NationalPrefixFieldNumber
+  fullName: PhoneNumbers.PhoneMetadata.NationalPrefixFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int NationalPrefixFieldNumber = 12
+    return:
+      type: System.Int32
+    content.vb: Public Const NationalPrefixFieldNumber As Integer = 12
+- uid: PhoneNumbers.PhoneMetadata.PreferredExtnPrefixFieldNumber
+  commentId: F:PhoneNumbers.PhoneMetadata.PreferredExtnPrefixFieldNumber
+  id: PreferredExtnPrefixFieldNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: PreferredExtnPrefixFieldNumber
+  nameWithType: PhoneMetadata.PreferredExtnPrefixFieldNumber
+  fullName: PhoneNumbers.PhoneMetadata.PreferredExtnPrefixFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int PreferredExtnPrefixFieldNumber = 13
+    return:
+      type: System.Int32
+    content.vb: Public Const PreferredExtnPrefixFieldNumber As Integer = 13
+- uid: PhoneNumbers.PhoneMetadata.NationalPrefixForParsingFieldNumber
+  commentId: F:PhoneNumbers.PhoneMetadata.NationalPrefixForParsingFieldNumber
+  id: NationalPrefixForParsingFieldNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: NationalPrefixForParsingFieldNumber
+  nameWithType: PhoneMetadata.NationalPrefixForParsingFieldNumber
+  fullName: PhoneNumbers.PhoneMetadata.NationalPrefixForParsingFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int NationalPrefixForParsingFieldNumber = 15
+    return:
+      type: System.Int32
+    content.vb: Public Const NationalPrefixForParsingFieldNumber As Integer = 15
+- uid: PhoneNumbers.PhoneMetadata.NationalPrefixTransformRuleFieldNumber
+  commentId: F:PhoneNumbers.PhoneMetadata.NationalPrefixTransformRuleFieldNumber
+  id: NationalPrefixTransformRuleFieldNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: NationalPrefixTransformRuleFieldNumber
+  nameWithType: PhoneMetadata.NationalPrefixTransformRuleFieldNumber
+  fullName: PhoneNumbers.PhoneMetadata.NationalPrefixTransformRuleFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int NationalPrefixTransformRuleFieldNumber = 16
+    return:
+      type: System.Int32
+    content.vb: Public Const NationalPrefixTransformRuleFieldNumber As Integer = 16
+- uid: PhoneNumbers.PhoneMetadata.SameMobileAndFixedLinePatternFieldNumber
+  commentId: F:PhoneNumbers.PhoneMetadata.SameMobileAndFixedLinePatternFieldNumber
+  id: SameMobileAndFixedLinePatternFieldNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: SameMobileAndFixedLinePatternFieldNumber
+  nameWithType: PhoneMetadata.SameMobileAndFixedLinePatternFieldNumber
+  fullName: PhoneNumbers.PhoneMetadata.SameMobileAndFixedLinePatternFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int SameMobileAndFixedLinePatternFieldNumber = 18
+    return:
+      type: System.Int32
+    content.vb: Public Const SameMobileAndFixedLinePatternFieldNumber As Integer = 18
+- uid: PhoneNumbers.PhoneMetadata.NumberFormatFieldNumber
+  commentId: F:PhoneNumbers.PhoneMetadata.NumberFormatFieldNumber
+  id: NumberFormatFieldNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: NumberFormatFieldNumber
+  nameWithType: PhoneMetadata.NumberFormatFieldNumber
+  fullName: PhoneNumbers.PhoneMetadata.NumberFormatFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int NumberFormatFieldNumber = 19
+    return:
+      type: System.Int32
+    content.vb: Public Const NumberFormatFieldNumber As Integer = 19
+- uid: PhoneNumbers.PhoneMetadata.IntlNumberFormatFieldNumber
+  commentId: F:PhoneNumbers.PhoneMetadata.IntlNumberFormatFieldNumber
+  id: IntlNumberFormatFieldNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: IntlNumberFormatFieldNumber
+  nameWithType: PhoneMetadata.IntlNumberFormatFieldNumber
+  fullName: PhoneNumbers.PhoneMetadata.IntlNumberFormatFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int IntlNumberFormatFieldNumber = 20
+    return:
+      type: System.Int32
+    content.vb: Public Const IntlNumberFormatFieldNumber As Integer = 20
+- uid: PhoneNumbers.PhoneMetadata.MainCountryForCodeFieldNumber
+  commentId: F:PhoneNumbers.PhoneMetadata.MainCountryForCodeFieldNumber
+  id: MainCountryForCodeFieldNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: MainCountryForCodeFieldNumber
+  nameWithType: PhoneMetadata.MainCountryForCodeFieldNumber
+  fullName: PhoneNumbers.PhoneMetadata.MainCountryForCodeFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int MainCountryForCodeFieldNumber = 22
+    return:
+      type: System.Int32
+    content.vb: Public Const MainCountryForCodeFieldNumber As Integer = 22
+- uid: PhoneNumbers.PhoneMetadata.LeadingDigitsFieldNumber
+  commentId: F:PhoneNumbers.PhoneMetadata.LeadingDigitsFieldNumber
+  id: LeadingDigitsFieldNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: LeadingDigitsFieldNumber
+  nameWithType: PhoneMetadata.LeadingDigitsFieldNumber
+  fullName: PhoneNumbers.PhoneMetadata.LeadingDigitsFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int LeadingDigitsFieldNumber = 23
+    return:
+      type: System.Int32
+    content.vb: Public Const LeadingDigitsFieldNumber As Integer = 23
+- uid: PhoneNumbers.PhoneMetadata.LeadingZeroPossibleFieldNumber
+  commentId: F:PhoneNumbers.PhoneMetadata.LeadingZeroPossibleFieldNumber
+  id: LeadingZeroPossibleFieldNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: LeadingZeroPossibleFieldNumber
+  nameWithType: PhoneMetadata.LeadingZeroPossibleFieldNumber
+  fullName: PhoneNumbers.PhoneMetadata.LeadingZeroPossibleFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int LeadingZeroPossibleFieldNumber = 26
+    return:
+      type: System.Int32
+    content.vb: Public Const LeadingZeroPossibleFieldNumber As Integer = 26
+- uid: PhoneNumbers.PhoneMetadata.MobileNumberPortableRegionFieldNumber
+  commentId: F:PhoneNumbers.PhoneMetadata.MobileNumberPortableRegionFieldNumber
+  id: MobileNumberPortableRegionFieldNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: MobileNumberPortableRegionFieldNumber
+  nameWithType: PhoneMetadata.MobileNumberPortableRegionFieldNumber
+  fullName: PhoneNumbers.PhoneMetadata.MobileNumberPortableRegionFieldNumber
+  type: Field
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public const int MobileNumberPortableRegionFieldNumber = 32
+    return:
+      type: System.Int32
+    content.vb: Public Const MobileNumberPortableRegionFieldNumber As Integer = 32
+- uid: PhoneNumbers.PhoneMetadata.DefaultInstance
+  commentId: P:PhoneNumbers.PhoneMetadata.DefaultInstance
+  id: DefaultInstance
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: DefaultInstance
+  nameWithType: PhoneMetadata.DefaultInstance
+  fullName: PhoneNumbers.PhoneMetadata.DefaultInstance
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public static PhoneMetadata DefaultInstance { get; }
+    parameters: []
+    return:
+      type: PhoneNumbers.PhoneMetadata
+    content.vb: Public Shared ReadOnly Property DefaultInstance As PhoneMetadata
+  overload: PhoneNumbers.PhoneMetadata.DefaultInstance*
+- uid: PhoneNumbers.PhoneMetadata.DefaultInstanceForType
+  commentId: P:PhoneNumbers.PhoneMetadata.DefaultInstanceForType
+  id: DefaultInstanceForType
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: DefaultInstanceForType
+  nameWithType: PhoneMetadata.DefaultInstanceForType
+  fullName: PhoneNumbers.PhoneMetadata.DefaultInstanceForType
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public PhoneMetadata DefaultInstanceForType { get; }
+    parameters: []
+    return:
+      type: PhoneNumbers.PhoneMetadata
+    content.vb: Public ReadOnly Property DefaultInstanceForType As PhoneMetadata
+  overload: PhoneNumbers.PhoneMetadata.DefaultInstanceForType*
+- uid: PhoneNumbers.PhoneMetadata.HasGeneralDesc
+  commentId: P:PhoneNumbers.PhoneMetadata.HasGeneralDesc
+  id: HasGeneralDesc
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: HasGeneralDesc
+  nameWithType: PhoneMetadata.HasGeneralDesc
+  fullName: PhoneNumbers.PhoneMetadata.HasGeneralDesc
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasGeneralDesc { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasGeneralDesc As Boolean
+  overload: PhoneNumbers.PhoneMetadata.HasGeneralDesc*
+- uid: PhoneNumbers.PhoneMetadata.GeneralDesc
+  commentId: P:PhoneNumbers.PhoneMetadata.GeneralDesc
+  id: GeneralDesc
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: GeneralDesc
+  nameWithType: PhoneMetadata.GeneralDesc
+  fullName: PhoneNumbers.PhoneMetadata.GeneralDesc
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public PhoneNumberDesc GeneralDesc { get; }
+    parameters: []
+    return:
+      type: PhoneNumbers.PhoneNumberDesc
+    content.vb: Public Property GeneralDesc As PhoneNumberDesc
+  overload: PhoneNumbers.PhoneMetadata.GeneralDesc*
+- uid: PhoneNumbers.PhoneMetadata.HasFixedLine
+  commentId: P:PhoneNumbers.PhoneMetadata.HasFixedLine
+  id: HasFixedLine
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: HasFixedLine
+  nameWithType: PhoneMetadata.HasFixedLine
+  fullName: PhoneNumbers.PhoneMetadata.HasFixedLine
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasFixedLine { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasFixedLine As Boolean
+  overload: PhoneNumbers.PhoneMetadata.HasFixedLine*
+- uid: PhoneNumbers.PhoneMetadata.FixedLine
+  commentId: P:PhoneNumbers.PhoneMetadata.FixedLine
+  id: FixedLine
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: FixedLine
+  nameWithType: PhoneMetadata.FixedLine
+  fullName: PhoneNumbers.PhoneMetadata.FixedLine
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public PhoneNumberDesc FixedLine { get; }
+    parameters: []
+    return:
+      type: PhoneNumbers.PhoneNumberDesc
+    content.vb: Public Property FixedLine As PhoneNumberDesc
+  overload: PhoneNumbers.PhoneMetadata.FixedLine*
+- uid: PhoneNumbers.PhoneMetadata.HasMobile
+  commentId: P:PhoneNumbers.PhoneMetadata.HasMobile
+  id: HasMobile
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: HasMobile
+  nameWithType: PhoneMetadata.HasMobile
+  fullName: PhoneNumbers.PhoneMetadata.HasMobile
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasMobile { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasMobile As Boolean
+  overload: PhoneNumbers.PhoneMetadata.HasMobile*
+- uid: PhoneNumbers.PhoneMetadata.Mobile
+  commentId: P:PhoneNumbers.PhoneMetadata.Mobile
+  id: Mobile
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: Mobile
+  nameWithType: PhoneMetadata.Mobile
+  fullName: PhoneNumbers.PhoneMetadata.Mobile
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public PhoneNumberDesc Mobile { get; }
+    parameters: []
+    return:
+      type: PhoneNumbers.PhoneNumberDesc
+    content.vb: Public Property Mobile As PhoneNumberDesc
+  overload: PhoneNumbers.PhoneMetadata.Mobile*
+- uid: PhoneNumbers.PhoneMetadata.HasTollFree
+  commentId: P:PhoneNumbers.PhoneMetadata.HasTollFree
+  id: HasTollFree
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: HasTollFree
+  nameWithType: PhoneMetadata.HasTollFree
+  fullName: PhoneNumbers.PhoneMetadata.HasTollFree
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasTollFree { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasTollFree As Boolean
+  overload: PhoneNumbers.PhoneMetadata.HasTollFree*
+- uid: PhoneNumbers.PhoneMetadata.TollFree
+  commentId: P:PhoneNumbers.PhoneMetadata.TollFree
+  id: TollFree
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: TollFree
+  nameWithType: PhoneMetadata.TollFree
+  fullName: PhoneNumbers.PhoneMetadata.TollFree
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public PhoneNumberDesc TollFree { get; }
+    parameters: []
+    return:
+      type: PhoneNumbers.PhoneNumberDesc
+    content.vb: Public Property TollFree As PhoneNumberDesc
+  overload: PhoneNumbers.PhoneMetadata.TollFree*
+- uid: PhoneNumbers.PhoneMetadata.HasPremiumRate
+  commentId: P:PhoneNumbers.PhoneMetadata.HasPremiumRate
+  id: HasPremiumRate
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: HasPremiumRate
+  nameWithType: PhoneMetadata.HasPremiumRate
+  fullName: PhoneNumbers.PhoneMetadata.HasPremiumRate
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasPremiumRate { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasPremiumRate As Boolean
+  overload: PhoneNumbers.PhoneMetadata.HasPremiumRate*
+- uid: PhoneNumbers.PhoneMetadata.PremiumRate
+  commentId: P:PhoneNumbers.PhoneMetadata.PremiumRate
+  id: PremiumRate
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: PremiumRate
+  nameWithType: PhoneMetadata.PremiumRate
+  fullName: PhoneNumbers.PhoneMetadata.PremiumRate
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public PhoneNumberDesc PremiumRate { get; }
+    parameters: []
+    return:
+      type: PhoneNumbers.PhoneNumberDesc
+    content.vb: Public Property PremiumRate As PhoneNumberDesc
+  overload: PhoneNumbers.PhoneMetadata.PremiumRate*
+- uid: PhoneNumbers.PhoneMetadata.HasSharedCost
+  commentId: P:PhoneNumbers.PhoneMetadata.HasSharedCost
+  id: HasSharedCost
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: HasSharedCost
+  nameWithType: PhoneMetadata.HasSharedCost
+  fullName: PhoneNumbers.PhoneMetadata.HasSharedCost
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasSharedCost { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasSharedCost As Boolean
+  overload: PhoneNumbers.PhoneMetadata.HasSharedCost*
+- uid: PhoneNumbers.PhoneMetadata.SharedCost
+  commentId: P:PhoneNumbers.PhoneMetadata.SharedCost
+  id: SharedCost
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: SharedCost
+  nameWithType: PhoneMetadata.SharedCost
+  fullName: PhoneNumbers.PhoneMetadata.SharedCost
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public PhoneNumberDesc SharedCost { get; }
+    parameters: []
+    return:
+      type: PhoneNumbers.PhoneNumberDesc
+    content.vb: Public Property SharedCost As PhoneNumberDesc
+  overload: PhoneNumbers.PhoneMetadata.SharedCost*
+- uid: PhoneNumbers.PhoneMetadata.HasPersonalNumber
+  commentId: P:PhoneNumbers.PhoneMetadata.HasPersonalNumber
+  id: HasPersonalNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: HasPersonalNumber
+  nameWithType: PhoneMetadata.HasPersonalNumber
+  fullName: PhoneNumbers.PhoneMetadata.HasPersonalNumber
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasPersonalNumber { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasPersonalNumber As Boolean
+  overload: PhoneNumbers.PhoneMetadata.HasPersonalNumber*
+- uid: PhoneNumbers.PhoneMetadata.PersonalNumber
+  commentId: P:PhoneNumbers.PhoneMetadata.PersonalNumber
+  id: PersonalNumber
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: PersonalNumber
+  nameWithType: PhoneMetadata.PersonalNumber
+  fullName: PhoneNumbers.PhoneMetadata.PersonalNumber
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public PhoneNumberDesc PersonalNumber { get; }
+    parameters: []
+    return:
+      type: PhoneNumbers.PhoneNumberDesc
+    content.vb: Public Property PersonalNumber As PhoneNumberDesc
+  overload: PhoneNumbers.PhoneMetadata.PersonalNumber*
+- uid: PhoneNumbers.PhoneMetadata.HasVoip
+  commentId: P:PhoneNumbers.PhoneMetadata.HasVoip
+  id: HasVoip
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: HasVoip
+  nameWithType: PhoneMetadata.HasVoip
+  fullName: PhoneNumbers.PhoneMetadata.HasVoip
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasVoip { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasVoip As Boolean
+  overload: PhoneNumbers.PhoneMetadata.HasVoip*
+- uid: PhoneNumbers.PhoneMetadata.Voip
+  commentId: P:PhoneNumbers.PhoneMetadata.Voip
+  id: Voip
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: Voip
+  nameWithType: PhoneMetadata.Voip
+  fullName: PhoneNumbers.PhoneMetadata.Voip
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public PhoneNumberDesc Voip { get; }
+    parameters: []
+    return:
+      type: PhoneNumbers.PhoneNumberDesc
+    content.vb: Public Property Voip As PhoneNumberDesc
+  overload: PhoneNumbers.PhoneMetadata.Voip*
+- uid: PhoneNumbers.PhoneMetadata.HasPager
+  commentId: P:PhoneNumbers.PhoneMetadata.HasPager
+  id: HasPager
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: HasPager
+  nameWithType: PhoneMetadata.HasPager
+  fullName: PhoneNumbers.PhoneMetadata.HasPager
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasPager { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasPager As Boolean
+  overload: PhoneNumbers.PhoneMetadata.HasPager*
+- uid: PhoneNumbers.PhoneMetadata.Pager
+  commentId: P:PhoneNumbers.PhoneMetadata.Pager
+  id: Pager
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: Pager
+  nameWithType: PhoneMetadata.Pager
+  fullName: PhoneNumbers.PhoneMetadata.Pager
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public PhoneNumberDesc Pager { get; }
+    parameters: []
+    return:
+      type: PhoneNumbers.PhoneNumberDesc
+    content.vb: Public Property Pager As PhoneNumberDesc
+  overload: PhoneNumbers.PhoneMetadata.Pager*
+- uid: PhoneNumbers.PhoneMetadata.HasUan
+  commentId: P:PhoneNumbers.PhoneMetadata.HasUan
+  id: HasUan
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: HasUan
+  nameWithType: PhoneMetadata.HasUan
+  fullName: PhoneNumbers.PhoneMetadata.HasUan
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasUan { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasUan As Boolean
+  overload: PhoneNumbers.PhoneMetadata.HasUan*
+- uid: PhoneNumbers.PhoneMetadata.Uan
+  commentId: P:PhoneNumbers.PhoneMetadata.Uan
+  id: Uan
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: Uan
+  nameWithType: PhoneMetadata.Uan
+  fullName: PhoneNumbers.PhoneMetadata.Uan
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public PhoneNumberDesc Uan { get; }
+    parameters: []
+    return:
+      type: PhoneNumbers.PhoneNumberDesc
+    content.vb: Public Property Uan As PhoneNumberDesc
+  overload: PhoneNumbers.PhoneMetadata.Uan*
+- uid: PhoneNumbers.PhoneMetadata.HasEmergency
+  commentId: P:PhoneNumbers.PhoneMetadata.HasEmergency
+  id: HasEmergency
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: HasEmergency
+  nameWithType: PhoneMetadata.HasEmergency
+  fullName: PhoneNumbers.PhoneMetadata.HasEmergency
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasEmergency { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasEmergency As Boolean
+  overload: PhoneNumbers.PhoneMetadata.HasEmergency*
+- uid: PhoneNumbers.PhoneMetadata.Emergency
+  commentId: P:PhoneNumbers.PhoneMetadata.Emergency
+  id: Emergency
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: Emergency
+  nameWithType: PhoneMetadata.Emergency
+  fullName: PhoneNumbers.PhoneMetadata.Emergency
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public PhoneNumberDesc Emergency { get; }
+    parameters: []
+    return:
+      type: PhoneNumbers.PhoneNumberDesc
+    content.vb: Public Property Emergency As PhoneNumberDesc
+  overload: PhoneNumbers.PhoneMetadata.Emergency*
+- uid: PhoneNumbers.PhoneMetadata.HasVoicemail
+  commentId: P:PhoneNumbers.PhoneMetadata.HasVoicemail
+  id: HasVoicemail
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: HasVoicemail
+  nameWithType: PhoneMetadata.HasVoicemail
+  fullName: PhoneNumbers.PhoneMetadata.HasVoicemail
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasVoicemail { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasVoicemail As Boolean
+  overload: PhoneNumbers.PhoneMetadata.HasVoicemail*
+- uid: PhoneNumbers.PhoneMetadata.Voicemail
+  commentId: P:PhoneNumbers.PhoneMetadata.Voicemail
+  id: Voicemail
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: Voicemail
+  nameWithType: PhoneMetadata.Voicemail
+  fullName: PhoneNumbers.PhoneMetadata.Voicemail
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public PhoneNumberDesc Voicemail { get; }
+    parameters: []
+    return:
+      type: PhoneNumbers.PhoneNumberDesc
+    content.vb: Public Property Voicemail As PhoneNumberDesc
+  overload: PhoneNumbers.PhoneMetadata.Voicemail*
+- uid: PhoneNumbers.PhoneMetadata.HasShortCode
+  commentId: P:PhoneNumbers.PhoneMetadata.HasShortCode
+  id: HasShortCode
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: HasShortCode
+  nameWithType: PhoneMetadata.HasShortCode
+  fullName: PhoneNumbers.PhoneMetadata.HasShortCode
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasShortCode { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasShortCode As Boolean
+  overload: PhoneNumbers.PhoneMetadata.HasShortCode*
+- uid: PhoneNumbers.PhoneMetadata.ShortCode
+  commentId: P:PhoneNumbers.PhoneMetadata.ShortCode
+  id: ShortCode
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: ShortCode
+  nameWithType: PhoneMetadata.ShortCode
+  fullName: PhoneNumbers.PhoneMetadata.ShortCode
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public PhoneNumberDesc ShortCode { get; }
+    parameters: []
+    return:
+      type: PhoneNumbers.PhoneNumberDesc
+    content.vb: Public Property ShortCode As PhoneNumberDesc
+  overload: PhoneNumbers.PhoneMetadata.ShortCode*
+- uid: PhoneNumbers.PhoneMetadata.HasStandardRate
+  commentId: P:PhoneNumbers.PhoneMetadata.HasStandardRate
+  id: HasStandardRate
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: HasStandardRate
+  nameWithType: PhoneMetadata.HasStandardRate
+  fullName: PhoneNumbers.PhoneMetadata.HasStandardRate
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasStandardRate { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasStandardRate As Boolean
+  overload: PhoneNumbers.PhoneMetadata.HasStandardRate*
+- uid: PhoneNumbers.PhoneMetadata.StandardRate
+  commentId: P:PhoneNumbers.PhoneMetadata.StandardRate
+  id: StandardRate
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: StandardRate
+  nameWithType: PhoneMetadata.StandardRate
+  fullName: PhoneNumbers.PhoneMetadata.StandardRate
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public PhoneNumberDesc StandardRate { get; }
+    parameters: []
+    return:
+      type: PhoneNumbers.PhoneNumberDesc
+    content.vb: Public Property StandardRate As PhoneNumberDesc
+  overload: PhoneNumbers.PhoneMetadata.StandardRate*
+- uid: PhoneNumbers.PhoneMetadata.HasCarrierSpecific
+  commentId: P:PhoneNumbers.PhoneMetadata.HasCarrierSpecific
+  id: HasCarrierSpecific
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: HasCarrierSpecific
+  nameWithType: PhoneMetadata.HasCarrierSpecific
+  fullName: PhoneNumbers.PhoneMetadata.HasCarrierSpecific
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasCarrierSpecific { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasCarrierSpecific As Boolean
+  overload: PhoneNumbers.PhoneMetadata.HasCarrierSpecific*
+- uid: PhoneNumbers.PhoneMetadata.CarrierSpecific
+  commentId: P:PhoneNumbers.PhoneMetadata.CarrierSpecific
+  id: CarrierSpecific
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: CarrierSpecific
+  nameWithType: PhoneMetadata.CarrierSpecific
+  fullName: PhoneNumbers.PhoneMetadata.CarrierSpecific
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public PhoneNumberDesc CarrierSpecific { get; }
+    parameters: []
+    return:
+      type: PhoneNumbers.PhoneNumberDesc
+    content.vb: Public Property CarrierSpecific As PhoneNumberDesc
+  overload: PhoneNumbers.PhoneMetadata.CarrierSpecific*
+- uid: PhoneNumbers.PhoneMetadata.HasSmsServices
+  commentId: P:PhoneNumbers.PhoneMetadata.HasSmsServices
+  id: HasSmsServices
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: HasSmsServices
+  nameWithType: PhoneMetadata.HasSmsServices
+  fullName: PhoneNumbers.PhoneMetadata.HasSmsServices
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasSmsServices { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasSmsServices As Boolean
+  overload: PhoneNumbers.PhoneMetadata.HasSmsServices*
+- uid: PhoneNumbers.PhoneMetadata.SmsServices
+  commentId: P:PhoneNumbers.PhoneMetadata.SmsServices
+  id: SmsServices
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: SmsServices
+  nameWithType: PhoneMetadata.SmsServices
+  fullName: PhoneNumbers.PhoneMetadata.SmsServices
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public PhoneNumberDesc SmsServices { get; }
+    parameters: []
+    return:
+      type: PhoneNumbers.PhoneNumberDesc
+    content.vb: Public Property SmsServices As PhoneNumberDesc
+  overload: PhoneNumbers.PhoneMetadata.SmsServices*
+- uid: PhoneNumbers.PhoneMetadata.HasNoInternationalDialling
+  commentId: P:PhoneNumbers.PhoneMetadata.HasNoInternationalDialling
+  id: HasNoInternationalDialling
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: HasNoInternationalDialling
+  nameWithType: PhoneMetadata.HasNoInternationalDialling
+  fullName: PhoneNumbers.PhoneMetadata.HasNoInternationalDialling
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasNoInternationalDialling { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasNoInternationalDialling As Boolean
+  overload: PhoneNumbers.PhoneMetadata.HasNoInternationalDialling*
+- uid: PhoneNumbers.PhoneMetadata.NoInternationalDialling
+  commentId: P:PhoneNumbers.PhoneMetadata.NoInternationalDialling
+  id: NoInternationalDialling
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: NoInternationalDialling
+  nameWithType: PhoneMetadata.NoInternationalDialling
+  fullName: PhoneNumbers.PhoneMetadata.NoInternationalDialling
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public PhoneNumberDesc NoInternationalDialling { get; }
+    parameters: []
+    return:
+      type: PhoneNumbers.PhoneNumberDesc
+    content.vb: Public Property NoInternationalDialling As PhoneNumberDesc
+  overload: PhoneNumbers.PhoneMetadata.NoInternationalDialling*
+- uid: PhoneNumbers.PhoneMetadata.HasId
+  commentId: P:PhoneNumbers.PhoneMetadata.HasId
+  id: HasId
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: HasId
+  nameWithType: PhoneMetadata.HasId
+  fullName: PhoneNumbers.PhoneMetadata.HasId
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasId { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasId As Boolean
+  overload: PhoneNumbers.PhoneMetadata.HasId*
+- uid: PhoneNumbers.PhoneMetadata.Id
+  commentId: P:PhoneNumbers.PhoneMetadata.Id
+  id: Id
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: Id
+  nameWithType: PhoneMetadata.Id
+  fullName: PhoneNumbers.PhoneMetadata.Id
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public string Id { get; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property Id As String
+  overload: PhoneNumbers.PhoneMetadata.Id*
+- uid: PhoneNumbers.PhoneMetadata.HasCountryCode
+  commentId: P:PhoneNumbers.PhoneMetadata.HasCountryCode
+  id: HasCountryCode
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: HasCountryCode
+  nameWithType: PhoneMetadata.HasCountryCode
+  fullName: PhoneNumbers.PhoneMetadata.HasCountryCode
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasCountryCode { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasCountryCode As Boolean
+  overload: PhoneNumbers.PhoneMetadata.HasCountryCode*
+- uid: PhoneNumbers.PhoneMetadata.CountryCode
+  commentId: P:PhoneNumbers.PhoneMetadata.CountryCode
+  id: CountryCode
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: CountryCode
+  nameWithType: PhoneMetadata.CountryCode
+  fullName: PhoneNumbers.PhoneMetadata.CountryCode
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public int CountryCode { get; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public Property CountryCode As Integer
+  overload: PhoneNumbers.PhoneMetadata.CountryCode*
+- uid: PhoneNumbers.PhoneMetadata.HasInternationalPrefix
+  commentId: P:PhoneNumbers.PhoneMetadata.HasInternationalPrefix
+  id: HasInternationalPrefix
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: HasInternationalPrefix
+  nameWithType: PhoneMetadata.HasInternationalPrefix
+  fullName: PhoneNumbers.PhoneMetadata.HasInternationalPrefix
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasInternationalPrefix { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasInternationalPrefix As Boolean
+  overload: PhoneNumbers.PhoneMetadata.HasInternationalPrefix*
+- uid: PhoneNumbers.PhoneMetadata.InternationalPrefix
+  commentId: P:PhoneNumbers.PhoneMetadata.InternationalPrefix
+  id: InternationalPrefix
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: InternationalPrefix
+  nameWithType: PhoneMetadata.InternationalPrefix
+  fullName: PhoneNumbers.PhoneMetadata.InternationalPrefix
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public string InternationalPrefix { get; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property InternationalPrefix As String
+  overload: PhoneNumbers.PhoneMetadata.InternationalPrefix*
+- uid: PhoneNumbers.PhoneMetadata.HasPreferredInternationalPrefix
+  commentId: P:PhoneNumbers.PhoneMetadata.HasPreferredInternationalPrefix
+  id: HasPreferredInternationalPrefix
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: HasPreferredInternationalPrefix
+  nameWithType: PhoneMetadata.HasPreferredInternationalPrefix
+  fullName: PhoneNumbers.PhoneMetadata.HasPreferredInternationalPrefix
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasPreferredInternationalPrefix { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasPreferredInternationalPrefix As Boolean
+  overload: PhoneNumbers.PhoneMetadata.HasPreferredInternationalPrefix*
+- uid: PhoneNumbers.PhoneMetadata.PreferredInternationalPrefix
+  commentId: P:PhoneNumbers.PhoneMetadata.PreferredInternationalPrefix
+  id: PreferredInternationalPrefix
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: PreferredInternationalPrefix
+  nameWithType: PhoneMetadata.PreferredInternationalPrefix
+  fullName: PhoneNumbers.PhoneMetadata.PreferredInternationalPrefix
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public string PreferredInternationalPrefix { get; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property PreferredInternationalPrefix As String
+  overload: PhoneNumbers.PhoneMetadata.PreferredInternationalPrefix*
+- uid: PhoneNumbers.PhoneMetadata.HasNationalPrefix
+  commentId: P:PhoneNumbers.PhoneMetadata.HasNationalPrefix
+  id: HasNationalPrefix
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: HasNationalPrefix
+  nameWithType: PhoneMetadata.HasNationalPrefix
+  fullName: PhoneNumbers.PhoneMetadata.HasNationalPrefix
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasNationalPrefix { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasNationalPrefix As Boolean
+  overload: PhoneNumbers.PhoneMetadata.HasNationalPrefix*
+- uid: PhoneNumbers.PhoneMetadata.NationalPrefix
+  commentId: P:PhoneNumbers.PhoneMetadata.NationalPrefix
+  id: NationalPrefix
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: NationalPrefix
+  nameWithType: PhoneMetadata.NationalPrefix
+  fullName: PhoneNumbers.PhoneMetadata.NationalPrefix
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public string NationalPrefix { get; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property NationalPrefix As String
+  overload: PhoneNumbers.PhoneMetadata.NationalPrefix*
+- uid: PhoneNumbers.PhoneMetadata.HasPreferredExtnPrefix
+  commentId: P:PhoneNumbers.PhoneMetadata.HasPreferredExtnPrefix
+  id: HasPreferredExtnPrefix
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: HasPreferredExtnPrefix
+  nameWithType: PhoneMetadata.HasPreferredExtnPrefix
+  fullName: PhoneNumbers.PhoneMetadata.HasPreferredExtnPrefix
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasPreferredExtnPrefix { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasPreferredExtnPrefix As Boolean
+  overload: PhoneNumbers.PhoneMetadata.HasPreferredExtnPrefix*
+- uid: PhoneNumbers.PhoneMetadata.PreferredExtnPrefix
+  commentId: P:PhoneNumbers.PhoneMetadata.PreferredExtnPrefix
+  id: PreferredExtnPrefix
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: PreferredExtnPrefix
+  nameWithType: PhoneMetadata.PreferredExtnPrefix
+  fullName: PhoneNumbers.PhoneMetadata.PreferredExtnPrefix
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public string PreferredExtnPrefix { get; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property PreferredExtnPrefix As String
+  overload: PhoneNumbers.PhoneMetadata.PreferredExtnPrefix*
+- uid: PhoneNumbers.PhoneMetadata.HasNationalPrefixForParsing
+  commentId: P:PhoneNumbers.PhoneMetadata.HasNationalPrefixForParsing
+  id: HasNationalPrefixForParsing
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: HasNationalPrefixForParsing
+  nameWithType: PhoneMetadata.HasNationalPrefixForParsing
+  fullName: PhoneNumbers.PhoneMetadata.HasNationalPrefixForParsing
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasNationalPrefixForParsing { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasNationalPrefixForParsing As Boolean
+  overload: PhoneNumbers.PhoneMetadata.HasNationalPrefixForParsing*
+- uid: PhoneNumbers.PhoneMetadata.NationalPrefixForParsing
+  commentId: P:PhoneNumbers.PhoneMetadata.NationalPrefixForParsing
+  id: NationalPrefixForParsing
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: NationalPrefixForParsing
+  nameWithType: PhoneMetadata.NationalPrefixForParsing
+  fullName: PhoneNumbers.PhoneMetadata.NationalPrefixForParsing
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public string NationalPrefixForParsing { get; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property NationalPrefixForParsing As String
+  overload: PhoneNumbers.PhoneMetadata.NationalPrefixForParsing*
+- uid: PhoneNumbers.PhoneMetadata.HasNationalPrefixTransformRule
+  commentId: P:PhoneNumbers.PhoneMetadata.HasNationalPrefixTransformRule
+  id: HasNationalPrefixTransformRule
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: HasNationalPrefixTransformRule
+  nameWithType: PhoneMetadata.HasNationalPrefixTransformRule
+  fullName: PhoneNumbers.PhoneMetadata.HasNationalPrefixTransformRule
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasNationalPrefixTransformRule { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasNationalPrefixTransformRule As Boolean
+  overload: PhoneNumbers.PhoneMetadata.HasNationalPrefixTransformRule*
+- uid: PhoneNumbers.PhoneMetadata.NationalPrefixTransformRule
+  commentId: P:PhoneNumbers.PhoneMetadata.NationalPrefixTransformRule
+  id: NationalPrefixTransformRule
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: NationalPrefixTransformRule
+  nameWithType: PhoneMetadata.NationalPrefixTransformRule
+  fullName: PhoneNumbers.PhoneMetadata.NationalPrefixTransformRule
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public string NationalPrefixTransformRule { get; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property NationalPrefixTransformRule As String
+  overload: PhoneNumbers.PhoneMetadata.NationalPrefixTransformRule*
+- uid: PhoneNumbers.PhoneMetadata.HasSameMobileAndFixedLinePattern
+  commentId: P:PhoneNumbers.PhoneMetadata.HasSameMobileAndFixedLinePattern
+  id: HasSameMobileAndFixedLinePattern
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: HasSameMobileAndFixedLinePattern
+  nameWithType: PhoneMetadata.HasSameMobileAndFixedLinePattern
+  fullName: PhoneNumbers.PhoneMetadata.HasSameMobileAndFixedLinePattern
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasSameMobileAndFixedLinePattern { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasSameMobileAndFixedLinePattern As Boolean
+  overload: PhoneNumbers.PhoneMetadata.HasSameMobileAndFixedLinePattern*
+- uid: PhoneNumbers.PhoneMetadata.SameMobileAndFixedLinePattern
+  commentId: P:PhoneNumbers.PhoneMetadata.SameMobileAndFixedLinePattern
+  id: SameMobileAndFixedLinePattern
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: SameMobileAndFixedLinePattern
+  nameWithType: PhoneMetadata.SameMobileAndFixedLinePattern
+  fullName: PhoneNumbers.PhoneMetadata.SameMobileAndFixedLinePattern
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool SameMobileAndFixedLinePattern { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public Property SameMobileAndFixedLinePattern As Boolean
+  overload: PhoneNumbers.PhoneMetadata.SameMobileAndFixedLinePattern*
+- uid: PhoneNumbers.PhoneMetadata.NumberFormatList
+  commentId: P:PhoneNumbers.PhoneMetadata.NumberFormatList
+  id: NumberFormatList
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: NumberFormatList
+  nameWithType: PhoneMetadata.NumberFormatList
+  fullName: PhoneNumbers.PhoneMetadata.NumberFormatList
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public IList<NumberFormat> NumberFormatList { get; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.IList{PhoneNumbers.NumberFormat}
+    content.vb: Public ReadOnly Property NumberFormatList As IList(Of NumberFormat)
+  overload: PhoneNumbers.PhoneMetadata.NumberFormatList*
+- uid: PhoneNumbers.PhoneMetadata.NumberFormatCount
+  commentId: P:PhoneNumbers.PhoneMetadata.NumberFormatCount
+  id: NumberFormatCount
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: NumberFormatCount
+  nameWithType: PhoneMetadata.NumberFormatCount
+  fullName: PhoneNumbers.PhoneMetadata.NumberFormatCount
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public int NumberFormatCount { get; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public ReadOnly Property NumberFormatCount As Integer
+  overload: PhoneNumbers.PhoneMetadata.NumberFormatCount*
+- uid: PhoneNumbers.PhoneMetadata.IntlNumberFormatList
+  commentId: P:PhoneNumbers.PhoneMetadata.IntlNumberFormatList
+  id: IntlNumberFormatList
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: IntlNumberFormatList
+  nameWithType: PhoneMetadata.IntlNumberFormatList
+  fullName: PhoneNumbers.PhoneMetadata.IntlNumberFormatList
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public IList<NumberFormat> IntlNumberFormatList { get; }
+    parameters: []
+    return:
+      type: System.Collections.Generic.IList{PhoneNumbers.NumberFormat}
+    content.vb: Public ReadOnly Property IntlNumberFormatList As IList(Of NumberFormat)
+  overload: PhoneNumbers.PhoneMetadata.IntlNumberFormatList*
+- uid: PhoneNumbers.PhoneMetadata.IntlNumberFormatCount
+  commentId: P:PhoneNumbers.PhoneMetadata.IntlNumberFormatCount
+  id: IntlNumberFormatCount
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: IntlNumberFormatCount
+  nameWithType: PhoneMetadata.IntlNumberFormatCount
+  fullName: PhoneNumbers.PhoneMetadata.IntlNumberFormatCount
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public int IntlNumberFormatCount { get; }
+    parameters: []
+    return:
+      type: System.Int32
+    content.vb: Public ReadOnly Property IntlNumberFormatCount As Integer
+  overload: PhoneNumbers.PhoneMetadata.IntlNumberFormatCount*
+- uid: PhoneNumbers.PhoneMetadata.HasMainCountryForCode
+  commentId: P:PhoneNumbers.PhoneMetadata.HasMainCountryForCode
+  id: HasMainCountryForCode
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: HasMainCountryForCode
+  nameWithType: PhoneMetadata.HasMainCountryForCode
+  fullName: PhoneNumbers.PhoneMetadata.HasMainCountryForCode
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasMainCountryForCode { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasMainCountryForCode As Boolean
+  overload: PhoneNumbers.PhoneMetadata.HasMainCountryForCode*
+- uid: PhoneNumbers.PhoneMetadata.MainCountryForCode
+  commentId: P:PhoneNumbers.PhoneMetadata.MainCountryForCode
+  id: MainCountryForCode
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: MainCountryForCode
+  nameWithType: PhoneMetadata.MainCountryForCode
+  fullName: PhoneNumbers.PhoneMetadata.MainCountryForCode
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool MainCountryForCode { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public Property MainCountryForCode As Boolean
+  overload: PhoneNumbers.PhoneMetadata.MainCountryForCode*
+- uid: PhoneNumbers.PhoneMetadata.HasLeadingDigits
+  commentId: P:PhoneNumbers.PhoneMetadata.HasLeadingDigits
+  id: HasLeadingDigits
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: HasLeadingDigits
+  nameWithType: PhoneMetadata.HasLeadingDigits
+  fullName: PhoneNumbers.PhoneMetadata.HasLeadingDigits
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasLeadingDigits { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasLeadingDigits As Boolean
+  overload: PhoneNumbers.PhoneMetadata.HasLeadingDigits*
+- uid: PhoneNumbers.PhoneMetadata.LeadingDigits
+  commentId: P:PhoneNumbers.PhoneMetadata.LeadingDigits
+  id: LeadingDigits
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: LeadingDigits
+  nameWithType: PhoneMetadata.LeadingDigits
+  fullName: PhoneNumbers.PhoneMetadata.LeadingDigits
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public string LeadingDigits { get; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property LeadingDigits As String
+  overload: PhoneNumbers.PhoneMetadata.LeadingDigits*
+- uid: PhoneNumbers.PhoneMetadata.HasMobileNumberPortableRegion
+  commentId: P:PhoneNumbers.PhoneMetadata.HasMobileNumberPortableRegion
+  id: HasMobileNumberPortableRegion
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: HasMobileNumberPortableRegion
+  nameWithType: PhoneMetadata.HasMobileNumberPortableRegion
+  fullName: PhoneNumbers.PhoneMetadata.HasMobileNumberPortableRegion
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool HasMobileNumberPortableRegion { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property HasMobileNumberPortableRegion As Boolean
+  overload: PhoneNumbers.PhoneMetadata.HasMobileNumberPortableRegion*
+- uid: PhoneNumbers.PhoneMetadata.MobileNumberPortableRegion
+  commentId: P:PhoneNumbers.PhoneMetadata.MobileNumberPortableRegion
+  id: MobileNumberPortableRegion
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: MobileNumberPortableRegion
+  nameWithType: PhoneMetadata.MobileNumberPortableRegion
+  fullName: PhoneNumbers.PhoneMetadata.MobileNumberPortableRegion
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool MobileNumberPortableRegion { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public Property MobileNumberPortableRegion As Boolean
+  overload: PhoneNumbers.PhoneMetadata.MobileNumberPortableRegion*
+- uid: PhoneNumbers.PhoneMetadata.IsInitialized
+  commentId: P:PhoneNumbers.PhoneMetadata.IsInitialized
+  id: IsInitialized
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: IsInitialized
+  nameWithType: PhoneMetadata.IsInitialized
+  fullName: PhoneNumbers.PhoneMetadata.IsInitialized
+  type: Property
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public bool IsInitialized { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public ReadOnly Property IsInitialized As Boolean
+  overload: PhoneNumbers.PhoneMetadata.IsInitialized*
+- uid: PhoneNumbers.PhoneMetadata.GetNumberFormat(System.Int32)
+  commentId: M:PhoneNumbers.PhoneMetadata.GetNumberFormat(System.Int32)
+  id: GetNumberFormat(System.Int32)
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: GetNumberFormat(int)
+  nameWithType: PhoneMetadata.GetNumberFormat(int)
+  fullName: PhoneNumbers.PhoneMetadata.GetNumberFormat(int)
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public NumberFormat GetNumberFormat(int index)
+    parameters:
+    - id: index
+      type: System.Int32
+    return:
+      type: PhoneNumbers.NumberFormat
+    content.vb: Public Function GetNumberFormat(index As Integer) As NumberFormat
+  overload: PhoneNumbers.PhoneMetadata.GetNumberFormat*
+  nameWithType.vb: PhoneMetadata.GetNumberFormat(Integer)
+  fullName.vb: PhoneNumbers.PhoneMetadata.GetNumberFormat(Integer)
+  name.vb: GetNumberFormat(Integer)
+- uid: PhoneNumbers.PhoneMetadata.GetIntlNumberFormat(System.Int32)
+  commentId: M:PhoneNumbers.PhoneMetadata.GetIntlNumberFormat(System.Int32)
+  id: GetIntlNumberFormat(System.Int32)
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: GetIntlNumberFormat(int)
+  nameWithType: PhoneMetadata.GetIntlNumberFormat(int)
+  fullName: PhoneNumbers.PhoneMetadata.GetIntlNumberFormat(int)
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public NumberFormat GetIntlNumberFormat(int index)
+    parameters:
+    - id: index
+      type: System.Int32
+    return:
+      type: PhoneNumbers.NumberFormat
+    content.vb: Public Function GetIntlNumberFormat(index As Integer) As NumberFormat
+  overload: PhoneNumbers.PhoneMetadata.GetIntlNumberFormat*
+  nameWithType.vb: PhoneMetadata.GetIntlNumberFormat(Integer)
+  fullName.vb: PhoneNumbers.PhoneMetadata.GetIntlNumberFormat(Integer)
+  name.vb: GetIntlNumberFormat(Integer)
+- uid: PhoneNumbers.PhoneMetadata.CreateBuilder
+  commentId: M:PhoneNumbers.PhoneMetadata.CreateBuilder
+  id: CreateBuilder
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: CreateBuilder()
+  nameWithType: PhoneMetadata.CreateBuilder()
+  fullName: PhoneNumbers.PhoneMetadata.CreateBuilder()
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public static PhoneMetadata.Builder CreateBuilder()
+    return:
+      type: PhoneNumbers.PhoneMetadata.Builder
+    content.vb: Public Shared Function CreateBuilder() As PhoneMetadata.Builder
+  overload: PhoneNumbers.PhoneMetadata.CreateBuilder*
+- uid: PhoneNumbers.PhoneMetadata.ToBuilder
+  commentId: M:PhoneNumbers.PhoneMetadata.ToBuilder
+  id: ToBuilder
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: ToBuilder()
+  nameWithType: PhoneMetadata.ToBuilder()
+  fullName: PhoneNumbers.PhoneMetadata.ToBuilder()
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public PhoneMetadata.Builder ToBuilder()
+    return:
+      type: PhoneNumbers.PhoneMetadata.Builder
+    content.vb: Public Function ToBuilder() As PhoneMetadata.Builder
+  overload: PhoneNumbers.PhoneMetadata.ToBuilder*
+- uid: PhoneNumbers.PhoneMetadata.CreateBuilderForType
+  commentId: M:PhoneNumbers.PhoneMetadata.CreateBuilderForType
+  id: CreateBuilderForType
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: CreateBuilderForType()
+  nameWithType: PhoneMetadata.CreateBuilderForType()
+  fullName: PhoneNumbers.PhoneMetadata.CreateBuilderForType()
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public PhoneMetadata.Builder CreateBuilderForType()
+    return:
+      type: PhoneNumbers.PhoneMetadata.Builder
+    content.vb: Public Function CreateBuilderForType() As PhoneMetadata.Builder
+  overload: PhoneNumbers.PhoneMetadata.CreateBuilderForType*
+- uid: PhoneNumbers.PhoneMetadata.CreateBuilder(PhoneNumbers.PhoneMetadata)
+  commentId: M:PhoneNumbers.PhoneMetadata.CreateBuilder(PhoneNumbers.PhoneMetadata)
+  id: CreateBuilder(PhoneNumbers.PhoneMetadata)
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: CreateBuilder(PhoneMetadata)
+  nameWithType: PhoneMetadata.CreateBuilder(PhoneMetadata)
+  fullName: PhoneNumbers.PhoneMetadata.CreateBuilder(PhoneNumbers.PhoneMetadata)
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  syntax:
+    content: public static PhoneMetadata.Builder CreateBuilder(PhoneMetadata prototype)
+    parameters:
+    - id: prototype
+      type: PhoneNumbers.PhoneMetadata
+    return:
+      type: PhoneNumbers.PhoneMetadata.Builder
+    content.vb: Public Shared Function CreateBuilder(prototype As PhoneMetadata) As PhoneMetadata.Builder
+  overload: PhoneNumbers.PhoneMetadata.CreateBuilder*
+- uid: PhoneNumbers.PhoneMetadata.GetHashCode
+  commentId: M:PhoneNumbers.PhoneMetadata.GetHashCode
+  id: GetHashCode
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: GetHashCode()
+  nameWithType: PhoneMetadata.GetHashCode()
+  fullName: PhoneNumbers.PhoneMetadata.GetHashCode()
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: Serves as the default hash function.
+  example: []
+  syntax:
+    content: public override int GetHashCode()
+    return:
+      type: System.Int32
+      description: A hash code for the current object.
+    content.vb: Public Overrides Function GetHashCode() As Integer
+  overridden: System.Object.GetHashCode
+  overload: PhoneNumbers.PhoneMetadata.GetHashCode*
+- uid: PhoneNumbers.PhoneMetadata.Equals(System.Object)
+  commentId: M:PhoneNumbers.PhoneMetadata.Equals(System.Object)
+  id: Equals(System.Object)
+  parent: PhoneNumbers.PhoneMetadata
+  langs:
+  - csharp
+  - vb
+  name: Equals(object)
+  nameWithType: PhoneMetadata.Equals(object)
+  fullName: PhoneNumbers.PhoneMetadata.Equals(object)
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: Determines whether the specified object is equal to the current object.
+  example: []
+  syntax:
+    content: public override bool Equals(object obj)
+    parameters:
+    - id: obj
+      type: System.Object
+      description: The object to compare with the current object.
+    return:
+      type: System.Boolean
+      description: <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the specified object  is equal to the current object; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.
+    content.vb: Public Overrides Function Equals(obj As Object) As Boolean
+  overridden: System.Object.Equals(System.Object)
+  overload: PhoneNumbers.PhoneMetadata.Equals*
+  nameWithType.vb: PhoneMetadata.Equals(Object)
+  fullName.vb: PhoneNumbers.PhoneMetadata.Equals(Object)
+  name.vb: Equals(Object)
+references:
+- uid: PhoneNumbers
+  commentId: N:PhoneNumbers
+  href: PhoneNumbers.html
+  name: PhoneNumbers
+  nameWithType: PhoneNumbers
+  fullName: PhoneNumbers
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: System.Int32
+  commentId: T:System.Int32
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.int32
+  name: int
+  nameWithType: int
+  fullName: int
+  nameWithType.vb: Integer
+  fullName.vb: Integer
+  name.vb: Integer
+- uid: PhoneNumbers.PhoneMetadata.DefaultInstance*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.DefaultInstance
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_DefaultInstance
+  name: DefaultInstance
+  nameWithType: PhoneMetadata.DefaultInstance
+  fullName: PhoneNumbers.PhoneMetadata.DefaultInstance
+- uid: PhoneNumbers.PhoneMetadata
+  commentId: T:PhoneNumbers.PhoneMetadata
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneMetadata.html
+  name: PhoneMetadata
+  nameWithType: PhoneMetadata
+  fullName: PhoneNumbers.PhoneMetadata
+- uid: PhoneNumbers.PhoneMetadata.DefaultInstanceForType*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.DefaultInstanceForType
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_DefaultInstanceForType
+  name: DefaultInstanceForType
+  nameWithType: PhoneMetadata.DefaultInstanceForType
+  fullName: PhoneNumbers.PhoneMetadata.DefaultInstanceForType
+- uid: PhoneNumbers.PhoneMetadata.HasGeneralDesc*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.HasGeneralDesc
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_HasGeneralDesc
+  name: HasGeneralDesc
+  nameWithType: PhoneMetadata.HasGeneralDesc
+  fullName: PhoneNumbers.PhoneMetadata.HasGeneralDesc
+- uid: System.Boolean
+  commentId: T:System.Boolean
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.boolean
+  name: bool
+  nameWithType: bool
+  fullName: bool
+  nameWithType.vb: Boolean
+  fullName.vb: Boolean
+  name.vb: Boolean
+- uid: PhoneNumbers.PhoneMetadata.GeneralDesc*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.GeneralDesc
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_GeneralDesc
+  name: GeneralDesc
+  nameWithType: PhoneMetadata.GeneralDesc
+  fullName: PhoneNumbers.PhoneMetadata.GeneralDesc
+- uid: PhoneNumbers.PhoneNumberDesc
+  commentId: T:PhoneNumbers.PhoneNumberDesc
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumberDesc.html
+  name: PhoneNumberDesc
+  nameWithType: PhoneNumberDesc
+  fullName: PhoneNumbers.PhoneNumberDesc
+- uid: PhoneNumbers.PhoneMetadata.HasFixedLine*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.HasFixedLine
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_HasFixedLine
+  name: HasFixedLine
+  nameWithType: PhoneMetadata.HasFixedLine
+  fullName: PhoneNumbers.PhoneMetadata.HasFixedLine
+- uid: PhoneNumbers.PhoneMetadata.FixedLine*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.FixedLine
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_FixedLine
+  name: FixedLine
+  nameWithType: PhoneMetadata.FixedLine
+  fullName: PhoneNumbers.PhoneMetadata.FixedLine
+- uid: PhoneNumbers.PhoneMetadata.HasMobile*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.HasMobile
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_HasMobile
+  name: HasMobile
+  nameWithType: PhoneMetadata.HasMobile
+  fullName: PhoneNumbers.PhoneMetadata.HasMobile
+- uid: PhoneNumbers.PhoneMetadata.Mobile*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.Mobile
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_Mobile
+  name: Mobile
+  nameWithType: PhoneMetadata.Mobile
+  fullName: PhoneNumbers.PhoneMetadata.Mobile
+- uid: PhoneNumbers.PhoneMetadata.HasTollFree*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.HasTollFree
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_HasTollFree
+  name: HasTollFree
+  nameWithType: PhoneMetadata.HasTollFree
+  fullName: PhoneNumbers.PhoneMetadata.HasTollFree
+- uid: PhoneNumbers.PhoneMetadata.TollFree*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.TollFree
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_TollFree
+  name: TollFree
+  nameWithType: PhoneMetadata.TollFree
+  fullName: PhoneNumbers.PhoneMetadata.TollFree
+- uid: PhoneNumbers.PhoneMetadata.HasPremiumRate*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.HasPremiumRate
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_HasPremiumRate
+  name: HasPremiumRate
+  nameWithType: PhoneMetadata.HasPremiumRate
+  fullName: PhoneNumbers.PhoneMetadata.HasPremiumRate
+- uid: PhoneNumbers.PhoneMetadata.PremiumRate*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.PremiumRate
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_PremiumRate
+  name: PremiumRate
+  nameWithType: PhoneMetadata.PremiumRate
+  fullName: PhoneNumbers.PhoneMetadata.PremiumRate
+- uid: PhoneNumbers.PhoneMetadata.HasSharedCost*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.HasSharedCost
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_HasSharedCost
+  name: HasSharedCost
+  nameWithType: PhoneMetadata.HasSharedCost
+  fullName: PhoneNumbers.PhoneMetadata.HasSharedCost
+- uid: PhoneNumbers.PhoneMetadata.SharedCost*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.SharedCost
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_SharedCost
+  name: SharedCost
+  nameWithType: PhoneMetadata.SharedCost
+  fullName: PhoneNumbers.PhoneMetadata.SharedCost
+- uid: PhoneNumbers.PhoneMetadata.HasPersonalNumber*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.HasPersonalNumber
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_HasPersonalNumber
+  name: HasPersonalNumber
+  nameWithType: PhoneMetadata.HasPersonalNumber
+  fullName: PhoneNumbers.PhoneMetadata.HasPersonalNumber
+- uid: PhoneNumbers.PhoneMetadata.PersonalNumber*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.PersonalNumber
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_PersonalNumber
+  name: PersonalNumber
+  nameWithType: PhoneMetadata.PersonalNumber
+  fullName: PhoneNumbers.PhoneMetadata.PersonalNumber
+- uid: PhoneNumbers.PhoneMetadata.HasVoip*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.HasVoip
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_HasVoip
+  name: HasVoip
+  nameWithType: PhoneMetadata.HasVoip
+  fullName: PhoneNumbers.PhoneMetadata.HasVoip
+- uid: PhoneNumbers.PhoneMetadata.Voip*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.Voip
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_Voip
+  name: Voip
+  nameWithType: PhoneMetadata.Voip
+  fullName: PhoneNumbers.PhoneMetadata.Voip
+- uid: PhoneNumbers.PhoneMetadata.HasPager*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.HasPager
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_HasPager
+  name: HasPager
+  nameWithType: PhoneMetadata.HasPager
+  fullName: PhoneNumbers.PhoneMetadata.HasPager
+- uid: PhoneNumbers.PhoneMetadata.Pager*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.Pager
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_Pager
+  name: Pager
+  nameWithType: PhoneMetadata.Pager
+  fullName: PhoneNumbers.PhoneMetadata.Pager
+- uid: PhoneNumbers.PhoneMetadata.HasUan*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.HasUan
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_HasUan
+  name: HasUan
+  nameWithType: PhoneMetadata.HasUan
+  fullName: PhoneNumbers.PhoneMetadata.HasUan
+- uid: PhoneNumbers.PhoneMetadata.Uan*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.Uan
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_Uan
+  name: Uan
+  nameWithType: PhoneMetadata.Uan
+  fullName: PhoneNumbers.PhoneMetadata.Uan
+- uid: PhoneNumbers.PhoneMetadata.HasEmergency*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.HasEmergency
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_HasEmergency
+  name: HasEmergency
+  nameWithType: PhoneMetadata.HasEmergency
+  fullName: PhoneNumbers.PhoneMetadata.HasEmergency
+- uid: PhoneNumbers.PhoneMetadata.Emergency*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.Emergency
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_Emergency
+  name: Emergency
+  nameWithType: PhoneMetadata.Emergency
+  fullName: PhoneNumbers.PhoneMetadata.Emergency
+- uid: PhoneNumbers.PhoneMetadata.HasVoicemail*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.HasVoicemail
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_HasVoicemail
+  name: HasVoicemail
+  nameWithType: PhoneMetadata.HasVoicemail
+  fullName: PhoneNumbers.PhoneMetadata.HasVoicemail
+- uid: PhoneNumbers.PhoneMetadata.Voicemail*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.Voicemail
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_Voicemail
+  name: Voicemail
+  nameWithType: PhoneMetadata.Voicemail
+  fullName: PhoneNumbers.PhoneMetadata.Voicemail
+- uid: PhoneNumbers.PhoneMetadata.HasShortCode*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.HasShortCode
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_HasShortCode
+  name: HasShortCode
+  nameWithType: PhoneMetadata.HasShortCode
+  fullName: PhoneNumbers.PhoneMetadata.HasShortCode
+- uid: PhoneNumbers.PhoneMetadata.ShortCode*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.ShortCode
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_ShortCode
+  name: ShortCode
+  nameWithType: PhoneMetadata.ShortCode
+  fullName: PhoneNumbers.PhoneMetadata.ShortCode
+- uid: PhoneNumbers.PhoneMetadata.HasStandardRate*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.HasStandardRate
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_HasStandardRate
+  name: HasStandardRate
+  nameWithType: PhoneMetadata.HasStandardRate
+  fullName: PhoneNumbers.PhoneMetadata.HasStandardRate
+- uid: PhoneNumbers.PhoneMetadata.StandardRate*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.StandardRate
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_StandardRate
+  name: StandardRate
+  nameWithType: PhoneMetadata.StandardRate
+  fullName: PhoneNumbers.PhoneMetadata.StandardRate
+- uid: PhoneNumbers.PhoneMetadata.HasCarrierSpecific*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.HasCarrierSpecific
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_HasCarrierSpecific
+  name: HasCarrierSpecific
+  nameWithType: PhoneMetadata.HasCarrierSpecific
+  fullName: PhoneNumbers.PhoneMetadata.HasCarrierSpecific
+- uid: PhoneNumbers.PhoneMetadata.CarrierSpecific*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.CarrierSpecific
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_CarrierSpecific
+  name: CarrierSpecific
+  nameWithType: PhoneMetadata.CarrierSpecific
+  fullName: PhoneNumbers.PhoneMetadata.CarrierSpecific
+- uid: PhoneNumbers.PhoneMetadata.HasSmsServices*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.HasSmsServices
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_HasSmsServices
+  name: HasSmsServices
+  nameWithType: PhoneMetadata.HasSmsServices
+  fullName: PhoneNumbers.PhoneMetadata.HasSmsServices
+- uid: PhoneNumbers.PhoneMetadata.SmsServices*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.SmsServices
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_SmsServices
+  name: SmsServices
+  nameWithType: PhoneMetadata.SmsServices
+  fullName: PhoneNumbers.PhoneMetadata.SmsServices
+- uid: PhoneNumbers.PhoneMetadata.HasNoInternationalDialling*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.HasNoInternationalDialling
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_HasNoInternationalDialling
+  name: HasNoInternationalDialling
+  nameWithType: PhoneMetadata.HasNoInternationalDialling
+  fullName: PhoneNumbers.PhoneMetadata.HasNoInternationalDialling
+- uid: PhoneNumbers.PhoneMetadata.NoInternationalDialling*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.NoInternationalDialling
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_NoInternationalDialling
+  name: NoInternationalDialling
+  nameWithType: PhoneMetadata.NoInternationalDialling
+  fullName: PhoneNumbers.PhoneMetadata.NoInternationalDialling
+- uid: PhoneNumbers.PhoneMetadata.HasId*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.HasId
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_HasId
+  name: HasId
+  nameWithType: PhoneMetadata.HasId
+  fullName: PhoneNumbers.PhoneMetadata.HasId
+- uid: PhoneNumbers.PhoneMetadata.Id*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.Id
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_Id
+  name: Id
+  nameWithType: PhoneMetadata.Id
+  fullName: PhoneNumbers.PhoneMetadata.Id
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: string
+  nameWithType: string
+  fullName: string
+  nameWithType.vb: String
+  fullName.vb: String
+  name.vb: String
+- uid: PhoneNumbers.PhoneMetadata.HasCountryCode*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.HasCountryCode
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_HasCountryCode
+  name: HasCountryCode
+  nameWithType: PhoneMetadata.HasCountryCode
+  fullName: PhoneNumbers.PhoneMetadata.HasCountryCode
+- uid: PhoneNumbers.PhoneMetadata.CountryCode*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.CountryCode
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_CountryCode
+  name: CountryCode
+  nameWithType: PhoneMetadata.CountryCode
+  fullName: PhoneNumbers.PhoneMetadata.CountryCode
+- uid: PhoneNumbers.PhoneMetadata.HasInternationalPrefix*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.HasInternationalPrefix
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_HasInternationalPrefix
+  name: HasInternationalPrefix
+  nameWithType: PhoneMetadata.HasInternationalPrefix
+  fullName: PhoneNumbers.PhoneMetadata.HasInternationalPrefix
+- uid: PhoneNumbers.PhoneMetadata.InternationalPrefix*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.InternationalPrefix
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_InternationalPrefix
+  name: InternationalPrefix
+  nameWithType: PhoneMetadata.InternationalPrefix
+  fullName: PhoneNumbers.PhoneMetadata.InternationalPrefix
+- uid: PhoneNumbers.PhoneMetadata.HasPreferredInternationalPrefix*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.HasPreferredInternationalPrefix
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_HasPreferredInternationalPrefix
+  name: HasPreferredInternationalPrefix
+  nameWithType: PhoneMetadata.HasPreferredInternationalPrefix
+  fullName: PhoneNumbers.PhoneMetadata.HasPreferredInternationalPrefix
+- uid: PhoneNumbers.PhoneMetadata.PreferredInternationalPrefix*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.PreferredInternationalPrefix
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_PreferredInternationalPrefix
+  name: PreferredInternationalPrefix
+  nameWithType: PhoneMetadata.PreferredInternationalPrefix
+  fullName: PhoneNumbers.PhoneMetadata.PreferredInternationalPrefix
+- uid: PhoneNumbers.PhoneMetadata.HasNationalPrefix*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.HasNationalPrefix
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_HasNationalPrefix
+  name: HasNationalPrefix
+  nameWithType: PhoneMetadata.HasNationalPrefix
+  fullName: PhoneNumbers.PhoneMetadata.HasNationalPrefix
+- uid: PhoneNumbers.PhoneMetadata.NationalPrefix*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.NationalPrefix
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_NationalPrefix
+  name: NationalPrefix
+  nameWithType: PhoneMetadata.NationalPrefix
+  fullName: PhoneNumbers.PhoneMetadata.NationalPrefix
+- uid: PhoneNumbers.PhoneMetadata.HasPreferredExtnPrefix*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.HasPreferredExtnPrefix
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_HasPreferredExtnPrefix
+  name: HasPreferredExtnPrefix
+  nameWithType: PhoneMetadata.HasPreferredExtnPrefix
+  fullName: PhoneNumbers.PhoneMetadata.HasPreferredExtnPrefix
+- uid: PhoneNumbers.PhoneMetadata.PreferredExtnPrefix*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.PreferredExtnPrefix
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_PreferredExtnPrefix
+  name: PreferredExtnPrefix
+  nameWithType: PhoneMetadata.PreferredExtnPrefix
+  fullName: PhoneNumbers.PhoneMetadata.PreferredExtnPrefix
+- uid: PhoneNumbers.PhoneMetadata.HasNationalPrefixForParsing*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.HasNationalPrefixForParsing
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_HasNationalPrefixForParsing
+  name: HasNationalPrefixForParsing
+  nameWithType: PhoneMetadata.HasNationalPrefixForParsing
+  fullName: PhoneNumbers.PhoneMetadata.HasNationalPrefixForParsing
+- uid: PhoneNumbers.PhoneMetadata.NationalPrefixForParsing*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.NationalPrefixForParsing
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_NationalPrefixForParsing
+  name: NationalPrefixForParsing
+  nameWithType: PhoneMetadata.NationalPrefixForParsing
+  fullName: PhoneNumbers.PhoneMetadata.NationalPrefixForParsing
+- uid: PhoneNumbers.PhoneMetadata.HasNationalPrefixTransformRule*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.HasNationalPrefixTransformRule
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_HasNationalPrefixTransformRule
+  name: HasNationalPrefixTransformRule
+  nameWithType: PhoneMetadata.HasNationalPrefixTransformRule
+  fullName: PhoneNumbers.PhoneMetadata.HasNationalPrefixTransformRule
+- uid: PhoneNumbers.PhoneMetadata.NationalPrefixTransformRule*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.NationalPrefixTransformRule
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_NationalPrefixTransformRule
+  name: NationalPrefixTransformRule
+  nameWithType: PhoneMetadata.NationalPrefixTransformRule
+  fullName: PhoneNumbers.PhoneMetadata.NationalPrefixTransformRule
+- uid: PhoneNumbers.PhoneMetadata.HasSameMobileAndFixedLinePattern*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.HasSameMobileAndFixedLinePattern
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_HasSameMobileAndFixedLinePattern
+  name: HasSameMobileAndFixedLinePattern
+  nameWithType: PhoneMetadata.HasSameMobileAndFixedLinePattern
+  fullName: PhoneNumbers.PhoneMetadata.HasSameMobileAndFixedLinePattern
+- uid: PhoneNumbers.PhoneMetadata.SameMobileAndFixedLinePattern*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.SameMobileAndFixedLinePattern
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_SameMobileAndFixedLinePattern
+  name: SameMobileAndFixedLinePattern
+  nameWithType: PhoneMetadata.SameMobileAndFixedLinePattern
+  fullName: PhoneNumbers.PhoneMetadata.SameMobileAndFixedLinePattern
+- uid: PhoneNumbers.PhoneMetadata.NumberFormatList*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.NumberFormatList
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_NumberFormatList
+  name: NumberFormatList
+  nameWithType: PhoneMetadata.NumberFormatList
+  fullName: PhoneNumbers.PhoneMetadata.NumberFormatList
+- uid: System.Collections.Generic.IList{PhoneNumbers.NumberFormat}
+  commentId: T:System.Collections.Generic.IList{PhoneNumbers.NumberFormat}
+  parent: System.Collections.Generic
+  definition: System.Collections.Generic.IList`1
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ilist-1
+  name: IList<NumberFormat>
+  nameWithType: IList<NumberFormat>
+  fullName: System.Collections.Generic.IList<PhoneNumbers.NumberFormat>
+  nameWithType.vb: IList(Of NumberFormat)
+  fullName.vb: System.Collections.Generic.IList(Of PhoneNumbers.NumberFormat)
+  name.vb: IList(Of NumberFormat)
+  spec.csharp:
+  - uid: System.Collections.Generic.IList`1
+    name: IList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ilist-1
+  - name: <
+  - uid: PhoneNumbers.NumberFormat
+    name: NumberFormat
+    href: PhoneNumbers.NumberFormat.html
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IList`1
+    name: IList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ilist-1
+  - name: (
+  - name: Of
+  - name: " "
+  - uid: PhoneNumbers.NumberFormat
+    name: NumberFormat
+    href: PhoneNumbers.NumberFormat.html
+  - name: )
+- uid: System.Collections.Generic.IList`1
+  commentId: T:System.Collections.Generic.IList`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ilist-1
+  name: IList<T>
+  nameWithType: IList<T>
+  fullName: System.Collections.Generic.IList<T>
+  nameWithType.vb: IList(Of T)
+  fullName.vb: System.Collections.Generic.IList(Of T)
+  name.vb: IList(Of T)
+  spec.csharp:
+  - uid: System.Collections.Generic.IList`1
+    name: IList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ilist-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Collections.Generic.IList`1
+    name: IList
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic.ilist-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: System.Collections.Generic
+  commentId: N:System.Collections.Generic
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System.Collections.Generic
+  nameWithType: System.Collections.Generic
+  fullName: System.Collections.Generic
+  spec.csharp:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+  spec.vb:
+  - uid: System
+    name: System
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system
+  - name: .
+  - uid: System.Collections
+    name: Collections
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections
+  - name: .
+  - uid: System.Collections.Generic
+    name: Generic
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.collections.generic
+- uid: PhoneNumbers.PhoneMetadata.NumberFormatCount*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.NumberFormatCount
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_NumberFormatCount
+  name: NumberFormatCount
+  nameWithType: PhoneMetadata.NumberFormatCount
+  fullName: PhoneNumbers.PhoneMetadata.NumberFormatCount
+- uid: PhoneNumbers.PhoneMetadata.IntlNumberFormatList*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.IntlNumberFormatList
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_IntlNumberFormatList
+  name: IntlNumberFormatList
+  nameWithType: PhoneMetadata.IntlNumberFormatList
+  fullName: PhoneNumbers.PhoneMetadata.IntlNumberFormatList
+- uid: PhoneNumbers.PhoneMetadata.IntlNumberFormatCount*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.IntlNumberFormatCount
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_IntlNumberFormatCount
+  name: IntlNumberFormatCount
+  nameWithType: PhoneMetadata.IntlNumberFormatCount
+  fullName: PhoneNumbers.PhoneMetadata.IntlNumberFormatCount
+- uid: PhoneNumbers.PhoneMetadata.HasMainCountryForCode*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.HasMainCountryForCode
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_HasMainCountryForCode
+  name: HasMainCountryForCode
+  nameWithType: PhoneMetadata.HasMainCountryForCode
+  fullName: PhoneNumbers.PhoneMetadata.HasMainCountryForCode
+- uid: PhoneNumbers.PhoneMetadata.MainCountryForCode*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.MainCountryForCode
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_MainCountryForCode
+  name: MainCountryForCode
+  nameWithType: PhoneMetadata.MainCountryForCode
+  fullName: PhoneNumbers.PhoneMetadata.MainCountryForCode
+- uid: PhoneNumbers.PhoneMetadata.HasLeadingDigits*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.HasLeadingDigits
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_HasLeadingDigits
+  name: HasLeadingDigits
+  nameWithType: PhoneMetadata.HasLeadingDigits
+  fullName: PhoneNumbers.PhoneMetadata.HasLeadingDigits
+- uid: PhoneNumbers.PhoneMetadata.LeadingDigits*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.LeadingDigits
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_LeadingDigits
+  name: LeadingDigits
+  nameWithType: PhoneMetadata.LeadingDigits
+  fullName: PhoneNumbers.PhoneMetadata.LeadingDigits
+- uid: PhoneNumbers.PhoneMetadata.HasMobileNumberPortableRegion*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.HasMobileNumberPortableRegion
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_HasMobileNumberPortableRegion
+  name: HasMobileNumberPortableRegion
+  nameWithType: PhoneMetadata.HasMobileNumberPortableRegion
+  fullName: PhoneNumbers.PhoneMetadata.HasMobileNumberPortableRegion
+- uid: PhoneNumbers.PhoneMetadata.MobileNumberPortableRegion*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.MobileNumberPortableRegion
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_MobileNumberPortableRegion
+  name: MobileNumberPortableRegion
+  nameWithType: PhoneMetadata.MobileNumberPortableRegion
+  fullName: PhoneNumbers.PhoneMetadata.MobileNumberPortableRegion
+- uid: PhoneNumbers.PhoneMetadata.IsInitialized*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.IsInitialized
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_IsInitialized
+  name: IsInitialized
+  nameWithType: PhoneMetadata.IsInitialized
+  fullName: PhoneNumbers.PhoneMetadata.IsInitialized
+- uid: PhoneNumbers.PhoneMetadata.GetNumberFormat*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.GetNumberFormat
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_GetNumberFormat_System_Int32_
+  name: GetNumberFormat
+  nameWithType: PhoneMetadata.GetNumberFormat
+  fullName: PhoneNumbers.PhoneMetadata.GetNumberFormat
+- uid: PhoneNumbers.NumberFormat
+  commentId: T:PhoneNumbers.NumberFormat
+  parent: PhoneNumbers
+  href: PhoneNumbers.NumberFormat.html
+  name: NumberFormat
+  nameWithType: NumberFormat
+  fullName: PhoneNumbers.NumberFormat
+- uid: PhoneNumbers.PhoneMetadata.GetIntlNumberFormat*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.GetIntlNumberFormat
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_GetIntlNumberFormat_System_Int32_
+  name: GetIntlNumberFormat
+  nameWithType: PhoneMetadata.GetIntlNumberFormat
+  fullName: PhoneNumbers.PhoneMetadata.GetIntlNumberFormat
+- uid: PhoneNumbers.PhoneMetadata.CreateBuilder*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.CreateBuilder
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_CreateBuilder
+  name: CreateBuilder
+  nameWithType: PhoneMetadata.CreateBuilder
+  fullName: PhoneNumbers.PhoneMetadata.CreateBuilder
+- uid: PhoneNumbers.PhoneMetadata.Builder
+  commentId: T:PhoneNumbers.PhoneMetadata.Builder
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneMetadata.html
+  name: PhoneMetadata.Builder
+  nameWithType: PhoneMetadata.Builder
+  fullName: PhoneNumbers.PhoneMetadata.Builder
+  spec.csharp:
+  - uid: PhoneNumbers.PhoneMetadata
+    name: PhoneMetadata
+    href: PhoneNumbers.PhoneMetadata.html
+  - name: .
+  - uid: PhoneNumbers.PhoneMetadata.Builder
+    name: Builder
+  spec.vb:
+  - uid: PhoneNumbers.PhoneMetadata
+    name: PhoneMetadata
+    href: PhoneNumbers.PhoneMetadata.html
+  - name: .
+  - uid: PhoneNumbers.PhoneMetadata.Builder
+    name: Builder
+- uid: PhoneNumbers.PhoneMetadata.ToBuilder*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.ToBuilder
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_ToBuilder
+  name: ToBuilder
+  nameWithType: PhoneMetadata.ToBuilder
+  fullName: PhoneNumbers.PhoneMetadata.ToBuilder
+- uid: PhoneNumbers.PhoneMetadata.CreateBuilderForType*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.CreateBuilderForType
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_CreateBuilderForType
+  name: CreateBuilderForType
+  nameWithType: PhoneMetadata.CreateBuilderForType
+  fullName: PhoneNumbers.PhoneMetadata.CreateBuilderForType
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: PhoneNumbers.PhoneMetadata.GetHashCode*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.GetHashCode
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_GetHashCode
+  name: GetHashCode
+  nameWithType: PhoneMetadata.GetHashCode
+  fullName: PhoneNumbers.PhoneMetadata.GetHashCode
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: PhoneNumbers.PhoneMetadata.Equals*
+  commentId: Overload:PhoneNumbers.PhoneMetadata.Equals
+  href: PhoneNumbers.PhoneMetadata.html#PhoneNumbers_PhoneMetadata_Equals_System_Object_
+  name: Equals
+  nameWithType: PhoneMetadata.Equals
+  fullName: PhoneNumbers.PhoneMetadata.Equals

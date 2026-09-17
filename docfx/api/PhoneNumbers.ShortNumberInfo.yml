@@ -1,0 +1,1150 @@
+### YamlMime:ManagedReference
+items:
+- uid: PhoneNumbers.ShortNumberInfo
+  commentId: T:PhoneNumbers.ShortNumberInfo
+  id: ShortNumberInfo
+  parent: PhoneNumbers
+  children:
+  - PhoneNumbers.ShortNumberInfo.ConnectsToEmergencyNumber(System.String,System.String)
+  - PhoneNumbers.ShortNumberInfo.GetExpectedCost(PhoneNumbers.PhoneNumber)
+  - PhoneNumbers.ShortNumberInfo.GetExpectedCostForRegion(PhoneNumbers.PhoneNumber,System.String)
+  - PhoneNumbers.ShortNumberInfo.GetInstance
+  - PhoneNumbers.ShortNumberInfo.IsCarrierSpecific(PhoneNumbers.PhoneNumber)
+  - PhoneNumbers.ShortNumberInfo.IsCarrierSpecificForRegion(PhoneNumbers.PhoneNumber,System.String)
+  - PhoneNumbers.ShortNumberInfo.IsEmergencyNumber(System.String,System.String)
+  - PhoneNumbers.ShortNumberInfo.IsPossibleShortNumber(PhoneNumbers.PhoneNumber)
+  - PhoneNumbers.ShortNumberInfo.IsPossibleShortNumberForRegion(PhoneNumbers.PhoneNumber,System.String)
+  - PhoneNumbers.ShortNumberInfo.IsSmsServiceForRegion(PhoneNumbers.PhoneNumber,System.String)
+  - PhoneNumbers.ShortNumberInfo.IsValidShortNumber(PhoneNumbers.PhoneNumber)
+  - PhoneNumbers.ShortNumberInfo.IsValidShortNumberForRegion(PhoneNumbers.PhoneNumber,System.String)
+  langs:
+  - csharp
+  - vb
+  name: ShortNumberInfo
+  nameWithType: ShortNumberInfo
+  fullName: PhoneNumbers.ShortNumberInfo
+  type: Class
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    Methods for getting information about short phone numbers, such as short codes and emergency
+
+    numbers. Note that most commercial short numbers are not handled here, but by the
+
+    <xref href="PhoneNumbers.PhoneNumberUtil" data-throw-if-not-resolved="false"></xref>.
+
+
+    @author Shaopeng Jia
+
+    @author David Yonge-Mallo
+  example: []
+  syntax:
+    content: public sealed class ShortNumberInfo
+    content.vb: Public NotInheritable Class ShortNumberInfo
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: PhoneNumbers.ShortNumberInfo.GetInstance
+  commentId: M:PhoneNumbers.ShortNumberInfo.GetInstance
+  id: GetInstance
+  parent: PhoneNumbers.ShortNumberInfo
+  langs:
+  - csharp
+  - vb
+  name: GetInstance()
+  nameWithType: ShortNumberInfo.GetInstance()
+  fullName: PhoneNumbers.ShortNumberInfo.GetInstance()
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: Returns the singleton instance of the ShortNumberInfo.
+  example: []
+  syntax:
+    content: public static ShortNumberInfo GetInstance()
+    return:
+      type: PhoneNumbers.ShortNumberInfo
+    content.vb: Public Shared Function GetInstance() As ShortNumberInfo
+  overload: PhoneNumbers.ShortNumberInfo.GetInstance*
+- uid: PhoneNumbers.ShortNumberInfo.IsPossibleShortNumberForRegion(PhoneNumbers.PhoneNumber,System.String)
+  commentId: M:PhoneNumbers.ShortNumberInfo.IsPossibleShortNumberForRegion(PhoneNumbers.PhoneNumber,System.String)
+  id: IsPossibleShortNumberForRegion(PhoneNumbers.PhoneNumber,System.String)
+  parent: PhoneNumbers.ShortNumberInfo
+  langs:
+  - csharp
+  - vb
+  name: IsPossibleShortNumberForRegion(PhoneNumber, string)
+  nameWithType: ShortNumberInfo.IsPossibleShortNumberForRegion(PhoneNumber, string)
+  fullName: PhoneNumbers.ShortNumberInfo.IsPossibleShortNumberForRegion(PhoneNumbers.PhoneNumber, string)
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    Check whether a short number is a possible number when dialed from the given region. This
+
+    provides a more lenient check than <xref href="PhoneNumbers.ShortNumberInfo.IsValidShortNumberForRegion(PhoneNumbers.PhoneNumber%2cSystem.String)" data-throw-if-not-resolved="false"></xref>.
+  example: []
+  syntax:
+    content: public bool IsPossibleShortNumberForRegion(PhoneNumber number, string regionDialingFrom)
+    parameters:
+    - id: number
+      type: PhoneNumbers.PhoneNumber
+      description: the short number to check
+    - id: regionDialingFrom
+      type: System.String
+      description: the region from which the number is dialed
+    return:
+      type: System.Boolean
+      description: whether the number is a possible short number
+    content.vb: Public Function IsPossibleShortNumberForRegion(number As PhoneNumber, regionDialingFrom As String) As Boolean
+  overload: PhoneNumbers.ShortNumberInfo.IsPossibleShortNumberForRegion*
+  nameWithType.vb: ShortNumberInfo.IsPossibleShortNumberForRegion(PhoneNumber, String)
+  fullName.vb: PhoneNumbers.ShortNumberInfo.IsPossibleShortNumberForRegion(PhoneNumbers.PhoneNumber, String)
+  name.vb: IsPossibleShortNumberForRegion(PhoneNumber, String)
+- uid: PhoneNumbers.ShortNumberInfo.IsPossibleShortNumber(PhoneNumbers.PhoneNumber)
+  commentId: M:PhoneNumbers.ShortNumberInfo.IsPossibleShortNumber(PhoneNumbers.PhoneNumber)
+  id: IsPossibleShortNumber(PhoneNumbers.PhoneNumber)
+  parent: PhoneNumbers.ShortNumberInfo
+  langs:
+  - csharp
+  - vb
+  name: IsPossibleShortNumber(PhoneNumber)
+  nameWithType: ShortNumberInfo.IsPossibleShortNumber(PhoneNumber)
+  fullName: PhoneNumbers.ShortNumberInfo.IsPossibleShortNumber(PhoneNumbers.PhoneNumber)
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    Check whether a short number is a possible number. If a country calling code is shared by
+
+    multiple regions, this returns true if it's possible in any of them. This provides a more
+
+    lenient check than <xref href="PhoneNumbers.ShortNumberInfo.IsValidShortNumber(PhoneNumbers.PhoneNumber)" data-throw-if-not-resolved="false"></xref>. See
+
+    <xref href="PhoneNumbers.ShortNumberInfo.IsPossibleShortNumberForRegion(PhoneNumbers.PhoneNumber%2cSystem.String)" data-throw-if-not-resolved="false"></xref> for details.
+  example: []
+  syntax:
+    content: public bool IsPossibleShortNumber(PhoneNumber number)
+    parameters:
+    - id: number
+      type: PhoneNumbers.PhoneNumber
+      description: the short number to check
+    return:
+      type: System.Boolean
+      description: whether the number is a possible short number
+    content.vb: Public Function IsPossibleShortNumber(number As PhoneNumber) As Boolean
+  overload: PhoneNumbers.ShortNumberInfo.IsPossibleShortNumber*
+- uid: PhoneNumbers.ShortNumberInfo.IsValidShortNumberForRegion(PhoneNumbers.PhoneNumber,System.String)
+  commentId: M:PhoneNumbers.ShortNumberInfo.IsValidShortNumberForRegion(PhoneNumbers.PhoneNumber,System.String)
+  id: IsValidShortNumberForRegion(PhoneNumbers.PhoneNumber,System.String)
+  parent: PhoneNumbers.ShortNumberInfo
+  langs:
+  - csharp
+  - vb
+  name: IsValidShortNumberForRegion(PhoneNumber, string)
+  nameWithType: ShortNumberInfo.IsValidShortNumberForRegion(PhoneNumber, string)
+  fullName: PhoneNumbers.ShortNumberInfo.IsValidShortNumberForRegion(PhoneNumbers.PhoneNumber, string)
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    Tests whether a short number matches a valid pattern in a region. Note that this doesn't verify
+
+    the number is actually in use, which is impossible to tell by just looking at the number itself.
+  example: []
+  syntax:
+    content: public bool IsValidShortNumberForRegion(PhoneNumber number, string regionDialingFrom)
+    parameters:
+    - id: number
+      type: PhoneNumbers.PhoneNumber
+      description: the short number for which we want to test the validity
+    - id: regionDialingFrom
+      type: System.String
+      description: the region from which the number is dialed
+    return:
+      type: System.Boolean
+      description: whether the short number matches a valid pattern
+    content.vb: Public Function IsValidShortNumberForRegion(number As PhoneNumber, regionDialingFrom As String) As Boolean
+  overload: PhoneNumbers.ShortNumberInfo.IsValidShortNumberForRegion*
+  nameWithType.vb: ShortNumberInfo.IsValidShortNumberForRegion(PhoneNumber, String)
+  fullName.vb: PhoneNumbers.ShortNumberInfo.IsValidShortNumberForRegion(PhoneNumbers.PhoneNumber, String)
+  name.vb: IsValidShortNumberForRegion(PhoneNumber, String)
+- uid: PhoneNumbers.ShortNumberInfo.IsValidShortNumber(PhoneNumbers.PhoneNumber)
+  commentId: M:PhoneNumbers.ShortNumberInfo.IsValidShortNumber(PhoneNumbers.PhoneNumber)
+  id: IsValidShortNumber(PhoneNumbers.PhoneNumber)
+  parent: PhoneNumbers.ShortNumberInfo
+  langs:
+  - csharp
+  - vb
+  name: IsValidShortNumber(PhoneNumber)
+  nameWithType: ShortNumberInfo.IsValidShortNumber(PhoneNumber)
+  fullName: PhoneNumbers.ShortNumberInfo.IsValidShortNumber(PhoneNumbers.PhoneNumber)
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    Tests whether a short number matches a valid pattern. If a country calling code is shared by
+
+    multiple regions, this returns true if it's valid in any of them. Note that this doesn't verify
+
+    the number is actually in use, which is impossible to tell by just looking at the number
+
+    itself. See <xref href="PhoneNumbers.ShortNumberInfo.IsValidShortNumberForRegion(PhoneNumbers.PhoneNumber%2cSystem.String)" data-throw-if-not-resolved="false"></xref> for details.
+  example: []
+  syntax:
+    content: public bool IsValidShortNumber(PhoneNumber number)
+    parameters:
+    - id: number
+      type: PhoneNumbers.PhoneNumber
+      description: the short number for which we want to test the validity
+    return:
+      type: System.Boolean
+      description: whether the short number matches a valid pattern
+    content.vb: Public Function IsValidShortNumber(number As PhoneNumber) As Boolean
+  overload: PhoneNumbers.ShortNumberInfo.IsValidShortNumber*
+- uid: PhoneNumbers.ShortNumberInfo.GetExpectedCostForRegion(PhoneNumbers.PhoneNumber,System.String)
+  commentId: M:PhoneNumbers.ShortNumberInfo.GetExpectedCostForRegion(PhoneNumbers.PhoneNumber,System.String)
+  id: GetExpectedCostForRegion(PhoneNumbers.PhoneNumber,System.String)
+  parent: PhoneNumbers.ShortNumberInfo
+  langs:
+  - csharp
+  - vb
+  name: GetExpectedCostForRegion(PhoneNumber, string)
+  nameWithType: ShortNumberInfo.GetExpectedCostForRegion(PhoneNumber, string)
+  fullName: PhoneNumbers.ShortNumberInfo.GetExpectedCostForRegion(PhoneNumbers.PhoneNumber, string)
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    Gets the expected cost category of a short number when dialed from a region (however, nothing
+
+    is implied about its validity). If it is important that the number is valid, then its validity
+
+    must first be checked using <xref href="PhoneNumbers.ShortNumberInfo.IsValidShortNumberForRegion(PhoneNumbers.PhoneNumber%2cSystem.String)" data-throw-if-not-resolved="false"></xref>. Note that emergency numbers
+
+    are always considered toll-free. Example usage:
+
+
+    <pre><code class="lang-csharp">// The region for which the number was parsed and the region we subsequently check against
+
+    // need not be the same. Here we parse the number in the US and check it for Canada.
+
+    PhoneNumber number = phoneUtil.parse("110", "US");
+
+    ...
+
+    string regionCode = "CA";
+
+    ShortNumberInfo shortInfo = ShortNumberInfo.getInstance();
+
+    if (shortInfo.isValidShortNumberForRegion(shortNumber, regionCode)) {
+      ShortNumberCost cost = shortInfo.getExpectedCostForRegion(number, regionCode);
+      // Do something with the cost information here.
+    }}</code></pre>
+  example: []
+  syntax:
+    content: public ShortNumberInfo.ShortNumberCost GetExpectedCostForRegion(PhoneNumber number, string regionDialingFrom)
+    parameters:
+    - id: number
+      type: PhoneNumbers.PhoneNumber
+      description: the short number for which we want to know the expected cost category
+    - id: regionDialingFrom
+      type: System.String
+      description: the region from which the number is dialed
+    return:
+      type: PhoneNumbers.ShortNumberInfo.ShortNumberCost
+      description: >-
+        the expected cost category for that region of the short number. Returns UNKNOWN_COST if
+                the number does not match a cost category. Note that an invalid number may match any cost
+                category.
+    content.vb: Public Function GetExpectedCostForRegion(number As PhoneNumber, regionDialingFrom As String) As ShortNumberInfo.ShortNumberCost
+  overload: PhoneNumbers.ShortNumberInfo.GetExpectedCostForRegion*
+  nameWithType.vb: ShortNumberInfo.GetExpectedCostForRegion(PhoneNumber, String)
+  fullName.vb: PhoneNumbers.ShortNumberInfo.GetExpectedCostForRegion(PhoneNumbers.PhoneNumber, String)
+  name.vb: GetExpectedCostForRegion(PhoneNumber, String)
+- uid: PhoneNumbers.ShortNumberInfo.GetExpectedCost(PhoneNumbers.PhoneNumber)
+  commentId: M:PhoneNumbers.ShortNumberInfo.GetExpectedCost(PhoneNumbers.PhoneNumber)
+  id: GetExpectedCost(PhoneNumbers.PhoneNumber)
+  parent: PhoneNumbers.ShortNumberInfo
+  langs:
+  - csharp
+  - vb
+  name: GetExpectedCost(PhoneNumber)
+  nameWithType: ShortNumberInfo.GetExpectedCost(PhoneNumber)
+  fullName: PhoneNumbers.ShortNumberInfo.GetExpectedCost(PhoneNumbers.PhoneNumber)
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    Gets the expected cost category of a short number (however, nothing is implied about its
+
+    validity). If the country calling code is unique to a region, this method behaves exactly the
+
+    same as <xref href="PhoneNumbers.ShortNumberInfo.GetExpectedCostForRegion(PhoneNumbers.PhoneNumber%2cSystem.String)" data-throw-if-not-resolved="false"></xref>. However, if the country
+
+    calling code is shared by multiple regions, then it returns the highest cost in the sequence
+
+    PREMIUM_RATE, UNKNOWN_COST, STANDARD_RATE, TOLL_FREE. The reason for the position of
+
+    UNKNOWN_COST in this order is that if a number is UNKNOWN_COST in one region but STANDARD_RATE
+
+    or TOLL_FREE in another, its expected cost cannot be estimated as one of the latter since it
+
+    might be a PREMIUM_RATE number.
+
+
+    <p></p>
+
+
+    For example, if a number is STANDARD_RATE in the US, but TOLL_FREE in Canada, the expected
+
+    cost returned by this method will be STANDARD_RATE, since the NANPA countries share the same
+
+    country calling code.
+
+
+    <p></p>
+
+
+    Note: If the region from which the number is dialed is known, it is highly preferable to call
+
+    <xref href="PhoneNumbers.ShortNumberInfo.GetExpectedCostForRegion(PhoneNumbers.PhoneNumber%2cSystem.String)" data-throw-if-not-resolved="false"></xref> instead.
+  example: []
+  syntax:
+    content: public ShortNumberInfo.ShortNumberCost GetExpectedCost(PhoneNumber number)
+    parameters:
+    - id: number
+      type: PhoneNumbers.PhoneNumber
+      description: the short number for which we want to know the expected cost category
+    return:
+      type: PhoneNumbers.ShortNumberInfo.ShortNumberCost
+      description: >-
+        the highest expected cost category of the short number in the region(s) with the given
+                country calling code
+    content.vb: Public Function GetExpectedCost(number As PhoneNumber) As ShortNumberInfo.ShortNumberCost
+  overload: PhoneNumbers.ShortNumberInfo.GetExpectedCost*
+- uid: PhoneNumbers.ShortNumberInfo.ConnectsToEmergencyNumber(System.String,System.String)
+  commentId: M:PhoneNumbers.ShortNumberInfo.ConnectsToEmergencyNumber(System.String,System.String)
+  id: ConnectsToEmergencyNumber(System.String,System.String)
+  parent: PhoneNumbers.ShortNumberInfo
+  langs:
+  - csharp
+  - vb
+  name: ConnectsToEmergencyNumber(string, string)
+  nameWithType: ShortNumberInfo.ConnectsToEmergencyNumber(string, string)
+  fullName: PhoneNumbers.ShortNumberInfo.ConnectsToEmergencyNumber(string, string)
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    Returns true if the given number, exactly as dialed, might be used to connect to an emergency
+
+    service in the given region.
+
+
+    <p></p>
+
+
+    This method accepts a string, rather than a PhoneNumber, because it needs to distinguish
+
+    cases such as "+1 911" and "911", where the former may not connect to an emergency service in
+
+    all cases but the latter would. This method takes into account cases where the number might
+
+    contain formatting, or might have additional digits appended (when it is okay to do that in
+
+    the specified region).
+  example: []
+  syntax:
+    content: public bool ConnectsToEmergencyNumber(string number, string regionCode)
+    parameters:
+    - id: number
+      type: System.String
+      description: the phone number to test
+    - id: regionCode
+      type: System.String
+      description: the region where the phone number is being dialed
+    return:
+      type: System.Boolean
+      description: whether the number might be used to connect to an emergency service in the given region
+    content.vb: Public Function ConnectsToEmergencyNumber(number As String, regionCode As String) As Boolean
+  overload: PhoneNumbers.ShortNumberInfo.ConnectsToEmergencyNumber*
+  nameWithType.vb: ShortNumberInfo.ConnectsToEmergencyNumber(String, String)
+  fullName.vb: PhoneNumbers.ShortNumberInfo.ConnectsToEmergencyNumber(String, String)
+  name.vb: ConnectsToEmergencyNumber(String, String)
+- uid: PhoneNumbers.ShortNumberInfo.IsEmergencyNumber(System.String,System.String)
+  commentId: M:PhoneNumbers.ShortNumberInfo.IsEmergencyNumber(System.String,System.String)
+  id: IsEmergencyNumber(System.String,System.String)
+  parent: PhoneNumbers.ShortNumberInfo
+  langs:
+  - csharp
+  - vb
+  name: IsEmergencyNumber(string, string)
+  nameWithType: ShortNumberInfo.IsEmergencyNumber(string, string)
+  fullName: PhoneNumbers.ShortNumberInfo.IsEmergencyNumber(string, string)
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    Returns true if the given number exactly matches an emergency service number in the given
+
+    region.
+
+
+    <p></p>
+
+
+    This method takes into account cases where the number might contain formatting, but doesn't
+
+    allow additional digits to be appended. Note that <xref href="PhoneNumbers.ShortNumberInfo.IsEmergencyNumber(System.String%2cSystem.String)" data-throw-if-not-resolved="false"></xref>
+
+    implies <xref href="PhoneNumbers.ShortNumberInfo.ConnectsToEmergencyNumber(System.String%2cSystem.String)" data-throw-if-not-resolved="false"></xref>.
+  example: []
+  syntax:
+    content: public bool IsEmergencyNumber(string number, string regionCode)
+    parameters:
+    - id: number
+      type: System.String
+      description: the phone number to test
+    - id: regionCode
+      type: System.String
+      description: the region where the phone number is being dialed
+    return:
+      type: System.Boolean
+      description: whether the number exactly matches an emergency services number in the given region
+    content.vb: Public Function IsEmergencyNumber(number As String, regionCode As String) As Boolean
+  overload: PhoneNumbers.ShortNumberInfo.IsEmergencyNumber*
+  nameWithType.vb: ShortNumberInfo.IsEmergencyNumber(String, String)
+  fullName.vb: PhoneNumbers.ShortNumberInfo.IsEmergencyNumber(String, String)
+  name.vb: IsEmergencyNumber(String, String)
+- uid: PhoneNumbers.ShortNumberInfo.IsCarrierSpecific(PhoneNumbers.PhoneNumber)
+  commentId: M:PhoneNumbers.ShortNumberInfo.IsCarrierSpecific(PhoneNumbers.PhoneNumber)
+  id: IsCarrierSpecific(PhoneNumbers.PhoneNumber)
+  parent: PhoneNumbers.ShortNumberInfo
+  langs:
+  - csharp
+  - vb
+  name: IsCarrierSpecific(PhoneNumber)
+  nameWithType: ShortNumberInfo.IsCarrierSpecific(PhoneNumber)
+  fullName: PhoneNumbers.ShortNumberInfo.IsCarrierSpecific(PhoneNumbers.PhoneNumber)
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    Given a valid short number, determines whether it is carrier-specific (however, nothing is
+
+    implied about its validity). Carrier-specific numbers may connect to a different end-point, or
+
+    not connect at all, depending on the user's carrier. If it is important that the number is
+
+    valid, then its validity must first be checked using <xref href="PhoneNumbers.ShortNumberInfo.IsValidShortNumber(PhoneNumbers.PhoneNumber)" data-throw-if-not-resolved="false"></xref> or
+
+    <see cerf="IsValidShortNumberForRegion"></see>.
+  example: []
+  syntax:
+    content: public bool IsCarrierSpecific(PhoneNumber number)
+    parameters:
+    - id: number
+      type: PhoneNumbers.PhoneNumber
+      description: the valid short number to check
+    return:
+      type: System.Boolean
+      description: >-
+        whether the short number is carrier-specific, assuming the input was a valid short
+                number
+    content.vb: Public Function IsCarrierSpecific(number As PhoneNumber) As Boolean
+  overload: PhoneNumbers.ShortNumberInfo.IsCarrierSpecific*
+- uid: PhoneNumbers.ShortNumberInfo.IsCarrierSpecificForRegion(PhoneNumbers.PhoneNumber,System.String)
+  commentId: M:PhoneNumbers.ShortNumberInfo.IsCarrierSpecificForRegion(PhoneNumbers.PhoneNumber,System.String)
+  id: IsCarrierSpecificForRegion(PhoneNumbers.PhoneNumber,System.String)
+  parent: PhoneNumbers.ShortNumberInfo
+  langs:
+  - csharp
+  - vb
+  name: IsCarrierSpecificForRegion(PhoneNumber, string)
+  nameWithType: ShortNumberInfo.IsCarrierSpecificForRegion(PhoneNumber, string)
+  fullName: PhoneNumbers.ShortNumberInfo.IsCarrierSpecificForRegion(PhoneNumbers.PhoneNumber, string)
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    Given a valid short number, determines whether it is carrier-specific when dialed from the
+
+    given region (however, nothing is implied about its validity). Carrier-specific numbers may
+
+    connect to a different end-point, or not connect at all, depending on the user's carrier. If
+
+    it is important that the number is valid, then its validity must first be checked using
+
+    <xref href="PhoneNumbers.ShortNumberInfo.IsValidShortNumber(PhoneNumbers.PhoneNumber)" data-throw-if-not-resolved="false"></xref> or <xref href="PhoneNumbers.ShortNumberInfo.IsValidShortNumberForRegion(PhoneNumbers.PhoneNumber%2cSystem.String)" data-throw-if-not-resolved="false"></xref>.
+
+    Returns false if the number doesn't match the region provided.
+  example: []
+  syntax:
+    content: public bool IsCarrierSpecificForRegion(PhoneNumber number, string regionDialingFrom)
+    parameters:
+    - id: number
+      type: PhoneNumbers.PhoneNumber
+      description: the valid short number to check
+    - id: regionDialingFrom
+      type: System.String
+      description: the region from which the number is dialed
+    return:
+      type: System.Boolean
+      description: >-
+        whether the short number is carrier-specific in the provided region, assuming the
+                 input was a valid short number
+    content.vb: Public Function IsCarrierSpecificForRegion(number As PhoneNumber, regionDialingFrom As String) As Boolean
+  overload: PhoneNumbers.ShortNumberInfo.IsCarrierSpecificForRegion*
+  nameWithType.vb: ShortNumberInfo.IsCarrierSpecificForRegion(PhoneNumber, String)
+  fullName.vb: PhoneNumbers.ShortNumberInfo.IsCarrierSpecificForRegion(PhoneNumbers.PhoneNumber, String)
+  name.vb: IsCarrierSpecificForRegion(PhoneNumber, String)
+- uid: PhoneNumbers.ShortNumberInfo.IsSmsServiceForRegion(PhoneNumbers.PhoneNumber,System.String)
+  commentId: M:PhoneNumbers.ShortNumberInfo.IsSmsServiceForRegion(PhoneNumbers.PhoneNumber,System.String)
+  id: IsSmsServiceForRegion(PhoneNumbers.PhoneNumber,System.String)
+  parent: PhoneNumbers.ShortNumberInfo
+  langs:
+  - csharp
+  - vb
+  name: IsSmsServiceForRegion(PhoneNumber, string)
+  nameWithType: ShortNumberInfo.IsSmsServiceForRegion(PhoneNumber, string)
+  fullName: PhoneNumbers.ShortNumberInfo.IsSmsServiceForRegion(PhoneNumbers.PhoneNumber, string)
+  type: Method
+  assemblies:
+  - PhoneNumbers
+  namespace: PhoneNumbers
+  summary: >-
+    Given a valid short number, determines whether it is an SMS service (however, nothing is
+
+    implied about its validity). An SMS service is where the primary or only intended usage is to
+
+    receive and/or send text messages (SMSs). This includes MMS as MMS numbers downgrade to SMS if
+
+    the other party isn't MMS-capable. If it is important that the number is valid, then its
+
+    validity must first be checked using <xref href="PhoneNumbers.ShortNumberInfo.IsValidShortNumber(PhoneNumbers.PhoneNumber)" data-throw-if-not-resolved="false"></xref> or
+
+    <xref href="PhoneNumbers.ShortNumberInfo.IsValidShortNumberForRegion(PhoneNumbers.PhoneNumber%2cSystem.String)" data-throw-if-not-resolved="false"></xref>. Returns false if the number doesn't match the region provided.
+  example: []
+  syntax:
+    content: public bool IsSmsServiceForRegion(PhoneNumber number, string regionDialingFrom)
+    parameters:
+    - id: number
+      type: PhoneNumbers.PhoneNumber
+      description: the valid short number to check
+    - id: regionDialingFrom
+      type: System.String
+      description: the region from which the number is dialed
+    return:
+      type: System.Boolean
+      description: >-
+        whether the short number is an SMS service in the provided region, assuming the input
+               was a valid short number
+    content.vb: Public Function IsSmsServiceForRegion(number As PhoneNumber, regionDialingFrom As String) As Boolean
+  overload: PhoneNumbers.ShortNumberInfo.IsSmsServiceForRegion*
+  nameWithType.vb: ShortNumberInfo.IsSmsServiceForRegion(PhoneNumber, String)
+  fullName.vb: PhoneNumbers.ShortNumberInfo.IsSmsServiceForRegion(PhoneNumbers.PhoneNumber, String)
+  name.vb: IsSmsServiceForRegion(PhoneNumber, String)
+references:
+- uid: PhoneNumbers.PhoneNumberUtil
+  commentId: T:PhoneNumbers.PhoneNumberUtil
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumberUtil.html
+  name: PhoneNumberUtil
+  nameWithType: PhoneNumberUtil
+  fullName: PhoneNumbers.PhoneNumberUtil
+- uid: PhoneNumbers
+  commentId: N:PhoneNumbers
+  href: PhoneNumbers.html
+  name: PhoneNumbers
+  nameWithType: PhoneNumbers
+  fullName: PhoneNumbers
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: PhoneNumbers.ShortNumberInfo.GetInstance*
+  commentId: Overload:PhoneNumbers.ShortNumberInfo.GetInstance
+  href: PhoneNumbers.ShortNumberInfo.html#PhoneNumbers_ShortNumberInfo_GetInstance
+  name: GetInstance
+  nameWithType: ShortNumberInfo.GetInstance
+  fullName: PhoneNumbers.ShortNumberInfo.GetInstance
+- uid: PhoneNumbers.ShortNumberInfo
+  commentId: T:PhoneNumbers.ShortNumberInfo
+  parent: PhoneNumbers
+  href: PhoneNumbers.ShortNumberInfo.html
+  name: ShortNumberInfo
+  nameWithType: ShortNumberInfo
+  fullName: PhoneNumbers.ShortNumberInfo
+- uid: PhoneNumbers.ShortNumberInfo.IsValidShortNumberForRegion(PhoneNumbers.PhoneNumber,System.String)
+  commentId: M:PhoneNumbers.ShortNumberInfo.IsValidShortNumberForRegion(PhoneNumbers.PhoneNumber,System.String)
+  isExternal: true
+  href: PhoneNumbers.ShortNumberInfo.html#PhoneNumbers_ShortNumberInfo_IsValidShortNumberForRegion_PhoneNumbers_PhoneNumber_System_String_
+  name: IsValidShortNumberForRegion(PhoneNumber, string)
+  nameWithType: ShortNumberInfo.IsValidShortNumberForRegion(PhoneNumber, string)
+  fullName: PhoneNumbers.ShortNumberInfo.IsValidShortNumberForRegion(PhoneNumbers.PhoneNumber, string)
+  nameWithType.vb: ShortNumberInfo.IsValidShortNumberForRegion(PhoneNumber, String)
+  fullName.vb: PhoneNumbers.ShortNumberInfo.IsValidShortNumberForRegion(PhoneNumbers.PhoneNumber, String)
+  name.vb: IsValidShortNumberForRegion(PhoneNumber, String)
+  spec.csharp:
+  - uid: PhoneNumbers.ShortNumberInfo.IsValidShortNumberForRegion(PhoneNumbers.PhoneNumber,System.String)
+    name: IsValidShortNumberForRegion
+    href: PhoneNumbers.ShortNumberInfo.html#PhoneNumbers_ShortNumberInfo_IsValidShortNumberForRegion_PhoneNumbers_PhoneNumber_System_String_
+  - name: (
+  - uid: PhoneNumbers.PhoneNumber
+    name: PhoneNumber
+    href: PhoneNumbers.PhoneNumber.html
+  - name: ','
+  - name: " "
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: )
+  spec.vb:
+  - uid: PhoneNumbers.ShortNumberInfo.IsValidShortNumberForRegion(PhoneNumbers.PhoneNumber,System.String)
+    name: IsValidShortNumberForRegion
+    href: PhoneNumbers.ShortNumberInfo.html#PhoneNumbers_ShortNumberInfo_IsValidShortNumberForRegion_PhoneNumbers_PhoneNumber_System_String_
+  - name: (
+  - uid: PhoneNumbers.PhoneNumber
+    name: PhoneNumber
+    href: PhoneNumbers.PhoneNumber.html
+  - name: ','
+  - name: " "
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: )
+- uid: PhoneNumbers.ShortNumberInfo.IsPossibleShortNumberForRegion*
+  commentId: Overload:PhoneNumbers.ShortNumberInfo.IsPossibleShortNumberForRegion
+  href: PhoneNumbers.ShortNumberInfo.html#PhoneNumbers_ShortNumberInfo_IsPossibleShortNumberForRegion_PhoneNumbers_PhoneNumber_System_String_
+  name: IsPossibleShortNumberForRegion
+  nameWithType: ShortNumberInfo.IsPossibleShortNumberForRegion
+  fullName: PhoneNumbers.ShortNumberInfo.IsPossibleShortNumberForRegion
+- uid: PhoneNumbers.PhoneNumber
+  commentId: T:PhoneNumbers.PhoneNumber
+  parent: PhoneNumbers
+  href: PhoneNumbers.PhoneNumber.html
+  name: PhoneNumber
+  nameWithType: PhoneNumber
+  fullName: PhoneNumbers.PhoneNumber
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: string
+  nameWithType: string
+  fullName: string
+  nameWithType.vb: String
+  fullName.vb: String
+  name.vb: String
+- uid: System.Boolean
+  commentId: T:System.Boolean
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.boolean
+  name: bool
+  nameWithType: bool
+  fullName: bool
+  nameWithType.vb: Boolean
+  fullName.vb: Boolean
+  name.vb: Boolean
+- uid: PhoneNumbers.ShortNumberInfo.IsValidShortNumber(PhoneNumbers.PhoneNumber)
+  commentId: M:PhoneNumbers.ShortNumberInfo.IsValidShortNumber(PhoneNumbers.PhoneNumber)
+  href: PhoneNumbers.ShortNumberInfo.html#PhoneNumbers_ShortNumberInfo_IsValidShortNumber_PhoneNumbers_PhoneNumber_
+  name: IsValidShortNumber(PhoneNumber)
+  nameWithType: ShortNumberInfo.IsValidShortNumber(PhoneNumber)
+  fullName: PhoneNumbers.ShortNumberInfo.IsValidShortNumber(PhoneNumbers.PhoneNumber)
+  spec.csharp:
+  - uid: PhoneNumbers.ShortNumberInfo.IsValidShortNumber(PhoneNumbers.PhoneNumber)
+    name: IsValidShortNumber
+    href: PhoneNumbers.ShortNumberInfo.html#PhoneNumbers_ShortNumberInfo_IsValidShortNumber_PhoneNumbers_PhoneNumber_
+  - name: (
+  - uid: PhoneNumbers.PhoneNumber
+    name: PhoneNumber
+    href: PhoneNumbers.PhoneNumber.html
+  - name: )
+  spec.vb:
+  - uid: PhoneNumbers.ShortNumberInfo.IsValidShortNumber(PhoneNumbers.PhoneNumber)
+    name: IsValidShortNumber
+    href: PhoneNumbers.ShortNumberInfo.html#PhoneNumbers_ShortNumberInfo_IsValidShortNumber_PhoneNumbers_PhoneNumber_
+  - name: (
+  - uid: PhoneNumbers.PhoneNumber
+    name: PhoneNumber
+    href: PhoneNumbers.PhoneNumber.html
+  - name: )
+- uid: PhoneNumbers.ShortNumberInfo.IsPossibleShortNumberForRegion(PhoneNumbers.PhoneNumber,System.String)
+  commentId: M:PhoneNumbers.ShortNumberInfo.IsPossibleShortNumberForRegion(PhoneNumbers.PhoneNumber,System.String)
+  isExternal: true
+  href: PhoneNumbers.ShortNumberInfo.html#PhoneNumbers_ShortNumberInfo_IsPossibleShortNumberForRegion_PhoneNumbers_PhoneNumber_System_String_
+  name: IsPossibleShortNumberForRegion(PhoneNumber, string)
+  nameWithType: ShortNumberInfo.IsPossibleShortNumberForRegion(PhoneNumber, string)
+  fullName: PhoneNumbers.ShortNumberInfo.IsPossibleShortNumberForRegion(PhoneNumbers.PhoneNumber, string)
+  nameWithType.vb: ShortNumberInfo.IsPossibleShortNumberForRegion(PhoneNumber, String)
+  fullName.vb: PhoneNumbers.ShortNumberInfo.IsPossibleShortNumberForRegion(PhoneNumbers.PhoneNumber, String)
+  name.vb: IsPossibleShortNumberForRegion(PhoneNumber, String)
+  spec.csharp:
+  - uid: PhoneNumbers.ShortNumberInfo.IsPossibleShortNumberForRegion(PhoneNumbers.PhoneNumber,System.String)
+    name: IsPossibleShortNumberForRegion
+    href: PhoneNumbers.ShortNumberInfo.html#PhoneNumbers_ShortNumberInfo_IsPossibleShortNumberForRegion_PhoneNumbers_PhoneNumber_System_String_
+  - name: (
+  - uid: PhoneNumbers.PhoneNumber
+    name: PhoneNumber
+    href: PhoneNumbers.PhoneNumber.html
+  - name: ','
+  - name: " "
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: )
+  spec.vb:
+  - uid: PhoneNumbers.ShortNumberInfo.IsPossibleShortNumberForRegion(PhoneNumbers.PhoneNumber,System.String)
+    name: IsPossibleShortNumberForRegion
+    href: PhoneNumbers.ShortNumberInfo.html#PhoneNumbers_ShortNumberInfo_IsPossibleShortNumberForRegion_PhoneNumbers_PhoneNumber_System_String_
+  - name: (
+  - uid: PhoneNumbers.PhoneNumber
+    name: PhoneNumber
+    href: PhoneNumbers.PhoneNumber.html
+  - name: ','
+  - name: " "
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: )
+- uid: PhoneNumbers.ShortNumberInfo.IsPossibleShortNumber*
+  commentId: Overload:PhoneNumbers.ShortNumberInfo.IsPossibleShortNumber
+  href: PhoneNumbers.ShortNumberInfo.html#PhoneNumbers_ShortNumberInfo_IsPossibleShortNumber_PhoneNumbers_PhoneNumber_
+  name: IsPossibleShortNumber
+  nameWithType: ShortNumberInfo.IsPossibleShortNumber
+  fullName: PhoneNumbers.ShortNumberInfo.IsPossibleShortNumber
+- uid: PhoneNumbers.ShortNumberInfo.IsValidShortNumberForRegion*
+  commentId: Overload:PhoneNumbers.ShortNumberInfo.IsValidShortNumberForRegion
+  href: PhoneNumbers.ShortNumberInfo.html#PhoneNumbers_ShortNumberInfo_IsValidShortNumberForRegion_PhoneNumbers_PhoneNumber_System_String_
+  name: IsValidShortNumberForRegion
+  nameWithType: ShortNumberInfo.IsValidShortNumberForRegion
+  fullName: PhoneNumbers.ShortNumberInfo.IsValidShortNumberForRegion
+- uid: PhoneNumbers.ShortNumberInfo.IsValidShortNumber*
+  commentId: Overload:PhoneNumbers.ShortNumberInfo.IsValidShortNumber
+  href: PhoneNumbers.ShortNumberInfo.html#PhoneNumbers_ShortNumberInfo_IsValidShortNumber_PhoneNumbers_PhoneNumber_
+  name: IsValidShortNumber
+  nameWithType: ShortNumberInfo.IsValidShortNumber
+  fullName: PhoneNumbers.ShortNumberInfo.IsValidShortNumber
+- uid: PhoneNumbers.ShortNumberInfo.GetExpectedCostForRegion*
+  commentId: Overload:PhoneNumbers.ShortNumberInfo.GetExpectedCostForRegion
+  href: PhoneNumbers.ShortNumberInfo.html#PhoneNumbers_ShortNumberInfo_GetExpectedCostForRegion_PhoneNumbers_PhoneNumber_System_String_
+  name: GetExpectedCostForRegion
+  nameWithType: ShortNumberInfo.GetExpectedCostForRegion
+  fullName: PhoneNumbers.ShortNumberInfo.GetExpectedCostForRegion
+- uid: PhoneNumbers.ShortNumberInfo.ShortNumberCost
+  commentId: T:PhoneNumbers.ShortNumberInfo.ShortNumberCost
+  parent: PhoneNumbers
+  href: PhoneNumbers.ShortNumberInfo.html
+  name: ShortNumberInfo.ShortNumberCost
+  nameWithType: ShortNumberInfo.ShortNumberCost
+  fullName: PhoneNumbers.ShortNumberInfo.ShortNumberCost
+  spec.csharp:
+  - uid: PhoneNumbers.ShortNumberInfo
+    name: ShortNumberInfo
+    href: PhoneNumbers.ShortNumberInfo.html
+  - name: .
+  - uid: PhoneNumbers.ShortNumberInfo.ShortNumberCost
+    name: ShortNumberCost
+    href: PhoneNumbers.ShortNumberInfo.ShortNumberCost.html
+  spec.vb:
+  - uid: PhoneNumbers.ShortNumberInfo
+    name: ShortNumberInfo
+    href: PhoneNumbers.ShortNumberInfo.html
+  - name: .
+  - uid: PhoneNumbers.ShortNumberInfo.ShortNumberCost
+    name: ShortNumberCost
+    href: PhoneNumbers.ShortNumberInfo.ShortNumberCost.html
+- uid: PhoneNumbers.ShortNumberInfo.GetExpectedCostForRegion(PhoneNumbers.PhoneNumber,System.String)
+  commentId: M:PhoneNumbers.ShortNumberInfo.GetExpectedCostForRegion(PhoneNumbers.PhoneNumber,System.String)
+  isExternal: true
+  href: PhoneNumbers.ShortNumberInfo.html#PhoneNumbers_ShortNumberInfo_GetExpectedCostForRegion_PhoneNumbers_PhoneNumber_System_String_
+  name: GetExpectedCostForRegion(PhoneNumber, string)
+  nameWithType: ShortNumberInfo.GetExpectedCostForRegion(PhoneNumber, string)
+  fullName: PhoneNumbers.ShortNumberInfo.GetExpectedCostForRegion(PhoneNumbers.PhoneNumber, string)
+  nameWithType.vb: ShortNumberInfo.GetExpectedCostForRegion(PhoneNumber, String)
+  fullName.vb: PhoneNumbers.ShortNumberInfo.GetExpectedCostForRegion(PhoneNumbers.PhoneNumber, String)
+  name.vb: GetExpectedCostForRegion(PhoneNumber, String)
+  spec.csharp:
+  - uid: PhoneNumbers.ShortNumberInfo.GetExpectedCostForRegion(PhoneNumbers.PhoneNumber,System.String)
+    name: GetExpectedCostForRegion
+    href: PhoneNumbers.ShortNumberInfo.html#PhoneNumbers_ShortNumberInfo_GetExpectedCostForRegion_PhoneNumbers_PhoneNumber_System_String_
+  - name: (
+  - uid: PhoneNumbers.PhoneNumber
+    name: PhoneNumber
+    href: PhoneNumbers.PhoneNumber.html
+  - name: ','
+  - name: " "
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: )
+  spec.vb:
+  - uid: PhoneNumbers.ShortNumberInfo.GetExpectedCostForRegion(PhoneNumbers.PhoneNumber,System.String)
+    name: GetExpectedCostForRegion
+    href: PhoneNumbers.ShortNumberInfo.html#PhoneNumbers_ShortNumberInfo_GetExpectedCostForRegion_PhoneNumbers_PhoneNumber_System_String_
+  - name: (
+  - uid: PhoneNumbers.PhoneNumber
+    name: PhoneNumber
+    href: PhoneNumbers.PhoneNumber.html
+  - name: ','
+  - name: " "
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: )
+- uid: PhoneNumbers.ShortNumberInfo.GetExpectedCost*
+  commentId: Overload:PhoneNumbers.ShortNumberInfo.GetExpectedCost
+  href: PhoneNumbers.ShortNumberInfo.html#PhoneNumbers_ShortNumberInfo_GetExpectedCost_PhoneNumbers_PhoneNumber_
+  name: GetExpectedCost
+  nameWithType: ShortNumberInfo.GetExpectedCost
+  fullName: PhoneNumbers.ShortNumberInfo.GetExpectedCost
+- uid: PhoneNumbers.ShortNumberInfo.ConnectsToEmergencyNumber*
+  commentId: Overload:PhoneNumbers.ShortNumberInfo.ConnectsToEmergencyNumber
+  href: PhoneNumbers.ShortNumberInfo.html#PhoneNumbers_ShortNumberInfo_ConnectsToEmergencyNumber_System_String_System_String_
+  name: ConnectsToEmergencyNumber
+  nameWithType: ShortNumberInfo.ConnectsToEmergencyNumber
+  fullName: PhoneNumbers.ShortNumberInfo.ConnectsToEmergencyNumber
+- uid: PhoneNumbers.ShortNumberInfo.IsEmergencyNumber(System.String,System.String)
+  commentId: M:PhoneNumbers.ShortNumberInfo.IsEmergencyNumber(System.String,System.String)
+  isExternal: true
+  href: PhoneNumbers.ShortNumberInfo.html#PhoneNumbers_ShortNumberInfo_IsEmergencyNumber_System_String_System_String_
+  name: IsEmergencyNumber(string, string)
+  nameWithType: ShortNumberInfo.IsEmergencyNumber(string, string)
+  fullName: PhoneNumbers.ShortNumberInfo.IsEmergencyNumber(string, string)
+  nameWithType.vb: ShortNumberInfo.IsEmergencyNumber(String, String)
+  fullName.vb: PhoneNumbers.ShortNumberInfo.IsEmergencyNumber(String, String)
+  name.vb: IsEmergencyNumber(String, String)
+  spec.csharp:
+  - uid: PhoneNumbers.ShortNumberInfo.IsEmergencyNumber(System.String,System.String)
+    name: IsEmergencyNumber
+    href: PhoneNumbers.ShortNumberInfo.html#PhoneNumbers_ShortNumberInfo_IsEmergencyNumber_System_String_System_String_
+  - name: (
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: )
+  spec.vb:
+  - uid: PhoneNumbers.ShortNumberInfo.IsEmergencyNumber(System.String,System.String)
+    name: IsEmergencyNumber
+    href: PhoneNumbers.ShortNumberInfo.html#PhoneNumbers_ShortNumberInfo_IsEmergencyNumber_System_String_System_String_
+  - name: (
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: )
+- uid: PhoneNumbers.ShortNumberInfo.ConnectsToEmergencyNumber(System.String,System.String)
+  commentId: M:PhoneNumbers.ShortNumberInfo.ConnectsToEmergencyNumber(System.String,System.String)
+  isExternal: true
+  href: PhoneNumbers.ShortNumberInfo.html#PhoneNumbers_ShortNumberInfo_ConnectsToEmergencyNumber_System_String_System_String_
+  name: ConnectsToEmergencyNumber(string, string)
+  nameWithType: ShortNumberInfo.ConnectsToEmergencyNumber(string, string)
+  fullName: PhoneNumbers.ShortNumberInfo.ConnectsToEmergencyNumber(string, string)
+  nameWithType.vb: ShortNumberInfo.ConnectsToEmergencyNumber(String, String)
+  fullName.vb: PhoneNumbers.ShortNumberInfo.ConnectsToEmergencyNumber(String, String)
+  name.vb: ConnectsToEmergencyNumber(String, String)
+  spec.csharp:
+  - uid: PhoneNumbers.ShortNumberInfo.ConnectsToEmergencyNumber(System.String,System.String)
+    name: ConnectsToEmergencyNumber
+    href: PhoneNumbers.ShortNumberInfo.html#PhoneNumbers_ShortNumberInfo_ConnectsToEmergencyNumber_System_String_System_String_
+  - name: (
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: )
+  spec.vb:
+  - uid: PhoneNumbers.ShortNumberInfo.ConnectsToEmergencyNumber(System.String,System.String)
+    name: ConnectsToEmergencyNumber
+    href: PhoneNumbers.ShortNumberInfo.html#PhoneNumbers_ShortNumberInfo_ConnectsToEmergencyNumber_System_String_System_String_
+  - name: (
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: )
+- uid: PhoneNumbers.ShortNumberInfo.IsEmergencyNumber*
+  commentId: Overload:PhoneNumbers.ShortNumberInfo.IsEmergencyNumber
+  href: PhoneNumbers.ShortNumberInfo.html#PhoneNumbers_ShortNumberInfo_IsEmergencyNumber_System_String_System_String_
+  name: IsEmergencyNumber
+  nameWithType: ShortNumberInfo.IsEmergencyNumber
+  fullName: PhoneNumbers.ShortNumberInfo.IsEmergencyNumber
+- uid: PhoneNumbers.ShortNumberInfo.IsCarrierSpecific*
+  commentId: Overload:PhoneNumbers.ShortNumberInfo.IsCarrierSpecific
+  href: PhoneNumbers.ShortNumberInfo.html#PhoneNumbers_ShortNumberInfo_IsCarrierSpecific_PhoneNumbers_PhoneNumber_
+  name: IsCarrierSpecific
+  nameWithType: ShortNumberInfo.IsCarrierSpecific
+  fullName: PhoneNumbers.ShortNumberInfo.IsCarrierSpecific
+- uid: PhoneNumbers.ShortNumberInfo.IsCarrierSpecificForRegion*
+  commentId: Overload:PhoneNumbers.ShortNumberInfo.IsCarrierSpecificForRegion
+  href: PhoneNumbers.ShortNumberInfo.html#PhoneNumbers_ShortNumberInfo_IsCarrierSpecificForRegion_PhoneNumbers_PhoneNumber_System_String_
+  name: IsCarrierSpecificForRegion
+  nameWithType: ShortNumberInfo.IsCarrierSpecificForRegion
+  fullName: PhoneNumbers.ShortNumberInfo.IsCarrierSpecificForRegion
+- uid: PhoneNumbers.ShortNumberInfo.IsSmsServiceForRegion*
+  commentId: Overload:PhoneNumbers.ShortNumberInfo.IsSmsServiceForRegion
+  href: PhoneNumbers.ShortNumberInfo.html#PhoneNumbers_ShortNumberInfo_IsSmsServiceForRegion_PhoneNumbers_PhoneNumber_System_String_
+  name: IsSmsServiceForRegion
+  nameWithType: ShortNumberInfo.IsSmsServiceForRegion
+  fullName: PhoneNumbers.ShortNumberInfo.IsSmsServiceForRegion

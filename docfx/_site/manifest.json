@@ -1,0 +1,584 @@
+{
+  "source_base_path": "/home/oem/repos-fork-short-number-info/libphonenumber-csharp/docfx",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "Resource",
+      "output": {
+        "resource": {
+          "relative_path": "index.json"
+        }
+      }
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "../assets/brand/favicon.svg",
+      "output": {
+        "resource": {
+          "relative_path": "images/favicon.svg"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "../assets/brand/logo-dark.svg",
+      "output": {
+        "resource": {
+          "relative_path": "images/logo-dark.svg"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "../assets/brand/logo.svg",
+      "output": {
+        "resource": {
+          "relative_path": "images/logo.svg"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.AsYouTypeFormatter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.AsYouTypeFormatter.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.AsYouTypeFormatter",
+      "Summary": "<p sourcefile=\"api/PhoneNumbers.AsYouTypeFormatter.yml\" sourcestartlinenumber=\"1\">A formatter which formats phone numbers as they are entered.</p>\n<p>\nAn AsYouTypeFormatter can be created by invoking\n<xref href=\"PhoneNumbers.PhoneNumberUtil.GetAsYouTypeFormatter(System.String)\" data-throw-if-not-resolved=\"false\"></xref>. After that, digits can be added by invoking\n<xref href=\"PhoneNumbers.AsYouTypeFormatter.InputDigit(System.Char)\" data-throw-if-not-resolved=\"false\"></xref> on the formatter instance, and the partially formatted phone number will be\nreturned each time a digit is added. {@link #clear} can be invoked before formatting a new\nnumber.\n</p>\n<p sourcefile=\"api/PhoneNumbers.AsYouTypeFormatter.yml\" sourcestartlinenumber=\"11\">See the unittests for more details on how the formatter is to be used.</p>\n<!-- @author Shaopeng Jia -->\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.ErrorType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.ErrorType.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.ErrorType",
+      "Summary": "<p sourcefile=\"api/PhoneNumbers.ErrorType.yml\" sourcestartlinenumber=\"1\">The reason that a string could not be interpreted as a phone number.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.Extensions.PhoneNumber.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.Extensions.PhoneNumber.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.Extensions.PhoneNumber",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.Extensions.PhoneNumberAttribute.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.Extensions.PhoneNumberAttribute.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.Extensions.PhoneNumberAttribute",
+      "Summary": "<p sourcefile=\"api/PhoneNumbers.Extensions.PhoneNumberAttribute.yml\" sourcestartlinenumber=\"1\">Validates that a property, field, or parameter is a valid phone number, using the same\nvalidity check as <xref href=\"PhoneNumbers.PhoneNumberUtil.IsValidNumber(PhoneNumbers.PhoneNumber)\" data-throw-if-not-resolved=\"false\"></xref> rather than a loose format\nregex. Accepts a <xref href=\"System.String\" data-throw-if-not-resolved=\"false\"></xref> (parsed via <xref href=\"PhoneNumbers.Extensions.PhoneNumberAttribute.Region\" data-throw-if-not-resolved=\"false\"></xref>) or an already-parsed\n<xref href=\"PhoneNumbers.PhoneNumber\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.Extensions.PhoneNumberConverter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.Extensions.PhoneNumberConverter.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.Extensions.PhoneNumberConverter",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.Extensions.PhoneNumberExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.Extensions.PhoneNumberExtensions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.Extensions.PhoneNumberExtensions",
+      "Summary": "<p sourcefile=\"api/PhoneNumbers.Extensions.PhoneNumberExtensions.yml\" sourcestartlinenumber=\"1\">C#-idiomatic extension methods over <xref href=\"PhoneNumbers.PhoneNumber\" data-throw-if-not-resolved=\"false\"></xref> for the formatting\nand validity checks callers reach for most often, so they read as\n<code>number.ToE164()</code> / <code>number.IsValid()</code> instead of\n<code>PhoneNumberUtil.GetInstance().Format(number, PhoneNumberFormat.E164)</code>.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.Extensions.PhoneNumberJsonContext.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.Extensions.PhoneNumberJsonContext.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.Extensions.PhoneNumberJsonContext",
+      "Summary": "<p sourcefile=\"api/PhoneNumbers.Extensions.PhoneNumberJsonContext.yml\" sourcestartlinenumber=\"1\">Source-generated <xref href=\"System.Text.Json.Serialization.JsonSerializerContext\" data-throw-if-not-resolved=\"false\"></xref> for <xref href=\"PhoneNumbers.PhoneNumber\" data-throw-if-not-resolved=\"false\"></xref>,\nso consumers building trimmed or Native AOT apps do not need to hand-write one.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.Extensions.PhoneNumberJsonOptions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.Extensions.PhoneNumberJsonOptions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.Extensions.PhoneNumberJsonOptions",
+      "Summary": "<p sourcefile=\"api/PhoneNumbers.Extensions.PhoneNumberJsonOptions.yml\" sourcestartlinenumber=\"1\">Ready-made <xref href=\"System.Text.Json.JsonSerializerOptions\" data-throw-if-not-resolved=\"false\"></xref> for serializing <xref href=\"PhoneNumbers.PhoneNumber\" data-throw-if-not-resolved=\"false\"></xref>\nunder Native AOT / trimming, where the reflection-based default resolver is unavailable.\nCombines <xref href=\"PhoneNumbers.Extensions.PhoneNumberJsonContext\" data-throw-if-not-resolved=\"false\"></xref> (source-generated type metadata) with\n<xref href=\"PhoneNumbers.Extensions.PhoneNumberConverter\" data-throw-if-not-resolved=\"false\"></xref> (the actual read/write logic) so callers cannot wire the two\ntogether incorrectly — see the remarks on <xref href=\"PhoneNumbers.Extensions.PhoneNumberJsonContext\" data-throw-if-not-resolved=\"false\"></xref> for why doing it\nby hand is easy to get wrong.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.Extensions.PhoneNumberTypeConverter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.Extensions.PhoneNumberTypeConverter.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.Extensions.PhoneNumberTypeConverter",
+      "Summary": "<p sourcefile=\"api/PhoneNumbers.Extensions.PhoneNumberTypeConverter.yml\" sourcestartlinenumber=\"1\">Converts a <xref href=\"PhoneNumbers.PhoneNumber\" data-throw-if-not-resolved=\"false\"></xref> to and from its E.164 string\nrepresentation. Not applied automatically — register it where needed, e.g.\n<code>TypeDescriptor.AddAttributes(typeof(PhoneNumbers.PhoneNumber), new TypeConverterAttribute(typeof(PhoneNumberTypeConverter)));</code></p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.Extensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.Extensions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.Extensions",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.LeniencyExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.LeniencyExtensions.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.LeniencyExtensions",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.Locale.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.Locale.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.Locale",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.LocaleData.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.LocaleData.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.LocaleData",
+      "Summary": "<p sourcefile=\"api/PhoneNumbers.LocaleData.yml\" sourcestartlinenumber=\"1\">Holds a map from ISO 3166-1 country code (e.g. GB) to a dict. Each dict maps from an\nISO 639-1 language code (e.g. ja) to the country's name in that language.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.MissingMetadataException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.MissingMetadataException.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.MissingMetadataException",
+      "Summary": "<p sourcefile=\"api/PhoneNumbers.MissingMetadataException.yml\" sourcestartlinenumber=\"1\">Thrown when metadata for a region or country calling code that is expected to exist cannot\nbe loaded (resource missing, stream truncated, etc.). Mirrors\n<code>com.google.i18n.phonenumbers.MissingMetadataException</code> in the Java upstream.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.NumberFormat.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.NumberFormat.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.NumberFormat",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.NumberParseException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.NumberParseException.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.NumberParseException",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.PhoneMetadata.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.PhoneMetadata.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.PhoneMetadata",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.PhoneNumber.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.PhoneNumber.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.PhoneNumber",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.PhoneNumberDesc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.PhoneNumberDesc.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.PhoneNumberDesc",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.PhoneNumberFormat.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.PhoneNumberFormat.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.PhoneNumberFormat",
+      "Summary": "<p sourcefile=\"api/PhoneNumbers.PhoneNumberFormat.yml\" sourcestartlinenumber=\"1\">INTERNATIONAL and NATIONAL formats are consistent with the definition in ITU-T Recommendation\nE123. For example, the number of the Google Switzerland office will be written as\n&quot;+41 44 668 1800&quot; in INTERNATIONAL format, and as &quot;044 668 1800&quot; in NATIONAL format.\nE164 format is as per INTERNATIONAL format but with no formatting applied, e.g.\n&quot;+41446681800&quot;. RFC3966 is as per INTERNATIONAL format, but with all spaces and other\nseparating symbols replaced with a hyphen, and with any phone number extension appended with\n&quot;;ext=&quot;. It also will have a prefix of &quot;tel:&quot; added, e.g. &quot;tel:+41-44-668-1800&quot;.</p>\n<p sourcefile=\"api/PhoneNumbers.PhoneNumberFormat.yml\" sourcestartlinenumber=\"9\">Note: If you are considering storing the number in a neutral format, you are highly advised to\nuse the PhoneNumber class.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.PhoneNumberMatch.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.PhoneNumberMatch.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.PhoneNumberMatch",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.PhoneNumberMatcher.CheckGroups.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.PhoneNumberMatcher.CheckGroups.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.PhoneNumberMatcher.CheckGroups",
+      "Summary": "<p sourcefile=\"api/PhoneNumbers.PhoneNumberMatcher.CheckGroups.yml\" sourcestartlinenumber=\"1\">Returns true if the groups of digits found in our candidate phone number match our\nexpectations.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.PhoneNumberMatcher.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.PhoneNumberMatcher.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.PhoneNumberMatcher",
+      "Summary": "<p sourcefile=\"api/PhoneNumbers.PhoneNumberMatcher.yml\" sourcestartlinenumber=\"1\">The phone number pattern used by {<xref href=\"link\" data-throw-if-not-resolved=\"False\" data-raw-source=\"@link\" sourcefile=\"api/PhoneNumbers.PhoneNumberMatcher.yml\" sourcestartlinenumber=\"1\"></xref> #find}, similar to\n<code> PhoneNumberUtil.VALID_PHONE_NUMBER</code>, but with the following differences:</p>\n<ul>\n  <li>All captures are limited in order to place an upper bound to the text matched by the pattern. </li>\n</ul>\n<ul>\n  <li>Leading punctuation / plus signs are limited. </li>\n  <li>Consecutive occurrences of punctuation are limited. </li>\n  <li>Number of digits is limited. </li>\n</ul>\n<ul>\n  <li>No whitespace is allowed at the start or end. </li>\n  <li>No alpha digits (vanity numbers such as 1-800-SIX-FLAGS) are currently supported. </li>\n</ul>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.PhoneNumberOfflineGeocoder.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.PhoneNumberOfflineGeocoder.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.PhoneNumberOfflineGeocoder",
+      "Summary": "<p sourcefile=\"api/PhoneNumbers.PhoneNumberOfflineGeocoder.yml\" sourcestartlinenumber=\"1\">An offline geocoder which provides geographical information related to a phone number.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.PhoneNumberToCarrierMapper.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.PhoneNumberToCarrierMapper.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.PhoneNumberToCarrierMapper",
+      "Summary": "<p sourcefile=\"api/PhoneNumbers.PhoneNumberToCarrierMapper.yml\" sourcestartlinenumber=\"1\">A phone prefix mapper which provides carrier information related to a phone number.</p>\n<p>\nCarrier data is the one the number was originally allocated to. If the country supports mobile\nnumber portability the number might not belong to the returned carrier anymore.\n</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.PhoneNumberToTimeZonesMapper.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.PhoneNumberToTimeZonesMapper.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.PhoneNumberToTimeZonesMapper",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.PhoneNumberType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.PhoneNumberType.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.PhoneNumberType",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.PhoneNumberUtil.Leniency.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.PhoneNumberUtil.Leniency.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.PhoneNumberUtil.Leniency",
+      "Summary": "<p sourcefile=\"api/PhoneNumbers.PhoneNumberUtil.Leniency.yml\" sourcestartlinenumber=\"1\">Leniency when <xref href=\"PhoneNumbers.PhoneNumberUtil.FindNumbers(System.String%2cSystem.String)\" data-throw-if-not-resolved=\"false\"></xref> finding potential phone numbers in text\nsegments. The levels here are ordered in increasing strictness.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.PhoneNumberUtil.MatchType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.PhoneNumberUtil.MatchType.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.PhoneNumberUtil.MatchType",
+      "Summary": "<p sourcefile=\"api/PhoneNumbers.PhoneNumberUtil.MatchType.yml\" sourcestartlinenumber=\"1\">Types of phone number matches. See detailed description beside the isNumberMatch() method.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.PhoneNumberUtil.ValidationResult.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.PhoneNumberUtil.ValidationResult.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.PhoneNumberUtil.ValidationResult",
+      "Summary": "<p sourcefile=\"api/PhoneNumbers.PhoneNumberUtil.ValidationResult.yml\" sourcestartlinenumber=\"1\">Possible outcomes when testing if a PhoneNumber is possible.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.PhoneNumberUtil.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.PhoneNumberUtil.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.PhoneNumberUtil",
+      "Summary": "<p sourcefile=\"api/PhoneNumbers.PhoneNumberUtil.yml\" sourcestartlinenumber=\"1\">Utility for international phone numbers. Functionality includes formatting, parsing and\nvalidation.</p>\n<p>\nIf you use this library, and want to be notified about important changes, please sign up to\nour mailing list: http://groups.google.com/group/libphonenumber-discuss/about\n</p>\n<p sourcefile=\"api/PhoneNumbers.PhoneNumberUtil.yml\" sourcestartlinenumber=\"9\">NOTE: A lot of methods in this class require Region Code strings.These must be provided using\nISO 3166-1 two-letter country-code format.These should be in upper-case. The list of the codes\ncan be found here:\n<a href=\"http://www.iso.org/iso/country_codes/iso_3166_code_lists/country_names_and_code_elements.htm\" sourcefile=\"api/PhoneNumbers.PhoneNumberUtil.yml\" sourcestartlinenumber=\"12\">http://www.iso.org/iso/country_codes/iso_3166_code_lists/country_names_and_code_elements.htm</a></p>\n<!--\n@author Shaopeng Jia\n@author Lara Rennie\n-->\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.ShortNumberInfo.ShortNumberCost.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.ShortNumberInfo.ShortNumberCost.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.ShortNumberInfo.ShortNumberCost",
+      "Summary": "<p sourcefile=\"api/PhoneNumbers.ShortNumberInfo.ShortNumberCost.yml\" sourcestartlinenumber=\"1\">Cost categories of short numbers.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.ShortNumberInfo.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.ShortNumberInfo.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers.ShortNumberInfo",
+      "Summary": "<p sourcefile=\"api/PhoneNumbers.ShortNumberInfo.yml\" sourcestartlinenumber=\"1\">Methods for getting information about short phone numbers, such as short codes and emergency\nnumbers. Note that most commercial short numbers are not handled here, but by the\n<xref href=\"PhoneNumbers.PhoneNumberUtil\" data-throw-if-not-resolved=\"false\"></xref>.</p>\n<p sourcefile=\"api/PhoneNumbers.ShortNumberInfo.yml\" sourcestartlinenumber=\"5\"><xref href=\"author\" data-throw-if-not-resolved=\"False\" data-raw-source=\"@author\" sourcefile=\"api/PhoneNumbers.ShortNumberInfo.yml\" sourcestartlinenumber=\"5\"></xref> Shaopeng Jia\n<xref href=\"author\" data-throw-if-not-resolved=\"False\" data-raw-source=\"@author\" sourcefile=\"api/PhoneNumbers.ShortNumberInfo.yml\" sourcestartlinenumber=\"6\"></xref> David Yonge-Mallo</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/PhoneNumbers.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/PhoneNumbers.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "PhoneNumbers",
+      "Summary": null
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "api/toc.yml",
+      "output": {
+        ".json": {
+          "relative_path": "api/toc.json"
+        },
+        ".html": {
+          "relative_path": "api/toc.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/api-differences-from-java.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/api-differences-from-java.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "articles/toc.yml",
+      "output": {
+        ".json": {
+          "relative_path": "articles/toc.json"
+        },
+        ".html": {
+          "relative_path": "articles/toc.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "toc.yml",
+      "output": {
+        ".json": {
+          "relative_path": "toc.json"
+        },
+        ".html": {
+          "relative_path": "toc.html"
+        }
+      },
+      "version": ""
+    }
+  ],
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}
