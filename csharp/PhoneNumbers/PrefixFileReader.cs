@@ -20,7 +20,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Reflection;
 
 namespace PhoneNumbers
@@ -39,34 +38,38 @@ namespace PhoneNumbers
         // Pre-allocated delegates to avoid closure re-allocation on every GetOrAdd call.
         private readonly Func<(int, string, string, string), string> _fileNameFactory;
         private readonly Func<string, Lazy<AreaCodeMap>> _areaCodeMapFactory;
-        private readonly string phonePrefixDataDirectory;
-        private readonly Assembly assembly;
+        private readonly ResourcePack pack;
+        private readonly string packResourceName;
 
         internal PrefixFileReader(string phonePrefixDataDirectory, Assembly asm = null)
         {
             asm ??= typeof(PrefixFileReader).Assembly;
-            var prefix = asm.GetName().Name + "." + phonePrefixDataDirectory;
-            var files = LoadFileNamesFromManifestResources(asm, prefix);
+            // One resource per data set: "PhoneNumbers.geocoding.pack", and for the test
+            // assembly's own fixtures "PhoneNumbers.Test.carrier.pack".
+            packResourceName = asm.GetName().Name + "." + phonePrefixDataDirectory + "pack";
+            pack = ResourcePack.FromAssembly(asm, packResourceName);
+            var files = LoadFileNamesFromPack(pack);
             mappingFileProvider = new MappingFileProvider();
             mappingFileProvider.ReadFileConfigs(files);
-            assembly = asm;
-            this.phonePrefixDataDirectory = prefix;
             _fileNameFactory = k => mappingFileProvider.GetFileName(k.Item1, k.Item2, k.Item3, k.Item4);
             _areaCodeMapFactory = key => new Lazy<AreaCodeMap>(() => LoadAreaCodeMapFromFile(key));
         }
 
-        // Resources follow the pattern "{AssemblyName}.{prefix}{lang}.{cc}"
-        // e.g. "PhoneNumbers.carrier.en.1" or "PhoneNumbers.Test.carrier.zh_Hant.852".
-        private static SortedDictionary<int, HashSet<string>> LoadFileNamesFromManifestResources(
-            Assembly asm, string prefix)
+        /// <summary>
+        /// True when the data set this reader was constructed for is not in the assembly, i.e. the
+        /// build opted out of it and the trimmer removed the resource. Callers check this instead
+        /// of discovering it as an empty lookup result.
+        /// </summary>
+        internal bool IsDataTrimmed => pack is null;
+
+        // Pack entries are named "{lang}.{cc}", e.g. "en.44" or "zh_Hant.852".
+        private static SortedDictionary<int, HashSet<string>> LoadFileNamesFromPack(ResourcePack pack)
         {
             var files = new SortedDictionary<int, HashSet<string>>();
-            var names = asm.GetManifestResourceNames()
-                .Where(n => n.StartsWith(prefix, StringComparison.Ordinal));
-            foreach (var n in names)
+            if (pack is null)
+                return files;
+            foreach (var filePart in pack.Names)
             {
-                // filePart e.g. "en.44" or "zh_Hant.852"
-                var filePart = n.Substring(prefix.Length);
                 var parts = filePart.Split('.');
                 // Minimum: [lang, cc] => length 2
                 if (parts.Length < 2)
@@ -122,10 +125,10 @@ namespace PhoneNumbers
 
         private AreaCodeMap LoadAreaCodeMapFromFile(string fileName)
         {
-            var resName = phonePrefixDataDirectory + fileName;
-            using var raw = assembly.GetManifestResourceStream(resName)
+            var entry = pack?.Read(fileName)
                 ?? throw new MissingMetadataException(
-                    $"Prefix map resource '{resName}' not found on assembly '{assembly.GetName().Name}'.");
+                    $"Prefix map entry '{fileName}' not found in resource pack '{packResourceName}'.");
+            using var raw = new MemoryStream(entry, writable: false);
             using var fp = new GZipStream(raw, CompressionMode.Decompress);
 
             var sortedMap = BuildPrefixMapFromBin.ReadAreaCodeMap(fp);

@@ -34,7 +34,32 @@ Targets `netstandard2.0`, `net8.0` and `net10.0`.
 
 ### Trimming and Native AOT
 
-The library is annotated as trim- and AOT-compatible, and the trim/AOT analyzers run as part of its own build. All metadata — including the geocoding, carrier and time zone prefix maps — is compiled to a binary form at build time and embedded in the assembly as compressed resources, so no XML is parsed and no file is read from disk at run time. The [interactive demo](https://twcclegg.github.io/libphonenumber-csharp/) is a Blazor WebAssembly app that runs this library trimmed, in the browser.
+The library is annotated as trim- and AOT-compatible, and the trim/AOT analyzers run as part of its own build. All metadata — including the geocoding, carrier and time zone prefix maps — is compiled to a binary form at build time and embedded in the assembly as compressed resources, so no XML is parsed and no file is read from disk at run time. A trimmed build can drop the data sets it does not use; see [Dropping the data sets you don't use](#dropping-the-data-sets-you-dont-use). The [interactive demo](https://twcclegg.github.io/libphonenumber-csharp/) is a Blazor WebAssembly app that runs this library trimmed, in the browser.
+
+### Dropping the data sets you don't use
+
+The assembly carries about 2.6 MB of embedded data, and only 136 KB of it — the phone metadata — is needed to parse, validate and format. The rest backs the offline geocoder, the carrier mapper, the time zone mapper and the country-name table. Embedded resources survive trimming (the trimmer removes code, not resources), so an app that never geocodes still ships the 1.9 MB of area descriptions.
+
+Two MSBuild properties let a **trimmed** build drop what it does not use:
+
+```xml
+<PropertyGroup>
+  <PublishTrimmed>true</PublishTrimmed>
+  <PhoneNumbersIncludeGeocodingData>false</PhoneNumbersIncludeGeocodingData>
+  <PhoneNumbersIncludeLocaleNameData>false</PhoneNumbersIncludeLocaleNameData>
+</PropertyGroup>
+```
+
+| property | drops | saves |
+| --- | --- | --- |
+| `PhoneNumbersIncludeGeocodingData` | `PhoneNumberOfflineGeocoder`, `PhoneNumberToCarrierMapper`, `PhoneNumberToTimeZonesMapper` data | ~2.1 MB |
+| `PhoneNumbersIncludeLocaleNameData` | the country-name table behind `Locale.GetDisplayCountry` and `LocaleData` | ~0.4 MB |
+
+With both set, a trimmed `PhoneNumbers.dll` measured 250 KB against 2.72 MB with neither — a 91% reduction. Parsing, validation and formatting are unaffected; that is the point of the split.
+
+Both default to included, so a project that sets nothing is unchanged. Using a type whose data was dropped throws `MissingMetadataException` (an `InvalidOperationException`) naming the property to remove — it does not silently return an empty result. The properties do nothing in an untrimmed build, because nothing removes the resources there.
+
+`PhoneNumbersIncludeLocaleNameData=false` requires `PhoneNumbersIncludeGeocodingData=false`, and the build fails with `PN1001` otherwise: the geocoder falls back to the country name for any number it has no area-level description for, so keeping the geocoder without the country names works for most numbers and throws for Andorra and San Marino.
 
 ### Regex compilation and startup cost
 

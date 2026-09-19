@@ -106,6 +106,11 @@ namespace PhoneNumbers
         internal PhoneNumberOfflineGeocoder(string phonePrefixDataDirectory, Assembly asm = null)
         {
             prefixFileReader = new PrefixFileReader(phonePrefixDataDirectory, asm);
+            // Fail at construction, not on the first query: a trimmed-away data set is a permanent
+            // property of the build, and reporting it once here beats every lookup quietly
+            // returning "".
+            if (prefixFileReader.IsDataTrimmed)
+                throw PhoneNumbersFeatures.GeocodingDataTrimmed();
         }
 
         /// <summary>

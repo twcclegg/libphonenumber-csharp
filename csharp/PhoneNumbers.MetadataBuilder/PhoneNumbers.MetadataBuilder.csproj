@@ -27,6 +27,7 @@
     <Compile Include="..\PhoneNumbers\BuildMetadataFromXml.cs" Link="Linked\BuildMetadataFromXml.cs" />
     <Compile Include="..\PhoneNumbers\BuildMetadataFromBin.cs" Link="Linked\BuildMetadataFromBin.cs" />
     <Compile Include="..\PhoneNumbers\BuildPrefixMapFromBin.cs" Link="Linked\BuildPrefixMapFromBin.cs" />
+    <Compile Include="..\PhoneNumbers\ResourcePack.cs" Link="Linked\ResourcePack.cs" />
     <Compile Include="..\PhoneNumbers\MetadataFilter.cs" Link="Linked\MetadataFilter.cs" />
     <Compile Include="..\PhoneNumbers\PhoneRegex.cs" Link="Linked\PhoneRegex.cs" />
     <Compile Include="..\PhoneNumbers\InternalRegexOptions.cs" Link="Linked\InternalRegexOptions.cs" />

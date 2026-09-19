@@ -122,9 +122,11 @@ namespace PhoneNumbers
             var allNames = asm.GetManifestResourceNames();
             var prefix = asm.GetName().Name + "." + timezoneDataDirectory;
             var names = allNames.Where(n => n.StartsWith(prefix, StringComparison.Ordinal)).ToList();
-            var mapFile = names.FirstOrDefault(s => s.EndsWith(TZMAP_BIN_FILENAME, StringComparison.Ordinal))
-                ?? throw new MissingMetadataException(
-                    $"Timezone data resource '{prefix}{TZMAP_BIN_FILENAME}' not found on assembly '{asm.GetName().Name}'.");
+            var mapFile = names.FirstOrDefault(s => s.EndsWith(TZMAP_BIN_FILENAME, StringComparison.Ordinal));
+            // Absent because the build opted out of the geocoding data set, which this map
+            // ships with; say so instead of reporting corrupt metadata.
+            if (mapFile is null)
+                throw PhoneNumbersFeatures.GeocodingDataTrimmed();
             using var raw = asm.GetManifestResourceStream(mapFile)
                 ?? throw new MissingMetadataException(
                     $"Timezone data resource '{mapFile}' not found on assembly '{asm.GetName().Name}'.");

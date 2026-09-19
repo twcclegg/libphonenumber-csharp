@@ -18,6 +18,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.Compression;
 using System.Reflection;
 using System.Linq;
@@ -36,9 +37,16 @@ namespace PhoneNumbers
     /// </remarks>
     internal static class LocaleNames
     {
-        private const string ResourcePrefix = "PhoneNumbers.locale.";
+        internal const string PackResourceName = "PhoneNumbers.locale.pack";
 
         private static readonly Assembly Assembly = typeof(LocaleNames).GetTypeInfo().Assembly;
+
+        /// <summary>
+        /// The whole data set, one embedded resource, read on first use. Null when the build opted
+        /// out of the locale data and the trimmer removed it.
+        /// </summary>
+        private static readonly Lazy<ResourcePack> Pack =
+            new Lazy<ResourcePack>(() => ResourcePack.FromAssembly(Assembly, PackResourceName), true);
 
         /// <summary>
         /// Countries with no entry cache a null, so a miss costs one dictionary lookup rather than
@@ -60,10 +68,12 @@ namespace PhoneNumbers
 
         private static Dictionary<string, string> Load(string country)
         {
-            using var raw = Assembly.GetManifestResourceStream(ResourcePrefix + country);
-            if (raw is null)
+            var pack = Pack.Value ?? throw PhoneNumbersFeatures.LocaleDataTrimmed();
+            var entry = pack.Read(country);
+            if (entry is null)
                 return null;
 
+            using var raw = new MemoryStream(entry, writable: false);
             using var gz = new GZipStream(raw, CompressionMode.Decompress);
             return BuildPrefixMapFromBin.ReadLocaleNames(gz);
         }
@@ -74,10 +84,10 @@ namespace PhoneNumbers
         /// </summary>
         internal static IEnumerable<string> SupportedCountries()
         {
-            foreach (var name in Assembly.GetManifestResourceNames()
-                .Where(name => name.StartsWith(ResourcePrefix, StringComparison.Ordinal)))
+            var pack = Pack.Value ?? throw PhoneNumbersFeatures.LocaleDataTrimmed();
+            foreach (var name in pack.Names)
             {
-                yield return name.Substring(ResourcePrefix.Length);
+                yield return name;
             }
         }
     }

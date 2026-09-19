@@ -42,7 +42,9 @@
       "PhoneNumbers.timezones.*" namespaces respectively. The text/xml originals still live in
       resources/ on disk so the build tool and the test project can use them as input.
     -->
+    <EmbeddedResource Include="ILLink.Substitutions.xml" LogicalName="ILLink.Substitutions.xml" />
     <None Include="..\..\icon.png" Pack="true" PackagePath="" />
+    <None Include="buildTransitive\libphonenumber-csharp.targets" Pack="true" PackagePath="buildTransitive\" />
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
@@ -99,112 +101,77 @@
   -->
 
   <!--
-    Generation runs ONCE on the outer cross-targeting build (BeforeTargets="DispatchToInnerBuilds")
-    and once on a direct single-TFM build (BeforeTargets="AssignTargetPaths"). Inputs/Outputs
-    gating means the per-TFM inner builds spawned by DispatchToInnerBuilds re-evaluate the target
-    after the outer has already produced the bins, see the outputs are newer, and skip — avoiding
-    the parallel-write race that broke CI when three concurrent dotnet-run invocations all wrote
-    to obj\geocoding\en.86 at once.
+    One target, one tool invocation, for every generated data file.
+
+    This used to be five Generate* targets driving seven `dotnet MetadataBuilder` processes. Each
+    paid a process launch and a turn through the tool's cross-process mutex, and each needed its
+    own Inputs/Outputs gate whose Outputs named a *sentinel* file (obj/geocoding/en.1) standing in
+    for a directory of ~220 outputs — so a gate could report up-to-date while siblings were stale.
+    The tool's `all` subcommand does the whole job in one process, and the three multi-file data
+    sets are now packed into single .pack files, so Outputs below names every real output.
+
+    Timing is unchanged and still load-bearing: generation runs once on the outer cross-targeting
+    build (DispatchToInnerBuilds) and once on a direct single-TFM build (AssignTargetPaths). The
+    Inputs/Outputs gate means the per-TFM inner builds re-evaluate, see the outputs are newer, and
+    skip — which is what keeps three concurrent inner builds off the same obj directory. The tool
+    also re-checks freshness per data set inside its mutex, so a redundant call is a no-op rather
+    than a rewrite.
   -->
+  <ItemGroup>
+    <!--
+      Top-level so the globs resolve at parse time and the Inputs attribute below sees the full
+      list. Collected inside the target body they would be empty when the gate is evaluated, and
+      the target would always report up-to-date.
+    -->
+    <_MetadataSourceFile Include="$(ResourcesDir)PhoneNumberMetadata.xml" />
+    <_MetadataSourceFile Include="$(ResourcesDir)ShortNumberMetadata.xml" />
+    <_MetadataSourceFile Include="$(ResourcesDir)PhoneNumberAlternateFormats.xml" />
+    <_MetadataSourceFile Include="$(ResourcesDir)geocoding/**/*.txt" />
+    <_MetadataSourceFile Include="$(ResourcesDir)carrier/**/*.txt" />
+    <_MetadataSourceFile Include="$(ResourcesDir)locale/country_names.txt" />
+    <_MetadataSourceFile Include="$(ResourcesDir)timezones/map_data.txt" />
+  </ItemGroup>
+
   <Target Name="GenerateBinaryMetadata"
           BeforeTargets="AssignTargetPaths"
-          Inputs="$(ResourcesDir)PhoneNumberMetadata.xml;$(ResourcesDir)ShortNumberMetadata.xml;$(ResourcesDir)PhoneNumberAlternateFormats.xml"
-          Outputs="$(BinaryMetadataDir)/PhoneNumberMetadata_US;$(BinaryMetadataDir)/ShortNumberMetadata_US;$(BinaryMetadataDir)/PhoneNumberAlternateFormats_49">
-    <MakeDir Directories="$(BinaryMetadataDir)" />
-    <Exec Command="dotnet &quot;$(MetadataBuilderDll)&quot; phone &quot;$(ResourcesDir)PhoneNumberMetadata.xml&quot; &quot;$(BinaryMetadataDir)&quot;" />
-    <Exec Command="dotnet &quot;$(MetadataBuilderDll)&quot; short &quot;$(ResourcesDir)ShortNumberMetadata.xml&quot; &quot;$(BinaryMetadataDir)&quot;" />
-    <Exec Command="dotnet &quot;$(MetadataBuilderDll)&quot; alternate &quot;$(ResourcesDir)PhoneNumberAlternateFormats.xml&quot; &quot;$(BinaryMetadataDir)&quot;" />
-  </Target>
-
-  <!--
-    Top-level ItemGroup so the wildcard is resolved at MSBuild parse time and the Inputs
-    attribute on the target below sees the full file list. (If we collected the items inside the
-    target body, the gate-check happens before the body runs, sees an empty list, and the target
-    always reports up-to-date.)
-  -->
-  <ItemGroup>
-    <_GeocodingTextFile Include="$(ResourcesDir)geocoding/**/*.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <_CarrierTextFile Include="$(ResourcesDir)carrier/**/*.txt" />
-  </ItemGroup>
-
-  <Target Name="GenerateGeocodingBins"
-          BeforeTargets="AssignTargetPaths"
-          Inputs="@(_GeocodingTextFile)"
-          Outputs="$(BinaryGeocodingDir)/en.1">
-    <!--
-      A change to ANY .txt under resources/geocoding/ should retrigger generation; the previous
-      single-file sentinel only watched en/1.txt, so editing e.g. de/49.txt during incremental
-      local builds wouldn't re-run the tool. Output sentinel is still a single file —
-      MetadataBuilder is all-or-nothing, so once en.1 is up-to-date all bins are.
-    -->
-    <MakeDir Directories="$(BinaryGeocodingDir)" />
-    <Exec Command="dotnet &quot;$(MetadataBuilderDll)&quot; geocoding &quot;$(ResourcesDir)geocoding&quot; &quot;$(BinaryGeocodingDir)&quot;" />
-  </Target>
-
-  <Target Name="GenerateCarrierBins"
-          BeforeTargets="AssignTargetPaths"
-          Inputs="@(_CarrierTextFile)"
-          Outputs="$(BinaryCarrierDir)/en.1">
-    <MakeDir Directories="$(BinaryCarrierDir)" />
-    <Exec Command="dotnet &quot;$(MetadataBuilderDll)&quot; carrier &quot;$(ResourcesDir)carrier&quot; &quot;$(BinaryCarrierDir)&quot;" />
-  </Target>
-
-  <Target Name="GenerateLocaleBins"
-          BeforeTargets="AssignTargetPaths"
-          Inputs="$(ResourcesDir)locale/country_names.txt"
-          Outputs="$(BinaryLocaleDir)/US">
-    <MakeDir Directories="$(BinaryLocaleDir)" />
-    <Exec Command="dotnet &quot;$(MetadataBuilderDll)&quot; locale &quot;$(ResourcesDir)locale/country_names.txt&quot; &quot;$(BinaryLocaleDir)&quot;" />
-  </Target>
-
-  <Target Name="GenerateTimezoneBin"
-          BeforeTargets="AssignTargetPaths"
-          Inputs="$(ResourcesDir)timezones/map_data.txt"
-          Outputs="$(BinaryTimezonesDir)/map_data.bin">
-    <MakeDir Directories="$(BinaryTimezonesDir)" />
-    <Exec Command="dotnet &quot;$(MetadataBuilderDll)&quot; timezones &quot;$(ResourcesDir)timezones/map_data.txt&quot; &quot;$(BinaryTimezonesDir)/map_data.bin&quot;" />
+          Inputs="@(_MetadataSourceFile)"
+          Outputs="$(BinaryMetadataDir)/PhoneNumberMetadata_US;$(BinaryMetadataDir)/ShortNumberMetadata_US;$(BinaryMetadataDir)/PhoneNumberAlternateFormats_49;$(BinaryGeocodingDir)/geocoding.pack;$(BinaryCarrierDir)/carrier.pack;$(BinaryLocaleDir)/locale.pack;$(BinaryTimezonesDir)/map_data.bin">
+    <Exec Command="dotnet &quot;$(MetadataBuilderDll)&quot; all &quot;$(ResourcesDir).&quot; &quot;$(BaseIntermediateOutputPath).&quot;" />
   </Target>
 
   <!--
     Embedding runs on every inner per-TFM build (AssignTargetPaths only — there's no resource
-    embedding on the cross-targeting outer). Items are added inside a Target rather than at
-    top-level because top-level wildcard globs are evaluated at MSBuild parse time, before the
-    Generate* targets have a chance to write the files. The Generate targets are listed as
-    DependsOn so MSBuild guarantees the bins exist (or were already up-to-date) by the time the
-    glob fires.
+    embedding on the cross-targeting outer). The per-region metadata is still a glob, because the
+    set of regions changes with every upstream sync; the four data-set resources are named
+    explicitly, because those exact names are what ILLink.Substitutions.xml removes and a glob
+    would let a rename silently stop matching.
   -->
   <Target Name="EmbedBinaryMetadata"
           BeforeTargets="AssignTargetPaths"
-          DependsOnTargets="GenerateBinaryMetadata;GenerateGeocodingBins;GenerateTimezoneBin;GenerateCarrierBins;GenerateLocaleBins">
+          DependsOnTargets="GenerateBinaryMetadata">
     <!--
-      Two-step add to avoid an MSBuild item-batching surprise:
-      a single `<EmbeddedResource Include="path/*" LogicalName="...%(Filename)..." />` inside a
-      Target's ItemGroup makes MSBuild batch the metadata expansion across every existing
-      EmbeddedResource item as well as the new ones from the glob, which produces a cross-product
-      (n_metadata × n_geocoding bogus items, each with the LogicalName of an unrelated item).
-      Globbing into a private item first, then `Include="@(_X)"` with metadata, evaluates
-      %(Filename) per-item against the named collection only — no batch against EmbeddedResource.
+      Two-step add to avoid an MSBuild item-batching surprise: a single
+      `<EmbeddedResource Include="path/*" LogicalName="...%(Filename)..." />` inside a Target's
+      ItemGroup makes MSBuild batch the metadata expansion across every existing EmbeddedResource
+      item as well as the new ones from the glob, producing a cross-product of bogus items each
+      carrying an unrelated item's LogicalName. Globbing into a private item first, then
+      `Include="@(_X)"` with metadata, evaluates %(Filename) per-item against the named collection
+      only.
     -->
     <ItemGroup>
       <_BinMetadataFile Include="$(BinaryMetadataDir)/*" />
-      <_BinGeocodingFile Include="$(BinaryGeocodingDir)/*" />
-      <_BinCarrierFile Include="$(BinaryCarrierDir)/*" />
-      <_BinLocaleFile Include="$(BinaryLocaleDir)/*" />
     </ItemGroup>
     <ItemGroup>
       <EmbeddedResource Include="@(_BinMetadataFile)"
                         LogicalName="PhoneNumbers.metadata.%(_BinMetadataFile.Filename)%(_BinMetadataFile.Extension)" />
-      <EmbeddedResource Include="@(_BinGeocodingFile)"
-                        LogicalName="PhoneNumbers.geocoding.%(_BinGeocodingFile.Filename)%(_BinGeocodingFile.Extension)" />
+      <EmbeddedResource Include="$(BinaryGeocodingDir)/geocoding.pack"
+                        LogicalName="PhoneNumbers.geocoding.pack" />
+      <EmbeddedResource Include="$(BinaryCarrierDir)/carrier.pack"
+                        LogicalName="PhoneNumbers.carrier.pack" />
+      <EmbeddedResource Include="$(BinaryLocaleDir)/locale.pack"
+                        LogicalName="PhoneNumbers.locale.pack" />
       <EmbeddedResource Include="$(BinaryTimezonesDir)/map_data.bin"
                         LogicalName="PhoneNumbers.timezones.map_data.bin" />
-      <EmbeddedResource Include="@(_BinCarrierFile)"
-                        LogicalName="PhoneNumbers.carrier.%(_BinCarrierFile.Filename)%(_BinCarrierFile.Extension)" />
-      <EmbeddedResource Include="@(_BinLocaleFile)"
-                        LogicalName="PhoneNumbers.locale.%(_BinLocaleFile.Filename)%(_BinLocaleFile.Extension)" />
     </ItemGroup>
   </Target>
 
