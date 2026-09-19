@@ -93,43 +93,25 @@
   -->
   <Target Name="GenerateTestGeocodingBins"
           BeforeTargets="AssignTargetPaths"
-          Inputs="@(_TestGeocodingTextFile)"
-          Outputs="$(BinaryTestGeocodingDir)/en.1">
-    <MakeDir Directories="$(BinaryTestGeocodingDir)" />
-    <Exec Command="dotnet &quot;$(MetadataBuilderDll)&quot; geocoding &quot;$(TestResourcesGeocodingDir)&quot; &quot;$(BinaryTestGeocodingDir)&quot;" />
+          Inputs="@(_TestGeocodingTextFile);@(_TestCarrierTextFile)"
+          Outputs="$(BinaryTestGeocodingDir)/geocoding.pack;$(BinaryTestCarrierDir)/carrier.pack">
+    <Exec Command="dotnet &quot;$(MetadataBuilderDll)&quot; geocoding &quot;$(TestResourcesGeocodingDir)&quot; &quot;$(BinaryTestGeocodingDir)/geocoding.pack&quot;" />
+    <Exec Command="dotnet &quot;$(MetadataBuilderDll)&quot; carrier &quot;$(TestResourcesCarrierDir)&quot; &quot;$(BinaryTestCarrierDir)/carrier.pack&quot;" />
   </Target>
 
+  <!--
+    The fixture data is packed exactly like the shipped data, so PrefixFileReader takes the same
+    path here as in production - the alternative would leave the pack reader untested by every
+    geocoder and carrier test in the suite.
+  -->
   <Target Name="EmbedTestGeocoding"
           BeforeTargets="AssignTargetPaths"
           DependsOnTargets="GenerateTestGeocodingBins">
-    <!-- See PhoneNumbers.csproj: glob into a private item first, then Include="@(...)" with
-         qualified metadata to avoid a cross-product batching surprise. -->
     <ItemGroup>
-      <_TestGeocodingFile Include="$(BinaryTestGeocodingDir)/*" />
-    </ItemGroup>
-    <ItemGroup>
-      <EmbeddedResource Include="@(_TestGeocodingFile)"
-                        LogicalName="PhoneNumbers.Test.geocoding.%(_TestGeocodingFile.Filename)%(_TestGeocodingFile.Extension)" />
-    </ItemGroup>
-  </Target>
-
-  <Target Name="GenerateTestCarrierBins"
-          BeforeTargets="AssignTargetPaths"
-          Inputs="@(_TestCarrierTextFile)"
-          Outputs="$(BinaryTestCarrierDir)/en.1">
-    <MakeDir Directories="$(BinaryTestCarrierDir)" />
-    <Exec Command="dotnet &quot;$(MetadataBuilderDll)&quot; carrier &quot;$(TestResourcesCarrierDir)&quot; &quot;$(BinaryTestCarrierDir)&quot;" />
-  </Target>
-
-  <Target Name="EmbedTestCarrier"
-          BeforeTargets="AssignTargetPaths"
-          DependsOnTargets="GenerateTestCarrierBins">
-    <ItemGroup>
-      <_TestCarrierFile Include="$(BinaryTestCarrierDir)/*" />
-    </ItemGroup>
-    <ItemGroup>
-      <EmbeddedResource Include="@(_TestCarrierFile)"
-                        LogicalName="PhoneNumbers.Test.carrier.%(_TestCarrierFile.Filename)%(_TestCarrierFile.Extension)" />
+      <EmbeddedResource Include="$(BinaryTestGeocodingDir)/geocoding.pack"
+                        LogicalName="PhoneNumbers.Test.geocoding.pack" />
+      <EmbeddedResource Include="$(BinaryTestCarrierDir)/carrier.pack"
+                        LogicalName="PhoneNumbers.Test.carrier.pack" />
     </ItemGroup>
   </Target>
 
