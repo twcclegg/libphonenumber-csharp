@@ -87,20 +87,41 @@ internal static class Program
         return "Global\\PhoneNumbers.MetadataBuilder." + Convert.ToHexString(hash);
     }
 
+    /// <summary>
+    /// Creates the directory a file is about to be written into. One helper because the three
+    /// call sites had three spellings, one of which (GetDirectoryName without GetFullPath) throws
+    /// for a bare relative filename -- fine from MSBuild, which always passes a joined path, and a
+    /// crash for anyone running the tool by hand.
+    /// </summary>
+    private static void EnsureDirectoryFor(string outputFile) =>
+        Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(outputFile))!);
+
+    /// <summary>
+    /// The one list of supported kinds. Both callers print this rather than restating it: the
+    /// unknown-kind message used to carry its own list, which had already drifted to name four of
+    /// the nine kinds.
+    /// </summary>
+    private static void PrintUsage()
+    {
+        Console.Error.WriteLine(
+            "Usage: PhoneNumbers.MetadataBuilder <kind> <input> <output-dir-or-file>");
+        Console.Error.WriteLine(
+            "  kind: all                                      (resources/ -> every output below)");
+        Console.Error.WriteLine(
+            "        phone | short | alternate | test         (XML metadata file -> per-region bins)");
+        Console.Error.WriteLine(
+            "        geocoding | carrier                      (<type>/ tree -> one .pack)");
+        Console.Error.WriteLine(
+            "        timezones                                (timezones/map_data.txt -> single bin)");
+        Console.Error.WriteLine(
+            "        locale                                   (locale/country_names.txt -> one .pack)");
+    }
+
     private static int Run(string[] args)
     {
         if (args.Length < 3)
         {
-            Console.Error.WriteLine(
-                "Usage: PhoneNumbers.MetadataBuilder <kind> <input> <output-dir-or-file>");
-            Console.Error.WriteLine(
-                "  kind: phone | short | alternate | test         (XML metadata file -> per-region bins)");
-            Console.Error.WriteLine(
-                "        geocoding | carrier                      (<type>/ tree -> per-(lang,cc) bins)");
-            Console.Error.WriteLine(
-                "        timezones                                (timezones/map_data.txt -> single bin)");
-            Console.Error.WriteLine(
-                "        locale                                   (locale/country_names.txt -> per-country bins)");
+            PrintUsage();
             return 2;
         }
 
@@ -118,8 +139,8 @@ internal static class Program
                 isShortNumberMetadata: false, isAlternateFormatsMetadata: true),
             "test" => BuildPerRegion(input, output, TestMetadataPrefix,
                 isShortNumberMetadata: false, isAlternateFormatsMetadata: false),
-            "geocoding" => BuildGeocoding(input, output),
-            "carrier" => BuildGeocoding(input, output),
+            "all" => BuildAll(input, output),
+            "geocoding" or "carrier" => BuildGeocoding(input, output),
             "timezones" => BuildTimezones(input, output),
             "locale" => BuildLocaleNames(input, output),
             _ => UnknownKind(kind),
@@ -128,18 +149,24 @@ internal static class Program
 
     /// <summary>
     /// Walks an input directory tree shaped <c>&lt;inputDir&gt;/&lt;lang&gt;/&lt;countryCode&gt;.txt</c>
-    /// (the layout used by libphonenumber's geocoding/ and carrier/ trees) and emits one binary
-    /// file per (lang, countryCode) pair as <c>&lt;outputDir&gt;/&lt;lang&gt;.&lt;countryCode&gt;</c>.
+    /// (the layout used by libphonenumber's geocoding/ and carrier/ trees) and emits a single
+    /// <see cref="ResourcePack"/> whose entries are named <c>&lt;lang&gt;.&lt;countryCode&gt;</c>.
+    /// <para>
+    /// One file rather than ~220 so the assembly carries one embedded resource per data set. That
+    /// is what lets the trimmer drop the whole set from a fixed four-line substitutions file --
+    /// resource removal matches exact names and has no wildcard -- and it lets the MSBuild target
+    /// above declare its real output instead of a sentinel.
+    /// </para>
     /// </summary>
-    private static int BuildGeocoding(string inputDir, string outputDir)
+    private static int BuildGeocoding(string inputDir, string outputFile)
     {
         if (!Directory.Exists(inputDir))
             throw new DirectoryNotFoundException($"Input directory not found: {inputDir}");
-        if (IsGeocodingOutputUpToDate(inputDir, outputDir))
+        if (IsPackUpToDate(inputDir, outputFile))
             return 0;
-        Directory.CreateDirectory(outputDir);
+        EnsureDirectoryFor(outputFile);
 
-        var written = 0;
+        var entries = new List<KeyValuePair<string, byte[]>>();
         foreach (var langDir in Directory.EnumerateDirectories(inputDir))
         {
             var lang = Path.GetFileName(langDir);
@@ -147,14 +174,45 @@ internal static class Program
             {
                 var countryCode = Path.GetFileNameWithoutExtension(txtPath);
                 var map = ParseAreaCodeText(txtPath);
-                var outPath = Path.Join(outputDir, Path.GetFileName($"{lang}.{countryCode}"));
-                using var gz = new GZipStream(File.Create(outPath), CompressionLevel.SmallestSize);
-                BuildPrefixMapFromBin.WriteAreaCodeMap(gz, map);
-                written++;
+                // Entries stay individually gzipped: the runtime decompresses only the one
+                // (language, country) map it was asked for, exactly as before packing.
+                using var buffer = new MemoryStream();
+                using (var gz = new GZipStream(buffer, CompressionLevel.SmallestSize, leaveOpen: true))
+                    BuildPrefixMapFromBin.WriteAreaCodeMap(gz, map);
+                entries.Add(new KeyValuePair<string, byte[]>($"{lang}.{countryCode}", buffer.ToArray()));
             }
         }
-        Console.Out.WriteLine($"PhoneNumbers.MetadataBuilder: wrote {written} geocoding bin file(s) to {outputDir}");
+
+        WritePack(outputFile, entries);
+        Console.Out.WriteLine(
+            $"PhoneNumbers.MetadataBuilder: packed {entries.Count} prefix map(s) into {outputFile}");
         return 0;
+    }
+
+    /// <summary>
+    /// Writes a pack to a temporary file and renames it into place, so a reader cannot observe a
+    /// half-written pack. The mutex in <see cref="Main"/> is what actually serialises writers; this
+    /// is cheap insurance on top of it, and cheaper here than for the per-region bins because a
+    /// pack is one file rather than several hundred.
+    /// </summary>
+    private static void WritePack(string outputFile, List<KeyValuePair<string, byte[]>> entries)
+    {
+        var temp = outputFile + ".tmp";
+        using (var stream = File.Create(temp))
+            ResourcePack.Write(stream, entries);
+        File.Move(temp, outputFile, overwrite: true);
+    }
+
+    /// <summary>
+    /// A pack is up to date when it exists and is at least as new as the newest input under the
+    /// tree it was built from.
+    /// </summary>
+    private static bool IsPackUpToDate(string inputDir, string outputFile)
+    {
+        if (!File.Exists(outputFile)) return false;
+        var newestInput = Directory.EnumerateFiles(inputDir, "*.txt", SearchOption.AllDirectories)
+            .Select(File.GetLastWriteTimeUtc).DefaultIfEmpty(DateTime.MinValue).Max();
+        return File.GetLastWriteTimeUtc(outputFile) >= newestInput;
     }
 
     /// <summary>
@@ -170,7 +228,7 @@ internal static class Program
         if (File.Exists(outputFile)
             && File.GetLastWriteTimeUtc(outputFile) >= File.GetLastWriteTimeUtc(inputFile))
             return 0;
-        Directory.CreateDirectory(Path.GetDirectoryName(outputFile)!);
+        EnsureDirectoryFor(outputFile);
 
         var map = ParseTimezoneText(inputFile, splitter: '&');
         using var gz = new GZipStream(File.Create(outputFile), CompressionLevel.SmallestSize);
@@ -181,26 +239,61 @@ internal static class Program
 
     /// <summary>
     /// Converts <c>resources/locale/country_names.txt</c> (lines of
-    /// <c>country|language|name</c>) into one binary file per country, named for the country so
-    /// the runtime can load a single country's names on demand instead of every country's.
+    /// <c>country|language|name</c>) into a single <see cref="ResourcePack"/> with one entry per
+    /// country, so the runtime can still decompress a single country's names on demand.
     /// </summary>
-    private static int BuildLocaleNames(string inputFile, string outputDir)
+    private static int BuildLocaleNames(string inputFile, string outputFile)
     {
         if (!File.Exists(inputFile))
             throw new FileNotFoundException($"Input file not found: {inputFile}", inputFile);
-        if (IsLocaleOutputUpToDate(inputFile, outputDir))
+        if (File.Exists(outputFile)
+            && File.GetLastWriteTimeUtc(outputFile) >= File.GetLastWriteTimeUtc(inputFile))
             return 0;
-        Directory.CreateDirectory(outputDir);
+        EnsureDirectoryFor(outputFile);
 
         var byCountry = ParseLocaleText(inputFile);
+        var entries = new List<KeyValuePair<string, byte[]>>(byCountry.Count);
         foreach (var country in byCountry)
         {
-            var outPath = Path.Join(outputDir, Path.GetFileName(country.Key));
-            using var gz = new GZipStream(File.Create(outPath), CompressionLevel.SmallestSize);
-            BuildPrefixMapFromBin.WriteLocaleNames(gz, country.Value);
+            using var buffer = new MemoryStream();
+            using (var gz = new GZipStream(buffer, CompressionLevel.SmallestSize, leaveOpen: true))
+                BuildPrefixMapFromBin.WriteLocaleNames(gz, country.Value);
+            entries.Add(new KeyValuePair<string, byte[]>(country.Key, buffer.ToArray()));
         }
+
+        WritePack(outputFile, entries);
         Console.Out.WriteLine(
-            $"PhoneNumbers.MetadataBuilder: wrote {byCountry.Count} locale bin file(s) to {outputDir}");
+            $"PhoneNumbers.MetadataBuilder: packed {entries.Count} locale name set(s) into {outputFile}");
+        return 0;
+    }
+
+    /// <summary>
+    /// Every output in one invocation. The seven separate MSBuild <c>Exec</c>s this replaces each
+    /// paid a process launch and a turn through the cross-process mutex, and each needed its own
+    /// Inputs/Outputs gate with a sentinel file standing in for a directory of outputs. The
+    /// per-kind up-to-date checks below still short-circuit, so a no-op rebuild stays a no-op.
+    /// </summary>
+    private static int BuildAll(string resourcesDir, string objDir)
+    {
+        if (!Directory.Exists(resourcesDir))
+            throw new DirectoryNotFoundException($"Resources directory not found: {resourcesDir}");
+
+        // Straight-line, with the return values ignored: every Build* below returns 0 on every
+        // path and signals failure by throwing, which Main turns into a non-zero exit. Threading an
+        // rc through would imply a convention none of them follows.
+        var metadataDir = Path.Join(objDir, "metadata");
+        BuildPerRegion(Path.Join(resourcesDir, "PhoneNumberMetadata.xml"), metadataDir,
+            PhoneMetadataPrefix, isShortNumberMetadata: false, isAlternateFormatsMetadata: false);
+        BuildPerRegion(Path.Join(resourcesDir, "ShortNumberMetadata.xml"), metadataDir,
+            ShortMetadataPrefix, isShortNumberMetadata: true, isAlternateFormatsMetadata: false);
+        BuildPerRegion(Path.Join(resourcesDir, "PhoneNumberAlternateFormats.xml"), metadataDir,
+            AlternateFormatsPrefix, isShortNumberMetadata: false, isAlternateFormatsMetadata: true);
+        BuildGeocoding(Path.Join(resourcesDir, "geocoding"), Path.Join(objDir, "geocoding", "geocoding.pack"));
+        BuildGeocoding(Path.Join(resourcesDir, "carrier"), Path.Join(objDir, "carrier", "carrier.pack"));
+        BuildLocaleNames(Path.Join(resourcesDir, "locale", "country_names.txt"),
+            Path.Join(objDir, "locale", "locale.pack"));
+        BuildTimezones(Path.Join(resourcesDir, "timezones", "map_data.txt"),
+            Path.Join(objDir, "timezones", "map_data.bin"));
         return 0;
     }
 
@@ -232,20 +325,6 @@ internal static class Program
     }
 
     /// <summary>
-    /// Returns true when the per-country locale bins are all at least as new as the text they are
-    /// generated from. Same short-circuit as the other kinds, for the same reason.
-    /// </summary>
-    private static bool IsLocaleOutputUpToDate(string inputFile, string outputDir)
-    {
-        if (!Directory.Exists(outputDir)) return false;
-        var existing = Directory.GetFiles(outputDir);
-        if (existing.Length == 0) return false;
-        var inputMTime = File.GetLastWriteTimeUtc(inputFile);
-        if (existing.Any(file => File.GetLastWriteTimeUtc(file) < inputMTime)) return false;
-        return true;
-    }
-
-    /// <summary>
     /// Returns true when every per-region bin under <paramref name="outputDir"/> matching the
     /// supplied prefix is at least as new as <paramref name="inputXml"/>. Used inside the mutex
     /// to short-circuit redundant work when a sibling MSBuild inner build already generated the
@@ -258,20 +337,6 @@ internal static class Program
         if (existing.Length == 0) return false;
         var inputMTime = File.GetLastWriteTimeUtc(inputXml);
         return !existing.Any(file => File.GetLastWriteTimeUtc(file) < inputMTime);
-    }
-
-    /// <summary>
-    /// Geocoding analog: every existing bin under <paramref name="outputDir"/> must be at least
-    /// as new as the newest .txt under <paramref name="inputDir"/>'s tree.
-    /// </summary>
-    private static bool IsGeocodingOutputUpToDate(string inputDir, string outputDir)
-    {
-        if (!Directory.Exists(outputDir)) return false;
-        var existing = Directory.GetFiles(outputDir);
-        if (existing.Length == 0) return false;
-        var newestInput = Directory.EnumerateFiles(inputDir, "*.txt", SearchOption.AllDirectories)
-            .Select(File.GetLastWriteTimeUtc).DefaultIfEmpty(DateTime.MinValue).Max();
-        return !existing.Any(file => File.GetLastWriteTimeUtc(file) < newestInput);
     }
 
     private static SortedDictionary<int, string> ParseAreaCodeText(string path)
@@ -310,7 +375,8 @@ internal static class Program
 
     private static int UnknownKind(string kind)
     {
-        Console.Error.WriteLine($"Unknown kind '{kind}'. Expected one of: phone, short, alternate, test.");
+        Console.Error.WriteLine($"Unknown kind '{kind}'.");
+        PrintUsage();
         return 2;
     }
 
@@ -329,6 +395,11 @@ internal static class Program
         // compiler reading already-embedded resources from a sibling inner build.
         if (IsOutputUpToDate(inputXml, outputDir, filePrefix))
             return 0;
+
+        // The tool creates its own output directory rather than relying on a <MakeDir> in the
+        // calling target: the single `all` invocation writes into four of them, and a caller that
+        // forgets one fails only on a clean build, where obj/ does not already exist.
+        Directory.CreateDirectory(outputDir);
 
         using var input = File.OpenRead(inputXml);
         var metadataList = BuildMetadataFromXml.BuildPhoneMetadataFromStream(
