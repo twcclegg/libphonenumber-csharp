@@ -29,10 +29,15 @@ Expect only `resources/**`, the regenerated locale data, and one `CHANGELOG.md` 
 Anything else — a `.cs` edit, a csproj change — means something went wrong; investigate rather
 than approving.
 
-`resources/**` is marked `linguist-generated` in `.gitattributes`, so GitHub collapses all of it and
-the visible diff is usually the `CHANGELOG.md` entry alone. That is the point — but it means the
-check above is a check of the **file list**, not of what renders: read the changed-files tab (or
-`git diff --name-only origin/main...`) before concluding nothing else moved.
+Review it by the **file list**, not by reading the diff. `git diff --name-only origin/main...` (or
+the PR's changed-files tab) answers the check above; `--stat` gives you the shape of it. Don't pull
+the metadata diff itself into context: a sync moves thousands of lines of upstream data and there is
+nothing in them to approve or reject — a bad upstream release is fixed upstream, by upstream's next
+release. Open a single file, for a single region, only when a failing test points at one.
+
+`resources/**` is marked `linguist-generated` in `.gitattributes`, so GitHub collapses it for human
+reviewers the same way, leaving the `CHANGELOG.md` entry as the visible diff. A collapsed file is
+still a changed file, which is exactly why the check is the file list.
 
 Check the PR's own status checks. Test failures on a metadata bump are usually genuine: a region's
 example number or formatting rule changed upstream, and a ported test asserts the old value.

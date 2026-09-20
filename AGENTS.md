@@ -30,9 +30,8 @@ automatically every ~two weeks; the library compiles it to binaries at build tim
 - `csharp/PhoneNumbers.Fuzz/` — SharpFuzz/libFuzzer target, run weekly (not in the solution).
 - `resources/` — upstream XML metadata plus `geocoding/`, `carrier/`, `timezones/`;
   `resources/locale/country_names.txt` is generated here by `lib/DumpLocale.java`.
-- `.gitattributes` — `linguist-generated` markings for that tree and the two C# tables derived from
-  it, so GitHub collapses them in diffs and leaves them out of the language stats. Collapsed is not
-  unchanged: expand the file, or `git diff`, when you need to see what actually moved.
+- `.gitattributes` — nothing but `linguist-generated` markings, for that tree and the two C# tables
+  derived from it. See the hard rule below.
 - `lib/` — bash automation for the metadata sync, changelog and release. The sync runs daily and
   opens a `metadata-update/*` PR with auto-merge off for a maintainer to review and merge; a later
   run that finds it still open regenerates the branch and arms auto-merge as a backstop.
@@ -62,15 +61,21 @@ dotnet test csharp/PhoneNumbers.Test --filter "FullyQualifiedName~TestPhoneNumbe
 
 ## Hard rules
 
-- **Don't hand-edit `resources/`** (overwritten by the next sync — metadata fixes go upstream), or
-  the generated `resources/locale/country_names.txt`. `CountryCodeToRegionCodeMap.cs` reads like a
-  generated file and is named like one, but nothing regenerates it — its own header still says
-  "todo make this file automatically generated", and `lib/github-actions-metadata-update.sh`
-  deliberately treats a change to it as hand-written content. Edit it by hand when you need to.
-  `resources/**`, `CountryCodeToRegionCodeMap.cs` and `ShortNumbersRegionCodeSet.cs` are marked
-  `linguist-generated` in `.gitattributes` so GitHub collapses them for human reviewers, which is a
-  display decision, not permission to change them quietly — and not a reason to assume a collapsed
-  diff is an empty one.
+- **`resources/` is 16 MB of generated upstream data: don't hand-edit it, and don't read it whole.**
+  A metadata fix goes upstream, because anything changed here is overwritten by the next sync — and
+  the same holds for the generated `resources/locale/country_names.txt`. To see a rule, extract the
+  part you need — `sed -n '/<territory id="GB"/,/<\/territory>/p' resources/PhoneNumberMetadata.xml`
+  is ~500 lines of that file's 32,000. Opening `PhoneNumberMetadata.xml` (957 KB) or a geocoding
+  table (up to 3.8 MB) spends a large part of a context window on data you will not read twice, and
+  the `diagnosing-number-behaviour` skill has the extraction one-liners for each file.
+  `ShortNumbersRegionCodeSet.cs` is derived from that metadata and off limits the same way.
+  `CountryCodeToRegionCodeMap.cs` reads like a generated file and is named like one, but nothing
+  regenerates it — its own header still says "todo make this file automatically generated", and
+  `lib/github-actions-metadata-update.sh` deliberately treats a change to it as hand-written
+  content. Edit it by hand when you need to. All three are marked `linguist-generated` in
+  `.gitattributes`, so GitHub collapses them for human reviewers too — which is a display decision,
+  not permission to change anything quietly, and not a reason to assume a collapsed diff is an
+  empty one.
 - **Adding a public member to `csharp/PhoneNumbers/` needs explicit sign-off from the user, as its
   own decision.** Package validation only catches breaks against the published baseline — never
   additions, so nothing automated will object. "It matches an existing pattern" is not permission —

@@ -60,17 +60,27 @@ Say so, point the reporter at <https://github.com/google/libphonenumber/issues>,
 the next sync (~every two weeks) brings the fix once Google publishes it. **Do not edit
 `resources/`** — see the `syncing-upstream-metadata` skill.
 
-To show *why* the library answers as it does, read the rules rather than guessing:
+To show *why* the library answers as it does, read the rules rather than guessing — but extract
+them, never open the file. `PhoneNumberMetadata.xml` is 957 KB over 32,000 lines,
+`ShortNumberMetadata.xml` 406 KB, and a geocoding table runs to 3.8 MB; one territory is ~500 lines
+of the first. Reading one of these whole costs most of a context window and answers nothing that
+these do not:
 
-- `resources/PhoneNumberMetadata.xml` — find `<territory id="GB" …>`; the `<generalDesc>`, the
-  per-type descs (`<mobile>`, `<fixedLine>`, …) and `<availableFormats>` under it are the entire
-  basis for validity, type and formatting.
-- `resources/ShortNumberMetadata.xml` — short codes and emergency numbers.
-- `resources/geocoding/<lang>/<country-code>.txt`, `resources/carrier/`, `resources/timezones/` —
-  the prefix maps behind the geocoder / carrier / timezone trio.
+```bash
+# GB validity, types and formats: <generalDesc>, the per-type descs and <availableFormats>
+sed -n '/<territory id="GB"/,/<\/territory>/p' resources/PhoneNumberMetadata.xml
 
-Quoting the exact pattern that rejected the number turns "it's a metadata issue" into an answer the
-reporter can act on upstream.
+# short codes and emergency numbers for the same region
+sed -n '/<territory id="GB"/,/<\/territory>/p' resources/ShortNumberMetadata.xml
+
+# prefix → place, longest match wins; same `prefix|value` shape under carrier/ and timezones/
+grep -m5 '^4420' resources/geocoding/en/44.txt
+```
+
+Those four descs and the format list are the entire basis for validity, type and formatting, so the
+extracted block is the whole answer — quoting the exact pattern that rejected the number turns "it's
+a metadata issue" into something the reporter can act on upstream. If a pattern is long, quote the
+one alternative that matters rather than pasting the block back.
 
 ## 3b. If it is a port bug
 
