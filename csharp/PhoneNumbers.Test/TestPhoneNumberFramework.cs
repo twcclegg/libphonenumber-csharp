@@ -85,19 +85,54 @@ namespace PhoneNumbers.Test
         [Fact]
         public void ToStringIsCultureInvariant()
         {
-            var number = PhoneUtil.Parse("+442070313000", null);
+            CultureInfo swedish;
+            try
+            {
+                // sv-SE formats a negative number with U+2212 MINUS SIGN rather than U+002D, so a
+                // country code built negative shows whether the current culture leaked in. Skipped
+                // where the runtime has no culture data (globalization-invariant mode).
+                swedish = new CultureInfo("sv-SE");
+                if (swedish.NumberFormat.NegativeSign != "\u2212")
+                {
+                    return;
+                }
+            }
+            catch (CultureNotFoundException)
+            {
+                return;
+            }
+
+            var number = PhoneNumber.CreateBuilder().SetCountryCode(-44).SetNationalNumber(1UL).Build();
             var original = CultureInfo.CurrentCulture;
             try
             {
-                // A culture with non-ASCII digits and its own number formatting.
-                CultureInfo.CurrentCulture = new CultureInfo("ar-SA");
+                CultureInfo.CurrentCulture = swedish;
 
-                Assert.Equal("Country Code: 44 National Number: 2070313000", number.ToString());
+                Assert.Equal("Country Code: -44 National Number: 1", number.ToString());
             }
             finally
             {
                 CultureInfo.CurrentCulture = original;
             }
+        }
+
+        // The port folds Java's italian_leading_zero and number_of_leading_zeros into one field, so a
+        // hand-built number can reach a state Java would print differently. Parse never produces one
+        // (it sets the count to 1 for a single zero), but these pin what the folded field does print.
+        [Theory]
+        [InlineData(0, "Country Code: 39 National Number: 212345678")]
+        [InlineData(1, "Country Code: 39 National Number: 212345678 Leading Zero(s): true")]
+        [InlineData(2, "Country Code: 39 National Number: 212345678 Leading Zero(s): true Number of leading zeros: 2")]
+        [InlineData(255, "Country Code: 39 National Number: 212345678 Leading Zero(s): true Number of leading zeros: 255")]
+        public void ToStringPrintsTheFoldedLeadingZeroField(int numberOfLeadingZeros, string expected)
+        {
+            var number = PhoneNumber.CreateBuilder()
+                .SetCountryCode(39)
+                .SetNationalNumber(212345678UL)
+                .SetNumberOfLeadingZeros(numberOfLeadingZeros)
+                .Build();
+
+            Assert.Equal(expected, number.ToString());
         }
 
         [Fact]
@@ -119,6 +154,15 @@ namespace PhoneNumbers.Test
 
             Assert.Equal(44, number.CountryCode);
             Assert.Equal(2070313000UL, number.NationalNumber);
+        }
+
+        [Fact]
+        public void IParsableAcceptsRfc3966AsWellAsE164()
+        {
+            // Documented as "input carrying its own country code", which includes tel: URIs.
+            var number = ParseViaConstraint<PhoneNumber>("tel:+44-20-7031-3000");
+
+            Assert.Equal(PhoneUtil.Parse("+442070313000", null), number);
         }
 
         [Fact]
@@ -178,6 +222,20 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
+        public void TypeConverterRefusesTypesItCannotConvert()
+        {
+            var converter = TypeDescriptor.GetConverter(typeof(PhoneNumber));
+            var number = PhoneUtil.Parse("+442070313000", null);
+
+            Assert.False(converter.CanConvertFrom(typeof(int)));
+            Assert.False(converter.CanConvertTo(typeof(int)));
+            // The base TypeConverter's documented failure for an unsupported conversion.
+            Assert.Throws<NotSupportedException>(() => converter.ConvertFrom(42));
+            Assert.Throws<NotSupportedException>(() => converter.ConvertFrom(null!));
+            Assert.Throws<NotSupportedException>(() => converter.ConvertTo(number, typeof(int)));
+        }
+
+        [Fact]
         public void TypeConverterThrowsFormatExceptionOnInvalidInput()
         {
             var converter = TypeDescriptor.GetConverter(typeof(PhoneNumber));
@@ -202,6 +260,23 @@ namespace PhoneNumbers.Test
 
             Assert.NotNull(options);
             Assert.Equal(PhoneUtil.Parse("+442070313000", null), options!.From);
+        }
+
+        [Fact]
+        public void ConfigurationSurfacesAnInvalidValueAsAnError()
+        {
+            var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    ["Sms:From"] = "junk",
+                })
+                .Build();
+
+            // Loud rather than silently null, which is what binding did before the TypeConverter.
+            var exception = Assert.Throws<InvalidOperationException>(
+                () => configuration.GetSection("Sms").Get<SmsOptions>());
+
+            Assert.IsType<FormatException>(exception.InnerException);
         }
 
         [Theory]

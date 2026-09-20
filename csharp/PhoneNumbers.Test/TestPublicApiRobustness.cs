@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using Xunit;
 
@@ -194,6 +195,47 @@ namespace PhoneNumbers.Test
                 {
                     failures.Add($"{regionCode}: {e.GetType().Name}: {e.Message}");
                 }
+            }
+
+            Assert.Empty(failures);
+        }
+
+        /// <summary>
+        /// The framework hooks added in PhoneNumber.Framework.cs: the TypeConverter is handed raw
+        /// strings by configuration binding and model binders, and ToString() runs on whatever came
+        /// back from a parse - including in a debugger, where an exception is especially unwelcome.
+        /// </summary>
+        [Fact]
+        public void TypeConverterFailsOnlyWithFormatException()
+        {
+            var converter = TypeDescriptor.GetConverter(typeof(PhoneNumber));
+
+            AssertOverInputs("TypeConverter.ConvertFrom",
+                input => converter.ConvertFrom(input)!, typeof(FormatException));
+        }
+
+        [Fact]
+        public void ToStringNeverThrowsForAnythingThatParsed()
+        {
+            var failures = new List<string>();
+            foreach (var input in HostileInputs)
+            {
+                PhoneNumber number;
+                try
+                {
+                    number = PhoneUtil.ParseAndKeepRawInput(input, "US");
+                }
+                catch (NumberParseException)
+                {
+                    continue;
+                }
+
+                Record("ToString", Describe(input), failures, () =>
+                {
+                    var text = number.ToString();
+                    Assert.StartsWith("Country Code: ", text, StringComparison.Ordinal);
+                    return text;
+                }, null);
             }
 
             Assert.Empty(failures);

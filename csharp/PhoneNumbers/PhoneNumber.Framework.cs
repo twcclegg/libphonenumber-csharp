@@ -37,10 +37,25 @@ namespace PhoneNumbers
         /// <c>"Country Code: 44 National Number: 2070313000"</c>.
         /// </summary>
         /// <remarks>
+        /// <para>
         /// This is for logs and debuggers, not for display or storage: it is not a phone number
         /// format and does not round-trip. Use <see cref="PhoneNumberUtil.Format(PhoneNumber, PhoneNumberFormat)"/>
         /// for a formatted number. Reads only fields already on this instance, so it never loads
         /// metadata and is safe to call from a debugger.
+        /// </para>
+        /// <para>
+        /// Output matches Java's for every number <see cref="PhoneNumberUtil.Parse(string, string)"/> and
+        /// <see cref="PhoneNumberUtil.ParseAndKeepRawInput(string, string)"/> can produce. It can differ for a
+        /// number assembled by hand through <see cref="Builder"/>, because Java stores
+        /// <c>italian_leading_zero</c> and <c>number_of_leading_zeros</c> as two fields and this port
+        /// folds them into <see cref="NumberOfLeadingZeros"/> alone — for example
+        /// <c>SetNumberOfLeadingZeros(1)</c> prints "Leading Zero(s): true" here where Java would print
+        /// "Number of leading zeros: 1". See <c>TestPhoneNumberFramework</c> for the cases.
+        /// </para>
+        /// <para>
+        /// Like Java's, this does not include <see cref="RawInput"/>, so two instances that
+        /// <see cref="Equals(PhoneNumber)"/> reports as different can print identically.
+        /// </para>
         /// </remarks>
         public override string ToString()
         {
@@ -80,15 +95,17 @@ namespace PhoneNumbers
 #if NET8_0_OR_GREATER
         /// <inheritdoc />
         /// <remarks>
-        /// Equivalent to <c>PhoneNumberUtil.GetInstance().Parse(s, null)</c>: the number must be in
-        /// international form ("+..."), since no region can be inferred here. <paramref name="provider"/>
-        /// is ignored. For region-aware parsing use <see cref="PhoneNumberUtil.Parse(string, string)"/>.
+        /// Equivalent to <c>PhoneNumberUtil.GetInstance().Parse(s, null)</c>: with no region to fall back
+        /// on, the input must carry its own country calling code — E.164 ("+442070313000") or an
+        /// RFC 3966 URI ("tel:+44-20-7031-3000") — and a national-format number fails.
+        /// <paramref name="provider"/> is ignored. For region-aware parsing use
+        /// <see cref="PhoneNumberUtil.Parse(string, string)"/>.
         /// </remarks>
         static PhoneNumber IParsable<PhoneNumber>.Parse(string s, IFormatProvider? provider)
             => PhoneNumberUtil.GetInstance().Parse(s, null);
 
         /// <inheritdoc />
-        /// <remarks>See the remarks on the <c>Parse</c> implementation: international form only.</remarks>
+        /// <remarks>See the remarks on the <c>Parse</c> implementation for the accepted input.</remarks>
         static bool IParsable<PhoneNumber>.TryParse(string? s, IFormatProvider? provider,
             [System.Diagnostics.CodeAnalysis.MaybeNullWhen(false)] out PhoneNumber result)
         {
@@ -120,8 +137,10 @@ namespace PhoneNumbers
     /// </summary>
     /// <remarks>
     /// Internal on purpose: it is reached through the <see cref="TypeConverterAttribute"/> on
-    /// <see cref="PhoneNumber"/>, so it adds no public API. Strings must be in international form
-    /// ("+..."), matching the <c>IParsable&lt;T&gt;</c> implementation.
+    /// <see cref="PhoneNumber"/>, so it adds no public API. Strings must carry their own country
+    /// calling code (E.164 or an RFC 3966 <c>tel:</c> URI), matching the <c>IParsable&lt;T&gt;</c>
+    /// implementation; an unconvertible string throws <see cref="FormatException"/>, which is what
+    /// <c>TypeDescriptor</c>-based binders expect.
     /// </remarks>
     internal sealed class PhoneNumberTypeConverter : TypeConverter
     {

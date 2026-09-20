@@ -2751,9 +2751,9 @@ namespace PhoneNumbers
         /// international format (does not start with +).
         /// </exception>
         /// <remarks>
-        /// This mirrors Java's <c>parse</c> and throws on invalid input. For a non-throwing,
-        /// nullable-aware alternative — <c>PhoneNumber.TryParse(input, region, out var number)</c> —
-        /// add the companion package <c>libphonenumber-csharp.extensions</c>.
+        /// This mirrors Java's <c>parse</c> and throws on invalid input. For non-throwing,
+        /// region-aware <c>TryParse</c> helpers, add the companion package
+        /// <c>libphonenumber-csharp.extensions</c>.
         /// </remarks>
         public PhoneNumber Parse(string numberToParse, string defaultRegion)
         {
