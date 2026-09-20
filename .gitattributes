@@ -1,0 +1,21 @@
+# Read by GitHub's linguist, not by git: marking a path generated collapses it in diffs by default
+# and keeps it out of the repository's language statistics and code search. Nothing here changes how
+# git stores, diffs or merges a file, so tooling that shells out to `git diff` - the changelog fold
+# in lib/update-changelog.sh, for one - sees exactly what it saw before.
+
+# Everything the metadata sync writes: upstream's XML metadata, the geocoding/carrier/timezone
+# tables and .proto definitions, copied verbatim by lib/github-actions-metadata-update.sh, plus
+# locale/country_names.txt, generated from the jdk by lib/DumpLocale.java in the same run. A fix
+# here would be overwritten by the next sync (metadata bugs go upstream), and collapsing it is what
+# makes a metadata-update PR reviewable: the CHANGELOG entry and anything unexpected that rode along
+# stop being buried under thousands of lines of data.
+resources/** linguist-generated=true
+
+# The two data tables derived from that metadata. Upstream generates them with
+# BuildMetadataProtoFromXml - ShortNumbersRegionCodeSet.cs still carries that header; the header of
+# CountryCodeToRegionCodeMap.cs says it is yet to be - and this port mirrors them rather than
+# regenerating them, so neither is worth reading line by line in a diff. This is a display decision
+# only: ShortNumbersRegionCodeSet.cs is off limits to hand edits, CountryCodeToRegionCodeMap.cs is
+# hand-maintained here, and AGENTS.md ("Hard rules") is what says which is which.
+csharp/PhoneNumbers/CountryCodeToRegionCodeMap.cs linguist-generated=true
+csharp/PhoneNumbers/ShortNumbersRegionCodeSet.cs linguist-generated=true

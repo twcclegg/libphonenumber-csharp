@@ -29,6 +29,11 @@ Expect only `resources/**`, the regenerated locale data, and one `CHANGELOG.md` 
 Anything else — a `.cs` edit, a csproj change — means something went wrong; investigate rather
 than approving.
 
+`resources/**` is marked `linguist-generated` in `.gitattributes`, so GitHub collapses all of it and
+the visible diff is usually the `CHANGELOG.md` entry alone. That is the point — but it means the
+check above is a check of the **file list**, not of what renders: read the changed-files tab (or
+`git diff --name-only origin/main...`) before concluding nothing else moved.
+
 Check the PR's own status checks. Test failures on a metadata bump are usually genuine: a region's
 example number or formatting rule changed upstream, and a ported test asserts the old value.
 Fix the *test* to match the new metadata; never edit `resources/` to make a test pass.
