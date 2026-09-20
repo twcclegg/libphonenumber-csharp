@@ -22,6 +22,22 @@
     <ProjectReference Include="..\PhoneNumbers\PhoneNumbers.csproj" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <!--
+      Shared framework, not a package download: gives TestPhoneNumberFramework the ASP.NET Core
+      minimal-API/MVC hosting and Microsoft.Extensions.Configuration types it binds a PhoneNumber
+      through. Those binders only see PhoneNumber's IParsable/TypeConverter implementations, so the
+      test has to exercise the real ones.
+
+      net10.0 only, and the tests using it are behind #if NET10_0_OR_GREATER: the reference lands in
+      runtimeconfig.json, so on net8.0 the whole run would abort with "To install missing framework
+      ... Microsoft.AspNetCore.App 8.0.0" on any machine (and CI, which installs 10.x) that has the
+      base .NET 8 runtime but not the ASP.NET Core 8 one. The framework hooks themselves are still
+      covered on net8.0 by the IParsable constraint and TypeConverter tests.
+    -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <!-- Property-based tests: see TestPhoneNumberProperties. FsCheck is referenced directly as
