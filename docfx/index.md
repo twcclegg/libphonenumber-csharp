@@ -1,4 +1,7 @@
 ---
+# The hero button links to the generated api/*.yml rather than an xref: docfx replaces an <a>
+# whose href is an xref with its own anchor, dropping the class and the arrow. The .yml
+# extension is what docfx validates and rewrites to .html; hard-coding .html renders but warns.
 _disableToc: true
 _disableBreadcrumb: true
 ---
@@ -11,7 +14,7 @@ _disableBreadcrumb: true
 
 C# port of Google's [libphonenumber](https://github.com/google/libphonenumber) &mdash; parse, format, validate, and geolocate international phone numbers.
 
-<a class="docs-btn" href="xref:PhoneNumbers">
+<a class="docs-btn" href="api/PhoneNumbers.yml">
   Browse the API Reference
   <svg viewBox="0 0 24 24" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
 </a>

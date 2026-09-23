@@ -13,8 +13,6 @@ on:
       - 'resources/**'
       - 'docs/**'
       - 'docfx/**'
-      # Both sites render the shared logomark/favicon out of here.
-      - 'assets/brand/**'
       - '.github/workflows/deploy-demo.yml'
   schedule:
     # Rebuild weekly to pick up any NuGet dependency updates

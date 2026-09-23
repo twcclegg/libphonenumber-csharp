@@ -10,8 +10,6 @@ on:
       - 'csharp/Directory.Packages.props'
       - 'docs/**'
       - 'docfx/**'
-      # docfx.json maps these into the site as images/, so a change here changes the build.
-      - 'assets/brand/**'
       - '.github/workflows/docs_preview.yml'
   workflow_dispatch:
 
