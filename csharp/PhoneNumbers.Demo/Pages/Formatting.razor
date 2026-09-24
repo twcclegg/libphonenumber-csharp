@@ -137,7 +137,8 @@ else
     private readonly PhoneNumberUtil _phoneUtil = PhoneNumberUtil.GetInstance();
     private string _phoneInput = "+1 650 253 0000";
     private string _selectedRegion = "US";
-    private string _callingFrom = "GB";
+    private const string DefaultCallingFrom = "GB";
+    private string _callingFrom = DefaultCallingFrom;
     private PhoneNumber? _parsed;
     private string? _parseError;
     private List<RegionOption> _regions = new();
@@ -181,8 +182,8 @@ else
 
     private void OnCallingFromChange(ChangeEventArgs e)
     {
-        _callingFrom = e.Value?.ToString() ?? "US";
-        TryParse();
+        // Only the rendered formats depend on this; the parsed number does not, so no re-parse.
+        _callingFrom = e.Value?.ToString() ?? DefaultCallingFrom;
     }
 
     private void SyncUrl()
