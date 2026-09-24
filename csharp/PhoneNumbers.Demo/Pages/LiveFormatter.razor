@@ -18,12 +18,7 @@
 
     <div class="live-formatter__region-control">
         <label class="form__label" for="live-region">Select region</label>
-        <select id="live-region" class="form__select" @onchange="OnRegionChange">
-            @foreach (var r in _regions)
-            {
-                <option value="@r.Code" selected="@(r.Code == _selectedRegion)">@r.Display</option>
-            }
-        </select>
+        <RegionSelect id="live-region" Value="@_selectedRegion" ValueChanged="OnRegionChange" />
     </div>
 </div>
 
@@ -141,22 +136,16 @@
     private string _caretAfter = "";
     private int _caretPos;
     private List<FormatStep> _steps = new();
-    private List<RegionOption> _regions = new();
 
     protected override void OnInitialized()
     {
-        _regions = _phoneUtil.GetSupportedRegions()
-            .OrderBy(r => r)
-            .Select(r => new RegionOption(r, $"{r} (+{_phoneUtil.GetCountryCodeForRegion(r)})"))
-            .ToList();
-
         var (_, r2) = UrlState.Read(Nav);
         if (!string.IsNullOrEmpty(r2)) _selectedRegion = r2;
     }
 
-    private void OnRegionChange(ChangeEventArgs e)
+    private void OnRegionChange(string region)
     {
-        _selectedRegion = e.Value?.ToString() ?? "US";
+        _selectedRegion = region;
         Reformat();
         Nav.NavigateTo(UrlState.Build(Nav, null, _selectedRegion), forceLoad: false, replace: true);
     }
@@ -213,5 +202,4 @@
     }
 
     private record FormatStep(char Char, string Output);
-    private record RegionOption(string Code, string Display);
 }
