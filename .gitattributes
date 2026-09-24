@@ -3,19 +3,20 @@
 # git stores, diffs or merges a file, so tooling that shells out to `git diff` - the changelog fold
 # in lib/update-changelog.sh, for one - sees exactly what it saw before.
 
-# Everything the metadata sync writes: upstream's XML metadata, the geocoding/carrier/timezone
-# tables and .proto definitions, copied verbatim by lib/github-actions-metadata-update.sh, plus
-# locale/country_names.txt, generated from the jdk by lib/DumpLocale.java in the same run. A fix
-# here would be overwritten by the next sync (metadata bugs go upstream), and collapsing it is what
-# makes a metadata-update PR reviewable: the CHANGELOG entry and anything unexpected that rode along
-# stop being buried under thousands of lines of data.
+# The data the metadata sync writes: upstream's XML metadata and the geocoding/carrier/timezone
+# tables, copied verbatim by lib/github-actions-metadata-update.sh, plus locale/country_names.txt,
+# generated from the jdk by lib/DumpLocale.java in the same run. A fix here would be overwritten by
+# the next sync (metadata bugs go upstream), and collapsing it is what makes a metadata-update PR
+# reviewable: the CHANGELOG entry and anything unexpected that rode along stop being buried under
+# thousands of lines of data.
 resources/** linguist-generated=true
 
-# The two data tables derived from that metadata. Upstream generates them with
-# BuildMetadataProtoFromXml - ShortNumbersRegionCodeSet.cs still carries that header; the header of
-# CountryCodeToRegionCodeMap.cs says it is yet to be - and this port mirrors them rather than
-# regenerating them, so neither is worth reading line by line in a diff. This is a display decision
-# only: ShortNumbersRegionCodeSet.cs is off limits to hand edits, CountryCodeToRegionCodeMap.cs is
-# hand-maintained here, and AGENTS.md ("Hard rules") is what says which is which.
-csharp/PhoneNumbers/CountryCodeToRegionCodeMap.cs linguist-generated=true
-csharp/PhoneNumbers/ShortNumbersRegionCodeSet.cs linguist-generated=true
+# ...except these two, which are the schema rather than the data. A .proto change is the one thing
+# in this tree that is never routine: it halts the sync outright
+# (lib/github-actions-metadata-update.sh, --skip-proto-check) because it may need porting by hand,
+# so it is precisely the diff a reviewer must see rather than the one to collapse. They are also
+# the only part of resources/ worth opening - AGENTS.md allows reading the tree for the schema, and
+# this is where the schema is. Listed by name, not by glob: these are the two that exist, and a new
+# one upstream should have to be looked at and added here deliberately.
+resources/phonemetadata.proto linguist-generated=false
+resources/phonenumber.proto linguist-generated=false

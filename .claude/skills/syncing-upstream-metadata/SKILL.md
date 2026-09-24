@@ -35,9 +35,11 @@ the metadata diff itself into context: a sync moves thousands of lines of upstre
 nothing in them to approve or reject — a bad upstream release is fixed upstream, by upstream's next
 release. Open a single file, for a single region, only when a failing test points at one.
 
-`resources/**` is marked `linguist-generated` in `.gitattributes`, so GitHub collapses it for human
-reviewers the same way, leaving the `CHANGELOG.md` entry as the visible diff. A collapsed file is
-still a changed file, which is exactly why the check is the file list.
+The data under `resources/**` is marked `linguist-generated` in `.gitattributes`, so GitHub
+collapses it for human reviewers the same way, leaving the `CHANGELOG.md` entry as the visible diff.
+A collapsed file is still a changed file, which is exactly why the check is the file list. The
+`.proto` files are deliberately exempt, so a schema change shows up expanded — if you see one, the
+gate below should have stopped the run before it ever opened a PR.
 
 Check the PR's own status checks. Test failures on a metadata bump are usually genuine: a region's
 example number or formatting rule changed upstream, and a ported test asserts the old value.

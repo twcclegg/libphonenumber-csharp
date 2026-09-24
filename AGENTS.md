@@ -30,8 +30,8 @@ automatically every ~two weeks; the library compiles it to binaries at build tim
 - `csharp/PhoneNumbers.Fuzz/` — SharpFuzz/libFuzzer target, run weekly (not in the solution).
 - `resources/` — upstream XML metadata plus `geocoding/`, `carrier/`, `timezones/`;
   `resources/locale/country_names.txt` is generated here by `lib/DumpLocale.java`.
-- `.gitattributes` — nothing but `linguist-generated` markings, for that tree and the two C# tables
-  derived from it. See the hard rule below.
+- `.gitattributes` — nothing but `linguist-generated` markings, for the data in that tree (the two
+  `.proto` files are exempt). See the hard rule below.
 - `lib/` — bash automation for the metadata sync, changelog and release. The sync runs daily and
   opens a `metadata-update/*` PR with auto-merge off for a maintainer to review and merge; a later
   run that finds it still open regenerates the branch and arms auto-merge as a backstop.
@@ -64,23 +64,23 @@ dotnet test csharp/PhoneNumbers.Test --filter "FullyQualifiedName~TestPhoneNumbe
 - **`resources/` is 16 MB of generated upstream data: don't hand-edit it, and don't read it.**
   A metadata fix goes upstream, because anything changed here is overwritten by the next sync — and
   the same holds for the generated `resources/locale/country_names.txt`. Nobody, human or agent,
-  needs to read the tree except when working on the parser itself and needing to see the schema;
-  for that, extract the part you need rather than opening the file —
-  `sed -n '/<territory id="GB"/,/<\/territory>/p' resources/PhoneNumberMetadata.xml` is ~500 lines
-  of that file's 32,000, against 957 KB whole, or up to 3.8 MB for a geocoding table.
-  Explaining why some number validates, types or formats the way it does is **not** such a reason.
-  The XML is a build input compiled into the embedded binary metadata, so it only restates behaviour
-  you can reproduce with a test in seconds, and an upstream report is settled on the numbering
-  authority's published plan, never on what the XML says — see the `diagnosing-number-behaviour`
-  skill.
-  `ShortNumbersRegionCodeSet.cs` is derived from that metadata and off limits the same way.
-  `CountryCodeToRegionCodeMap.cs` reads like a generated file and is named like one, but nothing
-  regenerates it — its own header still says "todo make this file automatically generated", and
-  `lib/github-actions-metadata-update.sh` deliberately treats a change to it as hand-written
-  content. Edit it by hand when you need to. All three are marked `linguist-generated` in
-  `.gitattributes`, so GitHub collapses them for human reviewers too — which is a display decision,
-  not permission to change anything quietly, and not a reason to assume a collapsed diff is an
-  empty one.
+  needs to read the data except when working on the parser itself and needing to see the schema —
+  and the schema is the two `.proto` files, 22 KB together, so read those freely; it is the XML and
+  the prefix tables beside them that are off limits. Explaining why some number validates, types or
+  formats the way it does is **not** a reason to open them. The XML is a build input compiled into
+  the embedded binary metadata, so it only restates behaviour you can reproduce with a test in
+  seconds, and an upstream report is settled on the numbering authority's published plan, never on
+  what the XML says — see the `diagnosing-number-behaviour` skill. If you do need one rule, extract
+  it: `sed -n '/<territory id="GB"/,/<\/territory>/p' resources/PhoneNumberMetadata.xml` is ~500
+  lines of that file's 32,000, against 957 KB whole, or up to 3.8 MB for a geocoding table.
+  `ShortNumbersRegionCodeSet.cs` is derived from that metadata and off limits to hand edits the same
+  way. `CountryCodeToRegionCodeMap.cs` reads like a generated file and is named like one, but
+  nothing regenerates it — its own header still says "todo make this file automatically generated",
+  and `lib/github-actions-metadata-update.sh` deliberately treats a change to it as hand-written
+  content. Edit it by hand when you need to. The data in `resources/` — not those two `.cs` files,
+  and not the `.proto` schema — is marked `linguist-generated` in `.gitattributes`, so GitHub
+  collapses it for human reviewers too, which is a display decision and not a reason to assume a
+  collapsed diff is an empty one.
 - **Adding a public member to `csharp/PhoneNumbers/` needs explicit sign-off from the user, as its
   own decision.** Package validation only catches breaks against the published baseline — never
   additions, so nothing automated will object. "It matches an existing pattern" is not permission —
