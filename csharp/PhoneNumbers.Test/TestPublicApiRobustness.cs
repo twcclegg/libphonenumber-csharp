@@ -53,6 +53,8 @@ namespace PhoneNumbers.Test
             "-",
             "()",
             "...",
+            "+1 800 555 0100 ext. 1234",     // parses, with an extension
+            "tel:+18005550100;ext=99",       // parses, RFC 3966 with an extension
             "tel:",
             "tel:;phone-context=",
             "tel:+1;ext=",
@@ -218,6 +220,8 @@ namespace PhoneNumbers.Test
         public void ToStringNeverThrowsForAnythingThatParsed()
         {
             var failures = new List<string>();
+            var sawExtension = false;
+            var sawCountryCodeSource = false;
             foreach (var input in HostileInputs)
             {
                 PhoneNumber number;
@@ -230,6 +234,9 @@ namespace PhoneNumbers.Test
                     continue;
                 }
 
+                sawExtension |= number.HasExtension;
+                sawCountryCodeSource |= number.HasCountryCodeSource;
+
                 Record("ToString", Describe(input), failures, () =>
                 {
                     var text = number.ToString();
@@ -239,6 +246,11 @@ namespace PhoneNumbers.Test
             }
 
             Assert.Empty(failures);
+            // Without these the sweep only ever reaches the two unconditional fields, so a throw from
+            // one of the optional branches slips through - which is what happened when this test was
+            // first written: a ToString() mutated to throw on an extension still passed it.
+            Assert.True(sawExtension, "no hostile input parsed into a number with an extension");
+            Assert.True(sawCountryCodeSource, "no hostile input parsed into a number with a country code source");
         }
 
         private static void AssertOverInputs(string what, Func<string, object> call, Type? allowed = null)
