@@ -40,9 +40,10 @@ automatically every ~two weeks; the library compiles it to binaries at build tim
   directly — the script copies `docs/*.md` in as articles and rewrites their repo-relative links.
   `docfx/template/public/main.css` ports the demo's design tokens onto DocFX's `modern` template
   so the two sites match; `docs_preview.yml` uploads the rendered site as a PR artifact.
-- `docfx/brand/` — the docs site's logomark and favicon SVGs, mapped to `images/` by
-  `docfx/docfx.json`. Only docfx reads them; the demo draws its rail logo from a Razor component
-  under `csharp/PhoneNumbers.Demo/Components/Icons/`.
+- `assets/brand/` — the logomark and favicon SVGs, shared by both sites: docfx maps them to
+  `images/` (`docfx/docfx.json`) and the demo links them into its `wwwroot/` (a `Content` item in
+  `PhoneNumbers.Demo.csproj`). Kept at the repo root rather than inside one site so the two can't
+  drift. Changing them rebuilds both — see the `assets/brand/**` path filters in the workflows.
 - `docs/api-differences-from-java.md` — the deliberate API-shape divergences from Java.
 
 ## Common commands

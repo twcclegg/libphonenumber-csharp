@@ -17,6 +17,13 @@
     <ProjectReference Include="..\PhoneNumbers\PhoneNumbers.csproj" />
   </ItemGroup>
 
+  <!-- The brand marks live at the repo root because the docfx site publishes the same three
+       files (see docfx/docfx.json). Content+Link puts them where the static web assets SDK
+       looks, so they ship in wwwroot/ exactly as if they were checked in there. -->
+  <ItemGroup>
+    <Content Include="..\..\assets\brand\*.svg" Link="wwwroot\%(Filename)%(Extension)" />
+  </ItemGroup>
+
   <UsingTask TaskName="ReplaceFileText" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
     <ParameterGroup>
       <InputFile Required="true" ParameterType="System.String" />
