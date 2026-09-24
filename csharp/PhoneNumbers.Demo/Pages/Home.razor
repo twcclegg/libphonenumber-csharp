@@ -92,7 +92,7 @@
             </div>
             <div class="result-grid__item">
                 <div class="result-grid__label">Number type</div>
-                <div class="result-grid__value"><span class="badge badge--info">@FormatType(_phoneUtil.GetNumberType(_parsed))</span></div>
+                <div class="result-grid__value"><span class="badge badge--info">@NumberTypeLabels.For(_phoneUtil.GetNumberType(_parsed))</span></div>
             </div>
             <div class="result-grid__item">
                 <div class="result-grid__label">Region</div>
@@ -276,22 +276,6 @@
             _parseError = ex.Message;
         }
     }
-
-    private static string FormatType(PhoneNumberType type) => type switch
-    {
-        PhoneNumberType.FIXED_LINE => "Fixed Line",
-        PhoneNumberType.MOBILE => "Mobile",
-        PhoneNumberType.FIXED_LINE_OR_MOBILE => "Fixed/Mobile",
-        PhoneNumberType.TOLL_FREE => "Toll Free",
-        PhoneNumberType.PREMIUM_RATE => "Premium Rate",
-        PhoneNumberType.SHARED_COST => "Shared Cost",
-        PhoneNumberType.VOIP => "VoIP",
-        PhoneNumberType.PERSONAL_NUMBER => "Personal",
-        PhoneNumberType.PAGER => "Pager",
-        PhoneNumberType.UAN => "UAN",
-        PhoneNumberType.VOICEMAIL => "Voicemail",
-        _ => "Unknown"
-    };
 
     private record RegionOption(string Code, string Display);
 }

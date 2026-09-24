@@ -93,7 +93,7 @@ else if (_parsed != null)
                 </div>
                 <div class="result-grid__item">
                     <div class="result-grid__label">Number Type</div>
-                    <div class="result-grid__value"><span class="badge badge--info">@FormatType(_numberType)</span></div>
+                    <div class="result-grid__value"><span class="badge badge--info">@NumberTypeLabels.For(_numberType)</span></div>
                 </div>
             </div>
         </div>
@@ -289,22 +289,6 @@ else
             _parseError = ex.Message;
         }
     }
-
-    private static string FormatType(PhoneNumberType type) => type switch
-    {
-        PhoneNumberType.FIXED_LINE => "Fixed Line",
-        PhoneNumberType.MOBILE => "Mobile",
-        PhoneNumberType.FIXED_LINE_OR_MOBILE => "Fixed/Mobile",
-        PhoneNumberType.TOLL_FREE => "Toll Free",
-        PhoneNumberType.PREMIUM_RATE => "Premium Rate",
-        PhoneNumberType.SHARED_COST => "Shared Cost",
-        PhoneNumberType.VOIP => "VoIP",
-        PhoneNumberType.PERSONAL_NUMBER => "Personal",
-        PhoneNumberType.PAGER => "Pager",
-        PhoneNumberType.UAN => "UAN",
-        PhoneNumberType.VOICEMAIL => "Voicemail",
-        _ => "Unknown"
-    };
 
     private record RegionOption(string Code, string Display);
 }
