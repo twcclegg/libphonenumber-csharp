@@ -11,12 +11,11 @@
 # thousands of lines of data.
 resources/** linguist-generated=true
 
-# ...except these two, which are the schema rather than the data. A .proto change is the one thing
-# in this tree that is never routine: it halts the sync outright
-# (lib/github-actions-metadata-update.sh, --skip-proto-check) because it may need porting by hand,
-# so it is precisely the diff a reviewer must see rather than the one to collapse. They are also
-# the only part of resources/ worth opening - AGENTS.md allows reading the tree for the schema, and
-# this is where the schema is. Listed by name, not by glob: these are the two that exist, and a new
-# one upstream should have to be looked at and added here deliberately.
+# ...except these, the schema and the prose describing it - the only part of resources/ worth
+# opening, and the part a reviewer must see rather than collapse. A .proto change halts the sync
+# outright (lib/github-actions-metadata-update.sh, --skip-proto-check) because it may need porting
+# by hand. Listed by name, not by glob, so anything new upstream has to be exempted deliberately.
 resources/phonemetadata.proto linguist-generated=false
 resources/phonenumber.proto linguist-generated=false
+resources/carrier/README linguist-generated=false
+resources/timezones/README.md linguist-generated=false
