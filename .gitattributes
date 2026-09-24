@@ -1,0 +1,21 @@
+# Read by GitHub's linguist, not by git: marking a path generated collapses it in diffs by default
+# and keeps it out of the repository's language statistics and code search. Nothing here changes how
+# git stores, diffs or merges a file, so tooling that shells out to `git diff` - the changelog fold
+# in lib/update-changelog.sh, for one - sees exactly what it saw before.
+
+# The data the metadata sync writes: upstream's XML metadata and the geocoding/carrier/timezone
+# tables, copied verbatim by lib/github-actions-metadata-update.sh, plus locale/country_names.txt,
+# generated from the jdk by lib/DumpLocale.java in the same run. A fix here would be overwritten by
+# the next sync (metadata bugs go upstream), and collapsing it is what makes a metadata-update PR
+# reviewable: the CHANGELOG entry and anything unexpected that rode along stop being buried under
+# thousands of lines of data.
+resources/** linguist-generated=true
+
+# ...except these, the schema and the prose describing it - the only part of resources/ worth
+# opening, and the part a reviewer must see rather than collapse. A .proto change halts the sync
+# outright (lib/github-actions-metadata-update.sh, --skip-proto-check) because it may need porting
+# by hand. Listed by name, not by glob, so anything new upstream has to be exempted deliberately.
+resources/phonemetadata.proto linguist-generated=false
+resources/phonenumber.proto linguist-generated=false
+resources/carrier/README linguist-generated=false
+resources/timezones/README.md linguist-generated=false
