@@ -48,6 +48,12 @@
     <link href="css/live-formatter.css" rel="stylesheet" />
     <link href="css/empty-state.css" rel="stylesheet" />
     <link href="css/install-block.css" rel="stylesheet" />
+
+    <!-- Filled in at build/publish (OverrideHtmlAssetPlaceholders in the csproj): the importmap
+         maps the runtime's module names to their fingerprinted files, the preload starts the
+         WebAssembly download early. -->
+    <script type="importmap"></script>
+    <link rel="preload" id="webassembly" />
 </head>
 <body>
     <div id="app">
@@ -111,6 +117,6 @@
         syncFavicon(window.phoneDemo.getTheme());
     </script>
 
-    <script src="_framework/blazor.webassembly.js"></script>
+    <script src="_framework/blazor.webassembly#[.{fingerprint}].js"></script>
 </body>
 </html>
