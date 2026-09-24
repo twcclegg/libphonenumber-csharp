@@ -8,7 +8,11 @@ namespace PhoneNumbers.Demo;
 /// </summary>
 public static class UrlState
 {
-    /// <summary>Reads the <c>n</c> and <c>r</c> query parameters from the current URL.</summary>
+    /// <summary>
+    /// Reads the <c>n</c> and <c>r</c> query parameters from the current URL. The region is
+    /// upper-cased and dropped (returned as <c>null</c>) unless it is a supported region, so a
+    /// hand-edited link can never leave a page parsing with a region its dropdown cannot show.
+    /// </summary>
     public static (string? Number, string? Region) Read(NavigationManager nav)
     {
         var query = new Uri(nav.Uri).Query;
@@ -30,7 +34,15 @@ public static class UrlState
                 region = value;
         }
 
-        return (number, region);
+        return (number, NormalizeRegion(region));
+    }
+
+    private static string? NormalizeRegion(string? region)
+    {
+        if (string.IsNullOrWhiteSpace(region))
+            return null;
+        var upper = region.Trim().ToUpperInvariant();
+        return PhoneNumberUtil.GetInstance().GetSupportedRegions().Contains(upper) ? upper : null;
     }
 
     /// <summary>

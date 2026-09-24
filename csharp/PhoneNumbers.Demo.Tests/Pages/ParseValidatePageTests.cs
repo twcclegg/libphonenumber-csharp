@@ -1,4 +1,6 @@
 using Bunit;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.DependencyInjection;
 using PhoneNumbers.Demo.Pages;
 using Xunit;
 
@@ -6,6 +8,28 @@ namespace PhoneNumbers.Demo.Tests.Pages;
 
 public class ParseValidatePageTests : BunitContext
 {
+    [Fact]
+    public void lower_case_region_in_link_parses_and_selects_that_region()
+    {
+        Services.GetRequiredService<NavigationManager>().NavigateTo("/parse?n=020%207946%200958&r=gb");
+
+        var cut = Render<ParseValidate>();
+
+        Assert.Empty(cut.FindAll("[role='alert']"));
+        Assert.Equal("GB", cut.Find("#parse-region option[selected]").GetAttribute("value"));
+    }
+
+    [Fact]
+    public void unknown_region_in_link_falls_back_to_the_default_region()
+    {
+        Services.GetRequiredService<NavigationManager>().NavigateTo("/parse?n=020%207946%200958&r=XX");
+
+        var cut = Render<ParseValidate>();
+
+        Assert.Empty(cut.FindAll("[role='alert']"));
+        Assert.Equal("GB", cut.Find("#parse-region option[selected]").GetAttribute("value"));
+    }
+
     [Fact]
     public void shows_valid_badge_for_default_uk_number()
     {

@@ -33,6 +33,30 @@ public class UrlStateTests : BunitContext
     }
 
     [Fact]
+    public void upper_cases_a_lower_case_region()
+    {
+        Nav.NavigateTo("/?r=gb");
+
+        var (_, region) = UrlState.Read(Nav);
+
+        Assert.Equal("GB", region);
+    }
+
+    [Theory]
+    [InlineData("XX")]
+    [InlineData("001")]
+    [InlineData("%20")]
+    public void ignores_a_region_the_library_does_not_support(string raw)
+    {
+        Nav.NavigateTo("/?n=123&r=" + raw);
+
+        var (number, region) = UrlState.Read(Nav);
+
+        Assert.Equal("123", number);
+        Assert.Null(region);
+    }
+
+    [Fact]
     public void build_omits_empty_number_but_keeps_region()
     {
         Nav.NavigateTo("/parse");
