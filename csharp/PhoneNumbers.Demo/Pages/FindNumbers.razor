@@ -51,11 +51,7 @@
     </div>
 </div>
 
-@if (_searchError != null)
-{
-    <div class="error-message" role="alert">@_searchError</div>
-}
-else if (_matches.Count > 0)
+@if (_matches.Count > 0)
 {
     <div class="card" aria-live="polite">
         <div class="card__header">
@@ -114,7 +110,6 @@ else if (!string.IsNullOrWhiteSpace(_textInput))
     private string _textInput = "";
     private List<PhoneNumberMatch> _matches = new();
     private List<RegionOption> _regions = new();
-    private string? _searchError;
 
     protected override void OnInitialized()
     {
@@ -160,25 +155,19 @@ else if (!string.IsNullOrWhiteSpace(_textInput))
     {
         _textInput = "";
         _matches.Clear();
-        _searchError = null;
     }
 
+    // No try/catch: PhoneNumberMatcher swallows the NumberParseException of every candidate it
+    // rejects, so nothing is expected to throw here. Anything that does is a library bug, and it
+    // should reach Blazor's error UI rather than be dressed up as a search result.
     private void Search()
     {
         _matches.Clear();
-        _searchError = null;
         if (string.IsNullOrWhiteSpace(_textInput)) return;
 
-        try
-        {
-            _matches = _phoneUtil.FindNumbers(_textInput, _selectedRegion, _leniency, long.MaxValue)
-                .Take(50)
-                .ToList();
-        }
-        catch (Exception ex)
-        {
-            _searchError = ex.Message;
-        }
+        _matches = _phoneUtil.FindNumbers(_textInput, _selectedRegion, _leniency, long.MaxValue)
+            .Take(50)
+            .ToList();
     }
 
     private static string FormatType(PhoneNumberType type) => type switch

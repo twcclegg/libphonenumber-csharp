@@ -27,6 +27,17 @@ public class FindNumbersPageTests : BunitContext
     }
 
     [Fact]
+    public void number_like_text_that_does_not_parse_shows_the_empty_state_not_an_error()
+    {
+        var cut = Render<FindNumbers>();
+
+        cut.Find("#find-text").Input("Dial +999 12 or ++44 20 now.");
+
+        Assert.Empty(cut.FindAll("[role='alert']"));
+        cut.Find(".empty-state__message");
+    }
+
+    [Fact]
     public void finds_international_number_in_text()
     {
         var cut = Render<FindNumbers>();
