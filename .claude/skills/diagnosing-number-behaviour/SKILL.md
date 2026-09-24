@@ -14,7 +14,7 @@ the code is. Establish which one you are looking at before writing a fix, or you
 Diagnosis:
 - [ ] 1. Reproduce against the shipped metadata (scratch test)
 - [ ] 2. Compare with Google's demo for the same number + region
-- [ ] 3a. Metadata → explain the rule, point upstream, no code change
+- [ ] 3a. Metadata → point upstream with regulatory evidence, no code change
 - [ ] 3b. Port bug → read the Java, then follow porting-upstream-changes
 ```
 
@@ -60,27 +60,18 @@ Say so, point the reporter at <https://github.com/google/libphonenumber/issues>,
 the next sync (~every two weeks) brings the fix once Google publishes it. **Do not edit
 `resources/`** — see the `syncing-upstream-metadata` skill.
 
-To show *why* the library answers as it does, read the rules rather than guessing — but extract
-them, never open the file. `PhoneNumberMetadata.xml` is 957 KB over 32,000 lines,
-`ShortNumberMetadata.xml` 406 KB, and a geocoding table runs to 3.8 MB; one territory is ~500 lines
-of the first. Reading one of these whole costs most of a context window and answers nothing that
-these do not:
+What makes that report actionable is **evidence from the numbering authority** — the national
+regulator's numbering plan, the range-holder's own published allocation, a carrier's documentation —
+for the number or range and the classification it should have. Upstream asks for exactly that, and
+nothing else substitutes for it.
 
-```bash
-# GB validity, types and formats: <generalDesc>, the per-type descs and <availableFormats>
-sed -n '/<territory id="GB"/,/<\/territory>/p' resources/PhoneNumberMetadata.xml
-
-# short codes and emergency numbers for the same region
-sed -n '/<territory id="GB"/,/<\/territory>/p' resources/ShortNumberMetadata.xml
-
-# prefix → place, longest match wins; same `prefix|value` shape under carrier/ and timezones/
-grep -m5 '^4420' resources/geocoding/en/44.txt
-```
-
-Those four descs and the format list are the entire basis for validity, type and formatting, so the
-extracted block is the whole answer — quoting the exact pattern that rejected the number turns "it's
-a metadata issue" into something the reporter can act on upstream. If a pattern is long, quote the
-one alternative that matters rather than pasting the block back.
+Do **not** go digging in `resources/` to explain the answer. Citing the pattern that rejected the
+number is not evidence: the XML is a build input that this port copies verbatim from Google and
+compiles into the embedded binary metadata, so it restates the behaviour you already reproduced in
+step 1 rather than justifying it. Upstream reports are not argued or settled on its contents — they
+are settled on the regulatory source. Step 2's comparison against Google's demo is the whole
+verdict; reading the metadata adds nothing to it and costs a large part of a context window
+(`PhoneNumberMetadata.xml` is 957 KB over 32,000 lines; a geocoding table runs to 3.8 MB).
 
 ## 3b. If it is a port bug
 

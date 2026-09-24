@@ -61,13 +61,18 @@ dotnet test csharp/PhoneNumbers.Test --filter "FullyQualifiedName~TestPhoneNumbe
 
 ## Hard rules
 
-- **`resources/` is 16 MB of generated upstream data: don't hand-edit it, and don't read it whole.**
+- **`resources/` is 16 MB of generated upstream data: don't hand-edit it, and don't read it.**
   A metadata fix goes upstream, because anything changed here is overwritten by the next sync — and
-  the same holds for the generated `resources/locale/country_names.txt`. To see a rule, extract the
-  part you need — `sed -n '/<territory id="GB"/,/<\/territory>/p' resources/PhoneNumberMetadata.xml`
-  is ~500 lines of that file's 32,000. Opening `PhoneNumberMetadata.xml` (957 KB) or a geocoding
-  table (up to 3.8 MB) spends a large part of a context window on data you will not read twice, and
-  the `diagnosing-number-behaviour` skill has the extraction one-liners for each file.
+  the same holds for the generated `resources/locale/country_names.txt`. Nobody, human or agent,
+  needs to read the tree except when working on the parser itself and needing to see the schema;
+  for that, extract the part you need rather than opening the file —
+  `sed -n '/<territory id="GB"/,/<\/territory>/p' resources/PhoneNumberMetadata.xml` is ~500 lines
+  of that file's 32,000, against 957 KB whole, or up to 3.8 MB for a geocoding table.
+  Explaining why some number validates, types or formats the way it does is **not** such a reason.
+  The XML is a build input compiled into the embedded binary metadata, so it only restates behaviour
+  you can reproduce with a test in seconds, and an upstream report is settled on the numbering
+  authority's published plan, never on what the XML says — see the `diagnosing-number-behaviour`
+  skill.
   `ShortNumbersRegionCodeSet.cs` is derived from that metadata and off limits the same way.
   `CountryCodeToRegionCodeMap.cs` reads like a generated file and is named like one, but nothing
   regenerates it — its own header still says "todo make this file automatically generated", and
