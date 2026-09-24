@@ -6,6 +6,12 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <PathBase Condition="'$(PathBase)' == ''">/</PathBase>
+    <!-- Rewrites the #[.{fingerprint}] placeholders, importmap and preload link in index.html to
+         the content-hashed file names at build/publish. GitHub Pages caches every file for 10
+         minutes and we can't set headers there, so without hashed URLs a deploy can leave a
+         browser mixing a cached loader with the new runtime files: an integrity failure and the
+         "An unhandled error has occurred" banner until the user clears their cache. -->
+    <OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
   </PropertyGroup>
 
   <ItemGroup>
