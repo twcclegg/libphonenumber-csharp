@@ -195,15 +195,19 @@
 
     // which command is currently showing its "copied" confirmation, if any
     private string? _copied;
+    private int _copyClicks;
 
     // Mirrors MainLayout's CopyLink: hand the text to the clipboard helper in
     // index.html, show a check for a moment, then fall back to the copy glyph.
     private async Task Copy(string command)
     {
         await JS.InvokeVoidAsync("phoneDemo.copyText", command);
+        var click = ++_copyClicks;
         _copied = command;
         StateHasChanged();
         await Task.Delay(1500);
+        // A later click restarted the confirmation; its own timer clears it.
+        if (click != _copyClicks) return;
         _copied = null;
         StateHasChanged();
     }

@@ -156,6 +156,7 @@
     private bool _sidebarOpen;
     private string _theme = "light";
     private bool _shareCopied;
+    private int _shareClicks;
     private string _currentTitle = "Home";
 
     // The API docs site is published as a sibling folder alongside this app (see
@@ -223,9 +224,12 @@
     private async Task CopyLink()
     {
         await JS.InvokeVoidAsync("phoneDemo.copyText", Nav.Uri);
+        var click = ++_shareClicks;
         _shareCopied = true;
         StateHasChanged();
         await Task.Delay(1500);
+        // A later click restarted the confirmation; its own timer clears it.
+        if (click != _shareClicks) return;
         _shareCopied = false;
         StateHasChanged();
     }
