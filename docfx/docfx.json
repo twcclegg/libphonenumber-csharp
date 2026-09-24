@@ -35,8 +35,8 @@
     ],
     "resource": [
       {
-        "//": "The docs site's own logomark and favicon - the demo draws its rail logo from a Razor component instead, so nothing outside docfx reads these. Mapped to images/ so _appLogoPath and _appFaviconPath below stay site-relative.",
-        "src": "brand",
+        "//": "Shared with the Blazor demo, which links the same three files into its own wwwroot via a Content item in PhoneNumbers.Demo.csproj; kept at the repo root so the two sites cannot drift. Mapped to images/ so _appLogoPath and _appFaviconPath below stay site-relative.",
+        "src": "../assets/brand",
         "files": [ "*.svg" ],
         "dest": "images"
       }
