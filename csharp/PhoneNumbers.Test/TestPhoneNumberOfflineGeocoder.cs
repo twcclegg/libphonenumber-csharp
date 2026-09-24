@@ -53,7 +53,7 @@ namespace PhoneNumbers.Test
 
     /// <summary>
     /// Unit tests for the geocoder, using the binary test geocoding data generated at build time
-    /// from <c>resources/test/geocoding/</c> and embedded under <c>PhoneNumbers.Test.geocoding.*</c>.
+    /// from <c>resources/test/geocoding/</c> and embedded as <c>PhoneNumbers.Test.geocoding.pack</c>.
     /// </summary>
     /// <remarks>
     /// The previously-separate "zipped" variant (TestZippedPhoneNumberOfflineGeocoder) was deleted

@@ -19,7 +19,8 @@ env:
 jobs:
   build_and_run_unit_tests_linux:
     runs-on: ubuntu-24.04-arm
-    # One compile of the library, then a second one for the determinism rebuild.
+    # Several compiles of the library: the build, the determinism rebuild, and two trimmed
+    # publishes for the opt-out check.
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -76,6 +77,18 @@ jobs:
             fi
           done
 
+          # The data-set opt-out is delivered entirely by this targets file: drop the <None>
+          # that packs it, rename it, or change PackageId without renaming it to match, and every
+          # consumer silently loses PhoneNumbersIncludeGeocodingData with no failing test. The
+          # filename has to equal the package id for NuGet to auto-import it.
+          targets="buildTransitive/libphonenumber-csharp.targets"
+          if ! unzip -l "packtest/libphonenumber-csharp.${PACK_VERSION}.nupkg" | grep -qF "${targets}"
+          then
+            echo "error: libphonenumber-csharp package is missing ${targets}" >&2
+            unzip -l "packtest/libphonenumber-csharp.${PACK_VERSION}.nupkg" >&2
+            exit 1
+          fi
+
           nuspec=$(unzip -p "packtest/libphonenumber-csharp.extensions.${PACK_VERSION}.nupkg" '*.nuspec')
           if ! grep -qE "id=\"libphonenumber-csharp\"[^>]*version=\"${PACK_VERSION}\"" <<< "${nuspec}"
           then
@@ -83,7 +96,15 @@ jobs:
             printf '%s\n' "${nuspec}" >&2
             exit 1
           fi
-          echo "packaging ok: both packages at ${PACK_VERSION}, extensions dependency pinned"
+          echo "packaging ok: both packages at ${PACK_VERSION}, extensions dependency pinned, ${targets} shipped"
+
+      # End-to-end guard for the data-set opt-out. The unit tests can only check that the two
+      # halves of the feature agree on names, because the library's own build does not trim; if
+      # ILLink silently stopped applying the substitutions every test would still pass and
+      # consumers would keep shipping the 2.4 MB they asked to drop. This publishes twice and
+      # compares.
+      - name: Verify trimming removes the optional data sets
+        run: lib/verify-trimming.sh
 
       # Determinism guard: recompiling the same commit must produce byte-identical assemblies.
       # Compares against the packages built above, so only one extra compile is needed. Cleaning
