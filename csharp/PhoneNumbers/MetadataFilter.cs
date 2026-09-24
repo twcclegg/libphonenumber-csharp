@@ -15,8 +15,9 @@
  */
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace PhoneNumbers
 {
@@ -29,6 +30,10 @@ namespace PhoneNumbers
     /// changes without notice. Any changes are not guaranteed to be reflected in the versioning scheme
     /// of the public API, nor in release notes.
     /// </summary>
+    // Implementation detail: strips unused metadata fields at build time. Public only
+    // because the port mirrored Java's class layout, not because callers are meant to reach
+    // it; hidden from IntelliSense and from the generated API reference.
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public sealed class MetadataFilter
     {
         // The following 3 sets comprise all the PhoneMetadata fields as defined at phonemetadata.proto

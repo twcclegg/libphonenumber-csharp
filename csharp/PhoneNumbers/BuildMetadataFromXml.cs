@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -28,6 +29,11 @@ using System.Xml.Linq;
 
 namespace PhoneNumbers
 {
+    // Implementation detail: XML metadata parser. Consumers with their own metadata go
+    // through PhoneNumberUtil.CreateInstance(Stream), which drives this internally. Public
+    // only because the port mirrored Java's class layout, not because callers are meant to
+    // reach it; hidden from IntelliSense and from the generated API reference.
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public class BuildMetadataFromXml
     {
         // String constants used to fetch the XML nodes and attributes.

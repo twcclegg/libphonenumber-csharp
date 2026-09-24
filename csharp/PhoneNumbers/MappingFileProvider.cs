@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
@@ -28,6 +29,10 @@ namespace PhoneNumbers
     /// calling code and language that the text descriptions are in.
     /// </summary>
     /// <remarks>Author: Shaopeng Jia</remarks>
+    // Implementation detail: picks the geocoding/carrier data file for a locale. Public
+    // only because the port mirrored Java's class layout, not because callers are meant to
+    // reach it; hidden from IntelliSense and from the generated API reference.
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public class MappingFileProvider
     {
         private static readonly Dictionary<string, string> LocaleNormalizationMap;

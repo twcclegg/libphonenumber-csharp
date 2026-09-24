@@ -16,6 +16,7 @@
  */
 
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 
 namespace PhoneNumbers
@@ -25,6 +26,11 @@ namespace PhoneNumbers
     /// covers.
     /// </summary>
     /// <remarks>Author: Shaopeng Jia</remarks>
+    // Implementation detail: prefix -> description lookup behind the geocoder, carrier and
+    // timezone mappers. Public only because the port mirrored Java's class layout, not
+    // because callers are meant to reach it; hidden from IntelliSense and from the
+    // generated API reference.
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public class AreaCodeMap
     {
         private readonly PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
