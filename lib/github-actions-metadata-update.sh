@@ -419,11 +419,15 @@ if [ -f "${CHANGELOG_FILE}" ] && grep -qF '<!-- next-entry -->' "${CHANGELOG_FIL
     # Folds into the previous changelog entry when nobody but the bots has landed anything since
     # the last release; .claude/skills/syncing-upstream-metadata/reference/changelog-and-release-internals.md says why.
     METADATA_ONLY=true
+    # Only set once the range is known to be readable; update-changelog.sh itemizes the release
+    # from it, and would rather have nothing than a range it cannot walk.
+    RELEASE_RANGE=""
     if isTrue "$(git rev-parse --is-shallow-repository)"; then
         warn "the checkout is shallow, so the commits since v${DEPLOYED_NUGET_TAG} cannot be read; treating this release as more than a metadata sync"
         METADATA_ONLY=false
     elif git rev-parse -q --verify "v${DEPLOYED_NUGET_TAG}" >/dev/null \
         && git merge-base --is-ancestor "v${DEPLOYED_NUGET_TAG}" HEAD 2>/dev/null; then
+        RELEASE_RANGE="v${DEPLOYED_NUGET_TAG}..HEAD"
         # Co-authored-by is read as well as the author: a squash merge records only the PR's
         # author, so a human fix pushed onto a dependabot PR would otherwise fold away.
         #
@@ -468,8 +472,10 @@ if [ -f "${CHANGELOG_FILE}" ] && grep -qF '<!-- next-entry -->' "${CHANGELOG_FIL
         METADATA_ONLY=false
     fi
 
-    bash "${SCRIPT_DIR}/update-changelog.sh" "${CHANGELOG_FILE}" "${GITHUB_REPOSITORY}" "${UPSTREAM_REPOSITORY}" \
-        "v${DEPLOYED_NUGET_TAG}" "${UPSTREAM_GITHUB_RELEASE_TAG}" "${METADATA_ONLY}" "$(date -u +%F)"
+    SYNC_COMMIT_AUTHOR="${METADATA_COMMIT_AUTHOR_NAME}" \
+        bash "${SCRIPT_DIR}/update-changelog.sh" "${CHANGELOG_FILE}" "${GITHUB_REPOSITORY}" "${UPSTREAM_REPOSITORY}" \
+        "v${DEPLOYED_NUGET_TAG}" "${UPSTREAM_GITHUB_RELEASE_TAG}" "${METADATA_ONLY}" "$(date -u +%F)" \
+        "${RELEASE_RANGE}"
 else
     warn "CHANGELOG.md missing or missing the '<!-- next-entry -->' marker, skipping changelog update"
 fi

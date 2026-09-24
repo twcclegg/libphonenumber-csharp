@@ -101,6 +101,13 @@ entry; any human commit since the last release — including one that only touch
 `CHANGELOG.md` — gives the release its own entry. So if you hand-edit `CHANGELOG.md`, expect the
 next release to start a new entry rather than extend the current run; that is intended.
 
+An entry of its own is itemized: `itemizeRange` walks `git log --first-parent <last tag>..HEAD`,
+so one bullet per merged PR, filed under `### Added` / `### Fixed` / `### Performance` / `### Docs`
+/ `### Changed` by conventional-commit prefix, with dependabot's collapsed into one
+`### Dependencies` line. The result is only as good as the PR titles — it is worth reading the
+generated entry in the sync PR and rewriting a bullet that will not mean anything to someone
+reading `CHANGELOG.md` a year from now.
+
 ## Releases generally
 
 Releases are tag-driven: a `vX.Y.Z` tag fires `publish_nuget.yml`, which packs both packable
