@@ -1,5 +1,5 @@
 @page "/format"
-@inject NavigationManager Nav
+@inherits PhoneNumberPageBase
 
 <PageTitle>Formatting - libphonenumber-csharp</PageTitle>
 
@@ -21,7 +21,7 @@
             <input id="format-phone"
                    class="form__input form__input--phone"
                    type="text"
-                   value="@_phoneInput"
+                   value="@PhoneInput"
                    @oninput="OnPhoneInput"
                    @onchange="OnPhoneCommit"
                    placeholder="+1 650 253 0000"
@@ -29,7 +29,7 @@
         </div>
         <div class="form__group form__group--flush">
             <label class="form__label" for="format-region">Default Region</label>
-            <RegionSelect id="format-region" Value="@_selectedRegion" ValueChanged="OnRegionChange" />
+            <RegionSelect id="format-region" Value="@SelectedRegion" ValueChanged="OnRegionChange" />
         </div>
         <div class="form__group form__group--flush">
             <label class="form__label" for="format-calling-from">Calling From</label>
@@ -38,11 +38,11 @@
     </div>
 </div>
 
-@if (_parseError != null)
+@if (ParseError != null)
 {
-    <div class="error-message" role="alert">@_parseError</div>
+    <div class="error-message" role="alert">@ParseError</div>
 }
-else if (_parsed != null)
+else if (Parsed != null)
 {
     <div aria-live="polite">
         <div class="card">
@@ -53,19 +53,19 @@ else if (_parsed != null)
             <div class="format-list">
                 <div class="format-list__item">
                     <div class="format-list__name">E.164</div>
-                    <div class="format-list__value">@_phoneUtil.Format(_parsed, PhoneNumberFormat.E164)</div>
+                    <div class="format-list__value">@PhoneUtil.Format(Parsed, PhoneNumberFormat.E164)</div>
                 </div>
                 <div class="format-list__item">
                     <div class="format-list__name">International</div>
-                    <div class="format-list__value">@_phoneUtil.Format(_parsed, PhoneNumberFormat.INTERNATIONAL)</div>
+                    <div class="format-list__value">@PhoneUtil.Format(Parsed, PhoneNumberFormat.INTERNATIONAL)</div>
                 </div>
                 <div class="format-list__item">
                     <div class="format-list__name">National</div>
-                    <div class="format-list__value">@_phoneUtil.Format(_parsed, PhoneNumberFormat.NATIONAL)</div>
+                    <div class="format-list__value">@PhoneUtil.Format(Parsed, PhoneNumberFormat.NATIONAL)</div>
                 </div>
                 <div class="format-list__item">
                     <div class="format-list__name">RFC 3966</div>
-                    <div class="format-list__value">@_phoneUtil.Format(_parsed, PhoneNumberFormat.RFC3966)</div>
+                    <div class="format-list__value">@PhoneUtil.Format(Parsed, PhoneNumberFormat.RFC3966)</div>
                 </div>
             </div>
         </div>
@@ -79,15 +79,15 @@ else if (_parsed != null)
             <div class="format-list">
                 <div class="format-list__item">
                     <div class="format-list__name">Out-of-Country</div>
-                    <div class="format-list__value">@_phoneUtil.FormatOutOfCountryCallingNumber(_parsed, _callingFrom)</div>
+                    <div class="format-list__value">@PhoneUtil.FormatOutOfCountryCallingNumber(Parsed, _callingFrom)</div>
                 </div>
                 <div class="format-list__item">
                     <div class="format-list__name">Mobile Dialing</div>
-                    <div class="format-list__value">@_phoneUtil.FormatNumberForMobileDialing(_parsed, _callingFrom, true)</div>
+                    <div class="format-list__value">@PhoneUtil.FormatNumberForMobileDialing(Parsed, _callingFrom, true)</div>
                 </div>
                 <div class="format-list__item">
                     <div class="format-list__name">Mobile (No Format)</div>
-                    <div class="format-list__value">@_phoneUtil.FormatNumberForMobileDialing(_parsed, _callingFrom, false)</div>
+                    <div class="format-list__value">@PhoneUtil.FormatNumberForMobileDialing(Parsed, _callingFrom, false)</div>
                 </div>
             </div>
         </div>
@@ -100,11 +100,11 @@ else if (_parsed != null)
             <div class="format-list">
                 <div class="format-list__item">
                     <div class="format-list__name">National Significant</div>
-                    <div class="format-list__value">@_phoneUtil.GetNationalSignificantNumber(_parsed)</div>
+                    <div class="format-list__value">@PhoneUtil.GetNationalSignificantNumber(Parsed)</div>
                 </div>
                 <div class="format-list__item">
                     <div class="format-list__name">Can Dial Intl.</div>
-                    <div class="format-list__value">@(_phoneUtil.CanBeInternationallyDialled(_parsed) ? "Yes" : "No")</div>
+                    <div class="format-list__value">@(PhoneUtil.CanBeInternationallyDialled(Parsed) ? "Yes" : "No")</div>
                 </div>
             </div>
         </div>
@@ -124,64 +124,12 @@ else
 </div>
 
 @code {
-    private readonly PhoneNumberUtil _phoneUtil = PhoneNumberUtil.GetInstance();
-    private string _phoneInput = "+1 650 253 0000";
-    private string _selectedRegion = "US";
     private const string DefaultCallingFrom = "GB";
     private string _callingFrom = DefaultCallingFrom;
-    private PhoneNumber? _parsed;
-    private string? _parseError;
 
-    protected override void OnInitialized()
-    {
-        var (n, r2) = UrlState.Read(Nav);
-        if (n != null) _phoneInput = n;
-        if (!string.IsNullOrEmpty(r2)) _selectedRegion = r2;
-
-        TryParse();
-    }
-
-    // @oninput keeps the live results in sync on every keystroke, but does NOT touch the URL.
-    private void OnPhoneInput(ChangeEventArgs e)
-    {
-        _phoneInput = e.Value?.ToString() ?? "";
-        TryParse();
-    }
-
-    // @onchange fires when the field is committed (blur / Enter), so the URL is only
-    // rewritten once the user is done typing — never mid-keystroke.
-    private void OnPhoneCommit(ChangeEventArgs e)
-    {
-        _phoneInput = e.Value?.ToString() ?? "";
-        TryParse();
-        SyncUrl();
-    }
-
-    private void OnRegionChange(string region)
-    {
-        _selectedRegion = region;
-        TryParse();
-        SyncUrl();
-    }
+    protected override string DefaultNumber => "+1 650 253 0000";
+    protected override string DefaultRegion => "US";
 
     // Only the rendered formats depend on this; the parsed number does not, so no re-parse.
     private void OnCallingFromChange(string region) => _callingFrom = region;
-
-    private void SyncUrl()
-        => Nav.NavigateTo(UrlState.Build(Nav, _phoneInput, _selectedRegion), forceLoad: false, replace: true);
-
-    private void TryParse()
-    {
-        _parsed = null;
-        _parseError = null;
-        if (string.IsNullOrWhiteSpace(_phoneInput)) return;
-        try
-        {
-            _parsed = _phoneUtil.Parse(_phoneInput, _selectedRegion);
-        }
-        catch (NumberParseException ex)
-        {
-            _parseError = ex.Message;
-        }
-    }
 }
