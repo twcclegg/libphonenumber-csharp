@@ -45,12 +45,18 @@
             }
 
             <div class="sidebar__section">
-                <div class="sidebar__section-title">Resources</div>
-                <a href="@DocsUrl" class="sidebar__link">
+                <div class="sidebar__section-title">Reference</div>
+                <a href="@DocsLinks.Resolve(Nav, DocsLinks.ApiReference)" class="sidebar__link">
                     <span class="sidebar__link-icon" aria-hidden="true">
                         <BookIcon />
                     </span>
-                    API Docs
+                    API Reference
+                </a>
+                <a href="@DocsLinks.Resolve(Nav, DocsLinks.Articles)" class="sidebar__link">
+                    <span class="sidebar__link-icon" aria-hidden="true">
+                        <FileIcon />
+                    </span>
+                    Articles
                 </a>
                 <a href="https://github.com/twcclegg/libphonenumber-csharp" target="_blank" rel="noopener" class="sidebar__link">
                     <span class="sidebar__link-icon" aria-hidden="true">
@@ -100,12 +106,6 @@
     private int _shareClicks;
     private static readonly TimeSpan ConfirmationTime = TimeSpan.FromMilliseconds(1500);
     private string _currentTitle = "Home";
-
-    // The API docs site is published as a sibling folder alongside this app (see
-    // deploy-demo.yml, which copies docfx's output to release/wwwroot/docs). Nav.BaseUri
-    // already includes the GitHub Pages repo-name PathBase, so this resolves correctly
-    // regardless of which client-side route the user is currently on.
-    private string DocsUrl => $"{Nav.BaseUri}docs/";
 
     // Every page the sidebar links to, in order: its route, the title the sidebar and the mobile
     // topbar show for it, its icon and the sidebar section it sits under.

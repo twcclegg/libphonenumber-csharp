@@ -20,7 +20,7 @@ public class MainLayoutTests : BunitContext
     }
 
     [Fact]
-    public void sidebar_links_every_page_in_order_then_the_resources()
+    public void sidebar_links_every_page_in_order_then_the_reference()
     {
         var cut = Render<MainLayout>();
 
@@ -40,7 +40,20 @@ public class MainLayoutTests : BunitContext
                 ("geo", "Geo & Timezone"),
             },
             links.Take(6));
-        Assert.Equal(new[] { "API Docs", "GitHub", "NuGet" }, links.Skip(6).Select(l => l.Item2));
+        Assert.Equal(new[] { "API Reference", "Articles", "GitHub", "NuGet" }, links.Skip(6).Select(l => l.Item2));
+    }
+
+    [Theory]
+    [InlineData("API Reference", "http://localhost/docs/api/PhoneNumbers.html")]
+    [InlineData("Articles", "http://localhost/docs/articles/api-differences-from-java.html")]
+    public void reference_links_open_the_docs_site_in_the_same_tab(string text, string href)
+    {
+        var cut = Render<MainLayout>();
+
+        var link = cut.FindAll("nav a").Single(a => a.TextContent.Trim() == text);
+
+        Assert.Equal(href, link.GetAttribute("href"));
+        Assert.Null(link.GetAttribute("target"));
     }
 
     [Theory]
