@@ -2,6 +2,7 @@
 @implements IDisposable
 @inject IJSRuntime JS
 @inject NavigationManager Nav
+@inject TimeProvider Time
 
 <div class="app-layout">
     @if (_sidebarOpen)
@@ -97,6 +98,7 @@
     private string _theme = "light";
     private bool _shareCopied;
     private int _shareClicks;
+    private static readonly TimeSpan ConfirmationTime = TimeSpan.FromMilliseconds(1500);
     private string _currentTitle = "Home";
 
     // The API docs site is published as a sibling folder alongside this app (see
@@ -165,11 +167,12 @@
 
     private async Task CopyLink()
     {
-        await JS.InvokeVoidAsync("phoneDemo.copyText", Nav.Uri);
+        // Take the token before awaiting, so it matches the order of the clicks themselves.
         var click = ++_shareClicks;
+        await JS.InvokeVoidAsync("phoneDemo.copyText", Nav.Uri);
         _shareCopied = true;
         StateHasChanged();
-        await Task.Delay(1500);
+        await Task.Delay(ConfirmationTime, Time);
         // A later click restarted the confirmation; its own timer clears it.
         if (click != _shareClicks) return;
         _shareCopied = false;

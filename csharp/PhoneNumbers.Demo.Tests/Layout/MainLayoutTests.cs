@@ -1,6 +1,7 @@
 using Bunit;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Time.Testing;
 using PhoneNumbers.Demo.Components.Icons;
 using PhoneNumbers.Demo.Layout;
 using Xunit;
@@ -9,8 +10,11 @@ namespace PhoneNumbers.Demo.Tests.Layout;
 
 public class MainLayoutTests : BunitContext
 {
+    private readonly FakeTimeProvider _time = new();
+
     public MainLayoutTests()
     {
+        Services.AddSingleton<TimeProvider>(_time);
         JSInterop.Setup<string>("phoneDemo.getTheme").SetResult("light");
         JSInterop.SetupVoid("phoneDemo.copyText", _ => true).SetVoidResult();
     }
@@ -112,11 +116,16 @@ public class MainLayoutTests : BunitContext
         var cut = Render<MainLayout>();
 
         cut.Find("button[aria-label='Copy shareable link']").Click();
-        await Task.Delay(1000);
+        _time.Advance(TimeSpan.FromMilliseconds(1000));
         cut.Find("button[aria-label='Link copied']").Click();
-        // The first click's 1.5s timer has now expired; the second click's has not.
-        await Task.Delay(800);
 
+        // The first click's 1.5s timer expires; the second click's does not.
+        _time.Advance(TimeSpan.FromMilliseconds(800));
+        await cut.InvokeAsync(() => { }); // let the expired timer's continuation run
         Assert.NotEmpty(cut.FindAll("button[aria-label='Link copied']"));
+
+        _time.Advance(TimeSpan.FromMilliseconds(700));
+        await cut.InvokeAsync(() => { });
+        Assert.Empty(cut.FindAll("button[aria-label='Link copied']"));
     }
 }
