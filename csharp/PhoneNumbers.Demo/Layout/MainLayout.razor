@@ -27,11 +27,11 @@
         </div>
 
         <div class="sidebar__nav">
-            @foreach (var group in Pages.GroupBy(p => p.Section))
+            @foreach (var navSection in Enum.GetValues<NavSection>())
             {
                 <div class="sidebar__section">
-                    <div class="sidebar__section-title">@group.Key</div>
-                    @foreach (var link in group)
+                    <div class="sidebar__section-title">@navSection</div>
+                    @foreach (var link in Pages.Where(p => p.Section == navSection))
                     {
                         <NavLink href="@link.Href" class="sidebar__link" ActiveClass="sidebar__link--active"
                                  Match="@(link.Href == "" ? NavLinkMatch.All : NavLinkMatch.Prefix)" @onclick="CloseSidebar">
@@ -111,12 +111,12 @@
     // topbar show for it, its icon and the sidebar section it sits under.
     private static readonly IReadOnlyList<PageLink> Pages =
     [
-        new("", "Home", Icon<HomeIcon>(), "Overview"),
-        new("parse", "Parse & Validate", Icon<SearchIcon>(), "Features"),
-        new("format", "Formatting", Icon<ListIcon>(), "Features"),
-        new("live", "Live Formatter", Icon<TerminalIcon>(), "Features"),
-        new("find", "Find Numbers", Icon<FileTextIcon>(), "Features"),
-        new("geo", "Geo & Timezone", Icon<GlobeIcon>(), "Features"),
+        new("", "Home", Icon<HomeIcon>(), NavSection.Overview),
+        new("parse", "Parse & Validate", Icon<SearchIcon>(), NavSection.Features),
+        new("format", "Formatting", Icon<ListIcon>(), NavSection.Features),
+        new("live", "Live Formatter", Icon<TerminalIcon>(), NavSection.Features),
+        new("find", "Find Numbers", Icon<FileTextIcon>(), NavSection.Features),
+        new("geo", "Geo & Timezone", Icon<GlobeIcon>(), NavSection.Features),
     ];
 
     protected override void OnInitialized()
@@ -182,14 +182,18 @@
     // sun when in dark mode (to switch to light), moon otherwise
     private RenderFragment ThemeIcon() => _theme == "dark" ? @<SunIcon /> : @<MoonIcon />;
 
+    // Each button's tooltip is its accessible name, so the two never disagree.
+    private string ShareLabel => _shareCopied ? "Link copied" : "Copy shareable link";
+    private string ThemeLabel => _theme == "dark" ? "Switch to light mode" : "Switch to dark mode";
+
     // The share and theme buttons, rendered in both the sidebar header and the mobile topbar;
     // only the button block differs between the two.
     private RenderFragment ChromeActions(string block) =>
         @<text>
             <button class="@block @(_shareCopied ? block + "--done" : "")"
                     @onclick="CopyLink"
-                    aria-label="@(_shareCopied ? "Link copied" : "Copy shareable link")"
-                    title="Copy shareable link">
+                    aria-label="@ShareLabel"
+                    title="@ShareLabel">
                 @if (_shareCopied)
                 {
                     <CheckIcon />
@@ -201,8 +205,8 @@
             </button>
             <button class="@block"
                     @onclick="ToggleTheme"
-                    aria-label="@(_theme == "dark" ? "Switch to light mode" : "Switch to dark mode")"
-                    title="Toggle theme">
+                    aria-label="@ThemeLabel"
+                    title="@ThemeLabel">
                 @ThemeIcon()
             </button>
         </text>;
@@ -218,5 +222,8 @@
         builder.CloseComponent();
     };
 
-    private record PageLink(string Href, string Title, RenderFragment Icon, string Section);
+    // Sidebar sections render in declaration order, whatever order the Pages table lists them in.
+    private enum NavSection { Overview, Features }
+
+    private record PageLink(string Href, string Title, RenderFragment Icon, NavSection Section);
 }

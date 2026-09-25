@@ -68,6 +68,21 @@ public class MainLayoutTests : BunitContext
     }
 
     [Fact]
+    public void button_tooltips_match_their_accessible_names_after_a_copy()
+    {
+        var cut = Render<MainLayout>();
+
+        cut.Find("button[aria-label='Copy shareable link']").Click();
+
+        cut.WaitForAssertion(() =>
+        {
+            var buttons = cut.FindAll("button[aria-label='Link copied'], button[aria-label='Switch to dark mode']");
+            Assert.Equal(4, buttons.Count);
+            Assert.All(buttons, b => Assert.Equal(b.GetAttribute("aria-label"), b.GetAttribute("title")));
+        });
+    }
+
+    [Fact]
     public void theme_toggle_offers_dark_mode_with_a_moon_icon_by_default()
     {
         var cut = Render<MainLayout>();
