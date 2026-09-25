@@ -39,6 +39,29 @@ public class FormattingPageTests : BunitContext
     }
 
     [Fact]
+    public void changing_calling_from_reformats_for_that_region()
+    {
+        var cut = Render<Formatting>();
+
+        cut.Find("#format-calling-from").Change("DE");
+
+        Assert.Contains("Formatted for dialing from DE", cut.Markup);
+        var outOfCountry = cut.FindAll(".format-list__item")
+            .First(i => i.QuerySelector(".format-list__name")?.TextContent.Trim() == "Out-of-Country");
+        Assert.StartsWith("00 1", outOfCountry.QuerySelector(".format-list__value")!.TextContent.Trim());
+    }
+
+    [Fact]
+    public void calling_from_with_no_value_falls_back_to_the_page_default()
+    {
+        var cut = Render<Formatting>();
+
+        cut.Find("#format-calling-from").Change((object?)null);
+
+        Assert.Contains("Formatted for dialing from GB", cut.Markup);
+    }
+
+    [Fact]
     public void shows_out_of_country_and_mobile_dialing_formats()
     {
         var cut = Render<Formatting>();
