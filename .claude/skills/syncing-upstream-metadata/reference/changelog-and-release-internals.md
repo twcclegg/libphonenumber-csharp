@@ -9,6 +9,7 @@ script's header comment point here for the reasoning.
 - The sync opens a PR and stops; merging it is the intended path
 - The release flow deliberately has no notion of declining, and no guards against same-day runs
 - The fold is decided by authorship, not by paths
+- A release that does not fold is itemized from its merge history
 - The fold check needs full history
 - The sync commits as the account its token belongs to
 
@@ -75,6 +76,42 @@ Hand-editing either is worth its own entry anyway.
 The fold state lives in an HTML comment directly above the heading it describes
 (`<!-- changelog-run from=… first=… start-date=… count=N -->`). Only a heading with that marker is a
 candidate to extend, so a hand-written heading can never be mistaken for a foldable run.
+
+## A release that does not fold is itemized from its merge history
+
+A release that carries work beyond the sync used to get a one-sentence entry pointing at the
+compare link, which said nothing that the heading above it did not. It now gets a bullet per merged
+PR, filed under Keep a Changelog headings — one `git log --first-parent <last tag>..HEAD` piped
+into one awk, in `itemizeRange`.
+
+First-parent, because the PR is the unit a reader cares about: the twenty commits inside one are
+its editing history, which `AGENTS.md` already says not to write down. It also means the record
+carries everything needed without a second lookup — the merge subject GitHub writes holds both the
+PR number and the branch it merged, and the first line of the body is the PR title. A commit pushed
+straight to `main` is one bullet of its own, from its subject and its trailing `(#123)`.
+
+The branch name is what identifies the bots: `metadata-update/*` is this automation's own sync and
+is dropped (the entry's opening sentence already names it), `dependabot/*` collapses onto a single
+`### Dependencies` line, and a `(deps)` scope catches a dependency bump that was squashed rather
+than merged. Only a sync pushed *straight* to `main`, as they were before v9.0.38, has no branch
+name to go on; it is recognised by author instead, via `SYNC_COMMIT_AUTHOR`, which the caller has
+already resolved from the API for the commit it is about to make.
+
+That is a different test from the fold's (which reads authorship, including `Co-authored-by`, over
+every commit) and deliberately so: the fold decides whether real work happened and must not be
+fooled by a human fix pushed onto a bot's PR, while this only decides how to present work already
+known to exist. They can disagree in one narrow case — a human commit on a dependabot PR makes the
+release standalone, and its bullet still reads as a dependency update — which costs a reader
+nothing, since the PR is named either way.
+
+Only the conventional-commit prefixes `AGENTS.md` mandates are stripped and mapped to a heading
+(`feat:` Added, `fix:` Fixed, `perf:` Performance, `docs:` Docs, the rest Changed). A subject whose
+prefix is not one of them keeps it: `Extensions: Native AOT JsonSerializerContext` reads as a
+title, not as a label to throw away.
+
+The entry is therefore only as good as the PR titles that went into it, which is a reason to read
+it in the sync PR before merging — it is an ordinary file in that diff, and rewriting a bullet
+there costs nothing.
 
 ## The fold check needs full history
 
