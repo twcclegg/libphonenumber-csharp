@@ -34,9 +34,9 @@
         <div class="form__group form__group--flush">
             <label class="form__label" for="geo-locale">Language</label>
             <select id="geo-locale" class="form__select" @onchange="OnLocaleChange">
-                @foreach (var l in _locales)
+                @foreach (var l in Languages)
                 {
-                    <option value="@l.Key" selected="@(l.Key == _selectedLocale)">@l.Value</option>
+                    <option value="@l.Code" selected="@(l == _language)">@l.Name</option>
                 }
             </select>
         </div>
@@ -184,21 +184,24 @@ else
     private PhoneNumberToTimeZonesMapper? _tzMapper;
     private PhoneNumberToCarrierMapper? _carrierMapper;
 
-    private string _selectedLocale = "en";
     private string _geoDescription = "";
     private List<string> _timeZones = new();
     private string _carrierName = "";
     private bool _isLoading = true;
 
-    private readonly Dictionary<string, string> _locales = new()
-    {
-        ["en"] = "English",
-        ["de"] = "German",
-        ["fr"] = "French",
-        ["it"] = "Italian",
-        ["ko"] = "Korean",
-        ["zh"] = "Chinese (Simplified)"
-    };
+    // The languages the geocoding and carrier data are offered in: the option value, its label and
+    // the Locale passed to the lookups, in one row so the three can't drift apart.
+    private static readonly IReadOnlyList<Language> Languages =
+    [
+        new("en", "English", Locale.English),
+        new("de", "German", Locale.German),
+        new("fr", "French", Locale.French),
+        new("it", "Italian", Locale.Italian),
+        new("ko", "Korean", Locale.Korean),
+        new("zh", "Chinese (Simplified)", Locale.SimplifiedChinese),
+    ];
+
+    private Language _language = Languages[0];
 
     protected override string DefaultNumber => "+1 650 253 0000";
     protected override string DefaultRegion => "US";
@@ -219,19 +222,9 @@ else
 
     private void OnLocaleChange(ChangeEventArgs e)
     {
-        _selectedLocale = e.Value?.ToString() ?? "en";
+        _language = Languages.FirstOrDefault(l => l.Code == e.Value?.ToString()) ?? Languages[0];
         TryParse();
     }
-
-    private Locale GetLocale() => _selectedLocale switch
-    {
-        "de" => Locale.German,
-        "fr" => Locale.French,
-        "it" => Locale.Italian,
-        "ko" => Locale.Korean,
-        "zh" => Locale.SimplifiedChinese,
-        _ => Locale.English
-    };
 
     protected override void OnParsed(PhoneNumber? number)
     {
@@ -240,7 +233,7 @@ else
         _carrierName = "";
         if (number == null) return;
 
-        var locale = GetLocale();
+        var locale = _language.Locale;
         _geoDescription = _geocoder?.GetDescriptionForNumber(number, locale) ?? "";
         // The mapper reports "no data" as a lone Etc/Unknown zone, never as an empty list.
         var unknownZone = _tzMapper?.GetUnknownTimeZone();
@@ -248,4 +241,6 @@ else
                      ?? new List<string>();
         _carrierName = _carrierMapper?.GetNameForNumber(number, locale) ?? "";
     }
+
+    private record Language(string Code, string Name, Locale Locale);
 }

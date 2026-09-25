@@ -101,6 +101,24 @@ public class GeoTimezonePageTests : BunitContext
     }
 
     [Fact]
+    public void switching_language_shows_the_description_in_that_language()
+    {
+        var cut = RenderAndWaitForLoad(this);
+        cut.Find("#geo-phone").Input("+82 2 2100 2114");
+        Assert.Contains("Seoul", DescriptionText(cut));
+
+        cut.Find("#geo-locale").Change("ko");
+
+        Assert.Contains("서울", DescriptionText(cut));
+        Assert.Equal("ko", cut.Find("#geo-locale option[selected]").GetAttribute("value"));
+    }
+
+    private static string DescriptionText(IRenderedComponent<GeoTimezone> cut) =>
+        cut.FindAll(".result-grid__item")
+            .First(i => i.QuerySelector(".result-grid__label")?.TextContent.Trim() == "Description")
+            .QuerySelector(".result-grid__value")!.TextContent;
+
+    [Fact]
     public void shows_carrier_section()
     {
         var cut = RenderAndWaitForLoad(this);
