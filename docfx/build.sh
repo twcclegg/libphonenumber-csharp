@@ -58,3 +58,26 @@ dotnet build ../csharp/PhoneNumbers.Extensions --no-restore
 
 dotnet tool restore
 dotnet docfx docfx.json "$@"
+
+# The demo links into this site by page and DocFX heading id (csharp/PhoneNumbers.Demo/
+# DocsLinks.cs), and main.js adds links back from the same kind of key. docfx validates neither,
+# so check each against the built site: a renamed type or a changed overload fails the build here
+# instead of shipping a link to a page or anchor that no longer exists.
+broken=0
+while IFS= read -r link; do
+    page=${link%%#*}
+    anchor=${link#"$page"}
+    anchor=${anchor#\#}
+    if [ ! -f "_site/$page" ]; then
+        echo "error: $link - _site/$page does not exist." >&2
+        broken=1
+    elif [ -n "$anchor" ] && ! grep -q "id=\"$anchor\"" "_site/$page"; then
+        echo "error: $link - _site/$page has no heading with that id." >&2
+        broken=1
+    fi
+done < <(grep -ohE "[\"'](api|articles)/[^\"'#]+\.html(#[^\"']*)?[\"']" \
+    ../csharp/PhoneNumbers.Demo/DocsLinks.cs template/public/main.js | tr -d "\"'" | sort -u)
+if [ "$broken" -ne 0 ]; then
+    echo "Update the links in csharp/PhoneNumbers.Demo/DocsLinks.cs or docfx/template/public/main.js." >&2
+    exit 1
+fi

@@ -187,6 +187,7 @@ pre code, pre.code, .article pre, .hljs {
   --icon-file: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'/%3E%3Cpolyline points='14 2 14 8 20 8'/%3E%3C/svg%3E");
   --icon-github: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22'/%3E%3C/svg%3E");
   --icon-nuget: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='2.831' cy='3.144' r='1.831' fill='black' stroke='none'/%3E%3Cpath d='M11.246 5.292a5.643 5.643 0 0 0-5.64 5.642v6.112c0 3.117 2.526 5.641 5.641 5.641h6.112c3.117 0 5.641-2.526 5.641-5.641v-6.112a5.641 5.641 0 0 0-5.641-5.642z'/%3E%3Ccircle cx='9.892' cy='10.147' r='2.288'/%3E%3Ccircle cx='17.195' cy='17.168' r='3.663'/%3E%3C/svg%3E");
+  --icon-arrow-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='5' y1='12' x2='19' y2='12'/%3E%3Cpolyline points='12 5 19 12 12 19'/%3E%3C/svg%3E");
 }
 
 [data-bs-theme="dark"] {
@@ -551,6 +552,41 @@ header {
 
 .toc-offcanvas .filter .form-control {
   border-radius: var(--bs-border-radius-pill);
+}
+
+/* "Try it live" links from an API into the demo page that exercises it
+   (added by main.js). A pill in the demo's accent, sized to a 44px tap
+   target like the rail's rows. */
+.try-live {
+  margin: 0.25rem 0 1rem;
+}
+
+.try-live__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius-pill);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.try-live__link::after {
+  content: "";
+  width: 16px;
+  height: 16px;
+  background-color: currentColor;
+  -webkit-mask: var(--icon-arrow-right) center / contain no-repeat;
+  mask: var(--icon-arrow-right) center / contain no-repeat;
+}
+
+.try-live__link:hover {
+  border-color: var(--bs-primary);
+  background: var(--bs-tertiary-bg);
 }
 
 /* ============================================================

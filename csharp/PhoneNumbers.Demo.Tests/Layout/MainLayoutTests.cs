@@ -46,14 +46,15 @@ public class MainLayoutTests : BunitContext
     [Theory]
     [InlineData("API Reference", "http://localhost/docs/api/PhoneNumbers.html")]
     [InlineData("Articles", "http://localhost/docs/articles/api-differences-from-java.html")]
-    public void reference_links_open_the_docs_site_in_the_same_tab(string text, string href)
+    public void reference_links_load_the_docs_site_in_the_same_tab(string text, string href)
     {
         var cut = Render<MainLayout>();
 
         var link = cut.FindAll("nav a").Single(a => a.TextContent.Trim() == text);
 
         Assert.Equal(href, link.GetAttribute("href"));
-        Assert.Null(link.GetAttribute("target"));
+        // _top: the same tab, but a target Blazor's router leaves to the browser (see DocsLinks).
+        Assert.Equal("_top", link.GetAttribute("target"));
     }
 
     [Theory]
