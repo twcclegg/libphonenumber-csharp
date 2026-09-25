@@ -141,6 +141,7 @@
     {
         var (_, r2) = UrlState.Read(Nav);
         if (!string.IsNullOrEmpty(r2)) _selectedRegion = r2;
+        UrlState.NormalizeUrl(Nav);
     }
 
     private void OnRegionChange(string region)

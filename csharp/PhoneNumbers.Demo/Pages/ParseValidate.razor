@@ -205,6 +205,12 @@ else
 
     protected override void OnParsed(PhoneNumber? number)
     {
+        // Clear every derived field, not just some, so nothing outlives the number it came from.
+        _isValid = false;
+        _isPossible = false;
+        _possibleReason = default;
+        _numberType = PhoneNumberType.UNKNOWN;
+        _regionCode = null;
         _exampleNumber = null;
         _exampleMobile = null;
         if (number == null) return;

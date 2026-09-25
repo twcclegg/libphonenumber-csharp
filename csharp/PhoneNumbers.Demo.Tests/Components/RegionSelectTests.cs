@@ -40,6 +40,19 @@ public class RegionSelectTests : BunitContext
     }
 
     [Fact]
+    public void a_change_with_no_value_reports_the_current_value()
+    {
+        string? picked = null;
+        var cut = Render<RegionSelect>(p => p
+            .Add(s => s.Value, "GB")
+            .Add(s => s.ValueChanged, (string r) => picked = r));
+
+        cut.Find("select").Change((object?)null);
+
+        Assert.Equal("GB", picked);
+    }
+
+    [Fact]
     public void forwards_its_id_to_the_select_so_a_label_can_target_it()
     {
         var cut = Render<RegionSelect>(p => p

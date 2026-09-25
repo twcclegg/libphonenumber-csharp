@@ -52,16 +52,6 @@ public class FormattingPageTests : BunitContext
     }
 
     [Fact]
-    public void calling_from_with_no_value_falls_back_to_the_page_default()
-    {
-        var cut = Render<Formatting>();
-
-        cut.Find("#format-calling-from").Change((object?)null);
-
-        Assert.Contains("Formatted for dialing from GB", cut.Markup);
-    }
-
-    [Fact]
     public void shows_out_of_country_and_mobile_dialing_formats()
     {
         var cut = Render<Formatting>();
