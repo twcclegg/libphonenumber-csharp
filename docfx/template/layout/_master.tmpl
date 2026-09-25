@@ -74,13 +74,21 @@
               makes _rel followed by ../ the demo's root from any page here. docfx/build.sh fails
               when these links and the demo's Pages table list different routes. The icons'
               shapes are in main.css (--icon-*). }}
-          <a class="navbar-brand" href="{{_rel}}../">
-            <img id="logo" class="svg" src="{{_rel}}{{{_appLogoPath}}}{{^_appLogoPath}}logo.svg{{/_appLogoPath}}" alt="">
-            <span class="navbar-brand__text">
-              <span class="navbar-brand__title">libphonenumber</span>
-              <span class="navbar-brand__subtitle">C# · API Reference</span>
-            </span>
-          </a>
+          <div class="rail-header">
+            <a class="navbar-brand" href="{{_rel}}../">
+              <img id="logo" class="svg" src="{{_rel}}{{{_appLogoPath}}}{{^_appLogoPath}}logo.svg{{/_appLogoPath}}" alt="">
+              <span class="navbar-brand__text">
+                <span class="navbar-brand__title">libphonenumber</span>
+                <span class="navbar-brand__subtitle">C# · API Reference</span>
+              </span>
+            </a>
+            {{! The demo's theme button (its sidebar__top-actions), in place of DocFX's
+                Light/Dark/Auto menu, which main.css hides. main.js wires it up and keeps its
+                name, which is also its tooltip, saying what pressing it will do. }}
+            <div class="rail-header__actions">
+              <button type="button" class="rail-icon-btn rail-theme-toggle" aria-label="Switch to dark mode" title="Switch to dark mode"></button>
+            </div>
+          </div>
           <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
             <i class="bi bi-three-dots"></i>
           </button>
@@ -109,7 +117,7 @@
                 </ul>
               </div>
               {{! DocFX's script renders toc.yml's links (API Reference, Articles, GitHub, NuGet)
-                  and then the theme picker after everything static in #navbar, so this heading
+                  and then its theme menu (hidden) after everything static in #navbar, so this heading
                   lands directly above them and the document order is the visual order. }}
               <div class="rail-section rail-section--reference">
                 <div class="rail-section__title">Reference</div>
@@ -118,9 +126,11 @@
           </div>
           {{! Desktop only, as in the demo: shrinks the sidebar to its icons and back. main.js
               keeps the label (its accessible name) saying what pressing it will do. }}
-          <button type="button" class="rail-collapse">
-            <span class="rail-collapse__label">Collapse sidebar</span>
-          </button>
+          <div class="rail-footer">
+            <button type="button" class="rail-collapse">
+              <span class="rail-collapse__label">Collapse sidebar</span>
+            </button>
+          </div>
         </div>
       </nav>
       {{/_disableNavbar}}

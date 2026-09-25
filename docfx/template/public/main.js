@@ -91,8 +91,7 @@ function setUpSidebar() {
 // The collapsed sidebar shows icons only, so name each control beside it on hover and on
 // keyboard focus. The name is still the control's own text (hidden visually), so the tooltip
 // is aria-hidden; it stays up while the pointer moves onto it and Escape dismisses it (WCAG
-// 1.4.13). Controls with a title (the theme picker) keep the browser's own tooltip, and the
-// theme menu's items are skipped. The demo carries the same behaviour in its index.html.
+// 1.4.13). Controls with a title (the theme button) keep the browser's own tooltip. The demo carries the same behaviour in its index.html.
 function addSidebarTooltips() {
     const tip = document.createElement('div');
     tip.className = 'rail-tooltip';
@@ -103,7 +102,7 @@ function addSidebarTooltips() {
     const controlFor = node => {
         if (!(node instanceof Element) || !desktop.matches || !isSidebarCollapsed()) return null;
         const control = node.closest('header a, header button');
-        return control && !control.hasAttribute('title') && !control.closest('.dropdown-menu') ? control : null;
+        return control && !control.hasAttribute('title') ? control : null;
     };
     const show = control => {
         clearTimeout(hideTimer);
@@ -144,8 +143,41 @@ function addSidebarTooltips() {
     window.addEventListener('scroll', hide, true);
 }
 
+// The theme button in the sidebar header, the demo's own: it flips between light and dark
+// and stores the choice under 'theme', the key DocFX (and the demo) read before first paint.
+// DocFX's 'auto' still resolves to the OS setting until the reader presses it. The icon
+// follows data-bs-theme in CSS; the name, which is also the tooltip, is kept in step here,
+// including when 'auto' follows an OS change.
+function currentTheme() {
+    return document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'dark' : 'light';
+}
+
+function setUpThemeToggle() {
+    const button = document.querySelector('.rail-theme-toggle');
+    if (!button) return;
+
+    const label = () => {
+        const text = currentTheme() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+        button.setAttribute('aria-label', text);
+        button.title = text;
+    };
+    label();
+    new MutationObserver(label).observe(document.documentElement, { attributeFilter: ['data-bs-theme'] });
+
+    button.addEventListener('click', () => {
+        const theme = currentTheme() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-bs-theme', theme);
+        try {
+            localStorage.setItem('theme', theme);
+        } catch {
+            // Storage can be unavailable; the page still switches.
+        }
+    });
+}
+
 export default {
     start() {
+        setUpThemeToggle();
         setUpSidebar();
         addTryItLiveLinks();
     },

@@ -151,9 +151,9 @@ pre code, pre.code, .article pre, .hljs {
 /* ============================================================
    Rail: the demo's sidebar (csharp/PhoneNumbers.Demo/wwwroot/css/
    sidebar.css), rebuilt from DocFX's navbar so the two sites share
-   one navigation. template/layout/_master.tmpl supplies the brand
-   and the Overview/Features sections; DocFX's script then renders
-   toc.yml (the Reference links) and the theme picker after them.
+   one navigation. template/layout/_master.tmpl supplies the header
+   (brand and theme button), the Overview/Features sections and the
+   footer; DocFX's script renders toc.yml (the Reference links).
    Fixed full-height on the left at >=768px (the same breakpoint
    DocFX's own toc-offcanvas switches to a static column at); below
    that the stock mobile collapse keeps working.
@@ -192,6 +192,8 @@ pre code, pre.code, .article pre, .hljs {
   --icon-nuget: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='2.831' cy='3.144' r='1.831' fill='black' stroke='none'/%3E%3Cpath d='M11.246 5.292a5.643 5.643 0 0 0-5.64 5.642v6.112c0 3.117 2.526 5.641 5.641 5.641h6.112c3.117 0 5.641-2.526 5.641-5.641v-6.112a5.641 5.641 0 0 0-5.641-5.642z'/%3E%3Ccircle cx='9.892' cy='10.147' r='2.288'/%3E%3Ccircle cx='17.195' cy='17.168' r='3.663'/%3E%3C/svg%3E");
   --icon-chevrons-left: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='11 17 6 12 11 7'/%3E%3Cpolyline points='18 17 13 12 18 7'/%3E%3C/svg%3E");
   --icon-chevrons-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='13 17 18 12 13 7'/%3E%3Cpolyline points='6 17 11 12 6 7'/%3E%3C/svg%3E");
+  --icon-moon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z'/%3E%3C/svg%3E");
+  --icon-sun: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Cpath d='M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41'/%3E%3C/svg%3E");
   --icon-arrow-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='5' y1='12' x2='19' y2='12'/%3E%3Cpolyline points='12 5 19 12 12 19'/%3E%3C/svg%3E");
 }
 
@@ -254,7 +256,7 @@ header {
     gap: 0;
   }
 
-  .navbar-brand {
+  .rail-header {
     flex-shrink: 0;
   }
 
@@ -273,30 +275,6 @@ header {
   .navbar-expand-md .navbar-nav {
     flex-direction: column !important;
     align-items: stretch !important;
-  }
-
-  /* The theme picker is the last thing DocFX renders into the rail, so it
-     sits at the foot like the demo's sidebar__footer, in document order.
-     DocFX's own "form.icons" rules push it to the end of its horizontal
-     navbar; this selector outranks them. */
-  .navbar #navbar > form.icons {
-    align-self: stretch;
-    justify-content: flex-start;
-    margin: auto calc(-0.75 * var(--rail-rem)) calc(-1 * var(--rail-rem));
-    padding: calc(0.9 * var(--rail-rem)) calc(1.25 * var(--rail-rem)) calc(0.5 * var(--rail-rem));
-    border-top: 1px solid var(--rail-border);
-  }
-
-  /* Bootstrap positions a navbar dropdown statically (data-bs-popper=
-     "static"): below its toggle and, for DocFX's dropdown-menu-end, right-
-     aligned to it. At the rail's foot and left edge that opens it below the
-     window and off its left side, so open it upwards from the left instead. */
-  .navbar #navbar > form.icons .dropdown-menu[data-bs-popper] {
-    top: auto;
-    bottom: 100%;
-    left: 0;
-    right: auto;
-    margin: 0 0 calc(0.25 * var(--rail-rem));
   }
 
   /* Everything body lays out beside the fixed rail: the page, the search
@@ -385,13 +363,84 @@ header {
   overflow-wrap: anywhere;
 }
 
+/* The demo's sidebar__header: the brand, then its actions at the far end. */
+.rail-header {
+  display: flex;
+  align-items: center;
+  gap: calc(0.7 * var(--rail-rem));
+  min-width: 0;
+  padding: calc(1.4 * var(--rail-rem)) calc(1.25 * var(--rail-rem)) calc(1.1 * var(--rail-rem));
+}
+
+/* In the phone-width top bar it fills the row up to DocFX's menu button. */
+@media (max-width: 767.98px) {
+  .rail-header {
+    flex: 1;
+  }
+}
+
 .navbar-brand {
   display: flex !important;
   align-items: center;
   gap: calc(0.7 * var(--rail-rem));
-  padding: calc(1.4 * var(--rail-rem)) calc(1.25 * var(--rail-rem)) calc(1.1 * var(--rail-rem)) !important;
+  min-width: 0;
+  padding: 0 !important;
   margin: 0 !important;
   color: var(--rail-active-text) !important;
+}
+
+.rail-header__actions {
+  display: flex;
+  gap: calc(0.35 * var(--rail-rem));
+  margin-left: auto;
+}
+
+/* The demo's rail-icon-btn, with its MoonIcon/SunIcon as masks. The icon
+   offers the other theme: a moon in light, a sun in dark. */
+.rail-icon-btn {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  padding: 0;
+  border-radius: var(--bs-border-radius-sm);
+  border: 1px solid var(--rail-border);
+  background: var(--rail-surface);
+  color: var(--rail-text);
+  cursor: pointer;
+  transition: color 0.16s ease, border-color 0.16s ease;
+}
+
+.rail-icon-btn:hover {
+  color: var(--rail-active-text);
+  border-color: var(--rail-text-dim);
+}
+
+.rail-icon-btn:focus-visible {
+  outline: 3px solid var(--rail-accent);
+  outline-offset: 2px;
+}
+
+.rail-theme-toggle::before {
+  content: "";
+  width: 17px;
+  height: 17px;
+  background-color: currentColor;
+  -webkit-mask: var(--icon-moon) center / contain no-repeat;
+  mask: var(--icon-moon) center / contain no-repeat;
+}
+
+[data-bs-theme="dark"] .rail-theme-toggle::before {
+  -webkit-mask-image: var(--icon-sun);
+  mask-image: var(--icon-sun);
+}
+
+/* DocFX renders its own Light/Dark/Auto menu into the rail; the header's
+   button replaces it, and the 'auto' it may have stored still resolves to
+   the OS setting until the reader presses the button. */
+.navbar #navbar > form.icons {
+  display: none !important;
 }
 
 .navbar-brand__text {
@@ -429,11 +478,13 @@ header {
   content: url("../images/logo-dark.svg");
 }
 
-/* ".navbar #navbar" to outrank DocFX's own rule, which lines its navbar's
-   contents up at the start; the rail's rows run full width. */
+/* ".navbar #navbar" to outrank DocFX's own rules, which push its navbar's
+   contents to the far end and line them up at the start; the rail's rows
+   start at the top and run full width. */
 .navbar #navbar {
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
   align-items: stretch;
   padding: 0 calc(0.75 * var(--rail-rem)) var(--rail-rem);
 }
@@ -533,11 +584,9 @@ header {
   --bs-dropdown-border-color: var(--rail-border);
 }
 
-/* The theme-toggle button (and, at mobile widths, the hamburger next to
-   it) are plain Bootstrap .btn elements that default to --bs-body-color —
-   the page's general text color, which is dark in light theme. Since the
-   rail they sit in stays dark in both themes, that made the toggle
-   invisible specifically in light mode. */
+/* The mobile menu button is a plain Bootstrap .btn, which defaults to
+   --bs-body-color - the page's general text colour, dark in light theme.
+   The rail it sits in stays dark in both themes, so it needs the rail's. */
 .navbar .btn {
   color: var(--rail-text-dim);
 }
@@ -578,6 +627,15 @@ header {
    base styles so these win at equal specificity.
    ============================================================ */
 @media (min-width: 768px) {
+  /* A flex column, so the button stretches across it as in the demo (a
+     button in normal flow only shrinks to fit). */
+  .rail-footer {
+    display: flex;
+    flex-direction: column;
+    padding-top: calc(0.5 * var(--rail-rem));
+    border-top: 1px solid var(--rail-border);
+  }
+
   .rail-collapse {
     display: flex;
     align-items: center;
@@ -619,9 +677,22 @@ header {
     mask-image: var(--icon-chevrons-right);
   }
 
-  [data-sidebar="collapsed"] .navbar-brand {
-    justify-content: center;
-    padding-inline: 0 !important;
+  /* The demo's collapsed header: the logo, with its actions stacked below. */
+  [data-sidebar="collapsed"] .rail-header {
+    flex-direction: column;
+    gap: calc(0.6 * var(--rail-rem));
+    padding: calc(1.4 * var(--rail-rem)) 0 calc(0.6 * var(--rail-rem));
+  }
+
+  [data-sidebar="collapsed"] .rail-header__actions {
+    flex-direction: column;
+    margin-left: 0;
+  }
+
+  /* As in the demo, whose collapsed sidebar hides its footer. */
+  [data-sidebar="collapsed"] .rail-footer {
+    padding-top: 0;
+    border-top: 0;
   }
 
   /* Names stay in the accessibility tree (they are the controls' accessible
@@ -675,20 +746,6 @@ header {
 
   [data-sidebar="collapsed"] .search .form-control::placeholder {
     color: transparent;
-  }
-
-  [data-sidebar="collapsed"] .navbar #navbar > form.icons {
-    justify-content: center;
-    padding-inline: 0;
-  }
-
-  /* The theme menu is wider than the collapsed rail, whose overflow would clip
-     it: open it beside the rail instead, fixed to the window. */
-  [data-sidebar="collapsed"] .navbar #navbar > form.icons .dropdown-menu[data-bs-popper] {
-    position: fixed;
-    left: calc(var(--rail-current) + 8px);
-    bottom: calc(0.75 * var(--rail-rem));
-    margin: 0;
   }
 
   /* The collapsed rail is compact, but at a short window it still scrolls;
