@@ -29,21 +29,11 @@
         </div>
         <div class="form__group form__group--flush">
             <label class="form__label" for="format-region">Default Region</label>
-            <select id="format-region" class="form__select" @onchange="OnRegionChange">
-                @foreach (var r in _regions)
-                {
-                    <option value="@r.Code" selected="@(r.Code == _selectedRegion)">@r.Display</option>
-                }
-            </select>
+            <RegionSelect id="format-region" Value="@_selectedRegion" ValueChanged="OnRegionChange" />
         </div>
         <div class="form__group form__group--flush">
             <label class="form__label" for="format-calling-from">Calling From</label>
-            <select id="format-calling-from" class="form__select" @onchange="OnCallingFromChange">
-                @foreach (var r in _regions)
-                {
-                    <option value="@r.Code" selected="@(r.Code == _callingFrom)">@r.Display</option>
-                }
-            </select>
+            <RegionSelect id="format-calling-from" Value="@_callingFrom" ValueChanged="OnCallingFromChange" />
         </div>
     </div>
 </div>
@@ -141,15 +131,9 @@ else
     private string _callingFrom = DefaultCallingFrom;
     private PhoneNumber? _parsed;
     private string? _parseError;
-    private List<RegionOption> _regions = new();
 
     protected override void OnInitialized()
     {
-        _regions = _phoneUtil.GetSupportedRegions()
-            .OrderBy(r => r)
-            .Select(r => new RegionOption(r, $"{r} (+{_phoneUtil.GetCountryCodeForRegion(r)})"))
-            .ToList();
-
         var (n, r2) = UrlState.Read(Nav);
         if (n != null) _phoneInput = n;
         if (!string.IsNullOrEmpty(r2)) _selectedRegion = r2;
@@ -173,18 +157,15 @@ else
         SyncUrl();
     }
 
-    private void OnRegionChange(ChangeEventArgs e)
+    private void OnRegionChange(string region)
     {
-        _selectedRegion = e.Value?.ToString() ?? "US";
+        _selectedRegion = region;
         TryParse();
         SyncUrl();
     }
 
-    private void OnCallingFromChange(ChangeEventArgs e)
-    {
-        // Only the rendered formats depend on this; the parsed number does not, so no re-parse.
-        _callingFrom = e.Value?.ToString() ?? DefaultCallingFrom;
-    }
+    // Only the rendered formats depend on this; the parsed number does not, so no re-parse.
+    private void OnCallingFromChange(string region) => _callingFrom = region;
 
     private void SyncUrl()
         => Nav.NavigateTo(UrlState.Build(Nav, _phoneInput, _selectedRegion), forceLoad: false, replace: true);
@@ -203,6 +184,4 @@ else
             _parseError = ex.Message;
         }
     }
-
-    private record RegionOption(string Code, string Display);
 }

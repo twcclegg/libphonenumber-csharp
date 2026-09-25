@@ -29,12 +29,7 @@
         </div>
         <div class="form__group form__group--flush">
             <label class="form__label" for="geo-region">Default Region</label>
-            <select id="geo-region" class="form__select" @onchange="OnRegionChange">
-                @foreach (var r in _regions)
-                {
-                    <option value="@r.Code" selected="@(r.Code == _selectedRegion)">@r.Display</option>
-                }
-            </select>
+            <RegionSelect id="geo-region" Value="@_selectedRegion" ValueChanged="OnRegionChange" />
         </div>
         <div class="form__group form__group--flush">
             <label class="form__label" for="geo-locale">Language</label>
@@ -198,7 +193,6 @@ else
     private string _geoDescription = "";
     private List<string> _timeZones = new();
     private string _carrierName = "";
-    private List<RegionOption> _regions = new();
     private bool _isLoading = true;
 
     private readonly Dictionary<string, string> _locales = new()
@@ -213,11 +207,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _regions = _phoneUtil.GetSupportedRegions()
-            .OrderBy(r => r)
-            .Select(r => new RegionOption(r, $"{r} (+{_phoneUtil.GetCountryCodeForRegion(r)})"))
-            .ToList();
-
         var (n, r2) = UrlState.Read(Nav);
         if (n != null) _phoneInput = n;
         if (!string.IsNullOrEmpty(r2)) _selectedRegion = r2;
@@ -250,9 +239,9 @@ else
         SyncUrl();
     }
 
-    private void OnRegionChange(ChangeEventArgs e)
+    private void OnRegionChange(string region)
     {
-        _selectedRegion = e.Value?.ToString() ?? "US";
+        _selectedRegion = region;
         TryParse();
         SyncUrl();
     }
@@ -311,6 +300,4 @@ else
             _parseError = ex.Message;
         }
     }
-
-    private record RegionOption(string Code, string Display);
 }

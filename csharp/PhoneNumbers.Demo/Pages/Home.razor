@@ -53,12 +53,7 @@
         </div>
         <div class="form__group form__group--flush">
             <label class="form__label" for="home-region">Default region</label>
-            <select id="home-region" class="form__select" @onchange="OnRegionChange">
-                @foreach (var r in _regions)
-                {
-                    <option value="@r.Code" selected="@(r.Code == _selectedRegion)">@r.Display</option>
-                }
-            </select>
+            <RegionSelect id="home-region" Value="@_selectedRegion" ValueChanged="OnRegionChange" />
         </div>
     </div>
 
@@ -217,17 +212,11 @@
     private string _selectedRegion = "US";
     private PhoneNumber? _parsed;
     private string? _parseError;
-    private List<RegionOption> _regions = new();
     private int _regionCount;
 
     protected override void OnInitialized()
     {
-        var supported = _phoneUtil.GetSupportedRegions();
-        _regionCount = supported.Count;
-        _regions = supported
-            .OrderBy(r => r)
-            .Select(r => new RegionOption(r, $"{r} (+{_phoneUtil.GetCountryCodeForRegion(r)})"))
-            .ToList();
+        _regionCount = _phoneUtil.GetSupportedRegions().Count;
 
         var (n, r2) = UrlState.Read(Nav);
         if (n != null) _phoneInput = n;
@@ -252,9 +241,9 @@
         SyncUrl();
     }
 
-    private void OnRegionChange(ChangeEventArgs e)
+    private void OnRegionChange(string region)
     {
-        _selectedRegion = e.Value?.ToString() ?? "US";
+        _selectedRegion = region;
         TryParse();
         SyncUrl();
     }
@@ -276,6 +265,4 @@
             _parseError = ex.Message;
         }
     }
-
-    private record RegionOption(string Code, string Display);
 }

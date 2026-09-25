@@ -18,12 +18,7 @@
     <div class="form__row">
         <div class="form__group form__group--flush">
             <label class="form__label" for="find-region">Default Region</label>
-            <select id="find-region" class="form__select" @onchange="OnRegionChange">
-                @foreach (var r in _regions)
-                {
-                    <option value="@r.Code" selected="@(r.Code == _selectedRegion)">@r.Display</option>
-                }
-            </select>
+            <RegionSelect id="find-region" Value="@_selectedRegion" ValueChanged="OnRegionChange" />
         </div>
         <div class="form__group form__group--flush">
             <label class="form__label" for="find-leniency">Leniency</label>
@@ -109,22 +104,16 @@ else if (!string.IsNullOrWhiteSpace(_textInput))
     private PhoneNumberUtil.Leniency _leniency = PhoneNumberUtil.Leniency.POSSIBLE;
     private string _textInput = "";
     private List<PhoneNumberMatch> _matches = new();
-    private List<RegionOption> _regions = new();
 
     protected override void OnInitialized()
     {
-        _regions = _phoneUtil.GetSupportedRegions()
-            .OrderBy(r => r)
-            .Select(r => new RegionOption(r, $"{r} (+{_phoneUtil.GetCountryCodeForRegion(r)})"))
-            .ToList();
-
         var (_, r2) = UrlState.Read(Nav);
         if (!string.IsNullOrEmpty(r2)) _selectedRegion = r2;
     }
 
-    private void OnRegionChange(ChangeEventArgs e)
+    private void OnRegionChange(string region)
     {
-        _selectedRegion = e.Value?.ToString() ?? "US";
+        _selectedRegion = region;
         Search();
         Nav.NavigateTo(UrlState.Build(Nav, null, _selectedRegion), forceLoad: false, replace: true);
     }
@@ -169,6 +158,4 @@ else if (!string.IsNullOrWhiteSpace(_textInput))
             .Take(50)
             .ToList();
     }
-
-    private record RegionOption(string Code, string Display);
 }
