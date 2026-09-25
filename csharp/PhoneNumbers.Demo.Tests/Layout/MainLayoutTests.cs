@@ -1,4 +1,6 @@
 using Bunit;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.DependencyInjection;
 using PhoneNumbers.Demo.Components.Icons;
 using PhoneNumbers.Demo.Layout;
 using Xunit;
@@ -11,6 +13,54 @@ public class MainLayoutTests : BunitContext
     {
         JSInterop.Setup<string>("phoneDemo.getTheme").SetResult("light");
         JSInterop.SetupVoid("phoneDemo.copyText", _ => true).SetVoidResult();
+    }
+
+    [Fact]
+    public void sidebar_links_every_page_in_order_then_the_resources()
+    {
+        var cut = Render<MainLayout>();
+
+        var links = cut.FindAll("nav a")
+            .Skip(1) // the logo
+            .Select(a => (a.GetAttribute("href"), a.TextContent.Trim()))
+            .ToList();
+
+        Assert.Equal(
+            new (string?, string)[]
+            {
+                ("", "Home"),
+                ("parse", "Parse & Validate"),
+                ("format", "Formatting"),
+                ("live", "Live Formatter"),
+                ("find", "Find Numbers"),
+                ("geo", "Geo & Timezone"),
+            },
+            links.Take(6));
+        Assert.Equal(new[] { "API Docs", "GitHub", "NuGet" }, links.Skip(6).Select(l => l.Item2));
+    }
+
+    [Theory]
+    [InlineData("/", "Home")]
+    [InlineData("/geo?n=%2B44&r=GB", "Geo & Timezone")]
+    [InlineData("/nowhere", "Home")]
+    public void mobile_topbar_names_the_current_page(string url, string title)
+    {
+        Services.GetRequiredService<NavigationManager>().NavigateTo(url);
+
+        var cut = Render<MainLayout>();
+
+        Assert.Equal(title, cut.Find(".topbar__title").TextContent.Trim());
+    }
+
+    [Fact]
+    public void share_and_theme_buttons_are_in_both_the_sidebar_and_the_mobile_topbar()
+    {
+        var cut = Render<MainLayout>();
+
+        Assert.Single(cut.FindAll("nav button[aria-label='Copy shareable link']"));
+        Assert.Single(cut.FindAll("main button[aria-label='Copy shareable link']"));
+        Assert.Single(cut.FindAll("nav button[aria-label='Switch to dark mode']"));
+        Assert.Single(cut.FindAll("main button[aria-label='Switch to dark mode']"));
     }
 
     [Fact]

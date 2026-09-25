@@ -21,72 +21,27 @@
                 </div>
             </a>
             <div class="sidebar__top-actions">
-                <button class="rail-icon-btn @(_shareCopied ? "rail-icon-btn--done" : "")"
-                        @onclick="CopyLink"
-                        aria-label="@(_shareCopied ? "Link copied" : "Copy shareable link")"
-                        title="Copy shareable link">
-                    @if (_shareCopied)
-                    {
-                        <CheckIcon />
-                    }
-                    else
-                    {
-                        <ShareIcon />
-                    }
-                </button>
-                <button class="rail-icon-btn"
-                        @onclick="ToggleTheme"
-                        aria-label="@(_theme == "dark" ? "Switch to light mode" : "Switch to dark mode")"
-                        title="Toggle theme">
-                    @ThemeIcon()
-                </button>
+                @ChromeActions("rail-icon-btn")
             </div>
         </div>
 
         <div class="sidebar__nav">
-            <div class="sidebar__section">
-                <div class="sidebar__section-title">Overview</div>
-                <NavLink href="" class="sidebar__link" ActiveClass="sidebar__link--active" Match="NavLinkMatch.All" @onclick="CloseSidebar">
-                    <span class="sidebar__link-icon" aria-hidden="true">
-                        <HomeIcon />
-                    </span>
-                    Home
-                </NavLink>
-            </div>
-
-            <div class="sidebar__section">
-                <div class="sidebar__section-title">Features</div>
-                <NavLink href="parse" class="sidebar__link" ActiveClass="sidebar__link--active" @onclick="CloseSidebar">
-                    <span class="sidebar__link-icon" aria-hidden="true">
-                        <SearchIcon />
-                    </span>
-                    Parse &amp; Validate
-                </NavLink>
-                <NavLink href="format" class="sidebar__link" ActiveClass="sidebar__link--active" @onclick="CloseSidebar">
-                    <span class="sidebar__link-icon" aria-hidden="true">
-                        <ListIcon />
-                    </span>
-                    Formatting
-                </NavLink>
-                <NavLink href="live" class="sidebar__link" ActiveClass="sidebar__link--active" @onclick="CloseSidebar">
-                    <span class="sidebar__link-icon" aria-hidden="true">
-                        <TerminalIcon />
-                    </span>
-                    Live Formatter
-                </NavLink>
-                <NavLink href="find" class="sidebar__link" ActiveClass="sidebar__link--active" @onclick="CloseSidebar">
-                    <span class="sidebar__link-icon" aria-hidden="true">
-                        <FileTextIcon />
-                    </span>
-                    Find Numbers
-                </NavLink>
-                <NavLink href="geo" class="sidebar__link" ActiveClass="sidebar__link--active" @onclick="CloseSidebar">
-                    <span class="sidebar__link-icon" aria-hidden="true">
-                        <GlobeIcon />
-                    </span>
-                    Geo &amp; Timezone
-                </NavLink>
-            </div>
+            @foreach (var group in Pages.GroupBy(p => p.Section))
+            {
+                <div class="sidebar__section">
+                    <div class="sidebar__section-title">@group.Key</div>
+                    @foreach (var link in group)
+                    {
+                        <NavLink href="@link.Href" class="sidebar__link" ActiveClass="sidebar__link--active"
+                                 Match="@(link.Href == "" ? NavLinkMatch.All : NavLinkMatch.Prefix)" @onclick="CloseSidebar">
+                            <span class="sidebar__link-icon" aria-hidden="true">
+                                @link.Icon
+                            </span>
+                            @link.Title
+                        </NavLink>
+                    }
+                </div>
+            }
 
             <div class="sidebar__section">
                 <div class="sidebar__section-title">Resources</div>
@@ -127,22 +82,7 @@
             <span class="topbar__title">@_currentTitle</span>
             <span class="topbar__spacer"></span>
             <div class="topbar__actions">
-                <button class="icon-btn @(_shareCopied ? "icon-btn--done" : "")"
-                        @onclick="CopyLink"
-                        aria-label="@(_shareCopied ? "Link copied" : "Copy shareable link")">
-                    @if (_shareCopied)
-                    {
-                        <CheckIcon />
-                    }
-                    else
-                    {
-                        <ShareIcon />
-                    }
-                </button>
-                <button class="icon-btn" @onclick="ToggleTheme"
-                        aria-label="@(_theme == "dark" ? "Switch to light mode" : "Switch to dark mode")">
-                    @ThemeIcon()
-                </button>
+                @ChromeActions("icon-btn")
             </div>
         </div>
 
@@ -165,15 +105,17 @@
     // regardless of which client-side route the user is currently on.
     private string DocsUrl => $"{Nav.BaseUri}docs/";
 
-    private static readonly Dictionary<string, string> Titles = new()
-    {
-        [""] = "Home",
-        ["parse"] = "Parse & Validate",
-        ["format"] = "Formatting",
-        ["live"] = "Live Formatter",
-        ["find"] = "Find Numbers",
-        ["geo"] = "Geo & Timezone",
-    };
+    // Every page the sidebar links to, in order: its route, the title the sidebar and the mobile
+    // topbar show for it, its icon and the sidebar section it sits under.
+    private static readonly IReadOnlyList<PageLink> Pages =
+    [
+        new("", "Home", Icon<HomeIcon>(), "Overview"),
+        new("parse", "Parse & Validate", Icon<SearchIcon>(), "Features"),
+        new("format", "Formatting", Icon<ListIcon>(), "Features"),
+        new("live", "Live Formatter", Icon<TerminalIcon>(), "Features"),
+        new("find", "Find Numbers", Icon<FileTextIcon>(), "Features"),
+        new("geo", "Geo & Timezone", Icon<GlobeIcon>(), "Features"),
+    ];
 
     protected override void OnInitialized()
     {
@@ -210,7 +152,7 @@
         var q = path.IndexOf('?');
         if (q >= 0) path = path[..q];
         path = path.Trim('/');
-        _currentTitle = Titles.TryGetValue(path, out var title) ? title : "Home";
+        _currentTitle = Pages.FirstOrDefault(p => p.Href == path)?.Title ?? "Home";
     }
 
     private void OpenSidebar() => _sidebarOpen = true;
@@ -237,8 +179,41 @@
     // sun when in dark mode (to switch to light), moon otherwise
     private RenderFragment ThemeIcon() => _theme == "dark" ? @<SunIcon /> : @<MoonIcon />;
 
+    // The share and theme buttons, rendered in both the sidebar header and the mobile topbar;
+    // only the button block differs between the two.
+    private RenderFragment ChromeActions(string block) =>
+        @<text>
+            <button class="@block @(_shareCopied ? block + "--done" : "")"
+                    @onclick="CopyLink"
+                    aria-label="@(_shareCopied ? "Link copied" : "Copy shareable link")"
+                    title="Copy shareable link">
+                @if (_shareCopied)
+                {
+                    <CheckIcon />
+                }
+                else
+                {
+                    <ShareIcon />
+                }
+            </button>
+            <button class="@block"
+                    @onclick="ToggleTheme"
+                    aria-label="@(_theme == "dark" ? "Switch to light mode" : "Switch to dark mode")"
+                    title="Toggle theme">
+                @ThemeIcon()
+            </button>
+        </text>;
+
     public void Dispose()
     {
         Nav.LocationChanged -= OnLocationChanged;
     }
+
+    private static RenderFragment Icon<TIcon>() where TIcon : IconBase => builder =>
+    {
+        builder.OpenComponent<TIcon>(0);
+        builder.CloseComponent();
+    };
+
+    private record PageLink(string Href, string Title, RenderFragment Icon, string Section);
 }
