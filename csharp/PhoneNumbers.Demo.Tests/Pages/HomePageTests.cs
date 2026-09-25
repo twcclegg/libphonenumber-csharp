@@ -201,4 +201,19 @@ public class HomePageTests : BunitContext
             Assert.Single(cut.FindAll("button[aria-label='Copy install command']"));
         });
     }
+
+    [Fact]
+    public async Task copying_the_second_command_soon_after_the_first_keeps_its_confirmation()
+    {
+        JSInterop.SetupVoid("phoneDemo.copyText", _ => true).SetVoidResult();
+        var cut = Render<Home>();
+
+        cut.FindAll("button[aria-label='Copy install command']")[0].Click();
+        await Task.Delay(1000);
+        cut.FindAll("button[aria-label='Copy install command']")[0].Click();
+        // The first click's 1.5s timer has now expired; the second click's has not.
+        await Task.Delay(800);
+
+        Assert.Single(cut.FindAll("button[aria-label='Command copied']"));
+    }
 }

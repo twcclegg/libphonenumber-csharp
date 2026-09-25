@@ -55,4 +55,18 @@ public class MainLayoutTests : BunitContext
         });
         JSInterop.VerifyInvoke("phoneDemo.copyText");
     }
+
+    [Fact]
+    public async Task copying_the_link_again_keeps_the_confirmation_for_its_full_time()
+    {
+        var cut = Render<MainLayout>();
+
+        cut.Find("button[aria-label='Copy shareable link']").Click();
+        await Task.Delay(1000);
+        cut.Find("button[aria-label='Link copied']").Click();
+        // The first click's 1.5s timer has now expired; the second click's has not.
+        await Task.Delay(800);
+
+        Assert.NotEmpty(cut.FindAll("button[aria-label='Link copied']"));
+    }
 }
