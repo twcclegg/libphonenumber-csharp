@@ -300,7 +300,10 @@ else
             var locale = GetLocale();
 
             _geoDescription = _geocoder?.GetDescriptionForNumber(_parsed, locale) ?? "";
-            _timeZones = _tzMapper?.GetTimeZonesForNumber(_parsed) ?? new List<string>();
+            // The mapper reports "no data" as a lone Etc/Unknown zone, never as an empty list.
+            var unknownZone = _tzMapper?.GetUnknownTimeZone();
+            _timeZones = _tzMapper?.GetTimeZonesForNumber(_parsed).Where(tz => tz != unknownZone).ToList()
+                         ?? new List<string>();
             _carrierName = _carrierMapper?.GetNameForNumber(_parsed, locale) ?? "";
         }
         catch (NumberParseException ex)

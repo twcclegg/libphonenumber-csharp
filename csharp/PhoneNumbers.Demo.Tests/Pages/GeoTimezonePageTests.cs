@@ -90,6 +90,17 @@ public class GeoTimezonePageTests : BunitContext
     }
 
     [Fact]
+    public void number_with_no_timezone_data_says_so_instead_of_showing_etc_unknown()
+    {
+        var cut = RenderAndWaitForLoad(this);
+
+        cut.Find("#geo-phone").Input("+800 1234 5678");
+
+        Assert.Contains("No timezone data available for this number", cut.Markup);
+        Assert.DoesNotContain("Etc/Unknown", cut.Markup);
+    }
+
+    [Fact]
     public void shows_carrier_section()
     {
         var cut = RenderAndWaitForLoad(this);
