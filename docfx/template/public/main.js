@@ -175,8 +175,52 @@ function setUpThemeToggle() {
     });
 }
 
+// The share button in the sidebar header, the demo's own: copies this page's address and
+// confirms with a check and "Link copied" for 1.5s. A second press restarts the confirmation.
+// Falls back to a hidden textarea where the async clipboard is unavailable, as the demo does.
+const COPY_CONFIRMATION_MS = 1500;
+
+async function copyText(text) {
+    try {
+        await navigator.clipboard.writeText(text);
+    } catch {
+        const area = document.createElement('textarea');
+        area.value = text;
+        area.style.position = 'fixed';
+        area.style.opacity = '0';
+        document.body.append(area);
+        area.select();
+        try {
+            document.execCommand('copy');
+        } finally {
+            area.remove();
+        }
+    }
+}
+
+function setUpShareButton() {
+    const button = document.querySelector('.rail-share');
+    if (!button) return;
+
+    let timer = 0;
+    const label = copied => {
+        const text = copied ? 'Link copied' : 'Copy shareable link';
+        button.setAttribute('aria-label', text);
+        button.title = text;
+        button.classList.toggle('rail-icon-btn--done', copied);
+    };
+
+    button.addEventListener('click', async () => {
+        await copyText(location.href);
+        label(true);
+        clearTimeout(timer);
+        timer = setTimeout(() => label(false), COPY_CONFIRMATION_MS);
+    });
+}
+
 export default {
     start() {
+        setUpShareButton();
         setUpThemeToggle();
         setUpSidebar();
         addTryItLiveLinks();

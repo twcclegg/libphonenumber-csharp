@@ -174,6 +174,8 @@ pre code, pre.code, .article pre, .hljs {
   --rail-text-dim: #9c9385;
   --rail-active-text: #ffffff;
   --rail-accent: #ea580c; /* the demo's --accent */
+  --rail-success-fg: #15643a; /* the demo's --success-fg */
+  --rail-success-solid: #15803d; /* the demo's --success-solid */
 
   /* The demo's icon components (csharp/PhoneNumbers.Demo/Components/
      Icons/) as masks. DocFX renders the Reference links itself, so
@@ -192,6 +194,8 @@ pre code, pre.code, .article pre, .hljs {
   --icon-nuget: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='2.831' cy='3.144' r='1.831' fill='black' stroke='none'/%3E%3Cpath d='M11.246 5.292a5.643 5.643 0 0 0-5.64 5.642v6.112c0 3.117 2.526 5.641 5.641 5.641h6.112c3.117 0 5.641-2.526 5.641-5.641v-6.112a5.641 5.641 0 0 0-5.641-5.642z'/%3E%3Ccircle cx='9.892' cy='10.147' r='2.288'/%3E%3Ccircle cx='17.195' cy='17.168' r='3.663'/%3E%3C/svg%3E");
   --icon-chevrons-left: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='11 17 6 12 11 7'/%3E%3Cpolyline points='18 17 13 12 18 7'/%3E%3C/svg%3E");
   --icon-chevrons-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='13 17 18 12 13 7'/%3E%3Cpolyline points='6 17 11 12 6 7'/%3E%3C/svg%3E");
+  --icon-share: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='18' cy='5' r='3'/%3E%3Ccircle cx='6' cy='12' r='3'/%3E%3Ccircle cx='18' cy='19' r='3'/%3E%3Cline x1='8.59' y1='13.51' x2='15.42' y2='17.49'/%3E%3Cline x1='15.41' y1='6.51' x2='8.59' y2='10.49'/%3E%3C/svg%3E");
+  --icon-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
   --icon-moon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z'/%3E%3C/svg%3E");
   --icon-sun: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Cpath d='M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41'/%3E%3C/svg%3E");
   --icon-arrow-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='5' y1='12' x2='19' y2='12'/%3E%3Cpolyline points='12 5 19 12 12 19'/%3E%3C/svg%3E");
@@ -209,6 +213,8 @@ pre code, pre.code, .article pre, .hljs {
   --rail-text-dim: #837a6c;
   --rail-active-text: #ffffff;
   --rail-accent: #fb923c;
+  --rail-success-fg: #7ee0a6;
+  --rail-success-solid: #34d27f;
 }
 
 header {
@@ -422,13 +428,30 @@ header {
   outline-offset: 2px;
 }
 
+.rail-share::before,
 .rail-theme-toggle::before {
   content: "";
   width: 17px;
   height: 17px;
   background-color: currentColor;
-  -webkit-mask: var(--icon-moon) center / contain no-repeat;
-  mask: var(--icon-moon) center / contain no-repeat;
+  -webkit-mask: var(--icon-share) center / contain no-repeat;
+  mask: var(--icon-share) center / contain no-repeat;
+}
+
+/* The demo's copy confirmation: a check, in its success colours. */
+.rail-icon-btn--done {
+  color: var(--rail-success-fg);
+  border-color: var(--rail-success-solid);
+}
+
+.rail-share.rail-icon-btn--done::before {
+  -webkit-mask-image: var(--icon-check);
+  mask-image: var(--icon-check);
+}
+
+.rail-theme-toggle::before {
+  -webkit-mask-image: var(--icon-moon);
+  mask-image: var(--icon-moon);
 }
 
 [data-bs-theme="dark"] .rail-theme-toggle::before {

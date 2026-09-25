@@ -82,10 +82,11 @@
                 <span class="navbar-brand__subtitle">C# · API Reference</span>
               </span>
             </a>
-            {{! The demo's theme button (its sidebar__top-actions), in place of DocFX's
-                Light/Dark/Auto menu, which main.css hides. main.js wires it up and keeps its
-                name, which is also its tooltip, saying what pressing it will do. }}
+            {{! The demo's share and theme buttons (its sidebar__top-actions); the theme button
+                replaces DocFX's Light/Dark/Auto menu, which main.css hides. main.js wires both
+                up and keeps each name, which is also its tooltip, saying what pressing it does. }}
             <div class="rail-header__actions">
+              <button type="button" class="rail-icon-btn rail-share" aria-label="Copy shareable link" title="Copy shareable link"></button>
               <button type="button" class="rail-icon-btn rail-theme-toggle" aria-label="Switch to dark mode" title="Switch to dark mode"></button>
             </div>
           </div>
