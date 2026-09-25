@@ -290,18 +290,40 @@ header {
     margin: 0 0 calc(0.25 * var(--rail-rem));
   }
 
-  main.container-xxl {
+  /* Everything body lays out beside the fixed rail: the page, the search
+     results DocFX shows in its place while a query is typed, and the footer.
+     Offsetting only main left the other two starting under the rail. */
+  main.container-xxl,
+  body > .search-results,
+  body > footer {
     margin-left: var(--rail-width) !important;
     max-width: none !important;
-    /* body is display:flex/column, making this a flex item; "width:auto"
-       under stretch alignment was resolving against this element's own
-       min-content size (it's a flex container in its own right, holding
-       toc-offcanvas+content+affix) rather than the space actually left
-       after the fixed-position rail, overflowing the viewport. An
-       explicit calc() sidesteps that flex-stretch ambiguity entirely. */
+    /* body is display:flex/column, making these flex items; "width:auto"
+       under stretch alignment was resolving against main's own min-content
+       size (it's a flex container in its own right, holding toc-offcanvas+
+       content+affix) rather than the space actually left after the fixed-
+       position rail, overflowing the viewport. An explicit calc() sidesteps
+       that flex-stretch ambiguity entirely. */
     width: calc(100% - var(--rail-width)) !important;
     min-width: 0 !important;
   }
+
+  /* The same gutter as an article page, not the container's bare 12px. */
+  body > .search-results {
+    padding-inline: 3rem;
+  }
+}
+
+/* DocFX's stock search results: a fixed grey count and a green URL line,
+   neither of which follows the theme. */
+#search-results > .search-list,
+#search-results > .sr-items .sr-item > .item-href {
+  color: var(--bs-secondary-color);
+}
+
+#search-results > .sr-items .sr-item > .item-href {
+  font-family: var(--bs-font-monospace);
+  overflow-wrap: anywhere;
 }
 
 .navbar-brand {
