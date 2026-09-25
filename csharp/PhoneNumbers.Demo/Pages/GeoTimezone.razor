@@ -1,5 +1,5 @@
 @page "/geo"
-@inject NavigationManager Nav
+@inherits PhoneNumberPageBase
 
 <PageTitle>Geocoding &amp; Timezone - libphonenumber-csharp</PageTitle>
 
@@ -21,7 +21,7 @@
             <input id="geo-phone"
                    class="form__input form__input--phone"
                    type="text"
-                   value="@_phoneInput"
+                   value="@PhoneInput"
                    @oninput="OnPhoneInput"
                    @onchange="OnPhoneCommit"
                    placeholder="+1 650 253 0000"
@@ -29,7 +29,7 @@
         </div>
         <div class="form__group form__group--flush">
             <label class="form__label" for="geo-region">Default Region</label>
-            <RegionSelect id="geo-region" Value="@_selectedRegion" ValueChanged="OnRegionChange" />
+            <RegionSelect id="geo-region" Value="@SelectedRegion" ValueChanged="OnRegionChange" />
         </div>
         <div class="form__group form__group--flush">
             <label class="form__label" for="geo-locale">Language</label>
@@ -62,11 +62,11 @@
         </div>
     </div>
 }
-else if (_parseError != null)
+else if (ParseError != null)
 {
-    <div class="error-message" role="alert">@_parseError</div>
+    <div class="error-message" role="alert">@ParseError</div>
 }
-else if (_parsed != null)
+else if (Parsed != null)
 {
     <div aria-live="polite">
         <div class="card">
@@ -140,12 +140,12 @@ else if (_parsed != null)
 
             <div class="data-table__row">
                 <div class="data-table__key">Formatted</div>
-                <div class="data-table__value data-table__value--mono">@_phoneUtil.Format(_parsed, PhoneNumberFormat.INTERNATIONAL)</div>
+                <div class="data-table__value data-table__value--mono">@PhoneUtil.Format(Parsed, PhoneNumberFormat.INTERNATIONAL)</div>
             </div>
             <div class="data-table__row">
                 <div class="data-table__key">Valid</div>
                 <div class="data-table__value">
-                    @if (_phoneUtil.IsValidNumber(_parsed))
+                    @if (PhoneUtil.IsValidNumber(Parsed))
                     {
                         <span class="badge badge--success">Valid</span>
                     }
@@ -157,11 +157,11 @@ else if (_parsed != null)
             </div>
             <div class="data-table__row">
                 <div class="data-table__key">Number Type</div>
-                <div class="data-table__value"><span class="badge badge--info">@NumberTypeLabels.For(_phoneUtil.GetNumberType(_parsed))</span></div>
+                <div class="data-table__value"><span class="badge badge--info">@NumberTypeLabels.For(PhoneUtil.GetNumberType(Parsed))</span></div>
             </div>
             <div class="data-table__row">
                 <div class="data-table__key">Is Geographical</div>
-                <div class="data-table__value">@(_phoneUtil.IsNumberGeographical(_parsed) ? "Yes" : "No")</div>
+                <div class="data-table__value">@(PhoneUtil.IsNumberGeographical(Parsed) ? "Yes" : "No")</div>
             </div>
         </div>
     </div>
@@ -180,16 +180,11 @@ else
 </div>
 
 @code {
-    private readonly PhoneNumberUtil _phoneUtil = PhoneNumberUtil.GetInstance();
     private PhoneNumberOfflineGeocoder? _geocoder;
     private PhoneNumberToTimeZonesMapper? _tzMapper;
     private PhoneNumberToCarrierMapper? _carrierMapper;
 
-    private string _phoneInput = "+1 650 253 0000";
-    private string _selectedRegion = "US";
     private string _selectedLocale = "en";
-    private PhoneNumber? _parsed;
-    private string? _parseError;
     private string _geoDescription = "";
     private List<string> _timeZones = new();
     private string _carrierName = "";
@@ -205,12 +200,11 @@ else
         ["zh"] = "Chinese (Simplified)"
     };
 
+    protected override string DefaultNumber => "+1 650 253 0000";
+    protected override string DefaultRegion => "US";
+
     protected override async Task OnInitializedAsync()
     {
-        var (n, r2) = UrlState.Read(Nav);
-        if (n != null) _phoneInput = n;
-        if (!string.IsNullOrEmpty(r2)) _selectedRegion = r2;
-
         // Yield so the loading state renders before we block the thread loading
         // the large geocoding/timezone/carrier embedded binary datasets.
         await Task.Yield();
@@ -223,45 +217,11 @@ else
         TryParse();
     }
 
-    // @oninput keeps the live results in sync on every keystroke, but does NOT touch the URL.
-    private void OnPhoneInput(ChangeEventArgs e)
-    {
-        _phoneInput = e.Value?.ToString() ?? "";
-        TryParse();
-    }
-
-    // @onchange fires when the field is committed (blur / Enter), so the URL is only
-    // rewritten once the user is done typing — never mid-keystroke.
-    private void OnPhoneCommit(ChangeEventArgs e)
-    {
-        _phoneInput = e.Value?.ToString() ?? "";
-        TryParse();
-        SyncUrl();
-    }
-
-    private void OnRegionChange(string region)
-    {
-        _selectedRegion = region;
-        TryParse();
-        SyncUrl();
-    }
-
     private void OnLocaleChange(ChangeEventArgs e)
     {
         _selectedLocale = e.Value?.ToString() ?? "en";
         TryParse();
     }
-
-    private void SetExample(string number, string region)
-    {
-        _phoneInput = number;
-        _selectedRegion = region;
-        TryParse();
-        SyncUrl();
-    }
-
-    private void SyncUrl()
-        => Nav.NavigateTo(UrlState.Build(Nav, _phoneInput, _selectedRegion), forceLoad: false, replace: true);
 
     private Locale GetLocale() => _selectedLocale switch
     {
@@ -273,31 +233,19 @@ else
         _ => Locale.English
     };
 
-    private void TryParse()
+    protected override void OnParsed(PhoneNumber? number)
     {
-        _parsed = null;
-        _parseError = null;
         _geoDescription = "";
         _timeZones.Clear();
         _carrierName = "";
+        if (number == null) return;
 
-        if (string.IsNullOrWhiteSpace(_phoneInput)) return;
-
-        try
-        {
-            _parsed = _phoneUtil.Parse(_phoneInput, _selectedRegion);
-            var locale = GetLocale();
-
-            _geoDescription = _geocoder?.GetDescriptionForNumber(_parsed, locale) ?? "";
-            // The mapper reports "no data" as a lone Etc/Unknown zone, never as an empty list.
-            var unknownZone = _tzMapper?.GetUnknownTimeZone();
-            _timeZones = _tzMapper?.GetTimeZonesForNumber(_parsed).Where(tz => tz != unknownZone).ToList()
-                         ?? new List<string>();
-            _carrierName = _carrierMapper?.GetNameForNumber(_parsed, locale) ?? "";
-        }
-        catch (NumberParseException ex)
-        {
-            _parseError = ex.Message;
-        }
+        var locale = GetLocale();
+        _geoDescription = _geocoder?.GetDescriptionForNumber(number, locale) ?? "";
+        // The mapper reports "no data" as a lone Etc/Unknown zone, never as an empty list.
+        var unknownZone = _tzMapper?.GetUnknownTimeZone();
+        _timeZones = _tzMapper?.GetTimeZonesForNumber(number).Where(tz => tz != unknownZone).ToList()
+                     ?? new List<string>();
+        _carrierName = _carrierMapper?.GetNameForNumber(number, locale) ?? "";
     }
 }

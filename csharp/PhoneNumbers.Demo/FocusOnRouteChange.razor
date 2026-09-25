@@ -22,8 +22,9 @@
     protected override void OnParametersSet()
     {
         // Compare the matched page type, not Nav.Uri: every page here syncs its input state
-        // into the query string on blur/change (see SyncUrl in Home.razor, Formatting.razor,
-        // and friends), which calls NavigateTo for the *same* page. Comparing raw URIs treated
+        // into the query string on blur/change (see SyncUrl in Pages/PhoneNumberPageBase.cs, and
+        // the region handlers in FindNumbers.razor and LiveFormatter.razor), which calls
+        // NavigateTo for the *same* page. Comparing raw URIs treated
         // that as a navigation, mounting FocusOnNavigate for the first time on ordinary form
         // interaction and yanking focus back to the heading the user had just left. PageType
         // only changes on an actual different-page transition, which is the only case

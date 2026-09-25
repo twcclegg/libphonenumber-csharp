@@ -1,5 +1,5 @@
 @page "/parse"
-@inject NavigationManager Nav
+@inherits PhoneNumberPageBase
 
 <PageTitle>Parse &amp; Validate - libphonenumber-csharp</PageTitle>
 
@@ -21,7 +21,7 @@
             <input id="parse-phone"
                    class="form__input form__input--phone"
                    type="text"
-                   value="@_phoneInput"
+                   value="@PhoneInput"
                    @oninput="OnPhoneInput"
                    @onchange="OnPhoneCommit"
                    placeholder="+44 20 7946 0958"
@@ -29,7 +29,7 @@
         </div>
         <div class="form__group form__group--flush">
             <label class="form__label" for="parse-region">Default Region</label>
-            <RegionSelect id="parse-region" Value="@_selectedRegion" ValueChanged="OnRegionChange" />
+            <RegionSelect id="parse-region" Value="@SelectedRegion" ValueChanged="OnRegionChange" />
         </div>
     </div>
 
@@ -43,11 +43,11 @@
     </div>
 </div>
 
-@if (_parseError != null)
+@if (ParseError != null)
 {
-    <div class="error-message" role="alert">@_parseError</div>
+    <div class="error-message" role="alert">@ParseError</div>
 }
-else if (_parsed != null)
+else if (Parsed != null)
 {
     <div aria-live="polite">
         <div class="card">
@@ -100,17 +100,17 @@ else if (_parsed != null)
 
             <div class="data-table__row">
                 <div class="data-table__key">Country Code</div>
-                <div class="data-table__value data-table__value--mono">+@_parsed.CountryCode</div>
+                <div class="data-table__value data-table__value--mono">+@Parsed.CountryCode</div>
             </div>
             <div class="data-table__row">
                 <div class="data-table__key">National Number</div>
-                <div class="data-table__value data-table__value--mono">@_parsed.NationalNumber</div>
+                <div class="data-table__value data-table__value--mono">@Parsed.NationalNumber</div>
             </div>
-            @if (_parsed.HasExtension)
+            @if (Parsed.HasExtension)
             {
                 <div class="data-table__row">
                     <div class="data-table__key">Extension</div>
-                    <div class="data-table__value data-table__value--mono">@_parsed.Extension</div>
+                    <div class="data-table__value data-table__value--mono">@Parsed.Extension</div>
                 </div>
             }
             <div class="data-table__row">
@@ -119,22 +119,22 @@ else if (_parsed != null)
             </div>
             <div class="data-table__row">
                 <div class="data-table__key">Is Geographical</div>
-                <div class="data-table__value">@(_phoneUtil.IsNumberGeographical(_parsed) ? "Yes" : "No")</div>
+                <div class="data-table__value">@(PhoneUtil.IsNumberGeographical(Parsed) ? "Yes" : "No")</div>
             </div>
             <div class="data-table__row">
                 <div class="data-table__key">Leading Zeros</div>
-                <div class="data-table__value">@(_parsed.HasNumberOfLeadingZeros ? _parsed.NumberOfLeadingZeros.ToString() : "0")</div>
+                <div class="data-table__value">@(Parsed.HasNumberOfLeadingZeros ? Parsed.NumberOfLeadingZeros.ToString() : "0")</div>
             </div>
 
             @if (_isValid && _regionCode != null)
             {
                 <div class="data-table__row">
                     <div class="data-table__key">Area Code Length</div>
-                    <div class="data-table__value">@_phoneUtil.GetLengthOfGeographicalAreaCode(_parsed)</div>
+                    <div class="data-table__value">@PhoneUtil.GetLengthOfGeographicalAreaCode(Parsed)</div>
                 </div>
                 <div class="data-table__row">
                     <div class="data-table__key">National Dest. Code Length</div>
-                    <div class="data-table__value">@_phoneUtil.GetLengthOfNationalDestinationCode(_parsed)</div>
+                    <div class="data-table__value">@PhoneUtil.GetLengthOfNationalDestinationCode(Parsed)</div>
                 </div>
             }
         </div>
@@ -148,22 +148,22 @@ else if (_parsed != null)
 
                 <div class="data-table__row">
                     <div class="data-table__key">Country Calling Code</div>
-                    <div class="data-table__value data-table__value--mono">+@_phoneUtil.GetCountryCodeForRegion(_regionCode)</div>
+                    <div class="data-table__value data-table__value--mono">+@PhoneUtil.GetCountryCodeForRegion(_regionCode)</div>
                 </div>
                 <div class="data-table__row">
                     <div class="data-table__key">NANPA Country</div>
-                    <div class="data-table__value">@(_phoneUtil.IsNANPACountry(_regionCode) ? "Yes" : "No")</div>
+                    <div class="data-table__value">@(PhoneUtil.IsNANPACountry(_regionCode) ? "Yes" : "No")</div>
                 </div>
                 <div class="data-table__row">
                     <div class="data-table__key">Mobile Portable</div>
-                    <div class="data-table__value">@(_phoneUtil.IsMobileNumberPortableRegion(_regionCode) ? "Yes" : "No")</div>
+                    <div class="data-table__value">@(PhoneUtil.IsMobileNumberPortableRegion(_regionCode) ? "Yes" : "No")</div>
                 </div>
 
                 @if (_exampleNumber != null)
                 {
                     <div class="data-table__row">
                         <div class="data-table__key">Example Number</div>
-                        <div class="data-table__value data-table__value--mono">@_phoneUtil.Format(_exampleNumber, PhoneNumberFormat.INTERNATIONAL)</div>
+                        <div class="data-table__value data-table__value--mono">@PhoneUtil.Format(_exampleNumber, PhoneNumberFormat.INTERNATIONAL)</div>
                     </div>
                 }
 
@@ -171,7 +171,7 @@ else if (_parsed != null)
                 {
                     <div class="data-table__row">
                         <div class="data-table__key">Example Mobile</div>
-                        <div class="data-table__value data-table__value--mono">@_phoneUtil.Format(_exampleMobile, PhoneNumberFormat.INTERNATIONAL)</div>
+                        <div class="data-table__value data-table__value--mono">@PhoneUtil.Format(_exampleMobile, PhoneNumberFormat.INTERNATIONAL)</div>
                     </div>
                 }
             </div>
@@ -192,12 +192,6 @@ else
 </div>
 
 @code {
-    private readonly PhoneNumberUtil _phoneUtil = PhoneNumberUtil.GetInstance();
-    private string _phoneInput = "+44 20 7946 0958";
-    private string _selectedRegion = "GB";
-    private PhoneNumber? _parsed;
-    private string? _parseError;
-
     private bool _isValid;
     private bool _isPossible;
     private PhoneNumberUtil.ValidationResult _possibleReason;
@@ -206,76 +200,25 @@ else
     private PhoneNumber? _exampleNumber;
     private PhoneNumber? _exampleMobile;
 
-    protected override void OnInitialized()
+    protected override string DefaultNumber => "+44 20 7946 0958";
+    protected override string DefaultRegion => "GB";
+
+    protected override void OnParsed(PhoneNumber? number)
     {
-        var (n, r2) = UrlState.Read(Nav);
-        if (n != null) _phoneInput = n;
-        if (!string.IsNullOrEmpty(r2)) _selectedRegion = r2;
-
-        TryParse();
-    }
-
-    // @oninput keeps the live results in sync on every keystroke, but does NOT touch the URL.
-    private void OnPhoneInput(ChangeEventArgs e)
-    {
-        _phoneInput = e.Value?.ToString() ?? "";
-        TryParse();
-    }
-
-    // @onchange fires when the field is committed (blur / Enter), so the URL is only
-    // rewritten once the user is done typing — never mid-keystroke.
-    private void OnPhoneCommit(ChangeEventArgs e)
-    {
-        _phoneInput = e.Value?.ToString() ?? "";
-        TryParse();
-        SyncUrl();
-    }
-
-    private void OnRegionChange(string region)
-    {
-        _selectedRegion = region;
-        TryParse();
-        SyncUrl();
-    }
-
-    private void SetExample(string number, string region)
-    {
-        _phoneInput = number;
-        _selectedRegion = region;
-        TryParse();
-        SyncUrl();
-    }
-
-    private void SyncUrl()
-        => Nav.NavigateTo(UrlState.Build(Nav, _phoneInput, _selectedRegion), forceLoad: false, replace: true);
-
-    private void TryParse()
-    {
-        _parsed = null;
-        _parseError = null;
         _exampleNumber = null;
         _exampleMobile = null;
+        if (number == null) return;
 
-        if (string.IsNullOrWhiteSpace(_phoneInput)) return;
+        _isValid = PhoneUtil.IsValidNumber(number);
+        _isPossible = PhoneUtil.IsPossibleNumber(number);
+        _possibleReason = PhoneUtil.IsPossibleNumberWithReason(number);
+        _numberType = PhoneUtil.GetNumberType(number);
+        _regionCode = PhoneUtil.GetRegionCodeForNumber(number);
 
-        try
+        if (_regionCode != null)
         {
-            _parsed = _phoneUtil.Parse(_phoneInput, _selectedRegion);
-            _isValid = _phoneUtil.IsValidNumber(_parsed);
-            _isPossible = _phoneUtil.IsPossibleNumber(_parsed);
-            _possibleReason = _phoneUtil.IsPossibleNumberWithReason(_parsed);
-            _numberType = _phoneUtil.GetNumberType(_parsed);
-            _regionCode = _phoneUtil.GetRegionCodeForNumber(_parsed);
-
-            if (_regionCode != null)
-            {
-                _exampleNumber = _phoneUtil.GetExampleNumber(_regionCode);
-                _exampleMobile = _phoneUtil.GetExampleNumberForType(_regionCode, PhoneNumberType.MOBILE);
-            }
-        }
-        catch (NumberParseException ex)
-        {
-            _parseError = ex.Message;
+            _exampleNumber = PhoneUtil.GetExampleNumber(_regionCode);
+            _exampleMobile = PhoneUtil.GetExampleNumberForType(_regionCode, PhoneNumberType.MOBILE);
         }
     }
 }
