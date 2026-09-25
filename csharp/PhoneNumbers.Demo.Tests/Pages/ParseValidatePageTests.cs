@@ -20,6 +20,17 @@ public class ParseValidatePageTests : BunitContext
     }
 
     [Fact]
+    public void lower_case_region_in_link_is_upper_cased_in_the_address_bar()
+    {
+        var nav = Services.GetRequiredService<NavigationManager>();
+        nav.NavigateTo("/parse?n=020%207946%200958&r=gb");
+
+        Render<ParseValidate>();
+
+        Assert.EndsWith("&r=GB", nav.Uri);
+    }
+
+    [Fact]
     public void unknown_region_in_link_falls_back_to_the_default_region()
     {
         Services.GetRequiredService<NavigationManager>().NavigateTo("/parse?n=020%207946%200958&r=XX");

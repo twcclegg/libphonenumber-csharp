@@ -30,6 +30,7 @@ public abstract class PhoneNumberPageBase : ComponentBase
         var (number, region) = UrlState.Read(Nav);
         PhoneInput = number ?? DefaultNumber;
         SelectedRegion = region ?? DefaultRegion;
+        UrlState.NormalizeUrl(Nav);
         TryParse();
     }
 

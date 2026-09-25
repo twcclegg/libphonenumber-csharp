@@ -8,6 +8,9 @@ namespace PhoneNumbers.Demo.Tests;
 
 public class UrlStateTests : BunitContext
 {
+    // A stand-in for the library's region list, so the region rules are tested without metadata.
+    private static readonly IReadOnlySet<string> Regions = new HashSet<string> { "GB", "US" };
+
     private NavigationManager Nav => Services.GetRequiredService<NavigationManager>();
 
     [Fact]
@@ -37,23 +40,59 @@ public class UrlStateTests : BunitContext
     {
         Nav.NavigateTo("/?r=gb");
 
-        var (_, region) = UrlState.Read(Nav);
+        var (_, region) = UrlState.Read(Nav, Regions);
 
         Assert.Equal("GB", region);
     }
 
     [Theory]
-    [InlineData("XX")]
+    [InlineData("JP")]
     [InlineData("001")]
     [InlineData("%20")]
-    public void ignores_a_region_the_library_does_not_support(string raw)
+    public void ignores_a_region_that_is_not_supported(string raw)
     {
         Nav.NavigateTo("/?n=123&r=" + raw);
 
-        var (number, region) = UrlState.Read(Nav);
+        var (number, region) = UrlState.Read(Nav, Regions);
 
         Assert.Equal("123", number);
         Assert.Null(region);
+    }
+
+    [Fact]
+    public void checks_the_region_against_the_library_by_default()
+    {
+        Nav.NavigateTo("/?r=jp");
+
+        var (_, region) = UrlState.Read(Nav);
+
+        Assert.Equal("JP", region);
+    }
+
+    [Theory]
+    [InlineData("/parse?n=123&r=gb", "parse?n=123&r=GB")]
+    [InlineData("/parse?n=123&r=JP", "parse?n=123")]
+    public void normalize_url_rewrites_a_region_that_read_had_to_change(string url, string expected)
+    {
+        Nav.NavigateTo(url);
+
+        UrlState.NormalizeUrl(Nav, Regions);
+
+        Assert.Equal(Nav.BaseUri + expected, Nav.Uri);
+    }
+
+    [Theory]
+    [InlineData("/parse?n=123&r=GB")]
+    [InlineData("/parse?n=123")]
+    [InlineData("/")]
+    public void normalize_url_leaves_a_link_that_is_already_normal(string url)
+    {
+        Nav.NavigateTo(url);
+        var before = Nav.Uri;
+
+        UrlState.NormalizeUrl(Nav, Regions);
+
+        Assert.Equal(before, Nav.Uri);
     }
 
     [Fact]
