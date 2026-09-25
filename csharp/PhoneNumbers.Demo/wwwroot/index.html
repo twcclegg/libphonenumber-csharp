@@ -40,6 +40,7 @@
     <link href="css/app.css" rel="stylesheet" />
     <link href="css/layout.css" rel="stylesheet" />
     <link href="css/sidebar.css" rel="stylesheet" />
+    <link href="css/sidebar-tooltip.css" rel="stylesheet" />
     <link href="css/hero.css" rel="stylesheet" />
     <link href="css/card.css" rel="stylesheet" />
     <link href="css/page-header.css" rel="stylesheet" />
@@ -74,7 +75,7 @@
         <a href="" class="reload">Reload</a>
     </div>
 
-    <!-- Minimal helpers for theme switching and clipboard (no framework, no deps). -->
+    <!-- Minimal helpers for theme switching, clipboard and the sidebar (no framework, no deps). -->
     <script>
         function syncFavicon(theme) {
             const link = document.querySelector('link[rel="icon"]');
@@ -117,12 +118,77 @@
                 }
                 fallback();
                 return Promise.resolve();
+            },
+            // The collapsed sidebar is kept under 'sidebar', the key the API docs (same origin,
+            // under docs/) read before they paint, so the choice carries between the two sites.
+            isSidebarCollapsed: function () {
+                try { return localStorage.getItem('sidebar') === 'collapsed'; } catch (e) { return false; }
+            },
+            setSidebarCollapsed: function (collapsed) {
+                try { localStorage.setItem('sidebar', collapsed ? 'collapsed' : 'expanded'); } catch (e) {}
             }
         };
         // Correct the favicon for a reload where the stored theme differs
         // from the OS preference favicon.svg's own media query resolved at
         // first paint (setTheme covers every change from here on).
         syncFavicon(window.phoneDemo.getTheme());
+
+        // The collapsed sidebar shows icons only, so name each control beside it on hover and
+        // on keyboard focus. The name is still the control's own text (visually hidden), so the
+        // tooltip is aria-hidden; it stays up while the pointer moves onto it and Escape
+        // dismisses it (WCAG 1.4.13). Controls with a title keep the browser's own tooltip.
+        // Delegated from the document because Blazor re-renders the sidebar's nodes. The API
+        // docs carry the same behaviour in docfx/template/public/main.js.
+        (function () {
+            const tip = document.createElement('div');
+            tip.className = 'sidebar-tooltip';
+            tip.setAttribute('aria-hidden', 'true');
+            let owner = null;
+            let hideTimer = 0;
+
+            function controlFor(node) {
+                const control = node instanceof Element && node.closest('.sidebar--collapsed a, .sidebar--collapsed button');
+                return control && !control.hasAttribute('title') ? control : null;
+            }
+            function show(control) {
+                clearTimeout(hideTimer);
+                const label = control.querySelector('.sidebar__link-label');
+                const text = (label || control).textContent.trim();
+                if (!text) return;
+                if (!tip.isConnected) document.body.appendChild(tip);
+                tip.textContent = text;
+                const rail = control.closest('.sidebar').getBoundingClientRect();
+                const box = control.getBoundingClientRect();
+                tip.style.left = rail.right + 8 + 'px';
+                tip.style.top = box.top + box.height / 2 + 'px';
+                tip.classList.add('sidebar-tooltip--visible');
+                owner = control;
+            }
+            function hide() {
+                clearTimeout(hideTimer);
+                tip.classList.remove('sidebar-tooltip--visible');
+                owner = null;
+            }
+            function hideSoon() {
+                clearTimeout(hideTimer);
+                hideTimer = setTimeout(hide, 300);
+            }
+
+            document.addEventListener('pointerover', function (e) {
+                const control = controlFor(e.target);
+                if (control) show(control);
+                else if (tip.contains(e.target)) clearTimeout(hideTimer);
+                else if (owner) hideSoon();
+            });
+            document.addEventListener('focusin', function (e) {
+                const control = controlFor(e.target);
+                if (control) show(control); else hide();
+            });
+            document.addEventListener('focusout', hide);
+            document.addEventListener('click', hide);
+            document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hide(); });
+            window.addEventListener('scroll', hide, true);
+        })();
     </script>
 
     <script src="_framework/blazor.webassembly#[.{fingerprint}].js"></script>

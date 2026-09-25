@@ -44,6 +44,11 @@
         const theme = localStorage.getItem('theme') || 'auto'
         document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
       </script>
+      {{! Before first paint, like the theme: the sidebar collapsed to its icons if the reader
+          last left it so, here or in the demo (which keeps the choice under the same key). }}
+      <script>
+        try { if (localStorage.getItem('sidebar') === 'collapsed') document.documentElement.setAttribute('data-sidebar', 'collapsed') } catch {}
+      </script>
 
       {{#_googleAnalyticsTagId}}
       <script async src="https://www.googletagmanager.com/gtag/js?id={{_googleAnalyticsTagId}}"></script>
@@ -111,6 +116,11 @@
               </div>
             </div>
           </div>
+          {{! Desktop only, as in the demo: shrinks the sidebar to its icons and back. main.js
+              keeps the label (its accessible name) saying what pressing it will do. }}
+          <button type="button" class="rail-collapse">
+            <span class="rail-collapse__label">Collapse sidebar</span>
+          </button>
         </div>
       </nav>
       {{/_disableNavbar}}

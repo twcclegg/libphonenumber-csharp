@@ -17,6 +17,56 @@ public class MainLayoutTests : BunitContext
         Services.AddSingleton<TimeProvider>(_time);
         JSInterop.Setup<string>("phoneDemo.getTheme").SetResult("light");
         JSInterop.SetupVoid("phoneDemo.copyText", _ => true).SetVoidResult();
+        JSInterop.Setup<bool>("phoneDemo.isSidebarCollapsed").SetResult(false);
+        JSInterop.SetupVoid("phoneDemo.setSidebarCollapsed", _ => true).SetVoidResult();
+    }
+
+    // The collapse toggle is named by its own text, which says what pressing it will do.
+    private static AngleSharp.Dom.IElement SidebarToggle(IRenderedComponent<MainLayout> cut) =>
+        cut.FindAll("nav button").Single(b => b.TextContent.Trim().EndsWith(" sidebar", StringComparison.Ordinal));
+
+    [Fact]
+    public void sidebar_starts_expanded_and_offers_to_collapse()
+    {
+        var cut = Render<MainLayout>();
+
+        Assert.Equal("Collapse sidebar", SidebarToggle(cut).TextContent.Trim());
+    }
+
+    [Fact]
+    public void sidebar_starts_collapsed_when_the_reader_last_left_it_collapsed()
+    {
+        JSInterop.Setup<bool>("phoneDemo.isSidebarCollapsed").SetResult(true);
+
+        var cut = Render<MainLayout>();
+
+        Assert.Equal("Expand sidebar", SidebarToggle(cut).TextContent.Trim());
+    }
+
+    [Fact]
+    public void collapsing_the_sidebar_offers_to_expand_it_and_remembers_the_choice()
+    {
+        var cut = Render<MainLayout>();
+
+        SidebarToggle(cut).Click();
+
+        Assert.Equal("Expand sidebar", SidebarToggle(cut).TextContent.Trim());
+        var saved = JSInterop.VerifyInvoke("phoneDemo.setSidebarCollapsed");
+        Assert.Equal(true, saved.Arguments.Single());
+    }
+
+    [Fact]
+    public void collapsed_sidebar_still_names_every_link()
+    {
+        JSInterop.Setup<bool>("phoneDemo.isSidebarCollapsed").SetResult(true);
+
+        var cut = Render<MainLayout>();
+
+        var names = cut.FindAll("nav a").Skip(1).Select(a => a.TextContent.Trim());
+        Assert.Equal(
+            new[] { "Home", "Parse & Validate", "Formatting", "Live Formatter", "Find Numbers", "Geo & Timezone",
+                    "API Reference", "Articles", "GitHub", "NuGet" },
+            names);
     }
 
     [Fact]

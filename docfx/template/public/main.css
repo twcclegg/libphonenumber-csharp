@@ -160,6 +160,9 @@ pre code, pre.code, .article pre, .hljs {
    ============================================================ */
 :root {
   --rail-width: 300px; /* the demo's --sidebar-width */
+  --rail-collapsed-width: 68px; /* the demo's --sidebar-collapsed-width */
+  /* The rail's width as laid out: collapsed to its icons or not. */
+  --rail-current: var(--rail-width);
   /* The demo sets html { font-size: var(--fs-base) }, 15px, so every rem
      in its sidebar.css is 15px; DocFX keeps the browser's 16px. The rail
      measures in this unit instead so its sizes match the demo's exactly. */
@@ -187,7 +190,13 @@ pre code, pre.code, .article pre, .hljs {
   --icon-file: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'/%3E%3Cpolyline points='14 2 14 8 20 8'/%3E%3C/svg%3E");
   --icon-github: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22'/%3E%3C/svg%3E");
   --icon-nuget: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='2.831' cy='3.144' r='1.831' fill='black' stroke='none'/%3E%3Cpath d='M11.246 5.292a5.643 5.643 0 0 0-5.64 5.642v6.112c0 3.117 2.526 5.641 5.641 5.641h6.112c3.117 0 5.641-2.526 5.641-5.641v-6.112a5.641 5.641 0 0 0-5.641-5.642z'/%3E%3Ccircle cx='9.892' cy='10.147' r='2.288'/%3E%3Ccircle cx='17.195' cy='17.168' r='3.663'/%3E%3C/svg%3E");
+  --icon-chevrons-left: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='11 17 6 12 11 7'/%3E%3Cpolyline points='18 17 13 12 18 7'/%3E%3C/svg%3E");
+  --icon-chevrons-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='13 17 18 12 13 7'/%3E%3Cpolyline points='6 17 11 12 6 7'/%3E%3C/svg%3E");
   --icon-arrow-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='5' y1='12' x2='19' y2='12'/%3E%3Cpolyline points='12 5 19 12 12 19'/%3E%3C/svg%3E");
+}
+
+[data-sidebar="collapsed"] {
+  --rail-current: var(--rail-collapsed-width);
 }
 
 [data-bs-theme="dark"] {
@@ -216,7 +225,7 @@ header {
   header {
     position: fixed !important;
     inset: 0 auto 0 0 !important;
-    width: var(--rail-width) !important;
+    width: var(--rail-current) !important;
     height: 100vh !important;
     display: flex !important;
     flex-direction: column !important;
@@ -274,7 +283,7 @@ header {
     align-self: stretch;
     justify-content: flex-start;
     margin: auto calc(-0.75 * var(--rail-rem)) calc(-1 * var(--rail-rem));
-    padding: calc(0.9 * var(--rail-rem)) calc(1.25 * var(--rail-rem)) calc(1.1 * var(--rail-rem));
+    padding: calc(0.9 * var(--rail-rem)) calc(1.25 * var(--rail-rem)) calc(0.5 * var(--rail-rem));
     border-top: 1px solid var(--rail-border);
   }
 
@@ -296,7 +305,7 @@ header {
   main.container-xxl,
   body > .search-results,
   body > footer {
-    margin-left: var(--rail-width) !important;
+    margin-left: var(--rail-current) !important;
     max-width: none !important;
     /* body is display:flex/column, making these flex items; "width:auto"
        under stretch alignment was resolving against main's own min-content
@@ -304,13 +313,63 @@ header {
        content+affix) rather than the space actually left after the fixed-
        position rail, overflowing the viewport. An explicit calc() sidesteps
        that flex-stretch ambiguity entirely. */
-    width: calc(100% - var(--rail-width)) !important;
+    width: calc(100% - var(--rail-current)) !important;
     min-width: 0 !important;
   }
 
   /* The same gutter as an article page, not the container's bare 12px. */
   body > .search-results {
     padding-inline: 3rem;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
+  header,
+  main.container-xxl,
+  body > .search-results,
+  body > footer {
+    transition: width 0.2s ease, margin-left 0.2s ease;
+  }
+}
+
+/* Below 768px the rail is DocFX's collapsing menu, which has no icon-only
+   state. */
+@media (max-width: 767.98px) {
+  .rail-collapse {
+    display: none;
+  }
+}
+
+/* Names a control in the collapsed rail on hover and keyboard focus (the
+   demo's sidebar-tooltip.css). One element, positioned by main.js. */
+.rail-tooltip {
+  position: fixed;
+  z-index: 1080;
+  transform: translateY(-50%);
+  padding: calc(0.35 * var(--rail-rem)) calc(0.65 * var(--rail-rem));
+  border: 1px solid var(--rail-border);
+  border-radius: var(--bs-border-radius-sm);
+  background: var(--rail-surface);
+  color: var(--rail-active-text);
+  font-size: calc(0.8125 * var(--rail-rem));
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Hoverable once shown, so the pointer can move onto it (WCAG 1.4.13). */
+.rail-tooltip--visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rail-tooltip {
+    transition: opacity 120ms ease, visibility 120ms;
   }
 }
 
@@ -511,6 +570,133 @@ header {
   color: var(--rail-text-dim);
 }
 
+
+/* ============================================================
+   Collapse toggle, and the collapsed (icon-only) rail: the demo's
+   sidebar.css. main.js toggles data-sidebar and names each control
+   in a tooltip while collapsed. Desktop only, and after the rail's
+   base styles so these win at equal specificity.
+   ============================================================ */
+@media (min-width: 768px) {
+  .rail-collapse {
+    display: flex;
+    align-items: center;
+    gap: calc(0.7 * var(--rail-rem));
+    margin: 0 calc(0.75 * var(--rail-rem)) calc(0.75 * var(--rail-rem));
+    padding: calc(0.6 * var(--rail-rem)) calc(0.65 * var(--rail-rem));
+    min-height: 44px;
+    border: 0;
+    border-radius: var(--bs-border-radius-sm);
+    background: transparent;
+    color: var(--rail-text-dim);
+    font-size: calc(0.8125 * var(--rail-rem));
+    font-weight: 500;
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .rail-collapse::before {
+    content: "";
+    width: 19px;
+    height: 19px;
+    flex-shrink: 0;
+    background-color: currentColor;
+    -webkit-mask: var(--icon-chevrons-left) center / contain no-repeat;
+    mask: var(--icon-chevrons-left) center / contain no-repeat;
+  }
+
+  .rail-collapse:hover {
+    background: var(--rail-surface);
+    color: var(--rail-active-text);
+  }
+
+  .rail-collapse:focus-visible {
+    outline: 3px solid var(--rail-accent);
+    outline-offset: 2px;
+  }
+
+  [data-sidebar="collapsed"] .rail-collapse::before {
+    -webkit-mask-image: var(--icon-chevrons-right);
+    mask-image: var(--icon-chevrons-right);
+  }
+
+  [data-sidebar="collapsed"] .navbar-brand {
+    justify-content: center;
+    padding-inline: 0 !important;
+  }
+
+  /* Names stay in the accessibility tree (they are the controls' accessible
+     names) and come back as tooltips. DocFX renders the Reference links' names
+     as bare text, so those are hidden with font-size instead; the icons are
+     sized in px and unaffected. */
+  [data-sidebar="collapsed"] .navbar-brand__text,
+  [data-sidebar="collapsed"] .rail-section__title,
+  [data-sidebar="collapsed"] .rail-collapse__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  [data-sidebar="collapsed"] .navbar-nav .nav-link,
+  [data-sidebar="collapsed"] .rail-collapse {
+    justify-content: center;
+    gap: 0;
+    padding-inline: 0;
+  }
+
+  [data-sidebar="collapsed"] .navbar-nav .nav-link {
+    font-size: 0;
+  }
+
+  /* Without their titles, sections are told apart by a rule between them. */
+  [data-sidebar="collapsed"] .rail-section {
+    margin-top: calc(0.6 * var(--rail-rem));
+    padding-top: calc(0.6 * var(--rail-rem));
+    border-top: 1px solid var(--rail-border);
+  }
+
+  /* Search collapses to its icon; main.js expands the rail when it's focused. */
+  [data-sidebar="collapsed"] .navbar #navbar form.search > i.bi {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  [data-sidebar="collapsed"] .search .form-control {
+    height: 44px;
+    padding: 0;
+    color: transparent;
+    cursor: pointer;
+  }
+
+  [data-sidebar="collapsed"] .search .form-control::placeholder {
+    color: transparent;
+  }
+
+  [data-sidebar="collapsed"] .navbar #navbar > form.icons {
+    justify-content: center;
+    padding-inline: 0;
+  }
+
+  /* The theme menu is wider than the collapsed rail, whose overflow would clip
+     it: open it beside the rail instead, fixed to the window. */
+  [data-sidebar="collapsed"] .navbar #navbar > form.icons .dropdown-menu[data-bs-popper] {
+    position: fixed;
+    left: calc(var(--rail-current) + 8px);
+    bottom: calc(0.75 * var(--rail-rem));
+    margin: 0;
+  }
+
+  /* The collapsed rail is compact, but at a short window it still scrolls;
+     a scrollbar would take a third of its width, so scroll it bare. */
+  [data-sidebar="collapsed"] header {
+    scrollbar-width: none;
+  }
+}
 
 /* Class-tree TOC on API pages: a lighter panel to the right of the rail,
    in the same spirit as the demo's active-link accent highlighting. DocFX's

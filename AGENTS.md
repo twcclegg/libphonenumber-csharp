@@ -43,8 +43,9 @@ automatically every ~two weeks; the library compiles it to binaries at build tim
   Overview/Features links, `docfx/toc.yml` holds the Reference links, and
   `docfx/template/public/main.css` ports the demo's design tokens and sidebar styling. A new demo
   page goes in both the demo's `MainLayout` page table and that template (`build.sh` fails when
-  they differ). The demo stores its
-  theme under DocFX's `theme` key so the choice carries across. `docs_preview.yml` uploads the
+  they differ). Both sidebars collapse to an icon-only rail on desktop; the two sites share
+  localStorage (same origin), so the theme (DocFX's `theme` key) and the collapsed state
+  (`sidebar`) carry across, and the docs apply both before first paint. `docs_preview.yml` uploads the
   rendered site as a PR artifact.
 - `assets/brand/` — the logomark and favicon SVGs, shared by both sites: docfx maps them to
   `images/` (`docfx/docfx.json`) and the demo links them into its `wwwroot/` (a `Content` item in
