@@ -45,7 +45,7 @@
     "template": [ "default", "modern", "template" ],
     "globalMetadata": {
       "_appName": "libphonenumber-csharp",
-      "_appTitle": "libphonenumber-csharp API Reference",
+      "_appTitle": "libphonenumber-csharp",
       "_appLogoPath": "images/logo.svg",
       "_appFaviconPath": "images/favicon.svg",
       "_enableSearch": true,

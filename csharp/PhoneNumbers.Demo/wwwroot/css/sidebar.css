@@ -196,7 +196,7 @@
 }
 
 .sidebar__footer {
-    padding: 0.9rem 1.25rem 1.1rem;
+    padding: 0.9rem 1.25rem 0.5rem;
     border-top: 1px solid var(--rail-border);
 }
 
@@ -227,6 +227,110 @@
 @keyframes pulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.45; }
+}
+
+/* ============================================================
+   Collapse toggle, and the collapsed (icon-only) sidebar.
+   Desktop only: below 860px the sidebar is a drawer instead.
+   ============================================================ */
+
+.sidebar__collapse {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin: 0 0.75rem 0.75rem;
+    padding: 0.6rem 0.65rem;
+    min-height: 44px;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--rail-text-dim);
+    font: inherit;
+    font-size: var(--fs-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.sidebar__collapse:hover {
+    background: var(--rail-surface);
+    color: var(--rail-active-text);
+}
+
+.sidebar__collapse:focus-visible {
+    outline: var(--ring-w) solid var(--accent);
+    outline-offset: 2px;
+}
+
+@media (min-width: 861px) {
+    .sidebar--collapsed {
+        width: var(--sidebar-collapsed-width);
+    }
+
+    .sidebar--collapsed .sidebar__header {
+        flex-direction: column;
+        padding: 1.4rem 0 0.6rem;
+        gap: 0.6rem;
+    }
+
+    .sidebar--collapsed .sidebar__top-actions {
+        flex-direction: column;
+        margin-left: 0;
+    }
+
+    /* Names stay in the accessibility tree (they are the links' accessible names) and
+       come back as tooltips on hover and focus; see index.html. */
+    .sidebar--collapsed .sidebar__brand-text,
+    .sidebar--collapsed .sidebar__section-title,
+    .sidebar--collapsed .sidebar__link-label {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        padding: 0;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    /* Without their titles, sections are told apart by a rule between them. */
+    .sidebar--collapsed .sidebar__section {
+        margin-top: 0.6rem;
+        padding-top: 0.6rem;
+        border-top: 1px solid var(--rail-border);
+    }
+
+    .sidebar--collapsed .sidebar__section:first-child {
+        margin-top: 0.2rem;
+        padding-top: 0;
+        border-top: 0;
+    }
+
+    .sidebar--collapsed .sidebar__link,
+    .sidebar--collapsed .sidebar__collapse {
+        justify-content: center;
+        gap: 0;
+        padding-inline: 0;
+    }
+
+    .sidebar--collapsed .sidebar__footer {
+        display: none;
+    }
+
+    .sidebar--collapsed .sidebar__collapse {
+        margin-top: 0.75rem;
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) and (min-width: 861px) {
+    .sidebar { transition: transform 0.3s ease, width 0.2s ease; }
+}
+
+@media (max-width: 860px) {
+    .sidebar__collapse {
+        display: none;
+    }
 }
 
 /* ============================================================

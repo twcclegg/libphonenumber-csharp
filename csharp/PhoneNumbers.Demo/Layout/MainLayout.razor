@@ -4,19 +4,19 @@
 @inject NavigationManager Nav
 @inject TimeProvider Time
 
-<div class="app-layout">
+<div class="app-layout @(_sidebarCollapsed ? "app-layout--sidebar-collapsed" : "")">
     @if (_sidebarOpen)
     {
         <div class="sidebar__overlay sidebar__overlay--visible" @onclick="CloseSidebar"></div>
     }
 
-    <nav class="sidebar @(_sidebarOpen ? "sidebar--open" : "")" aria-label="Main navigation">
+    <nav class="sidebar @(_sidebarOpen ? "sidebar--open" : "") @(_sidebarCollapsed ? "sidebar--collapsed" : "")" aria-label="Main navigation">
         <div class="sidebar__header">
             <a href="" class="sidebar__logo">
                 <div class="sidebar__logo-icon" aria-hidden="true">
                     <PhoneIcon />
                 </div>
-                <div>
+                <div class="sidebar__brand-text">
                     <div class="sidebar__title">libphonenumber</div>
                     <div class="sidebar__subtitle">C# · WebAssembly</div>
                 </div>
@@ -38,31 +38,37 @@
                             <span class="sidebar__link-icon" aria-hidden="true">
                                 @link.Icon
                             </span>
-                            @link.Title
+                            <span class="sidebar__link-label">@link.Title</span>
                         </NavLink>
                     }
                 </div>
             }
 
             <div class="sidebar__section">
-                <div class="sidebar__section-title">Resources</div>
-                <a href="@DocsUrl" class="sidebar__link">
+                <div class="sidebar__section-title">Reference</div>
+                <a href="@DocsLinks.Resolve(Nav, DocsLinks.ApiReference)" target="@DocsLinks.Target" class="sidebar__link">
                     <span class="sidebar__link-icon" aria-hidden="true">
                         <BookIcon />
                     </span>
-                    API Docs
+                    <span class="sidebar__link-label">API Reference</span>
+                </a>
+                <a href="@DocsLinks.Resolve(Nav, DocsLinks.Articles)" target="@DocsLinks.Target" class="sidebar__link">
+                    <span class="sidebar__link-icon" aria-hidden="true">
+                        <FileIcon />
+                    </span>
+                    <span class="sidebar__link-label">Articles</span>
                 </a>
                 <a href="https://github.com/twcclegg/libphonenumber-csharp" target="_blank" rel="noopener" class="sidebar__link">
                     <span class="sidebar__link-icon" aria-hidden="true">
                         <GitHubIcon />
                     </span>
-                    GitHub
+                    <span class="sidebar__link-label">GitHub</span>
                 </a>
                 <a href="https://www.nuget.org/packages/libphonenumber-csharp" target="_blank" rel="noopener" class="sidebar__link">
                     <span class="sidebar__link-icon" aria-hidden="true">
                         <NuGetIcon />
                     </span>
-                    NuGet
+                    <span class="sidebar__link-label">NuGet</span>
                 </a>
             </div>
         </div>
@@ -73,6 +79,21 @@
                 Running in your browser
             </span>
         </div>
+
+        @* Desktop only: shrinks the sidebar to its icons (names shown as tooltips) and back. *@
+        <button class="sidebar__collapse" @onclick="ToggleSidebarCollapsed">
+            <span class="sidebar__link-icon" aria-hidden="true">
+                @if (_sidebarCollapsed)
+                {
+                    <ChevronsRightIcon />
+                }
+                else
+                {
+                    <ChevronsLeftIcon />
+                }
+            </span>
+            <span class="sidebar__link-label">@(_sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar")</span>
+        </button>
     </nav>
 
     <main class="app-layout__content">
@@ -95,20 +116,17 @@
 
 @code {
     private bool _sidebarOpen;
+    private bool _sidebarCollapsed;
     private string _theme = "light";
     private bool _shareCopied;
     private int _shareClicks;
     private static readonly TimeSpan ConfirmationTime = TimeSpan.FromMilliseconds(1500);
     private string _currentTitle = "Home";
 
-    // The API docs site is published as a sibling folder alongside this app (see
-    // deploy-demo.yml, which copies docfx's output to release/wwwroot/docs). Nav.BaseUri
-    // already includes the GitHub Pages repo-name PathBase, so this resolves correctly
-    // regardless of which client-side route the user is currently on.
-    private string DocsUrl => $"{Nav.BaseUri}docs/";
-
     // Every page the sidebar links to, in order: its route, the title the sidebar and the mobile
-    // topbar show for it, its icon and the sidebar section it sits under.
+    // topbar show for it, its icon and the sidebar section it sits under. The API docs repeat
+    // these links in their own sidebar (docfx/template/layout/_master.tmpl); docfx/build.sh fails
+    // the docs build when the two list different routes.
     private static readonly IReadOnlyList<PageLink> Pages =
     [
         new("", "Home", Icon<HomeIcon>(), NavSection.Overview),
@@ -123,6 +141,29 @@
     {
         Nav.LocationChanged += OnLocationChanged;
         UpdateTitle();
+        _sidebarCollapsed = ReadSidebarCollapsed();
+    }
+
+    // Read synchronously so the very first render already has the reader's choice rather than
+    // drawing the sidebar expanded and then collapsing it: WebAssembly's JS runtime is in-process.
+    // The choice is shared with the API docs, which read the same key before they paint.
+    private bool ReadSidebarCollapsed()
+    {
+        if (JS is not IJSInProcessRuntime js) return false;
+        try
+        {
+            return js.Invoke<bool>("phoneDemo.isSidebarCollapsed");
+        }
+        catch (JSException)
+        {
+            return false;
+        }
+    }
+
+    private async Task ToggleSidebarCollapsed()
+    {
+        _sidebarCollapsed = !_sidebarCollapsed;
+        await JS.InvokeVoidAsync("phoneDemo.setSidebarCollapsed", _sidebarCollapsed);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

@@ -96,6 +96,16 @@
     border-color: var(--success-solid);
 }
 
+@media (min-width: 861px) {
+    .app-layout--sidebar-collapsed .app-layout__content {
+        margin-left: var(--sidebar-collapsed-width);
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) and (min-width: 861px) {
+    .app-layout__content { transition: margin-left 0.2s ease; }
+}
+
 @media (max-width: 860px) {
     .app-layout__content {
         margin-left: 0;

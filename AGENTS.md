@@ -38,8 +38,15 @@ automatically every ~two weeks; the library compiles it to binaries at build tim
 - `docfx/` — DocFX config for the generated API reference site, deployed alongside the demo under
   `/docs/` in the same `deploy-demo.yml` run. Build it with `docfx/build.sh`, never `docfx`
   directly — the script copies `docs/*.md` in as articles and rewrites their repo-relative links.
-  `docfx/template/public/main.css` ports the demo's design tokens onto DocFX's `modern` template
-  so the two sites match; `docs_preview.yml` uploads the rendered site as a PR artifact.
+  The two sites share one sidebar: `docfx/template/layout/_master.tmpl` (DocFX 2.78.5's master
+  layout, vendored — re-diff it when bumping docfx) renders the demo's brand and its
+  Overview/Features links, `docfx/toc.yml` holds the Reference links, and
+  `docfx/template/public/main.css` ports the demo's design tokens and sidebar styling. A new demo
+  page goes in both the demo's `MainLayout` page table and that template (`build.sh` fails when
+  they differ). Both sidebars collapse to an icon-only rail on desktop; the two sites share
+  localStorage (same origin), so the theme (DocFX's `theme` key) and the collapsed state
+  (`sidebar`) carry across, and the docs apply both before first paint. `docs_preview.yml` uploads the
+  rendered site as a PR artifact.
 - `assets/brand/` — the logomark and favicon SVGs, shared by both sites: docfx maps them to
   `images/` (`docfx/docfx.json`) and the demo links them into its `wwwroot/` (a `Content` item in
   `PhoneNumbers.Demo.csproj`). Kept at the repo root rather than inside one site so the two can't

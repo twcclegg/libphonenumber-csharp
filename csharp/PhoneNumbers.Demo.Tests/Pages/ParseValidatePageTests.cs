@@ -146,4 +146,16 @@ public class ParseValidatePageTests : BunitContext
         Assert.Contains("Is Valid", labels);
         Assert.Contains("Is Possible", labels);
     }
+
+    [Fact]
+    public void header_links_parse_in_the_api_reference()
+    {
+        var cut = Render<ParseValidate>();
+
+        var link = cut.Find("a[aria-label='PhoneNumberUtil.Parse in the API reference']");
+
+        Assert.Equal(
+            "http://localhost/docs/api/PhoneNumbers.PhoneNumberUtil.html#PhoneNumbers_PhoneNumberUtil_Parse_System_String_System_String_",
+            link.GetAttribute("href"));
+    }
 }
