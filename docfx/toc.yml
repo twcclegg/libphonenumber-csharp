@@ -1,6 +1,11 @@
-- name: Home
-  href: index.md
+# The sidebar's Reference section. Its Overview and Features sections link back into the demo
+# and are static markup in template/layout/_master.tmpl; these are the links DocFX renders itself,
+# so it can mark the current one active and start the breadcrumb from it.
 - name: API Reference
   href: api/
 - name: Articles
   href: articles/api-differences-from-java.md
+- name: GitHub
+  href: https://github.com/twcclegg/libphonenumber-csharp
+- name: NuGet
+  href: https://www.nuget.org/packages/libphonenumber-csharp

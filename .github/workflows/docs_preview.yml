@@ -12,6 +12,9 @@ on:
       - 'docfx/**'
       # docfx.json maps these into the site as images/, so a change here changes the build.
       - 'assets/brand/**'
+      # build.sh checks the docs sidebar against the demo's page table, so a demo page added or
+      # removed there has to rebuild the docs to be checked.
+      - 'csharp/PhoneNumbers.Demo/Layout/MainLayout.razor'
       - '.github/workflows/docs_preview.yml'
   workflow_dispatch:
 

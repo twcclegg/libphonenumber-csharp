@@ -108,7 +108,9 @@
     private string _currentTitle = "Home";
 
     // Every page the sidebar links to, in order: its route, the title the sidebar and the mobile
-    // topbar show for it, its icon and the sidebar section it sits under.
+    // topbar show for it, its icon and the sidebar section it sits under. The API docs repeat
+    // these links in their own sidebar (docfx/template/layout/_master.tmpl); docfx/build.sh fails
+    // the docs build when the two list different routes.
     private static readonly IReadOnlyList<PageLink> Pages =
     [
         new("", "Home", Icon<HomeIcon>(), NavSection.Overview),
