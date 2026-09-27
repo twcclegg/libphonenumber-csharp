@@ -39,9 +39,15 @@ gets its own standalone entry and breaks the chain: it can't extend the run abov
 hand-written or substantive entry never carries the marker a foldable run needs — the next metadata-only
 release starts a fresh run rather than reaching past it to resume the old one.
 
-Entries that describe an actual code change were written by hand at review time, tracing each claim
-back to the commit(s) or PR(s) named next to it. For the exhaustive per-PR detail behind any release
-(including the routine ones), see its
+**Releases that carry more than the sync are itemized automatically too.** Everything down to
+v9.0.38 was written by hand during that one-time rebuild, tracing each claim back to the commit(s)
+or PR(s) named next to it; from v9.0.39 on, the same script lists the pull requests merged into the
+release, filed by their conventional-commit prefix — `feat:` under `### Added`, `fix:` under
+`### Fixed`, `perf:` under `### Performance`, `docs:` under `### Docs`, anything else under
+`### Changed` — with the automated dependency bumps collapsed onto a single `### Dependencies`
+line. That is a summary of what merged rather than a curated narrative, so an entry is a fair place
+to rewrite a terse PR title into something a reader of this file would recognise. For the
+exhaustive per-PR detail behind any release (including the routine ones), see its
 [GitHub Release](https://github.com/twcclegg/libphonenumber-csharp/releases), whose notes are
 auto-generated from merged PR titles.
 
@@ -55,11 +61,61 @@ in the README for why staying current matters even for patch-looking bumps.
 
 ## [v9.0.40](https://github.com/twcclegg/libphonenumber-csharp/compare/v9.0.39...v9.0.40) - 2026-09-24
 
-Includes the metadata sync to upstream [libphonenumber v9.0.40](https://github.com/google/libphonenumber/releases/tag/v9.0.40) plus other changes merged to `main` since the last release — see the compare link above for the full diff.
+Metadata sync to upstream [libphonenumber v9.0.40](https://github.com/google/libphonenumber/releases/tag/v9.0.40), plus the work below that merged to `main` since v9.0.39.
+
+### Added
+- Fold the changelog by authorship, and attribute the sync commit. (#471)
+- Open the metadata sync as a PR for review instead of merging it unattended. (#464)
+- Extract svgs in the demo website to reusable components instead of inlining them everywhere. (#473)
+- Add DocFX API reference site, published alongside the demo. (#453)
+
+### Fixed
+- Demo initial-load focus ring, theme-synced favicon, and icon/alignment polish. (#455)
+
+### Docs
+- Break down AGENTS.md into various useful reusable skills to follow best practice. (#472)
+- Mark the metadata tree generated, and say not to read it. (#477)
 
 ## [v9.0.39](https://github.com/twcclegg/libphonenumber-csharp/compare/v9.0.38...v9.0.39) - 2026-09-10
 
-Includes the metadata sync to upstream [libphonenumber v9.0.39](https://github.com/google/libphonenumber/releases/tag/v9.0.39) plus other changes merged to `main` since the last release — see the compare link above for the full diff.
+Metadata sync to upstream [libphonenumber v9.0.39](https://github.com/google/libphonenumber/releases/tag/v9.0.39), plus the work below that merged to `main` since v9.0.38.
+
+### Changed
+- Gitignore local Claude Code worktree scratch state. (#442)
+- Replace the benchmark-comparison JS files with C# and bash. (#444)
+- Extensions: Native AOT JsonSerializerContext + formatting extension methods. (#440)
+- Simplify IsLatinLetter range test, document broad catch. (#461)
+- Match upstream grouping in FormatNumberForMobileDialing. (#463)
+- Harden metadata release and triage workflow permissions. (#458)
+- Strip generated-code results from CodeQL SARIF before upload. (#457)
+- Stop persisting git credentials in checkouts that don't use them. (#468)
+
+### Performance
+- Narrow \d to ASCII [0-9] in metadata-matched regex patterns. (#446)
+- (Test) Add first-use-per-region cold-start benchmark. (#438)
+- Stop compiling metadata-derived regexes. (#445)
+- Sparse-checkout the two workflows that only read a handful of files. (#467)
+- Stop vendoring upstream's metadata csv tables. (#469)
+
+### Fixed
+- Replace non-existent min() with the && / || ternary idiom in fuzz.yml. (#436)
+- Mark IMetadataLoader/SetMetadataLoader obsolete, not internal. (#448)
+- Stop MetadataFilter.GetHashCode throwing on an empty blacklist. (#462)
+- Make MetadataFilter.GetHashCode agree with Equals for non-empty blacklists. (#465)
+- Stop the obsolete leading-zero setter calling an obsolete method. (#460)
+- Make national-prefix stripping's null handling provable. (#459)
+- Make the documented demo test command actually run tests. (#456)
+
+### Docs
+- Require explicit sign-off before adding new public API surface. (#447)
+- Add API differences from upstream Java reference. (#439)
+- Add CHANGELOG.md (back to v8.7.1) and auto-update it on release. (#441)
+- PR descriptions describe current state, not their own history. (#449)
+- Move agent guidance to AGENTS.md, point CLAUDE.md at it. (#454)
+- Extend CHANGELOG.md back through the C# port's pre-v8.7.1 history. (#466)
+
+### Dependencies
+- 3 automated dependency updates. (#452, #451, #450)
 
 ## [v9.0.38](https://github.com/twcclegg/libphonenumber-csharp/compare/v9.0.37...v9.0.38) - 2026-08-28
 

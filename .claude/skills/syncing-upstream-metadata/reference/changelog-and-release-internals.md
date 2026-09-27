@@ -9,6 +9,8 @@ script's header comment point here for the reasoning.
 - The sync opens a PR and stops; merging it is the intended path
 - The release flow deliberately has no notion of declining, and no guards against same-day runs
 - The fold is decided by authorship, not by paths
+- A release that does not fold is itemized from its merge history
+- The release notes are that same entry, not a second list
 - The fold check needs full history
 - The sync commits as the account its token belongs to
 
@@ -75,6 +77,65 @@ Hand-editing either is worth its own entry anyway.
 The fold state lives in an HTML comment directly above the heading it describes
 (`<!-- changelog-run from=… first=… start-date=… count=N -->`). Only a heading with that marker is a
 candidate to extend, so a hand-written heading can never be mistaken for a foldable run.
+
+## A release that does not fold is itemized from its merge history
+
+A release that carries work beyond the sync used to get a one-sentence entry pointing at the
+compare link, which said nothing that the heading above it did not. It now gets a bullet per merged
+PR, filed under Keep a Changelog headings — one `git log --first-parent <last tag>..HEAD` piped
+into one awk, in `itemizeRange`.
+
+First-parent, because the PR is the unit a reader cares about: the twenty commits inside one are
+its editing history, which `AGENTS.md` already says not to write down. It also means the record
+carries everything needed without a second lookup — the merge subject GitHub writes holds both the
+PR number and the branch it merged, and the first line of the body is the PR title. A commit pushed
+straight to `main` is one bullet of its own, from its subject and its trailing `(#123)`.
+
+The branch name is what identifies the bots: `metadata-update/*` is this automation's own sync and
+is dropped (the entry's opening sentence already names it), `dependabot/*` collapses onto a single
+`### Dependencies` line, and a `(deps)` scope catches a dependency bump that was squashed rather
+than merged. Only a sync pushed *straight* to `main`, as they were before v9.0.38, has no branch
+name to go on; it is recognised by author instead, via `SYNC_COMMIT_AUTHOR`, which the caller has
+already resolved from the API for the commit it is about to make.
+
+That is a different test from the fold's (which reads authorship, including `Co-authored-by`, over
+every commit) and deliberately so: the fold decides whether real work happened and must not be
+fooled by a human fix pushed onto a bot's PR, while this only decides how to present work already
+known to exist. They can disagree in one narrow case — a human commit on a dependabot PR makes the
+release standalone, and its bullet still reads as a dependency update — which costs a reader
+nothing, since the PR is named either way.
+
+Only the conventional-commit prefixes `AGENTS.md` mandates are stripped and mapped to a heading
+(`feat:` Added, `fix:` Fixed, `perf:` Performance, `docs:` Docs, the rest Changed). A subject whose
+prefix is not one of them keeps it: `Extensions: Native AOT JsonSerializerContext` reads as a
+title, not as a label to throw away.
+
+The entry is therefore only as good as the PR titles that went into it, which is a reason to read
+it in the sync PR before merging — it is an ordinary file in that diff, and rewriting a bullet
+there costs nothing.
+
+## The release notes are that same entry, not a second list
+
+The GitHub release used to be created with `generate_release_notes: true`, which makes GitHub build
+its own flat "What's Changed" from the merged PR titles, server-side. That is a second list of the
+same release, generated from the same material by different code — so the moment a maintainer
+rewrote a bullet in the sync PR, the release page went on showing the PR title it was rewritten
+from.
+
+`createRelease` now reads the `CHANGELOG.md` entry back out of the commit being released and posts
+it as the release body, with the nuget links above it and the entry heading's own compare href as
+the `**Full Changelog**` line — so the previous tag does not have to be worked out a second time.
+It reads the file over the contents API rather than from a checkout, because that job needs no
+working tree for anything else and this keeps it that way. (The base64 the API returns is
+line-wrapped, which `@base64d` rejects; the newlines are stripped first.)
+
+Only an entry that itemizes the release takes over, which is tested by looking for a `### ` heading
+in it. A metadata-only release keeps `generate_release_notes`, deliberately: its entry is one
+sentence, or a ranged heading shared with the other releases in its run, and GitHub's list of the
+sync and the dependency bumps riding along with it says more about that release than the sentence
+does. So the routine fortnightly release is unaffected by any of this, and it keeps the
+"New Contributors" section GitHub's generator adds — which a release with its own body loses, the
+one thing given up here.
 
 ## The fold check needs full history
 
