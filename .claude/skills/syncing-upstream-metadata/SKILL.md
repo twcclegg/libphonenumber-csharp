@@ -104,9 +104,11 @@ next release to start a new entry rather than extend the current run; that is in
 An entry of its own is itemized: `itemizeRange` walks `git log --first-parent <last tag>..HEAD`,
 so one bullet per merged PR, filed under `### Added` / `### Fixed` / `### Performance` / `### Docs`
 / `### Changed` by conventional-commit prefix, with dependabot's collapsed into one
-`### Dependencies` line. The result is only as good as the PR titles — it is worth reading the
-generated entry in the sync PR and rewriting a bullet that will not mean anything to someone
-reading `CHANGELOG.md` a year from now.
+`### Dependencies` line. That entry is also the GitHub release's body (`createRelease` in
+`lib/github-release-helpers.sh` reads it back from the released commit; a release with no itemized
+entry keeps GitHub's generated notes). So the result is only as good as the PR titles, in two
+places at once — it is worth reading the generated entry in the sync PR and rewriting a bullet that
+will not mean anything to someone reading it a year from now.
 
 ## Releases generally
 

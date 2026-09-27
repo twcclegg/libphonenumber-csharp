@@ -203,6 +203,8 @@ The [`create_new_release_on_new_metadata_update`](https://github.com/twcclegg/li
 
 A maintainer reviews and merges that PR, which is how a metadata release ships. If nobody has merged it by the next daily run, that run enables auto-merge so the release still goes out — a sync is never left stalled because nobody was around. Once it merges, [`finalize_metadata_release`](https://github.com/twcclegg/libphonenumber-csharp/actions/workflows/finalize_metadata_release.yml) tags the merge commit, creates a matching GitHub release, and dispatches the NuGet publish. See [the release-internals reference](.claude/skills/syncing-upstream-metadata/reference/changelog-and-release-internals.md) for why it works this way.
 
+When that entry itemizes the release — a release carrying work beyond the sync — it is also the body of the GitHub release, rather than the list GitHub generates from PR titles server-side, so the two cannot disagree once a bullet is rewritten in the sync PR. Routine metadata-only releases keep GitHub's generated notes.
+
 The changelog entry is written in the same PR rather than afterwards: `finalize_metadata_release` only tags an existing commit and calls the Releases API, so it has no way to push a follow-up commit of its own, and `main` requires status checks that a direct push could never satisfy. The version number is already known at PR-open time (it's copied straight from the upstream tag), so there's nothing to guess.
 
 Before doing any of that it inspects the upstream diff and stops if it contains `.java` or `.proto` files, because changes to the Java sources may need porting by hand and an unattended metadata bump would silently skip them.

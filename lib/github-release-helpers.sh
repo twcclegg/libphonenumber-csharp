@@ -92,21 +92,62 @@ armAutoMerge() {
         || echo "could not parse github's response"
 }
 
-# generate_release_notes appends the commit/PR changelog below the links.
+# changelogEntry <repo> <tag> <ref>
+# The entry CHANGELOG.md carries for this exact tag, heading included, read from the commit being
+# released - which already has it, since update-changelog.sh writes it in the same commit as the
+# metadata sync. Empty when there is none: a metadata-only release that folded into a ranged
+# heading has no entry of its own.
+#
+# Over the api rather than from the checkout: the release job needs no working tree for anything
+# else, and this keeps it that way.
+changelogEntry() {
+    ghApi "https://api.github.com/repos/$1/contents/CHANGELOG.md?ref=$3" \
+        | jq -er '.content | gsub("\n"; "") | @base64d' \
+        | awk -v heading="## [$2](" '
+            # The entry runs from its own heading to the start of the next one.
+            !inEntry { inEntry = (index($0, heading) == 1); if (inEntry) print; next }
+            /^## / { exit }
+            { print }'
+}
+
+# The notes reuse that entry instead of generating a second list of the same release: the sync PR
+# is where a maintainer rewrites a bullet, and with github generating its own "What's Changed"
+# server-side the release page would go on showing the raw PR titles it was rewritten from. Only
+# for a release the entry itemizes. Everything else - a metadata-only release, whose entry is a
+# single sentence or a shared ranged heading - keeps generate_release_notes appending github's own
+# list below the links, the way every release used to.
 createRelease() {
+    local entry sections="" compare=""
+    entry=$(changelogEntry "$1" "$2" "$3" || true)
+    # Only an entry that itemizes the release takes the notes over. A metadata-only entry is one
+    # sentence, and github's own list of the sync and the dependency bumps riding along with it
+    # says more about that release than the sentence does.
+    if grep -q '^### ' <<<"${entry}"; then
+        # The compare link is the heading's own href, so the tag this release follows does not have
+        # to be worked out a second time here.
+        compare=$(sed -n '1s/^## \[[^]]*\](\([^)]*\)).*/\1/p' <<<"${entry}")
+        sections=$(tail -n +2 <<<"${entry}" | sed '/./,$!d')
+        log "release notes for $2 taken from its CHANGELOG.md entry"
+    else
+        log "no itemized CHANGELOG.md entry for $2, letting github generate its release notes"
+    fi
+
     jq -n --arg tag "$2" --arg version "${2#v}" --arg commit "$3" \
         --arg pkg "${NUGET_PACKAGE_ID}" --arg ext "${NUGET_EXTENSIONS_PACKAGE_ID}" \
-        --arg upstream "${UPSTREAM_REPOSITORY}" '
+        --arg upstream "${UPSTREAM_REPOSITORY}" \
+        --arg sections "${sections}" --arg compare "${compare}" '
         {
             tag_name: $tag,
             name: $tag,
             target_commitish: $commit,
-            generate_release_notes: true,
-            body: (
+            generate_release_notes: ($sections == ""),
+            body: ([
                 "[\($pkg) \($version)](https://www.nuget.org/packages/\($pkg)/\($version))"
                 + " · [\($ext) \($version)](https://www.nuget.org/packages/\($ext)/\($version))"
-                + " · [upstream \($tag)](https://github.com/\($upstream)/releases/tag/\($tag))"
-            )
+                + " · [upstream \($tag)](https://github.com/\($upstream)/releases/tag/\($tag))",
+                $sections,
+                (if $compare == "" then "" else "**Full Changelog**: \($compare)" end)
+            ] | map(select(. != "")) | join("\n\n"))
         }' \
         | ghApi -X POST --data @- "https://api.github.com/repos/$1/releases" >/dev/null
 }

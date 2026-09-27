@@ -10,6 +10,7 @@ script's header comment point here for the reasoning.
 - The release flow deliberately has no notion of declining, and no guards against same-day runs
 - The fold is decided by authorship, not by paths
 - A release that does not fold is itemized from its merge history
+- The release notes are that same entry, not a second list
 - The fold check needs full history
 - The sync commits as the account its token belongs to
 
@@ -112,6 +113,29 @@ title, not as a label to throw away.
 The entry is therefore only as good as the PR titles that went into it, which is a reason to read
 it in the sync PR before merging — it is an ordinary file in that diff, and rewriting a bullet
 there costs nothing.
+
+## The release notes are that same entry, not a second list
+
+The GitHub release used to be created with `generate_release_notes: true`, which makes GitHub build
+its own flat "What's Changed" from the merged PR titles, server-side. That is a second list of the
+same release, generated from the same material by different code — so the moment a maintainer
+rewrote a bullet in the sync PR, the release page went on showing the PR title it was rewritten
+from.
+
+`createRelease` now reads the `CHANGELOG.md` entry back out of the commit being released and posts
+it as the release body, with the nuget links above it and the entry heading's own compare href as
+the `**Full Changelog**` line — so the previous tag does not have to be worked out a second time.
+It reads the file over the contents API rather than from a checkout, because that job needs no
+working tree for anything else and this keeps it that way. (The base64 the API returns is
+line-wrapped, which `@base64d` rejects; the newlines are stripped first.)
+
+Only an entry that itemizes the release takes over, which is tested by looking for a `### ` heading
+in it. A metadata-only release keeps `generate_release_notes`, deliberately: its entry is one
+sentence, or a ranged heading shared with the other releases in its run, and GitHub's list of the
+sync and the dependency bumps riding along with it says more about that release than the sentence
+does. So the routine fortnightly release is unaffected by any of this, and it keeps the
+"New Contributors" section GitHub's generator adds — which a release with its own body loses, the
+one thing given up here.
 
 ## The fold check needs full history
 

@@ -499,6 +499,8 @@ else
     PR_BODY=$(cat <<EOF
 Syncs \`resources/\` from [${UPSTREAM_REPOSITORY} ${UPSTREAM_GITHUB_RELEASE_TAG}](https://github.com/${UPSTREAM_REPOSITORY}/releases/tag/${UPSTREAM_GITHUB_RELEASE_TAG}), regenerates \`resources/locale/country_names.txt\`, and records the release in \`CHANGELOG.md\`.
 
+When that entry itemizes the release, it is also what the GitHub release notes will say - so rewriting a bullet here is the way to fix one there, and worth doing before merging.
+
 **Review and merge this when you are happy with it** - that is the intended way for a metadata release to ship.
 
 If it is still open at the next daily [create_new_release_on_new_metadata_update.yml](.github/workflows/create_new_release_on_new_metadata_update.yml) run, that run regenerates this branch from ${UPSTREAM_GITHUB_RELEASE_TAG} and turns auto-merge on, so a sync is never left stalled because nobody was around. Don't push fixes to this branch - that regeneration force-pushes over anything else that is there, deliberately: the commit that merges is always one this automation just built.
