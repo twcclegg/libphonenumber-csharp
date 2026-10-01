@@ -136,4 +136,16 @@ public class GeoTimezonePageTests : BunitContext
         Assert.Contains("Geographic Location", cardTitles);
         Assert.Contains("Time Zones", cardTitles);
     }
+
+    [Fact]
+    public void header_links_offline_geocoder_in_the_api_reference()
+    {
+        var cut = Render<GeoTimezone>();
+
+        var link = cut.Find("a[aria-label='PhoneNumberOfflineGeocoder in the API reference']");
+
+        Assert.Equal(
+            "http://localhost/docs/api/PhoneNumbers.PhoneNumberOfflineGeocoder.html",
+            link.GetAttribute("href"));
+    }
 }

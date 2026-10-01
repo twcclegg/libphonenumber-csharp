@@ -125,4 +125,16 @@ public class FindNumbersPageTests : BunitContext
         Assert.Empty(cut.FindAll(".match-list__item"));
         Assert.Empty(cut.FindAll(".empty-state__message"));
     }
+
+    [Fact]
+    public void header_links_find_numbers_in_the_api_reference()
+    {
+        var cut = Render<FindNumbers>();
+
+        var link = cut.Find("a[aria-label='PhoneNumberUtil.FindNumbers in the API reference']");
+
+        Assert.Equal(
+            "http://localhost/docs/api/PhoneNumbers.PhoneNumberUtil.html#PhoneNumbers_PhoneNumberUtil_FindNumbers_System_String_System_String_PhoneNumbers_PhoneNumberUtil_Leniency_System_Int64_",
+            link.GetAttribute("href"));
+    }
 }

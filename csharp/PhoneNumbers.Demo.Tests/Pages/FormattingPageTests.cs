@@ -104,4 +104,16 @@ public class FormattingPageTests : BunitContext
         Assert.NotNull(e164Item);
         Assert.Contains("+442079460958", e164Item.QuerySelector(".format-list__value")?.TextContent ?? "");
     }
+
+    [Fact]
+    public void header_links_format_in_the_api_reference()
+    {
+        var cut = Render<Formatting>();
+
+        var link = cut.Find("a[aria-label='PhoneNumberUtil.Format in the API reference']");
+
+        Assert.Equal(
+            "http://localhost/docs/api/PhoneNumbers.PhoneNumberUtil.html#PhoneNumbers_PhoneNumberUtil_Format_PhoneNumbers_PhoneNumber_PhoneNumbers_PhoneNumberFormat_",
+            link.GetAttribute("href"));
+    }
 }

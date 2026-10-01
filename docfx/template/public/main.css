@@ -28,15 +28,6 @@
   --bs-code-color: #b8410b;
   --code-bg: #ffffff;
   --code-text: #211d18;
-  --install-bg: #2c271f;
-  --install-text: #f3ede2;
-
-  --surface: #ffffff;
-  --accent-soft: #fae6d6;
-  --accent-soft-fg: #9a3412;
-  --accent-soft-border: #f1c6a3;
-  --shadow-sm: 0 1px 2px rgba(45, 35, 20, 0.06);
-  --shadow-md: 0 6px 18px -6px rgba(45, 35, 20, 0.14), 0 2px 6px rgba(45, 35, 20, 0.06);
 }
 
 [data-bs-theme="dark"] {
@@ -58,15 +49,6 @@
   --bs-code-color: #fdb874;
   --code-bg: #0f0c08;
   --code-text: #f0e9dc;
-  --install-bg: #0f0c08;
-  --install-text: #f0e9dc;
-
-  --surface: #211d16;
-  --accent-soft: #3a2412;
-  --accent-soft-fg: #fdba74;
-  --accent-soft-border: #5a3a1c;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 8px 24px -8px rgba(0, 0, 0, 0.6);
 }
 
 :root {
@@ -167,20 +149,60 @@ pre code, pre.code, .article pre, .hljs {
 }
 
 /* ============================================================
-   Rail: the demo's persistent dark sidebar (sidebar.css), rebuilt
-   from DocFX's horizontal navbar. Fixed full-height on the left at
-   >=768px (the same breakpoint DocFX's own toc-offcanvas already
-   switches to a static column at); left alone below that so the
-   stock mobile collapse behavior keeps working.
+   Rail: the demo's sidebar (csharp/PhoneNumbers.Demo/wwwroot/css/
+   sidebar.css), rebuilt from DocFX's navbar so the two sites share
+   one navigation. template/layout/_master.tmpl supplies the header
+   (brand and theme button), the Overview/Features sections and the
+   footer; DocFX's script renders toc.yml (the Reference links).
+   Fixed full-height on the left at >=768px (the same breakpoint
+   DocFX's own toc-offcanvas switches to a static column at); below
+   that the stock mobile collapse keeps working.
    ============================================================ */
 :root {
-  --rail-width: 280px;
+  --rail-width: 300px; /* the demo's --sidebar-width */
+  --rail-collapsed-width: 68px; /* the demo's --sidebar-collapsed-width */
+  /* The rail's width as laid out: collapsed to its icons or not. */
+  --rail-current: var(--rail-width);
+  /* The demo sets html { font-size: var(--fs-base) }, 15px, so every rem
+     in its sidebar.css is 15px; DocFX keeps the browser's 16px. The rail
+     measures in this unit instead so its sizes match the demo's exactly. */
+  --rail-rem: 15px;
   --rail-bg: #211d18;
   --rail-surface: #2c271f;
   --rail-border: #3a342a;
   --rail-text: #d8d0c2;
   --rail-text-dim: #9c9385;
   --rail-active-text: #ffffff;
+  --rail-accent: #ea580c; /* the demo's --accent */
+  --rail-success-fg: #15643a; /* the demo's --success-fg */
+  --rail-success-solid: #15803d; /* the demo's --success-solid */
+
+  /* The demo's icon components (csharp/PhoneNumbers.Demo/Components/
+     Icons/) as masks. DocFX renders the Reference links itself, so
+     their icons can only come from CSS; the static links use the same
+     mechanism so every row is drawn alike. Keep these in step with
+     the components when a glyph changes. */
+  --icon-home: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'/%3E%3Cpolyline points='9 22 9 12 15 12 15 22'/%3E%3C/svg%3E");
+  --icon-search: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+  --icon-list: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='8' y1='6' x2='21' y2='6'/%3E%3Cline x1='8' y1='12' x2='21' y2='12'/%3E%3Cline x1='8' y1='18' x2='21' y2='18'/%3E%3Cline x1='3' y1='6' x2='3.01' y2='6'/%3E%3Cline x1='3' y1='12' x2='3.01' y2='12'/%3E%3Cline x1='3' y1='18' x2='3.01' y2='18'/%3E%3C/svg%3E");
+  --icon-terminal: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='4 17 10 11 4 5'/%3E%3Cline x1='12' y1='19' x2='20' y2='19'/%3E%3C/svg%3E");
+  --icon-file-text: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'/%3E%3Cpolyline points='14 2 14 8 20 8'/%3E%3Cline x1='16' y1='13' x2='8' y2='13'/%3E%3Cline x1='16' y1='17' x2='8' y2='17'/%3E%3C/svg%3E");
+  --icon-globe: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='2' y1='12' x2='22' y2='12'/%3E%3Cpath d='M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z'/%3E%3C/svg%3E");
+  --icon-book: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'/%3E%3Cpath d='M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z'/%3E%3C/svg%3E");
+  --icon-file: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'/%3E%3Cpolyline points='14 2 14 8 20 8'/%3E%3C/svg%3E");
+  --icon-github: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22'/%3E%3C/svg%3E");
+  --icon-nuget: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='2.831' cy='3.144' r='1.831' fill='black' stroke='none'/%3E%3Cpath d='M11.246 5.292a5.643 5.643 0 0 0-5.64 5.642v6.112c0 3.117 2.526 5.641 5.641 5.641h6.112c3.117 0 5.641-2.526 5.641-5.641v-6.112a5.641 5.641 0 0 0-5.641-5.642z'/%3E%3Ccircle cx='9.892' cy='10.147' r='2.288'/%3E%3Ccircle cx='17.195' cy='17.168' r='3.663'/%3E%3C/svg%3E");
+  --icon-chevrons-left: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='11 17 6 12 11 7'/%3E%3Cpolyline points='18 17 13 12 18 7'/%3E%3C/svg%3E");
+  --icon-chevrons-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='13 17 18 12 13 7'/%3E%3Cpolyline points='6 17 11 12 6 7'/%3E%3C/svg%3E");
+  --icon-share: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='18' cy='5' r='3'/%3E%3Ccircle cx='6' cy='12' r='3'/%3E%3Ccircle cx='18' cy='19' r='3'/%3E%3Cline x1='8.59' y1='13.51' x2='15.42' y2='17.49'/%3E%3Cline x1='15.41' y1='6.51' x2='8.59' y2='10.49'/%3E%3C/svg%3E");
+  --icon-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+  --icon-moon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z'/%3E%3C/svg%3E");
+  --icon-sun: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Cpath d='M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41'/%3E%3C/svg%3E");
+  --icon-arrow-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='5' y1='12' x2='19' y2='12'/%3E%3Cpolyline points='12 5 19 12 12 19'/%3E%3C/svg%3E");
+}
+
+[data-sidebar="collapsed"] {
+  --rail-current: var(--rail-collapsed-width);
 }
 
 [data-bs-theme="dark"] {
@@ -190,6 +212,9 @@ pre code, pre.code, .article pre, .hljs {
   --rail-text: #c5bcac;
   --rail-text-dim: #837a6c;
   --rail-active-text: #ffffff;
+  --rail-accent: #fb923c;
+  --rail-success-fg: #7ee0a6;
+  --rail-success-solid: #34d27f;
 }
 
 header {
@@ -208,7 +233,7 @@ header {
   header {
     position: fixed !important;
     inset: 0 auto 0 0 !important;
-    width: var(--rail-width) !important;
+    width: var(--rail-current) !important;
     height: 100vh !important;
     display: flex !important;
     flex-direction: column !important;
@@ -222,6 +247,7 @@ header {
     display: flex !important;
     align-items: stretch !important;
     min-height: 0;
+    padding: 0;
   }
 
   .navbar .container-xxl {
@@ -236,62 +262,229 @@ header {
     gap: 0;
   }
 
-  .navbar-brand {
+  .rail-header {
     flex-shrink: 0;
   }
 
   .navbar-collapse#navpanel {
     display: flex !important;
-    flex: 0 0 auto !important;
+    flex: 1 0 auto !important;
     flex-direction: column;
     align-items: stretch !important;
-    max-height: 100%;
-    overflow-y: auto;
   }
 
   #navbar {
-    display: flex;
-    flex: 0 0 auto !important;
-    flex-direction: column;
-    justify-content: flex-start !important;
-    order: 2;
+    flex: 1 0 auto;
   }
 
   .navbar-nav,
   .navbar-expand-md .navbar-nav {
     flex-direction: column !important;
     align-items: stretch !important;
-    order: 1;
-    padding: 0.5rem 0.9rem;
-    gap: 0.1rem;
   }
 
-  main.container-xxl {
-    margin-left: var(--rail-width) !important;
+  /* Everything body lays out beside the fixed rail: the page, the search
+     results DocFX shows in its place while a query is typed, and the footer.
+     Offsetting only main left the other two starting under the rail. */
+  main.container-xxl,
+  body > .search-results,
+  body > footer {
+    margin-left: var(--rail-current) !important;
     max-width: none !important;
-    /* body is display:flex/column, making this a flex item; "width:auto"
-       under stretch alignment was resolving against this element's own
-       min-content size (it's a flex container in its own right, holding
-       toc-offcanvas+content+affix) rather than the space actually left
-       after the fixed-position rail, overflowing the viewport. An
-       explicit calc() sidesteps that flex-stretch ambiguity entirely. */
-    width: calc(100% - var(--rail-width)) !important;
+    /* body is display:flex/column, making these flex items; "width:auto"
+       under stretch alignment was resolving against main's own min-content
+       size (it's a flex container in its own right, holding toc-offcanvas+
+       content+affix) rather than the space actually left after the fixed-
+       position rail, overflowing the viewport. An explicit calc() sidesteps
+       that flex-stretch ambiguity entirely. */
+    width: calc(100% - var(--rail-current)) !important;
     min-width: 0 !important;
+  }
+
+  /* The same gutter as an article page, not the container's bare 12px. */
+  body > .search-results {
+    padding-inline: 3rem;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
+  header,
+  main.container-xxl,
+  body > .search-results,
+  body > footer {
+    transition: width 0.2s ease, margin-left 0.2s ease;
+  }
+}
+
+/* Below 768px the rail is DocFX's collapsing menu, which has no icon-only
+   state. */
+@media (max-width: 767.98px) {
+  .rail-collapse {
+    display: none;
+  }
+}
+
+/* Names a control in the collapsed rail on hover and keyboard focus (the
+   demo's sidebar-tooltip.css). One element, positioned by main.js. */
+.rail-tooltip {
+  position: fixed;
+  z-index: 1080;
+  transform: translateY(-50%);
+  padding: calc(0.35 * var(--rail-rem)) calc(0.65 * var(--rail-rem));
+  border: 1px solid var(--rail-border);
+  border-radius: var(--bs-border-radius-sm);
+  background: var(--rail-surface);
+  color: var(--rail-active-text);
+  font-size: calc(0.8125 * var(--rail-rem));
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Hoverable once shown, so the pointer can move onto it (WCAG 1.4.13). */
+.rail-tooltip--visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rail-tooltip {
+    transition: opacity 120ms ease, visibility 120ms;
+  }
+}
+
+/* DocFX's stock search results: a fixed grey count and a green URL line,
+   neither of which follows the theme. */
+#search-results > .search-list,
+#search-results > .sr-items .sr-item > .item-href {
+  color: var(--bs-secondary-color);
+}
+
+#search-results > .sr-items .sr-item > .item-href {
+  font-family: var(--bs-font-monospace);
+  overflow-wrap: anywhere;
+}
+
+/* The demo's sidebar__header: the brand, then its actions at the far end. */
+.rail-header {
+  display: flex;
+  align-items: center;
+  gap: calc(0.7 * var(--rail-rem));
+  min-width: 0;
+  padding: calc(1.4 * var(--rail-rem)) calc(1.25 * var(--rail-rem)) calc(1.1 * var(--rail-rem));
+}
+
+/* In the phone-width top bar it fills the row up to DocFX's menu button. */
+@media (max-width: 767.98px) {
+  .rail-header {
+    flex: 1;
   }
 }
 
 .navbar-brand {
   display: flex !important;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 0.7rem;
-  padding: 1.35rem 1.25rem 1.05rem !important;
+  gap: calc(0.7 * var(--rail-rem));
+  min-width: 0;
+  padding: 0 !important;
   margin: 0 !important;
+  color: var(--rail-active-text) !important;
+}
+
+.rail-header__actions {
+  display: flex;
+  gap: calc(0.35 * var(--rail-rem));
+  margin-left: auto;
+}
+
+/* The demo's rail-icon-btn, with its MoonIcon/SunIcon as masks. The icon
+   offers the other theme: a moon in light, a sun in dark. */
+.rail-icon-btn {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  padding: 0;
+  border-radius: var(--bs-border-radius-sm);
+  border: 1px solid var(--rail-border);
+  background: var(--rail-surface);
+  color: var(--rail-text);
+  cursor: pointer;
+  transition: color 0.16s ease, border-color 0.16s ease;
+}
+
+.rail-icon-btn:hover {
+  color: var(--rail-active-text);
+  border-color: var(--rail-text-dim);
+}
+
+.rail-icon-btn:focus-visible {
+  outline: 3px solid var(--rail-accent);
+  outline-offset: 2px;
+}
+
+.rail-share::before,
+.rail-theme-toggle::before {
+  content: "";
+  width: 17px;
+  height: 17px;
+  background-color: currentColor;
+  -webkit-mask: var(--icon-share) center / contain no-repeat;
+  mask: var(--icon-share) center / contain no-repeat;
+}
+
+/* The demo's copy confirmation: a check, in its success colours. */
+.rail-icon-btn--done {
+  color: var(--rail-success-fg);
+  border-color: var(--rail-success-solid);
+}
+
+.rail-share.rail-icon-btn--done::before {
+  -webkit-mask-image: var(--icon-check);
+  mask-image: var(--icon-check);
+}
+
+.rail-theme-toggle::before {
+  -webkit-mask-image: var(--icon-moon);
+  mask-image: var(--icon-moon);
+}
+
+[data-bs-theme="dark"] .rail-theme-toggle::before {
+  -webkit-mask-image: var(--icon-sun);
+  mask-image: var(--icon-sun);
+}
+
+/* DocFX renders its own Light/Dark/Auto menu into the rail; the header's
+   button replaces it, and the 'auto' it may have stored still resolves to
+   the OS setting until the reader presses the button. */
+.navbar #navbar > form.icons {
+  display: none !important;
+}
+
+.navbar-brand__text {
+  display: flex;
+  flex-direction: column;
+}
+
+.navbar-brand__title {
   font-family: 'Space Grotesk', system-ui, sans-serif;
   font-weight: 600;
-  font-size: 0.95rem;
-  line-height: 1.3;
-  color: #ffffff !important;
+  font-size: calc(0.98 * var(--rail-rem));
+  line-height: 1.2;
+}
+
+.navbar-brand__subtitle {
+  font-family: var(--bs-font-monospace);
+  font-size: calc(0.66 * var(--rail-rem));
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rail-text-dim);
+  margin-top: 1px;
 }
 
 #logo {
@@ -308,19 +501,49 @@ header {
   content: url("../images/logo-dark.svg");
 }
 
-.navbar-nav .nav-link {
+/* ".navbar #navbar" to outrank DocFX's own rules, which push its navbar's
+   contents to the far end and line them up at the start; the rail's rows
+   start at the top and run full width. */
+.navbar #navbar {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  padding: 0 calc(0.75 * var(--rail-rem)) var(--rail-rem);
+}
+
+.rail-section {
+  margin-top: calc(1.1 * var(--rail-rem));
+}
+
+.rail-section__title {
+  font-size: calc(0.66 * var(--rail-rem));
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--rail-text-dim);
+  padding: 0 calc(0.65 * var(--rail-rem));
+  margin-bottom: calc(0.4 * var(--rail-rem));
+}
+
+.navbar-nav {
+  padding: 0;
+  margin: 0;
+}
+
+.navbar-nav .nav-link,
+.navbar-expand-md .navbar-nav .nav-link {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
+  gap: calc(0.7 * var(--rail-rem));
   position: relative;
+  min-height: 44px;
+  padding: calc(0.6 * var(--rail-rem)) calc(0.65 * var(--rail-rem));
+  border-radius: var(--bs-border-radius-sm);
   color: var(--rail-text);
-  padding: 0.6rem 0.65rem 0.6rem calc(0.65rem + 3px);
-  border-left: 3px solid transparent;
-  border-radius: 0 var(--bs-border-radius-sm) var(--bs-border-radius-sm) 0;
-  font-size: 0.9rem;
+  font-size: calc(0.9375 * var(--rail-rem));
   font-weight: 500;
-  min-height: 40px;
-  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+  transition: color 0.15s ease, background-color 0.15s ease;
 }
 
 .navbar-nav .nav-link::before {
@@ -328,33 +551,52 @@ header {
   width: 19px;
   height: 19px;
   flex-shrink: 0;
-  font: 19px bootstrap-icons;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  background-color: currentColor;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
   opacity: 0.85;
 }
 
-.navbar-nav .nav-link[href$="index.html"]::before { content: "\f425"; }
-.navbar-nav .nav-link[href*="/api/"]::before { content: "\f194"; }
-.navbar-nav .nav-link[href*="/articles/"]::before { content: "\f444"; }
+.rail-link--home { --icon: var(--icon-home); }
+.rail-link--parse { --icon: var(--icon-search); }
+.rail-link--format { --icon: var(--icon-list); }
+.rail-link--live { --icon: var(--icon-terminal); }
+.rail-link--find { --icon: var(--icon-file-text); }
+.rail-link--geo { --icon: var(--icon-globe); }
+.navbar-nav .nav-link[href*="/api/"] { --icon: var(--icon-book); }
+.navbar-nav .nav-link[href*="/articles/"] { --icon: var(--icon-file); }
+.navbar-nav .nav-link[href^="https://github.com/"] { --icon: var(--icon-github); }
+.navbar-nav .nav-link[href^="https://www.nuget.org/"] { --icon: var(--icon-nuget); }
 
-.navbar-nav .nav-link:hover {
-  color: var(--rail-active-text);
-  background: var(--rail-surface);
-}
-
+.navbar-nav .nav-link:hover,
 .navbar-nav .nav-link.active {
   color: var(--rail-active-text);
   background: var(--rail-surface);
-  border-left-color: var(--bs-primary);
-  font-weight: 600;
 }
 
-.navbar-nav .nav-link.active::before,
-.navbar-nav .nav-link:hover::before {
+.navbar-nav .nav-link:focus-visible {
+  outline: 3px solid var(--rail-accent);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+.navbar-nav .nav-link.active::before {
+  color: var(--rail-accent);
   opacity: 1;
-  color: var(--bs-primary);
+}
+
+/* The current page's accent bar, flush with the rail's left edge (the
+   links sit inside #navbar's side padding). ::before is the icon. */
+.navbar-nav .nav-link.active::after {
+  content: "";
+  position: absolute;
+  left: calc(-0.75 * var(--rail-rem));
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  border-radius: 0 3px 3px 0;
+  background: var(--rail-accent);
 }
 
 .dropdown-menu {
@@ -365,11 +607,9 @@ header {
   --bs-dropdown-border-color: var(--rail-border);
 }
 
-/* The theme-toggle button (and, at mobile widths, the hamburger next to
-   it) are plain Bootstrap .btn elements that default to --bs-body-color —
-   the page's general text color, which is dark in light theme. Since the
-   rail they sit in stays dark in both themes, that made the toggle
-   invisible specifically in light mode. */
+/* The mobile menu button is a plain Bootstrap .btn, which defaults to
+   --bs-body-color - the page's general text colour, dark in light theme.
+   The rail it sits in stays dark in both themes, so it needs the rail's. */
 .navbar .btn {
   color: var(--rail-text-dim);
 }
@@ -379,8 +619,12 @@ header {
   color: var(--rail-active-text);
 }
 
-.search {
-  margin: 0.4rem 0.9rem 1rem;
+/* DocFX orders the search box last (".navbar #navbar form.search", order:
+   50) to put it at the far end of its horizontal navbar; in the rail it
+   leads, as it does in the markup. Same selector, so this later rule wins. */
+.navbar #navbar form.search {
+  order: 0;
+  margin: 0 0 calc(0.25 * var(--rail-rem));
 }
 
 .search .form-control {
@@ -396,6 +640,142 @@ header {
 
 .search .bi-search {
   color: var(--rail-text-dim);
+}
+
+
+/* ============================================================
+   Collapse toggle, and the collapsed (icon-only) rail: the demo's
+   sidebar.css. main.js toggles data-sidebar and names each control
+   in a tooltip while collapsed. Desktop only, and after the rail's
+   base styles so these win at equal specificity.
+   ============================================================ */
+@media (min-width: 768px) {
+  /* A flex column, so the button stretches across it as in the demo (a
+     button in normal flow only shrinks to fit). */
+  .rail-footer {
+    display: flex;
+    flex-direction: column;
+    padding-top: calc(0.5 * var(--rail-rem));
+    border-top: 1px solid var(--rail-border);
+  }
+
+  .rail-collapse {
+    display: flex;
+    align-items: center;
+    gap: calc(0.7 * var(--rail-rem));
+    margin: 0 calc(0.75 * var(--rail-rem)) calc(0.75 * var(--rail-rem));
+    padding: calc(0.6 * var(--rail-rem)) calc(0.65 * var(--rail-rem));
+    min-height: 44px;
+    border: 0;
+    border-radius: var(--bs-border-radius-sm);
+    background: transparent;
+    color: var(--rail-text-dim);
+    font-size: calc(0.8125 * var(--rail-rem));
+    font-weight: 500;
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .rail-collapse::before {
+    content: "";
+    width: 19px;
+    height: 19px;
+    flex-shrink: 0;
+    background-color: currentColor;
+    -webkit-mask: var(--icon-chevrons-left) center / contain no-repeat;
+    mask: var(--icon-chevrons-left) center / contain no-repeat;
+  }
+
+  .rail-collapse:hover {
+    background: var(--rail-surface);
+    color: var(--rail-active-text);
+  }
+
+  .rail-collapse:focus-visible {
+    outline: 3px solid var(--rail-accent);
+    outline-offset: 2px;
+  }
+
+  [data-sidebar="collapsed"] .rail-collapse::before {
+    -webkit-mask-image: var(--icon-chevrons-right);
+    mask-image: var(--icon-chevrons-right);
+  }
+
+  /* The demo's collapsed header: the logo, with its actions stacked below. */
+  [data-sidebar="collapsed"] .rail-header {
+    flex-direction: column;
+    gap: calc(0.6 * var(--rail-rem));
+    padding: calc(1.4 * var(--rail-rem)) 0 calc(0.6 * var(--rail-rem));
+  }
+
+  [data-sidebar="collapsed"] .rail-header__actions {
+    flex-direction: column;
+    margin-left: 0;
+  }
+
+  /* As in the demo, whose collapsed sidebar hides its footer. */
+  [data-sidebar="collapsed"] .rail-footer {
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  /* Names stay in the accessibility tree (they are the controls' accessible
+     names) and come back as tooltips. DocFX renders the Reference links' names
+     as bare text, so those are hidden with font-size instead; the icons are
+     sized in px and unaffected. */
+  [data-sidebar="collapsed"] .navbar-brand__text,
+  [data-sidebar="collapsed"] .rail-section__title,
+  [data-sidebar="collapsed"] .rail-collapse__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  [data-sidebar="collapsed"] .navbar-nav .nav-link,
+  [data-sidebar="collapsed"] .rail-collapse {
+    justify-content: center;
+    gap: 0;
+    padding-inline: 0;
+  }
+
+  [data-sidebar="collapsed"] .navbar-nav .nav-link {
+    font-size: 0;
+  }
+
+  /* Without their titles, sections are told apart by a rule between them. */
+  [data-sidebar="collapsed"] .rail-section {
+    margin-top: calc(0.6 * var(--rail-rem));
+    padding-top: calc(0.6 * var(--rail-rem));
+    border-top: 1px solid var(--rail-border);
+  }
+
+  /* Search collapses to its icon; main.js expands the rail when it's focused. */
+  [data-sidebar="collapsed"] .navbar #navbar form.search > i.bi {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  [data-sidebar="collapsed"] .search .form-control {
+    height: 44px;
+    padding: 0;
+    color: transparent;
+    cursor: pointer;
+  }
+
+  [data-sidebar="collapsed"] .search .form-control::placeholder {
+    color: transparent;
+  }
+
+  /* The collapsed rail is compact, but at a short window it still scrolls;
+     a scrollbar would take a third of its width, so scroll it bare. */
+  [data-sidebar="collapsed"] header {
+    scrollbar-width: none;
+  }
 }
 
 /* Class-tree TOC on API pages: a lighter panel to the right of the rail,
@@ -460,6 +840,41 @@ header {
 
 .toc-offcanvas .filter .form-control {
   border-radius: var(--bs-border-radius-pill);
+}
+
+/* "Try it live" links from an API into the demo page that exercises it
+   (added by main.js). A pill in the demo's accent, sized to a 44px tap
+   target like the rail's rows. */
+.try-live {
+  margin: 0.25rem 0 1rem;
+}
+
+.try-live__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius-pill);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.try-live__link::after {
+  content: "";
+  width: 16px;
+  height: 16px;
+  background-color: currentColor;
+  -webkit-mask: var(--icon-arrow-right) center / contain no-repeat;
+  mask: var(--icon-arrow-right) center / contain no-repeat;
+}
+
+.try-live__link:hover {
+  border-color: var(--bs-primary);
+  background: var(--bs-tertiary-bg);
 }
 
 /* ============================================================
@@ -532,298 +947,4 @@ table thead th {
   --bs-btn-hover-bg: var(--bs-link-hover-color);
   --bs-btn-hover-border-color: var(--bs-link-hover-color);
   border-radius: var(--bs-border-radius-pill);
-}
-
-/* ============================================================
-   Hero + feature cards, used by the raw HTML in docfx/index.md
-   ============================================================ */
-.docs-hero {
-  padding: 2.5rem 0 1.5rem;
-}
-
-.docs-hero__badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.3rem 0.85rem;
-  border-radius: var(--bs-border-radius-pill);
-  background: var(--bs-tertiary-bg);
-  color: var(--bs-secondary-color);
-  font-size: 0.8rem;
-  font-weight: 600;
-  margin-bottom: 1.1rem;
-}
-
-.docs-hero__dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #34d27f;
-}
-
-.docs-hero h1 {
-  font-size: 2.5rem;
-  margin-bottom: 0.6rem;
-}
-
-.docs-hero p {
-  font-size: 1.1rem;
-  color: var(--bs-secondary-color);
-  max-width: 640px;
-}
-
-.docs-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.65rem 1.3rem;
-  border-radius: var(--bs-border-radius-pill);
-  background: linear-gradient(145deg, #f97316, #c2410c);
-  color: #ffffff !important;
-  font-weight: 600;
-  text-decoration: none !important;
-  box-shadow: 0 6px 16px -4px rgba(234, 88, 12, 0.35);
-  margin-top: 0.5rem;
-}
-
-.docs-btn:hover {
-  box-shadow: 0 8px 20px -4px rgba(234, 88, 12, 0.45);
-}
-
-.docs-cards {
-  display: grid;
-  /* 260px, not 230: auto-fit packs as many columns as the minimum allows,
-     so too small a minimum keeps three cramped columns on a wide screen
-     where two roomy ones read better - and the NuGet card's install
-     command is what pays for it, wrapping to four lines in a ~240px
-     card. 260 still goes three-up at the article's full width. */
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1rem;
-  margin: 1.5rem 0 2rem;
-  list-style: none !important;
-  padding: 0 !important;
-}
-
-.docs-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  padding: 1.5rem;
-  border: 1px solid var(--bs-border-color);
-  border-radius: var(--bs-border-radius);
-  background: var(--surface);
-  box-shadow: var(--shadow-sm);
-  overflow: hidden;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
-}
-
-/* text-decoration:none on the <li> above doesn't reach the <a> inside it —
-   the anchor sets its own underline (the site's default link style) that
-   an ancestor's "none" doesn't override. DocFX's JS also tags any external
-   link inside <article> with class="external" and a CSS ::after icon
-   (\f1c5); since that lands after this anchor's last block child (the
-   description <p>), it wrapped onto its own line. Absolutely position it
-   into the same top-right corner as .docs-card__go instead, and hand off
-   between the two on hover rather than showing both. */
-.docs-card > a {
-  text-decoration: none !important;
-  color: inherit !important;
-  display: block;
-}
-
-.docs-card .external[href]::after {
-  position: absolute;
-  top: 1.5rem;
-  right: 1.5rem;
-  margin: 0 !important;
-  opacity: 0.5;
-  transition: opacity 0.15s ease;
-}
-
-.docs-card:hover .external[href]::after {
-  opacity: 0;
-}
-
-.docs-card:hover {
-  border-color: var(--bs-primary);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
-
-.docs-card__icon {
-  width: 44px;
-  height: 44px;
-  display: grid;
-  place-items: center;
-  border-radius: var(--bs-border-radius-sm);
-  background: var(--accent-soft);
-  color: var(--accent-soft-fg);
-  border: 1px solid var(--accent-soft-border);
-  margin-bottom: 0.75rem;
-}
-
-.docs-card__icon svg {
-  width: 22px;
-  height: 22px;
-  stroke: currentColor;
-  fill: none;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-/* The NuGet logomark is drawn as line art to sit alongside the feather-style
-   icons, with two adjustments the shared rule above can't make: at 2px the
-   stroke closes up its small punch-hole circle, and its lead dot is a solid
-   dot in the real mark rather than an outlined ring. The svg's own viewBox is
-   inset by 1.5 units so the outer stroke isn't clipped at the edge. */
-.docs-card__icon--nuget svg {
-  stroke-width: 1.75;
-}
-
-.docs-card__icon--nuget .nuget-dot {
-  fill: currentColor;
-  stroke: none;
-}
-
-.docs-card__title {
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  font-weight: 600;
-  margin-bottom: 0.35rem;
-}
-
-.docs-card p {
-  margin: 0;
-  font-size: 0.9rem;
-  color: var(--bs-secondary-color);
-  line-height: 1.55;
-  flex: 1;
-}
-
-/* Matches the demo's own .install-block (csharp/PhoneNumbers.Demo/wwwroot/
-   css/install-block.css) exactly — same "$ " terminal-prompt treatment,
-   same permanently-dark ground in both themes. That one is deliberate: a
-   one-line shell command is meant to look like an actual terminal
-   regardless of page theme, unlike a real code block (see --code-bg
-   above, which is *not* permanently dark). */
-.install-block {
-  font-family: var(--bs-font-monospace);
-  font-size: 0.875rem;
-  background: var(--install-bg);
-  color: var(--install-text);
-  border-radius: var(--bs-border-radius-sm);
-  /* Symmetric: the copy button is floated, not inset with padding, so only
-     the line it actually sits on pays for its width. Reserving space with
-     padding-right charged every line - including ones below the button with
-     nothing but empty space to their right - which is what split
-     "libphonenumber-csharp" at the hyphen in a ~270px card. */
-  padding: 0.7rem 0.6rem;
-  line-height: 1.45;
-  /* Deliberately not display:flex. A flex row makes the command its own
-     box starting after the "$", so a wrapped line hangs under the "d" of
-     dotnet. Left in normal flow the "$" is just the first inline box on
-     the line, and a continuation returns to the content edge - directly
-     under the "$" - the way a real shell wraps. */
-  overflow-wrap: anywhere;
-}
-
-.install-block__prompt {
-  color: var(--bs-primary);
-  user-select: none;
-  font-weight: 600;
-  margin-right: 0.5rem;
-}
-
-.install-block__copy {
-  /* Floated and exactly one line tall, so it shortens the command's first
-     line and nothing below it. It comes first in source order because a
-     right float is placed on the line box where it appears. */
-  float: right;
-  position: relative;
-  /* a hair under the 1.45 line-height so sub-pixel rounding can never make
-     the float tall enough to clip the line below it */
-  width: 1.4em;
-  height: 1.4em;
-  margin-left: 0.45rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border: 0;
-  border-radius: var(--bs-border-radius-sm);
-  background: transparent;
-  color: var(--install-text);
-  opacity: 0.55;
-  cursor: pointer;
-  transition: opacity 0.15s ease, background-color 0.15s ease;
-}
-
-/* The tap target is a centred pseudo-element rather than the button's own
-   box: sized on the box it would be several lines tall, and the float would
-   shorten every one of them. */
-.install-block__copy::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 32px;
-  height: 32px;
-}
-
-.install-block__copy:hover,
-.install-block__copy:focus-visible {
-  opacity: 1;
-  background: rgba(255, 255, 255, 0.09);
-}
-
-.install-block__copy svg {
-  width: 13px;
-  height: 13px;
-  stroke: currentColor;
-  fill: none;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-/* the two glyphs are both in the button; the copied class swaps which shows */
-.install-block__copy .install-block__copy-done,
-.install-block__copy--copied .install-block__copy-idle {
-  display: none;
-}
-
-.install-block__copy--copied .install-block__copy-done {
-  display: block;
-}
-
-.install-block__copy--copied {
-  opacity: 1;
-  color: var(--bs-primary);
-}
-
-.docs-card__go {
-  position: absolute;
-  top: 1.5rem;
-  right: 1.5rem;
-  color: var(--bs-secondary-color);
-  transform: translateX(-4px);
-  opacity: 0;
-  transition: transform 0.15s ease, opacity 0.15s ease;
-}
-
-.docs-card__go svg {
-  width: 16px;
-  height: 16px;
-  stroke: currentColor;
-  fill: none;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.docs-card:hover .docs-card__go {
-  opacity: 1;
-  transform: translateX(0);
-  color: var(--bs-primary);
 }

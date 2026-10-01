@@ -163,4 +163,16 @@ public class LiveFormatterPageTests : BunitContext
         var output = cut.Find(".live-formatter__output--active");
         Assert.NotEmpty(output.TextContent.Trim());
     }
+
+    [Fact]
+    public void header_links_as_you_type_formatter_in_the_api_reference()
+    {
+        var cut = Render<LiveFormatter>();
+
+        var link = cut.Find("a[aria-label='AsYouTypeFormatter in the API reference']");
+
+        Assert.Equal(
+            "http://localhost/docs/api/PhoneNumbers.AsYouTypeFormatter.html",
+            link.GetAttribute("href"));
+    }
 }

@@ -15,6 +15,42 @@
     margin-bottom: 0.5rem;
 }
 
+/* The eyebrow as a link to the API it names (ApiReferenceLink). */
+.page-header__eyebrow--link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    text-decoration: none;
+}
+
+.page-header__eyebrow--link:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+/* A one-line mono caption is ~18px tall; this grows the tap target to 44px without moving
+   anything around it. */
+.page-header__eyebrow--link::after {
+    content: "";
+    position: absolute;
+    inset: -13px -4px;
+}
+
+.page-header__eyebrow-icon {
+    display: inline-flex;
+}
+
+.page-header__eyebrow-icon svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
 .page-header__title {
     font-size: var(--fs-3xl);
     letter-spacing: -0.02em;

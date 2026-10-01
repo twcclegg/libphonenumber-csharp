@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>libphonenumber-csharp · Demo</title>
+    <title>libphonenumber-csharp</title>
     <meta name="description" content="Parse, format, validate and enrich phone numbers in the browser via WebAssembly." />
     <base href="/" />
 
@@ -15,13 +15,18 @@
          see. -->
     <link rel="icon" href="favicon.svg" />
 
-    <!-- pre-paint: resolve theme before Blazor mounts to avoid a flash -->
+    <!-- pre-paint: resolve theme before Blazor mounts to avoid a flash.
+         The choice is stored under DocFX's own key, 'theme', so the API docs published beside
+         this app (same origin, under docs/) open in the theme picked here and the other way
+         round. DocFX also stores 'auto' (follow the OS), which resolves here the same way no
+         stored choice does. 'phone-demo-theme' is where the demo kept it before; it is read
+         once as a fallback and replaced on the next toggle. -->
     <script>
         (function () {
             try {
-                const stored = localStorage.getItem('phone-demo-theme');
+                const stored = localStorage.getItem('theme') || localStorage.getItem('phone-demo-theme');
                 const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-                const theme = stored || (prefersDark ? 'dark' : 'light');
+                const theme = stored === 'light' || stored === 'dark' ? stored : (prefersDark ? 'dark' : 'light');
                 document.documentElement.setAttribute('data-theme', theme);
                 document.documentElement.style.colorScheme = theme;
             } catch (e) {}
@@ -35,6 +40,7 @@
     <link href="css/app.css" rel="stylesheet" />
     <link href="css/layout.css" rel="stylesheet" />
     <link href="css/sidebar.css" rel="stylesheet" />
+    <link href="css/sidebar-tooltip.css" rel="stylesheet" />
     <link href="css/hero.css" rel="stylesheet" />
     <link href="css/card.css" rel="stylesheet" />
     <link href="css/page-header.css" rel="stylesheet" />
@@ -69,7 +75,7 @@
         <a href="" class="reload">Reload</a>
     </div>
 
-    <!-- Minimal helpers for theme switching and clipboard (no framework, no deps). -->
+    <!-- Minimal helpers for theme switching, clipboard and the sidebar (no framework, no deps). -->
     <script>
         function syncFavicon(theme) {
             const link = document.querySelector('link[rel="icon"]');
@@ -83,7 +89,10 @@
             setTheme: function (theme) {
                 document.documentElement.setAttribute('data-theme', theme);
                 document.documentElement.style.colorScheme = theme;
-                try { localStorage.setItem('phone-demo-theme', theme); } catch (e) {}
+                try {
+                    localStorage.setItem('theme', theme);
+                    localStorage.removeItem('phone-demo-theme');
+                } catch (e) {}
                 syncFavicon(theme);
                 return theme;
             },
@@ -109,12 +118,77 @@
                 }
                 fallback();
                 return Promise.resolve();
+            },
+            // The collapsed sidebar is kept under 'sidebar', the key the API docs (same origin,
+            // under docs/) read before they paint, so the choice carries between the two sites.
+            isSidebarCollapsed: function () {
+                try { return localStorage.getItem('sidebar') === 'collapsed'; } catch (e) { return false; }
+            },
+            setSidebarCollapsed: function (collapsed) {
+                try { localStorage.setItem('sidebar', collapsed ? 'collapsed' : 'expanded'); } catch (e) {}
             }
         };
         // Correct the favicon for a reload where the stored theme differs
         // from the OS preference favicon.svg's own media query resolved at
         // first paint (setTheme covers every change from here on).
         syncFavicon(window.phoneDemo.getTheme());
+
+        // The collapsed sidebar shows icons only, so name each control beside it on hover and
+        // on keyboard focus. The name is still the control's own text (visually hidden), so the
+        // tooltip is aria-hidden; it stays up while the pointer moves onto it and Escape
+        // dismisses it (WCAG 1.4.13). Controls with a title keep the browser's own tooltip.
+        // Delegated from the document because Blazor re-renders the sidebar's nodes. The API
+        // docs carry the same behaviour in docfx/template/public/main.js.
+        (function () {
+            const tip = document.createElement('div');
+            tip.className = 'sidebar-tooltip';
+            tip.setAttribute('aria-hidden', 'true');
+            let owner = null;
+            let hideTimer = 0;
+
+            function controlFor(node) {
+                const control = node instanceof Element && node.closest('.sidebar--collapsed a, .sidebar--collapsed button');
+                return control && !control.hasAttribute('title') ? control : null;
+            }
+            function show(control) {
+                clearTimeout(hideTimer);
+                const label = control.querySelector('.sidebar__link-label');
+                const text = (label || control).textContent.trim();
+                if (!text) return;
+                if (!tip.isConnected) document.body.appendChild(tip);
+                tip.textContent = text;
+                const rail = control.closest('.sidebar').getBoundingClientRect();
+                const box = control.getBoundingClientRect();
+                tip.style.left = rail.right + 8 + 'px';
+                tip.style.top = box.top + box.height / 2 + 'px';
+                tip.classList.add('sidebar-tooltip--visible');
+                owner = control;
+            }
+            function hide() {
+                clearTimeout(hideTimer);
+                tip.classList.remove('sidebar-tooltip--visible');
+                owner = null;
+            }
+            function hideSoon() {
+                clearTimeout(hideTimer);
+                hideTimer = setTimeout(hide, 300);
+            }
+
+            document.addEventListener('pointerover', function (e) {
+                const control = controlFor(e.target);
+                if (control) show(control);
+                else if (tip.contains(e.target)) clearTimeout(hideTimer);
+                else if (owner) hideSoon();
+            });
+            document.addEventListener('focusin', function (e) {
+                const control = controlFor(e.target);
+                if (control) show(control); else hide();
+            });
+            document.addEventListener('focusout', hide);
+            document.addEventListener('click', hide);
+            document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hide(); });
+            window.addEventListener('scroll', hide, true);
+        })();
     </script>
 
     <script src="_framework/blazor.webassembly#[.{fingerprint}].js"></script>

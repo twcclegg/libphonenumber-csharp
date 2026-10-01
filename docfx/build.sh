@@ -22,6 +22,19 @@ for f in ../docs/*.md; do
     fi
 done
 
+# The docs sidebar repeats the demo's page links as static markup in template/layout/_master.tmpl,
+# and nothing else keeps that in step with the demo's MainLayout page table - so a new demo page
+# would be missing from the docs sidebar, and a removed one would stay linked to a 404. Compare
+# the two route lists (the demo's Home route is "", which the template writes as a bare "../").
+demo_routes=$(grep -oE 'new\("[^"]*", "' ../csharp/PhoneNumbers.Demo/Layout/MainLayout.razor | sed -E 's/new\("([^"]*)".*/\1/' | sort -u)
+docs_routes=$(grep -oE 'href="\{\{_rel\}\}\.\./[^"]*"' template/layout/_master.tmpl | sed -E 's/.*\.\.\/([^"]*)"/\1/' | sort -u)
+if [ "$demo_routes" != "$docs_routes" ]; then
+    echo "error: the docs sidebar (docfx/template/layout/_master.tmpl) links different demo pages from" >&2
+    echo "the demo's own (Pages in csharp/PhoneNumbers.Demo/Layout/MainLayout.razor):" >&2
+    diff <(echo "$demo_routes") <(echo "$docs_routes") | sed 's/^</  demo only:/; s/^>/  docs only:/' | grep only >&2
+    exit 1
+fi
+
 # Links like "](../csharp/PhoneNumbers/Foo.cs)" resolve on GitHub (where the file renders
 # in its own repo location) but point nowhere in the published static site, which ships
 # only the rendered articles. Rewrite any repo-relative link - not just ../csharp/ - to
@@ -45,3 +58,26 @@ dotnet build ../csharp/PhoneNumbers.Extensions --no-restore
 
 dotnet tool restore
 dotnet docfx docfx.json "$@"
+
+# The demo links into this site by page and DocFX heading id (csharp/PhoneNumbers.Demo/
+# DocsLinks.cs), and main.js adds links back from the same kind of key. docfx validates neither,
+# so check each against the built site: a renamed type or a changed overload fails the build here
+# instead of shipping a link to a page or anchor that no longer exists.
+broken=0
+while IFS= read -r link; do
+    page=${link%%#*}
+    anchor=${link#"$page"}
+    anchor=${anchor#\#}
+    if [ ! -f "_site/$page" ]; then
+        echo "error: $link - _site/$page does not exist." >&2
+        broken=1
+    elif [ -n "$anchor" ] && ! grep -q "id=\"$anchor\"" "_site/$page"; then
+        echo "error: $link - _site/$page has no heading with that id." >&2
+        broken=1
+    fi
+done < <(grep -ohE "[\"'](api|articles)/[^\"'#]+\.html(#[^\"']*)?[\"']" \
+    ../csharp/PhoneNumbers.Demo/DocsLinks.cs template/public/main.js | tr -d "\"'" | sort -u)
+if [ "$broken" -ne 0 ]; then
+    echo "Update the links in csharp/PhoneNumbers.Demo/DocsLinks.cs or docfx/template/public/main.js." >&2
+    exit 1
+fi
