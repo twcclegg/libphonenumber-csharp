@@ -1,6 +1,7 @@
 using Bunit;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Time.Testing;
 using PhoneNumbers.Demo;
 using PhoneNumbers.Demo.Pages;
 using Xunit;
@@ -9,6 +10,13 @@ namespace PhoneNumbers.Demo.Tests.Pages;
 
 public class HomePageTests : BunitContext
 {
+    private readonly FakeTimeProvider _time = new();
+
+    public HomePageTests()
+    {
+        Services.AddSingleton<TimeProvider>(_time);
+    }
+
     [Fact]
     public void prepopulates_number_and_region_from_url_query()
     {
@@ -209,11 +217,14 @@ public class HomePageTests : BunitContext
         var cut = Render<Home>();
 
         cut.FindAll("button[aria-label='Copy install command']")[0].Click();
-        await Task.Delay(1000);
+        _time.Advance(TimeSpan.FromMilliseconds(1000));
+        // Not a double-click: the first button is now labelled "Command copied", so [0] is the
+        // second install command.
         cut.FindAll("button[aria-label='Copy install command']")[0].Click();
-        // The first click's 1.5s timer has now expired; the second click's has not.
-        await Task.Delay(800);
 
+        // The first click's 1.5s timer expires; the second click's does not.
+        _time.Advance(TimeSpan.FromMilliseconds(800));
+        await cut.InvokeAsync(() => { }); // let the expired timer's continuation run
         Assert.Single(cut.FindAll("button[aria-label='Command copied']"));
     }
 }

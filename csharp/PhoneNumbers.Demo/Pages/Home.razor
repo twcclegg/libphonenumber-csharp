@@ -1,6 +1,7 @@
 @page "/"
 @inherits PhoneNumberPageBase
 @inject IJSRuntime JS
+@inject TimeProvider Time
 
 <PageTitle>libphonenumber-csharp Demo</PageTitle>
 
@@ -191,6 +192,7 @@
     // which command is currently showing its "copied" confirmation, if any
     private string? _copied;
     private int _copyClicks;
+    private static readonly TimeSpan ConfirmationTime = TimeSpan.FromMilliseconds(1500);
     private int _regionCount;
 
     protected override string DefaultNumber => "+1 650 253 0000";
@@ -206,11 +208,12 @@
     // index.html, show a check for a moment, then fall back to the copy glyph.
     private async Task Copy(string command)
     {
-        await JS.InvokeVoidAsync("phoneDemo.copyText", command);
+        // Take the token before awaiting, so it matches the order of the clicks themselves.
         var click = ++_copyClicks;
+        await JS.InvokeVoidAsync("phoneDemo.copyText", command);
         _copied = command;
         StateHasChanged();
-        await Task.Delay(1500);
+        await Task.Delay(ConfirmationTime, Time);
         // A later click restarted the confirmation; its own timer clears it.
         if (click != _copyClicks) return;
         _copied = null;
