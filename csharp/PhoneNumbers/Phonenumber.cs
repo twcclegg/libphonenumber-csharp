@@ -7,7 +7,9 @@ using System.Runtime.CompilerServices;
 
 namespace PhoneNumbers
 {
-    public sealed class PhoneNumber : IEquatable<PhoneNumber>
+    // The framework hooks (ToString, IParsable, TypeConverter) live in PhoneNumber.Framework.cs so
+    // this ported file stays a straight translation of Java's Phonenumber.PhoneNumber.
+    public sealed partial class PhoneNumber : IEquatable<PhoneNumber>
     {
         public const int CountryCodeFieldNumber = 1;
         public const int NationalNumberFieldNumber = 2;
