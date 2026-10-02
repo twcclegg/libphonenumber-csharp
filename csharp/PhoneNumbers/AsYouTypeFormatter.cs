@@ -432,7 +432,7 @@ namespace PhoneNumbers
                             return InputAccruedNationalNumber();
                         }
                         return ableToFormat
-                           ? prefixBeforeNationalNumber + tempNationalNumber
+                           ? AppendNationalNumber(tempNationalNumber)
                            : accruedInput.ToString();
                     }
                     else
