@@ -43,6 +43,11 @@ structures, statistics or a library is a small C# console project like
 solution. A few `lib/*.js` helpers once crept in as an implementation detail and were ported away;
 JavaScript belongs only in the Blazor demo's own web assets.
 
+That tooling is tested: `bash lib/test/run-tests.sh` covers the scripts under `lib/` and the
+benchmark comparison tool, offline and in seconds, and `run_ci_tooling_tests.yml` runs it on any PR
+touching them. Change one of those scripts and the suite is where the change gets proved — the
+`writing-tests` skill describes how it is put together.
+
 Shared shell functions live in `lib/github-release-helpers.sh`, which is sourced rather than run
 and is kept bash-3.2-compatible (no `${var,,}`) so it loads on macOS's stock bash. The scripts
 that source it are not held to that — `lib/update-changelog.sh` already uses `mapfile` (bash 4+) —
