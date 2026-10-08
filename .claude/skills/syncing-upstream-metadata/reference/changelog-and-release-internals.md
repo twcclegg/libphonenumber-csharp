@@ -1,4 +1,4 @@
-# Sync flow, changelog generation, sync identity and checkout depth — why they are the way they are
+# Sync flow, changelog fold, sync identity and checkout depth — why they are the way they are
 
 Several decisions in `lib/github-actions-metadata-update.sh` and its workflow look arbitrary and are
 not. Each was reached after the simpler alternative failed in production. `README.md` and the
@@ -8,8 +8,9 @@ script's header comment point here for the reasoning.
 
 - The sync opens a PR and stops; merging it is the intended path
 - The release flow deliberately has no notion of declining, and no guards against same-day runs
-- The changelog entry is the release's own notes
-- The notes need a reachable previous tag
+- The fold is decided by authorship, not by paths
+- The fold check needs full history
+- A non-foldable release's entry is the release's own notes
 - The sync commits as the account its token belongs to
 
 ## The sync opens a PR and stops; merging it is the intended path
@@ -53,23 +54,47 @@ apart, so at most one metadata PR is ever open, and a maintainer merging or clos
 hours either side of a scheduled job rather than inside one — guards for those interleavings were
 written and removed.
 
-## The changelog entry is the release's own notes
+## The fold is decided by authorship, not by paths
 
-`lib/update-changelog.sh` writes the entry from the body of GitHub's
-`POST /releases/generate-notes` for the new tag (`generateReleaseNotes` in
-`github-release-helpers.sh`), the same generator `createRelease` asks for. The changelog and the
-release page therefore list the same PRs. The notes cannot contain the sync's own PR, so the sync
-appends its line; when the PR does not exist yet the line carries a placeholder number that is
-replaced after the PR is opened (amend + force-push of the sync branch, auto-merge still off).
+`lib/update-changelog.sh` collapses consecutive metadata-only releases into one ranged entry. The
+sync tells it which releases qualify by asking whether **every commit since the last release was
+written by the sync account or by dependabot**. `Co-authored-by` trailers count as authors, since a
+squash merge records only the PR's author and a human fix pushed onto a dependabot PR would
+otherwise fold away.
 
-This replaced a fold-by-authorship scheme that merged "bot-only" releases into ranged entries and
-described any release with human commits as "plus other changes merged to `main`". That left the
-changelog saying nothing about what shipped (v9.0.41 listed 17 PRs on its release page and none
-in the changelog). The notes are used verbatim apart from heading depth; don't re-summarise them.
+Dependabot has to be ignored because its monthly updates land between fortnightly metadata releases
+often enough to break most runs — over v9.0.12..v9.0.27 that alone is the difference between
+sixteen entries and one.
 
-## The notes need a reachable previous tag
+Authorship rather than paths because a path list cannot tell a maintainer's own CI change, which
+deserves an entry, from dependabot's; and because the sync's own generated output kept counting as
+substantive work under the old file-based rule.
 
-`previous_tag_name` must exist on GitHub; the sync uses the deployed NuGet version's tag.
+The trade-off: a human commit touching only `resources/` or only `CHANGELOG.md` now breaks a run.
+Hand-editing either is worth its own entry anyway.
+
+The fold state lives in an HTML comment directly above the heading it describes
+(`<!-- changelog-run from=… first=… start-date=… count=N -->`). Only a heading with that marker is a
+candidate to extend, so a hand-written heading can never be mistaken for a foldable run.
+
+## The fold check needs full history
+
+The sync's `actions/checkout` uses `fetch-depth: 0` with `filter: blob:none` (the blobs are never
+read). Don't shallow it, and don't fetch the tag shallowly instead: a `--depth=1` fetch grafts the
+tag as a parentless root and writes `.git/shallow` even into a full clone, after which
+`v<tag>..HEAD` covers the wrong commits — measured here, one range grew from 350 to 1648 commits and
+another collapsed to zero. `git merge-base --is-ancestor` still answers yes in that state and is no
+guard, which is why the script tests `git rev-parse --is-shallow-repository` and fails closed.
+
+## A non-foldable release's entry is the release's own notes
+
+When the fold check finds human work, `update-changelog.sh` writes the standalone entry from the
+body of GitHub's `POST /releases/generate-notes` for the new tag (`generateReleaseNotes` in
+`github-release-helpers.sh`), the same generator `createRelease` asks for, so the changelog and
+release page list the same PRs. Before this the entry was a generic "plus other changes" sentence
+(v9.0.41 shipped 17 PRs and listed none). The notes cannot contain the sync's own PR, so the sync
+appends its line; with no PR yet it carries a placeholder number, replaced after the PR is opened
+(amend + force-push, auto-merge still off). `previous_tag_name` must exist on GitHub.
 
 ## The sync commits as the account its token belongs to
 

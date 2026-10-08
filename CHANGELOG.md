@@ -28,11 +28,20 @@ still has a matching entry, so no version number is skipped. One stretch of earl
 2019) briefly synced this repo's full upstream multi-language source tree (`cpp/`, `java/`,
 `debian/`) alongside the C# port; those files are called out but not itemized.
 
-**Entries are generated from the release notes going forward.** [`lib/update-changelog.sh`](lib/update-changelog.sh),
-called from the same sync script, writes each release's entry from the notes GitHub generates for
-that tag (the same generator the GitHub Release uses), so this file and the release page list the
-same merged PRs. Nothing is folded or summarised; every release gets its own entry. The entries
-below v9.0.41 that are ranged or hand-written predate this.
+**Folding is automatic going forward.** [`lib/update-changelog.sh`](lib/update-changelog.sh), called
+from the same sync script, checks whether anyone but the bots landed anything on `main` since the
+last release. Automated dependency updates are folded in along with the syncs, which is why a folded
+entry reports "no hand-written changes" rather than claiming nothing at all moved. If not, it either starts a new one-release entry or, when the release immediately above
+it is *also* an automated metadata-only entry, extends that entry's range instead of adding another
+one — so a long stretch of routine syncs keeps collapsing into a single entry the way the historical
+ranges above do, without a human curating it. The moment a release includes anything else, it always
+gets its own standalone entry and breaks the chain: it can't extend the run above it, and — because a
+hand-written or substantive entry never carries the marker a foldable run needs — the next metadata-only
+release starts a fresh run rather than reaching past it to resume the old one.
+
+A release that does include other work gets a standalone entry built from the notes GitHub generates
+for that tag — the same generator the GitHub Release uses — so its entry lists the same merged PRs
+as the release page rather than a generic sentence.
 
 Entries that describe an actual code change were written by hand at review time, tracing each claim
 back to the commit(s) or PR(s) named next to it. For the exhaustive per-PR detail behind any release
