@@ -39,11 +39,14 @@ gets its own standalone entry and breaks the chain: it can't extend the run abov
 hand-written or substantive entry never carries the marker a foldable run needs — the next metadata-only
 release starts a fresh run rather than reaching past it to resume the old one.
 
+A release that does include other work gets a standalone entry built from the notes GitHub generates
+for that tag — the same generator the GitHub Release uses — so its entry lists the same merged PRs
+as the release page rather than a generic sentence.
+
 Entries that describe an actual code change were written by hand at review time, tracing each claim
 back to the commit(s) or PR(s) named next to it. For the exhaustive per-PR detail behind any release
 (including the routine ones), see its
-[GitHub Release](https://github.com/twcclegg/libphonenumber-csharp/releases), whose notes are
-auto-generated from merged PR titles.
+[GitHub Release](https://github.com/twcclegg/libphonenumber-csharp/releases).
 
 Format loosely follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning tracks
 whatever upstream `google/libphonenumber` release this port is synced to, not strict
@@ -55,7 +58,30 @@ in the README for why staying current matters even for patch-looking bumps.
 
 ## [v9.0.41](https://github.com/twcclegg/libphonenumber-csharp/compare/v9.0.40...v9.0.41) - 2026-10-08
 
-Includes the metadata sync to upstream [libphonenumber v9.0.41](https://github.com/google/libphonenumber/releases/tag/v9.0.41) plus other changes merged to `main` since the last release — see the compare link above for the full diff.
+Metadata sync to upstream [libphonenumber v9.0.41](https://github.com/google/libphonenumber/releases/tag/v9.0.41).
+
+### What's Changed
+* fix: fingerprint the demo's Blazor loader so a deploy can't strand a cached copy causing webpage to not load by @wmundev in https://github.com/twcclegg/libphonenumber-csharp/pull/481
+* fix: ignore a link's region unless it is one the demo can select by @wmundev in https://github.com/twcclegg/libphonenumber-csharp/pull/482
+* fix: say a number has no timezone data instead of showing Etc/Unknown by @wmundev in https://github.com/twcclegg/libphonenumber-csharp/pull/483
+* fix: keep a copy confirmation up for its full time after a second click by @wmundev in https://github.com/twcclegg/libphonenumber-csharp/pull/484
+* fix: fall back to the Formatting page's own Calling From default by @wmundev in https://github.com/twcclegg/libphonenumber-csharp/pull/485
+* fix: stop FindNumbers hiding library exceptions as a search message by @wmundev in https://github.com/twcclegg/libphonenumber-csharp/pull/486
+* refactor: share one number-type label map across the demo pages by @wmundev in https://github.com/twcclegg/libphonenumber-csharp/pull/487
+* refactor: replace six copies of the region dropdown with RegionSelect by @wmundev in https://github.com/twcclegg/libphonenumber-csharp/pull/488
+* refactor: move the shared number-input logic into PhoneNumberPageBase by @wmundev in https://github.com/twcclegg/libphonenumber-csharp/pull/489
+* refactor: keep the Geo page's languages in one table by @wmundev in https://github.com/twcclegg/libphonenumber-csharp/pull/490
+* refactor: drive the layout's nav and titles from one page table by @wmundev in https://github.com/twcclegg/libphonenumber-csharp/pull/491
+* fix: address review nits from the demo clean-up stack by @wmundev in https://github.com/twcclegg/libphonenumber-csharp/pull/493
+* feat: make the demo and the API docs one site by @wmundev in https://github.com/twcclegg/libphonenumber-csharp/pull/494
+* build(deps): bump the codeql-action group with 3 updates by @dependabot[bot] in https://github.com/twcclegg/libphonenumber-csharp/pull/496
+* build(deps): bump actions/deploy-pages from 5.0.0 to 5.0.1 by @dependabot[bot] in https://github.com/twcclegg/libphonenumber-csharp/pull/497
+* Bump the nuget_minor_patch_updates group with 1 update by @dependabot[bot] in https://github.com/twcclegg/libphonenumber-csharp/pull/498
+* fix: keep the space after the national prefix while typing by @youdie006 in https://github.com/twcclegg/libphonenumber-csharp/pull/499
+* feat: automatic upgrade to v9.0.41 by @libphonenumber-csharp-bot in https://github.com/twcclegg/libphonenumber-csharp/pull/501
+
+### New Contributors
+* @youdie006 made their first contribution in https://github.com/twcclegg/libphonenumber-csharp/pull/499
 
 ## [v9.0.40](https://github.com/twcclegg/libphonenumber-csharp/compare/v9.0.39...v9.0.40) - 2026-09-24
 

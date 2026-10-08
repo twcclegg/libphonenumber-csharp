@@ -468,8 +468,30 @@ if [ -f "${CHANGELOG_FILE}" ] && grep -qF '<!-- next-entry -->' "${CHANGELOG_FIL
         METADATA_ONLY=false
     fi
 
+    CHANGELOG_NOTES_FILE=""
+    SYNC_PR_PLACEHOLDER=""
+    if ! isTrue "${METADATA_ONLY}"; then
+        # Not foldable: the entry is github's own generated release notes for this tag, so it lists
+        # what the release page will. They cannot include this sync's own PR yet, so its line is
+        # added here; the PR number is known now when refreshing, else filled in after opening.
+        CHANGELOG_NOTES_FILE="${WORK_DIR}/release-notes.md"
+        generateReleaseNotes "${GITHUB_REPOSITORY}" "${UPSTREAM_GITHUB_RELEASE_TAG}" main "v${DEPLOYED_NUGET_TAG}" \
+            >"${CHANGELOG_NOTES_FILE}" \
+            || fail 1 "could not generate release notes for ${UPSTREAM_GITHUB_RELEASE_TAG} since v${DEPLOYED_NUGET_TAG}"
+        SYNC_PR_PLACEHOLDER="@@SYNC_PR@@"
+        SYNC_NOTE_LINE="* feat: automatic upgrade to ${UPSTREAM_GITHUB_RELEASE_TAG} by @${SYNC_LOGIN} in https://github.com/${GITHUB_REPOSITORY}/pull/${REFRESHING_PR_NUMBER:-${SYNC_PR_PLACEHOLDER}}"
+        awk -v line="${SYNC_NOTE_LINE}" '
+            /^\* / { last = NR }
+            { rows[NR] = $0 }
+            END {
+                for (i = 1; i <= NR; i++) { print rows[i]; if (i == last) print line }
+                if (!last) print line
+            }' "${CHANGELOG_NOTES_FILE}" >"${CHANGELOG_NOTES_FILE}.new"
+        mv "${CHANGELOG_NOTES_FILE}.new" "${CHANGELOG_NOTES_FILE}"
+    fi
+
     bash "${SCRIPT_DIR}/update-changelog.sh" "${CHANGELOG_FILE}" "${GITHUB_REPOSITORY}" "${UPSTREAM_REPOSITORY}" \
-        "v${DEPLOYED_NUGET_TAG}" "${UPSTREAM_GITHUB_RELEASE_TAG}" "${METADATA_ONLY}" "$(date -u +%F)"
+        "v${DEPLOYED_NUGET_TAG}" "${UPSTREAM_GITHUB_RELEASE_TAG}" "${METADATA_ONLY}" "$(date -u +%F)" "${CHANGELOG_NOTES_FILE}"
 else
     warn "CHANGELOG.md missing or missing the '<!-- next-entry -->' marker, skipping changelog update"
 fi
@@ -508,6 +530,14 @@ EOF
 
     PR_NUMBER=$(jq -er '.number' <<<"${PR_RESPONSE}")
     PR_NODE_ID=$(jq -er '.node_id' <<<"${PR_RESPONSE}")
+    # The changelog entry lists this PR, whose number did not exist until now.
+    if [ -n "${SYNC_PR_PLACEHOLDER:-}" ] && grep -qF "${SYNC_PR_PLACEHOLDER}" "${CHANGELOG_FILE}"; then
+        sed -i "s|/pull/${SYNC_PR_PLACEHOLDER}|/pull/${PR_NUMBER}|" "${CHANGELOG_FILE}"
+        git add "${CHANGELOG_FILE}"
+        git -c user.email="${METADATA_COMMIT_AUTHOR_EMAIL}" -c user.name="${METADATA_COMMIT_AUTHOR_NAME}" \
+            commit --amend --no-edit
+        git push --force origin "HEAD:refs/heads/${BRANCH}"
+    fi
     # Auto-merge stays off: this PR is for a person to read and merge.
     log "opened PR #${PR_NUMBER} for ${UPSTREAM_GITHUB_RELEASE_TAG} with auto-merge off; a later run arms it if nobody merges it first"
     exit 0

@@ -1,6 +1,6 @@
 # Sync flow, changelog fold, sync identity and checkout depth — why they are the way they are
 
-Four decisions in `lib/github-actions-metadata-update.sh` and its workflow look arbitrary and are
+Several decisions in `lib/github-actions-metadata-update.sh` and its workflow look arbitrary and are
 not. Each was reached after the simpler alternative failed in production. `README.md` and the
 script's header comment point here for the reasoning.
 
@@ -10,6 +10,7 @@ script's header comment point here for the reasoning.
 - The release flow deliberately has no notion of declining, and no guards against same-day runs
 - The fold is decided by authorship, not by paths
 - The fold check needs full history
+- A non-foldable release's entry is the release's own notes
 - The sync commits as the account its token belongs to
 
 ## The sync opens a PR and stops; merging it is the intended path
@@ -84,6 +85,16 @@ tag as a parentless root and writes `.git/shallow` even into a full clone, after
 `v<tag>..HEAD` covers the wrong commits — measured here, one range grew from 350 to 1648 commits and
 another collapsed to zero. `git merge-base --is-ancestor` still answers yes in that state and is no
 guard, which is why the script tests `git rev-parse --is-shallow-repository` and fails closed.
+
+## A non-foldable release's entry is the release's own notes
+
+When the fold check finds human work, `update-changelog.sh` writes the standalone entry from the
+body of GitHub's `POST /releases/generate-notes` for the new tag (`generateReleaseNotes` in
+`github-release-helpers.sh`), the same generator `createRelease` asks for, so the changelog and
+release page list the same PRs. Before this the entry was a generic "plus other changes" sentence
+(v9.0.41 shipped 17 PRs and listed none). The notes cannot contain the sync's own PR, so the sync
+appends its line; with no PR yet it carries a placeholder number, replaced after the PR is opened
+(amend + force-push, auto-merge still off). `previous_tag_name` must exist on GitHub.
 
 ## The sync commits as the account its token belongs to
 
