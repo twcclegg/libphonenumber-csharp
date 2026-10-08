@@ -96,7 +96,7 @@ namespace PhoneNumbers
             }
             if (HasCountryCodeSource)
             {
-                outputString.Append(" Country Code Source: ").Append(CountryCodeSource.ToString());
+                outputString.Append(" Country Code Source: ").Append(CountryCodeSource);
             }
             if (HasPreferredDomesticCarrierCode)
             {
