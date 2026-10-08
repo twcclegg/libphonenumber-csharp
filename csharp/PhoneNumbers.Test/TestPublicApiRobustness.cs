@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using Xunit;
 
@@ -52,6 +53,10 @@ namespace PhoneNumbers.Test
             "-",
             "()",
             "...",
+            "+1 800 555 0100 ext. 1234",     // parses, with an extension
+            "tel:+18005550100;ext=99",       // parses, RFC 3966 with an extension
+            "+39 02 1234 5678",              // parses, with an Italian leading zero
+            "+55 012 3121286979",            // parses, with a preferred domestic carrier code
             "tel:",
             "tel:;phone-context=",
             "tel:+1;ext=",
@@ -197,6 +202,63 @@ namespace PhoneNumbers.Test
             }
 
             Assert.Empty(failures);
+        }
+
+        /// <summary>
+        /// The framework hooks added in PhoneNumber.Framework.cs: the TypeConverter is handed raw
+        /// strings by configuration binding and model binders, and ToString() runs on whatever came
+        /// back from a parse - including in a debugger, where an exception is especially unwelcome.
+        /// </summary>
+        [Fact]
+        public void TypeConverterFailsOnlyWithFormatException()
+        {
+            var converter = TypeDescriptor.GetConverter(typeof(PhoneNumber));
+
+            AssertOverInputs("TypeConverter.ConvertFrom",
+                input => converter.ConvertFrom(input)!, typeof(FormatException));
+        }
+
+        [Fact]
+        public void ToStringNeverThrowsForAnythingThatParsed()
+        {
+            var failures = new List<string>();
+            var sawExtension = false;
+            var sawCountryCodeSource = false;
+            var sawLeadingZeros = false;
+            var sawCarrierCode = false;
+            foreach (var input in HostileInputs)
+            {
+                PhoneNumber number;
+                try
+                {
+                    number = PhoneUtil.ParseAndKeepRawInput(input, "US");
+                }
+                catch (NumberParseException)
+                {
+                    continue;
+                }
+
+                sawExtension |= number.HasExtension;
+                sawCountryCodeSource |= number.HasCountryCodeSource;
+                sawLeadingZeros |= number.HasNumberOfLeadingZeros;
+                sawCarrierCode |= number.HasPreferredDomesticCarrierCode;
+
+                Record("ToString", Describe(input), failures, () =>
+                {
+                    var text = number.ToString();
+                    Assert.StartsWith("Country Code: ", text, StringComparison.Ordinal);
+                    return text;
+                }, null);
+            }
+
+            Assert.Empty(failures);
+            // Without these the sweep only ever reaches the two unconditional fields, so a throw from
+            // one of the optional branches slips through - which is what happened when this test was
+            // first written: a ToString() mutated to throw on an extension still passed it.
+            Assert.True(sawExtension, "no hostile input parsed into a number with an extension");
+            Assert.True(sawCountryCodeSource, "no hostile input parsed into a number with a country code source");
+            Assert.True(sawLeadingZeros, "no hostile input parsed into a number with leading zeros");
+            Assert.True(sawCarrierCode, "no hostile input parsed into a number with a carrier code");
         }
 
         private static void AssertOverInputs(string what, Func<string, object> call, Type? allowed = null)
