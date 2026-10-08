@@ -368,8 +368,6 @@ fi
 
 METADATA_COMMIT_AUTHOR_NAME="${SYNC_LOGIN}"
 METADATA_COMMIT_AUTHOR_EMAIL="${SYNC_ID}+${SYNC_LOGIN}@users.noreply.github.com"
-# Git author names, not logins, matched in full: dependabot commits as "dependabot[bot]".
-CHANGELOG_FOLD_IGNORED_AUTHORS="${METADATA_COMMIT_AUTHOR_NAME}|dependabot[bot]"
 log "committing as ${METADATA_COMMIT_AUTHOR_NAME} <${METADATA_COMMIT_AUTHOR_EMAIL}>"
 
 rm -rf "${GITHUB_ACTION_WORKING_DIRECTORY:?}/resources"
@@ -416,60 +414,29 @@ fi
 # directly (see the file-level comment above). Doing it here keeps everything in the one PR.
 CHANGELOG_FILE="${GITHUB_ACTION_WORKING_DIRECTORY}/CHANGELOG.md"
 if [ -f "${CHANGELOG_FILE}" ] && grep -qF '<!-- next-entry -->' "${CHANGELOG_FILE}"; then
-    # Folds into the previous changelog entry when nobody but the bots has landed anything since
-    # the last release; .claude/skills/syncing-upstream-metadata/reference/changelog-and-release-internals.md says why.
-    METADATA_ONLY=true
-    if isTrue "$(git rev-parse --is-shallow-repository)"; then
-        warn "the checkout is shallow, so the commits since v${DEPLOYED_NUGET_TAG} cannot be read; treating this release as more than a metadata sync"
-        METADATA_ONLY=false
-    elif git rev-parse -q --verify "v${DEPLOYED_NUGET_TAG}" >/dev/null \
-        && git merge-base --is-ancestor "v${DEPLOYED_NUGET_TAG}" HEAD 2>/dev/null; then
-        # Co-authored-by is read as well as the author: a squash merge records only the PR's
-        # author, so a human fix pushed onto a dependabot PR would otherwise fold away.
-        #
-        # Exact full-name lookup, and %h leads so a tab in an author name cannot shift it.
-        SUBSTANTIVE_COMMITS=$(git log --no-merges \
-            --format='%h%x09%an%x1f%(trailers:key=Co-authored-by,valueonly,separator=%x1f)' \
-            "v${DEPLOYED_NUGET_TAG}..HEAD" \
-            | awk -F'\t' -v ignored="${CHANGELOG_FOLD_IGNORED_AUTHORS}" '
-                BEGIN {
-                    count = split(ignored, names, "|")
-                    for (i = 1; i <= count; i++) {
-                        if (names[i] != "") ignore[tolower(names[i])] = 1
-                    }
-                }
-                {
-                    hash = $1
-                    people = substr($0, index($0, "\t") + 1)
-                    total = split(people, who, "\037")
-                    for (i = 1; i <= total; i++) {
-                        name = who[i]
-                        sub(/ *<[^<>]*>$/, "", name)
-                        if (name == "") continue
-                        if (!(tolower(name) in ignore)) {
-                            print hash
-                            next
-                        }
-                    }
-                }')
-
-        if [ -n "${SUBSTANTIVE_COMMITS}" ]; then
-            METADATA_ONLY=false
-            log "release includes work beyond the metadata sync:"
-            # One argument per line: printf would consume the format once and indent only the first.
-            while IFS= read -r commit; do
-                [ -n "${commit}" ] && git log --no-walk --format='  %h %s' "${commit}"
-            done <<<"${SUBSTANTIVE_COMMITS}"
-        fi
-    else
-        # Fail closed: better to give this release its own entry than to silently fold real changes
-        # away as if they never happened because the history needed to check wasn't there.
-        warn "could not reach v${DEPLOYED_NUGET_TAG} from HEAD to check for work beyond the metadata sync; is the checkout shallow?"
-        METADATA_ONLY=false
-    fi
+    # The entry is github's own generated release notes for this tag (what the release page will
+    # list), so changelog and release stay 1:1. The notes cannot include this sync's own PR yet,
+    # so its line is added here; the PR number is known now when refreshing an open PR, and is
+    # filled in after the PR is opened otherwise.
+    CHANGELOG_NOTES_FILE="${WORK_DIR}/release-notes.md"
+    generateReleaseNotes "${GITHUB_REPOSITORY}" "${UPSTREAM_GITHUB_RELEASE_TAG}" main "v${DEPLOYED_NUGET_TAG}" \
+        >"${CHANGELOG_NOTES_FILE}" \
+        || fail 1 "could not generate release notes for ${UPSTREAM_GITHUB_RELEASE_TAG} since v${DEPLOYED_NUGET_TAG}"
+    SYNC_PR_PLACEHOLDER="@@SYNC_PR@@"
+    SYNC_PR_REF="${REFRESHING_PR_NUMBER:-${SYNC_PR_PLACEHOLDER}}"
+    SYNC_NOTE_LINE="* feat: automatic upgrade to ${UPSTREAM_GITHUB_RELEASE_TAG} by @${SYNC_LOGIN} in https://github.com/${GITHUB_REPOSITORY}/pull/${SYNC_PR_REF}"
+    # Goes after the last bullet of "What's Changed" (the sync merges last, as github lists it).
+    awk -v line="${SYNC_NOTE_LINE}" '
+        /^\* / { last = NR }
+        { rows[NR] = $0 }
+        END {
+            for (i = 1; i <= NR; i++) { print rows[i]; if (i == last) print line }
+            if (!last) print line
+        }' "${CHANGELOG_NOTES_FILE}" >"${CHANGELOG_NOTES_FILE}.new"
+    mv "${CHANGELOG_NOTES_FILE}.new" "${CHANGELOG_NOTES_FILE}"
 
     bash "${SCRIPT_DIR}/update-changelog.sh" "${CHANGELOG_FILE}" "${GITHUB_REPOSITORY}" "${UPSTREAM_REPOSITORY}" \
-        "v${DEPLOYED_NUGET_TAG}" "${UPSTREAM_GITHUB_RELEASE_TAG}" "${METADATA_ONLY}" "$(date -u +%F)"
+        "v${DEPLOYED_NUGET_TAG}" "${UPSTREAM_GITHUB_RELEASE_TAG}" "${CHANGELOG_NOTES_FILE}" "$(date -u +%F)"
 else
     warn "CHANGELOG.md missing or missing the '<!-- next-entry -->' marker, skipping changelog update"
 fi
@@ -508,6 +475,14 @@ EOF
 
     PR_NUMBER=$(jq -er '.number' <<<"${PR_RESPONSE}")
     PR_NODE_ID=$(jq -er '.node_id' <<<"${PR_RESPONSE}")
+    # The changelog entry lists this PR, whose number did not exist until now.
+    if [ -n "${SYNC_PR_PLACEHOLDER:-}" ] && grep -qF "${SYNC_PR_PLACEHOLDER}" "${CHANGELOG_FILE}"; then
+        sed -i "s|/pull/${SYNC_PR_PLACEHOLDER}|/pull/${PR_NUMBER}|" "${CHANGELOG_FILE}"
+        git add "${CHANGELOG_FILE}"
+        git -c user.email="${METADATA_COMMIT_AUTHOR_EMAIL}" -c user.name="${METADATA_COMMIT_AUTHOR_NAME}" \
+            commit --amend --no-edit
+        git push --force origin "HEAD:refs/heads/${BRANCH}"
+    fi
     # Auto-merge stays off: this PR is for a person to read and merge.
     log "opened PR #${PR_NUMBER} for ${UPSTREAM_GITHUB_RELEASE_TAG} with auto-merge off; a later run arms it if nobody merges it first"
     exit 0

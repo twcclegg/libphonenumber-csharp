@@ -1,6 +1,6 @@
 ---
 name: syncing-upstream-metadata
-description: Work with the automated upstream metadata sync and the release it triggers — reviewing a metadata-update/* PR, diagnosing a sync that stopped or failed, running it manually or as a dry run, understanding how CHANGELOG.md entries fold, or cutting a release. Use when phone metadata needs bumping to a new google/libphonenumber release, when the sync's .java / .proto gate has tripped, or when touching lib/github-actions-metadata-update.sh, lib/update-changelog.sh, lib/finalize-metadata-release.sh or their workflows.
+description: Work with the automated upstream metadata sync and the release it triggers — reviewing a metadata-update/* PR, diagnosing a sync that stopped or failed, running it manually or as a dry run, understanding how CHANGELOG.md entries are generated, or cutting a release. Use when phone metadata needs bumping to a new google/libphonenumber release, when the sync's .java / .proto gate has tripped, or when touching lib/github-actions-metadata-update.sh, lib/update-changelog.sh, lib/finalize-metadata-release.sh or their workflows.
 ---
 
 # Syncing upstream metadata
@@ -18,7 +18,7 @@ never stalled because nobody looked. Once the PR merges, by hand or by auto-merg
 cut the GitHub release, and dispatch the NuGet publish.
 
 `README.md` § "Metadata updates" is the user-facing description; this skill is the working detail.
-The reasoning behind the review-then-backstop flow, the changelog fold, the commit identity and the
+The reasoning behind the review-then-backstop flow, the changelog generation, the commit identity and the
 checkout depth is in
 [reference/changelog-and-release-internals.md](reference/changelog-and-release-internals.md) —
 read it before changing any of those four things.
@@ -95,11 +95,10 @@ without the user explicitly asking.
 
 ## The changelog
 
-`lib/update-changelog.sh` writes the release's entry in the same commit as the sync. Consecutive
-releases whose every commit was authored by the sync account or dependabot fold into one ranged
-entry; any human commit since the last release — including one that only touches `resources/` or
-`CHANGELOG.md` — gives the release its own entry. So if you hand-edit `CHANGELOG.md`, expect the
-next release to start a new entry rather than extend the current run; that is intended.
+`lib/update-changelog.sh` writes the release's entry in the same commit as the sync, from the notes
+GitHub generates for the tag, so `CHANGELOG.md` and the GitHub Release list the same PRs. Every
+release gets its own entry; there is no folding. If you hand-edit `CHANGELOG.md`, keep an entry
+matching its release's notes.
 
 ## Releases generally
 
