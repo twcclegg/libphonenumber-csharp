@@ -1,6 +1,7 @@
 using Bunit;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Time.Testing;
 using PhoneNumbers.Demo;
 using PhoneNumbers.Demo.Pages;
 using Xunit;
@@ -9,6 +10,13 @@ namespace PhoneNumbers.Demo.Tests.Pages;
 
 public class HomePageTests : BunitContext
 {
+    private readonly FakeTimeProvider _time = new();
+
+    public HomePageTests()
+    {
+        Services.AddSingleton<TimeProvider>(_time);
+    }
+
     [Fact]
     public void prepopulates_number_and_region_from_url_query()
     {
@@ -150,5 +158,73 @@ public class HomePageTests : BunitContext
         Assert.Contains("Live Formatter", titles);
         Assert.Contains("Find Numbers", titles);
         Assert.Contains("Geocoding & Timezone", titles);
+    }
+
+    [Fact]
+    public void copy_button_puts_the_install_command_on_the_clipboard()
+    {
+        var copy = JSInterop.SetupVoid("phoneDemo.copyText", _ => true).SetVoidResult();
+        var cut = Render<Home>();
+
+        cut.FindAll("button[aria-label='Copy install command']")[0].Click();
+
+        var call = Assert.Single(copy.Invocations);
+        Assert.Equal("dotnet add package libphonenumber-csharp", call.Arguments[0]);
+    }
+
+    [Fact]
+    public void each_install_block_copies_its_own_command()
+    {
+        var copy = JSInterop.SetupVoid("phoneDemo.copyText", _ => true).SetVoidResult();
+        var cut = Render<Home>();
+
+        cut.FindAll("button[aria-label='Copy install command']")[1].Click();
+
+        var call = Assert.Single(copy.Invocations);
+        Assert.Equal("dotnet add package libphonenumber-csharp.extensions", call.Arguments[0]);
+    }
+
+    [Fact]
+    public void copy_button_confirms_with_a_copied_label()
+    {
+        JSInterop.SetupVoid("phoneDemo.copyText", _ => true).SetVoidResult();
+        var cut = Render<Home>();
+
+        cut.FindAll("button[aria-label='Copy install command']")[0].Click();
+
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("button[aria-label='Command copied']")));
+    }
+
+    [Fact]
+    public void confirming_one_command_leaves_the_other_button_alone()
+    {
+        JSInterop.SetupVoid("phoneDemo.copyText", _ => true).SetVoidResult();
+        var cut = Render<Home>();
+
+        cut.FindAll("button[aria-label='Copy install command']")[0].Click();
+
+        cut.WaitForAssertion(() =>
+        {
+            Assert.Single(cut.FindAll("button[aria-label='Command copied']"));
+            Assert.Single(cut.FindAll("button[aria-label='Copy install command']"));
+        });
+    }
+
+    [Fact]
+    public async Task copying_the_second_command_soon_after_the_first_keeps_its_confirmation()
+    {
+        JSInterop.SetupVoid("phoneDemo.copyText", _ => true).SetVoidResult();
+        var cut = Render<Home>();
+
+        cut.FindAll("button[aria-label='Copy install command']")[0].Click();
+        _time.Advance(TimeSpan.FromMilliseconds(1000));
+        // Not a double-click: the first button is now labelled "Command copied", so [0] is the
+        // second install command.
+        cut.FindAll("button[aria-label='Copy install command']")[0].Click();
+
+        // The first click's 1.5s timer expires; the second click's does not.
+        _time.Advance(TimeSpan.FromMilliseconds(800));
+        await cut.InvokeAsync(() => { }); // let the expired timer's continuation run
+        Assert.Single(cut.FindAll("button[aria-label='Command copied']"));
     }
 }

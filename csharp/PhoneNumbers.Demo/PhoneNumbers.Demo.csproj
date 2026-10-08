@@ -6,6 +6,12 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <PathBase Condition="'$(PathBase)' == ''">/</PathBase>
+    <!-- Rewrites the #[.{fingerprint}] placeholders, importmap and preload link in index.html to
+         the content-hashed file names at build/publish. GitHub Pages caches every file for 10
+         minutes and we can't set headers there, so without hashed URLs a deploy can leave a
+         browser mixing a cached loader with the new runtime files: an integrity failure and the
+         "An unhandled error has occurred" banner until the user clears their cache. -->
+    <OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,6 +21,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PhoneNumbers\PhoneNumbers.csproj" />
+  </ItemGroup>
+
+  <!-- The brand marks live at the repo root because the docfx site publishes the same three
+       files (see docfx/docfx.json). Content+Link puts them where the static web assets SDK
+       looks, so they ship in wwwroot/ exactly as if they were checked in there. -->
+  <ItemGroup>
+    <Content Include="..\..\assets\brand\*.svg" Link="wwwroot\%(Filename)%(Extension)" />
   </ItemGroup>
 
   <UsingTask TaskName="ReplaceFileText" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">

@@ -39,6 +39,19 @@ public class FormattingPageTests : BunitContext
     }
 
     [Fact]
+    public void changing_calling_from_reformats_for_that_region()
+    {
+        var cut = Render<Formatting>();
+
+        cut.Find("#format-calling-from").Change("DE");
+
+        Assert.Contains("Formatted for dialing from DE", cut.Markup);
+        var outOfCountry = cut.FindAll(".format-list__item")
+            .First(i => i.QuerySelector(".format-list__name")?.TextContent.Trim() == "Out-of-Country");
+        Assert.StartsWith("00 1", outOfCountry.QuerySelector(".format-list__value")!.TextContent.Trim());
+    }
+
+    [Fact]
     public void shows_out_of_country_and_mobile_dialing_formats()
     {
         var cut = Render<Formatting>();
@@ -90,5 +103,17 @@ public class FormattingPageTests : BunitContext
         var e164Item = items.FirstOrDefault(i => i.QuerySelector(".format-list__name")?.TextContent.Trim() == "E.164");
         Assert.NotNull(e164Item);
         Assert.Contains("+442079460958", e164Item.QuerySelector(".format-list__value")?.TextContent ?? "");
+    }
+
+    [Fact]
+    public void header_links_format_in_the_api_reference()
+    {
+        var cut = Render<Formatting>();
+
+        var link = cut.Find("a[aria-label='PhoneNumberUtil.Format in the API reference']");
+
+        Assert.Equal(
+            "http://localhost/docs/api/PhoneNumbers.PhoneNumberUtil.html#PhoneNumbers_PhoneNumberUtil_Format_PhoneNumbers_PhoneNumber_PhoneNumbers_PhoneNumberFormat_",
+            link.GetAttribute("href"));
     }
 }

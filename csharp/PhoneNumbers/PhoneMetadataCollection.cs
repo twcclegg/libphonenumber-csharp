@@ -2,6 +2,7 @@
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -11,6 +12,10 @@ namespace PhoneNumbers
     [DebuggerNonUserCode]
     [CompilerGenerated]
     [GeneratedCode("ProtoGen", "2.3.0.277")]
+    // Implementation detail: the metadata file's root message; no public API hands one out.
+    // Public only because the port mirrored Java's class layout, not because callers are
+    // meant to reach it; hidden from IntelliSense and from the generated API reference.
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public sealed class PhoneMetadataCollection
     {
         public const int MetadataFieldNumber = 1;
@@ -58,6 +63,8 @@ namespace PhoneNumbers
         [DebuggerNonUserCode]
         [CompilerGenerated]
         [GeneratedCode("ProtoGen", "2.3.0.277")]
+        // Only reachable through the hidden type above; kept out of IntelliSense with it.
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public class Builder
         {
             protected Builder ThisBuilder => this;

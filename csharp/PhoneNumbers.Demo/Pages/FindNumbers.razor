@@ -1,11 +1,11 @@
 @page "/find"
 @inject NavigationManager Nav
 
-<PageTitle>Find Numbers - libphonenumber-csharp</PageTitle>
+<PageTitle>Find Numbers | libphonenumber-csharp</PageTitle>
 
 <div class="reveal">
 <div class="page-header">
-    <div class="page-header__eyebrow">PhoneNumberMatcher</div>
+    <ApiReferenceLink Api="PhoneNumberUtil.FindNumbers" Path="@DocsLinks.FindNumbers" />
     <h1 class="page-header__title">Find Numbers</h1>
     <p class="page-header__description">Extract and parse phone numbers from free-form text. Paste any text containing phone numbers to detect and parse them all.</p>
 </div>
@@ -18,12 +18,7 @@
     <div class="form__row">
         <div class="form__group form__group--flush">
             <label class="form__label" for="find-region">Default Region</label>
-            <select id="find-region" class="form__select" @onchange="OnRegionChange">
-                @foreach (var r in _regions)
-                {
-                    <option value="@r.Code" selected="@(r.Code == _selectedRegion)">@r.Display</option>
-                }
-            </select>
+            <RegionSelect id="find-region" Value="@_selectedRegion" ValueChanged="OnRegionChange" />
         </div>
         <div class="form__group form__group--flush">
             <label class="form__label" for="find-leniency">Leniency</label>
@@ -51,11 +46,7 @@
     </div>
 </div>
 
-@if (_searchError != null)
-{
-    <div class="error-message" role="alert">@_searchError</div>
-}
-else if (_matches.Count > 0)
+@if (_matches.Count > 0)
 {
     <div class="card" aria-live="polite">
         <div class="card__header">
@@ -72,7 +63,7 @@ else if (_matches.Count > 0)
                     </div>
                     <div class="match-list__details">
                         <span class="badge badge--info">@_phoneUtil.Format(match.Number, PhoneNumberFormat.E164)</span>
-                        <span class="badge badge--neutral">@FormatType(_phoneUtil.GetNumberType(match.Number))</span>
+                        <span class="badge badge--neutral">@NumberTypeLabels.For(_phoneUtil.GetNumberType(match.Number))</span>
                         @{
                             var region = _phoneUtil.GetRegionCodeForNumber(match.Number);
                         }
@@ -113,23 +104,17 @@ else if (!string.IsNullOrWhiteSpace(_textInput))
     private PhoneNumberUtil.Leniency _leniency = PhoneNumberUtil.Leniency.POSSIBLE;
     private string _textInput = "";
     private List<PhoneNumberMatch> _matches = new();
-    private List<RegionOption> _regions = new();
-    private string? _searchError;
 
     protected override void OnInitialized()
     {
-        _regions = _phoneUtil.GetSupportedRegions()
-            .OrderBy(r => r)
-            .Select(r => new RegionOption(r, $"{r} (+{_phoneUtil.GetCountryCodeForRegion(r)})"))
-            .ToList();
-
         var (_, r2) = UrlState.Read(Nav);
         if (!string.IsNullOrEmpty(r2)) _selectedRegion = r2;
+        UrlState.NormalizeUrl(Nav);
     }
 
-    private void OnRegionChange(ChangeEventArgs e)
+    private void OnRegionChange(string region)
     {
-        _selectedRegion = e.Value?.ToString() ?? "US";
+        _selectedRegion = region;
         Search();
         Nav.NavigateTo(UrlState.Build(Nav, null, _selectedRegion), forceLoad: false, replace: true);
     }
@@ -160,42 +145,18 @@ else if (!string.IsNullOrWhiteSpace(_textInput))
     {
         _textInput = "";
         _matches.Clear();
-        _searchError = null;
     }
 
+    // No try/catch: PhoneNumberMatcher swallows the NumberParseException of every candidate it
+    // rejects, so nothing is expected to throw here. Anything that does is a library bug, and it
+    // should reach Blazor's error UI rather than be dressed up as a search result.
     private void Search()
     {
         _matches.Clear();
-        _searchError = null;
         if (string.IsNullOrWhiteSpace(_textInput)) return;
 
-        try
-        {
-            _matches = _phoneUtil.FindNumbers(_textInput, _selectedRegion, _leniency, long.MaxValue)
-                .Take(50)
-                .ToList();
-        }
-        catch (Exception ex)
-        {
-            _searchError = ex.Message;
-        }
+        _matches = _phoneUtil.FindNumbers(_textInput, _selectedRegion, _leniency, long.MaxValue)
+            .Take(50)
+            .ToList();
     }
-
-    private static string FormatType(PhoneNumberType type) => type switch
-    {
-        PhoneNumberType.FIXED_LINE => "Fixed Line",
-        PhoneNumberType.MOBILE => "Mobile",
-        PhoneNumberType.FIXED_LINE_OR_MOBILE => "Fixed/Mobile",
-        PhoneNumberType.TOLL_FREE => "Toll Free",
-        PhoneNumberType.PREMIUM_RATE => "Premium Rate",
-        PhoneNumberType.SHARED_COST => "Shared Cost",
-        PhoneNumberType.VOIP => "VoIP",
-        PhoneNumberType.PERSONAL_NUMBER => "Personal",
-        PhoneNumberType.PAGER => "Pager",
-        PhoneNumberType.UAN => "UAN",
-        PhoneNumberType.VOICEMAIL => "Voicemail",
-        _ => "Unknown"
-    };
-
-    private record RegionOption(string Code, string Display);
 }

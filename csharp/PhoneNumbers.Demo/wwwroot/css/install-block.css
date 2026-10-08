@@ -8,16 +8,83 @@
     background: var(--code-bg);
     color: var(--code-text);
     border-radius: var(--radius-sm);
-    padding: 0.8rem 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    overflow-x: auto;
+    /* Symmetric: the copy button is floated, not inset with padding, so only
+       the line it actually sits on pays for its width. Reserving space with
+       padding-right charged every line, including ones below the button with
+       nothing but empty space to their right. */
+    padding: 0.8rem 0.9rem;
+    line-height: 1.5;
+    /* Deliberately not display:flex. A flex row makes the command its own
+       box starting after the "$", so a wrapped line hangs under the "d" of
+       dotnet. Left in normal flow the "$" is just the first inline box on
+       the line, and a continuation returns to the content edge - directly
+       under the "$" - the way a real shell wraps. */
+    overflow-wrap: anywhere;
 }
 
 .install-block__prompt {
     color: var(--accent-2);
     user-select: none;
     font-weight: 600;
-    margin-right: 0;
+    margin-right: 0.6rem;
+}
+
+.install-block__copy {
+    /* Floated and a hair under one line-height tall, so it shortens the
+       command's first line and nothing below it - a continuation line runs
+       on under the button. First in source order because a right float is
+       placed on the line box where it appears. */
+    float: right;
+    position: relative;
+    width: 1.45em;
+    height: 1.45em;
+    margin-left: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--code-text);
+    opacity: 0.6;
+    cursor: pointer;
+    transition: opacity 0.15s ease, background-color 0.15s ease;
+}
+
+/* 44x44 tap target (the size .sidebar__link and .feature-grid__icon use)
+   centred on the smaller visual box. It lives on a pseudo-element because
+   sizing the button itself to 44px would make the float three lines tall
+   and shorten every one of them. */
+.install-block__copy::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 44px;
+    height: 44px;
+}
+
+.install-block__copy:hover,
+.install-block__copy:focus-visible {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.09);
+}
+
+.install-block__copy svg {
+    /* 14px in a ~19px box: the box is capped by the line-height (the float
+       has to stay under one line), so the glyph is what gives it padding. */
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.install-block__copy--done {
+    opacity: 1;
+    color: var(--accent-2);
 }

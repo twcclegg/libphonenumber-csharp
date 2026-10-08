@@ -1,0 +1,19 @@
+@* A feature page's eyebrow: the API the page exercises, linking to its entry in the API
+   reference published beside the demo. The accessible name starts with the visible text. *@
+@inject NavigationManager Nav
+
+<a class="page-header__eyebrow page-header__eyebrow--link"
+   href="@DocsLinks.Resolve(Nav, Path)"
+   target="@DocsLinks.Target"
+   aria-label="@($"{Api} in the API reference")">
+    <span class="page-header__eyebrow-icon" aria-hidden="true"><BookIcon /></span>
+    @Api
+</a>
+
+@code {
+    /// <summary>The API as the page names it, e.g. <c>PhoneNumberUtil.Parse</c>.</summary>
+    [Parameter, EditorRequired] public string Api { get; set; } = "";
+
+    /// <summary>Its page in the API reference, one of the <see cref="DocsLinks"/> paths.</summary>
+    [Parameter, EditorRequired] public string Path { get; set; } = "";
+}

@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace PhoneNumbers
@@ -27,6 +28,10 @@ namespace PhoneNumbers
     /// is actually unnecessary (i.e no string duplication).
     /// </summary>
     /// <remarks>Author: Shaopeng Jia</remarks>
+    // Implementation detail: AreaCodeMap storage strategy. Public only because the port
+    // mirrored Java's class layout, not because callers are meant to reach it; hidden from
+    // IntelliSense and from the generated API reference.
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public class DefaultMapStorage : AreaCodeMapStorageStrategy
     {
         private int[] phoneNumberPrefixes;

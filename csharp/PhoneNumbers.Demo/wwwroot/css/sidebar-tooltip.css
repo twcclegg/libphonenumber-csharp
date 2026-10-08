@@ -1,0 +1,34 @@
+/* ============================================================
+   Sidebar tooltip: names a control in the collapsed (icon-only)
+   sidebar on hover and keyboard focus. One element, positioned
+   beside the sidebar by the script in index.html.
+   ============================================================ */
+
+.sidebar-tooltip {
+    position: fixed;
+    z-index: 200;
+    transform: translateY(-50%);
+    padding: 0.35rem 0.65rem;
+    border: 1px solid var(--rail-border);
+    border-radius: var(--radius-sm);
+    background: var(--rail-surface);
+    color: var(--rail-active-text);
+    font-size: var(--fs-sm);
+    font-weight: 500;
+    white-space: nowrap;
+    box-shadow: var(--shadow-md);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* Hoverable once shown, so the pointer can move onto it (WCAG 1.4.13). */
+.sidebar-tooltip--visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .sidebar-tooltip { transition: opacity 120ms ease, visibility 120ms; }
+}

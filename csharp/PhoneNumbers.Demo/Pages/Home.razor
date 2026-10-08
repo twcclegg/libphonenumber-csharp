@@ -1,7 +1,9 @@
 @page "/"
-@inject NavigationManager Nav
+@inherits PhoneNumberPageBase
+@inject IJSRuntime JS
+@inject TimeProvider Time
 
-<PageTitle>libphonenumber-csharp Demo</PageTitle>
+<PageTitle>libphonenumber-csharp</PageTitle>
 
 <div class="reveal">
 <div class="hero">
@@ -17,7 +19,7 @@
         </p>
         <div class="hero__badges">
             <span class="hero__badge">
-                <BoxIcon />
+                <NuGetIcon />
                 NuGet package
             </span>
             <span class="hero__badge">
@@ -44,7 +46,7 @@
             <input id="home-phone"
                    class="form__input form__input--phone"
                    type="text"
-                   value="@_phoneInput"
+                   value="@PhoneInput"
                    @oninput="OnPhoneInput"
                    @onchange="OnPhoneCommit"
                    placeholder="+1 650 253 0000"
@@ -52,34 +54,29 @@
         </div>
         <div class="form__group form__group--flush">
             <label class="form__label" for="home-region">Default region</label>
-            <select id="home-region" class="form__select" @onchange="OnRegionChange">
-                @foreach (var r in _regions)
-                {
-                    <option value="@r.Code" selected="@(r.Code == _selectedRegion)">@r.Display</option>
-                }
-            </select>
+            <RegionSelect id="home-region" Value="@SelectedRegion" ValueChanged="OnRegionChange" />
         </div>
     </div>
 
-    @if (_parseError != null)
+    @if (ParseError != null)
     {
-        <div class="error-message" role="alert">@_parseError</div>
+        <div class="error-message" role="alert">@ParseError</div>
     }
-    else if (_parsed != null)
+    else if (Parsed != null)
     {
         <div class="result-grid mt-2 reveal" aria-live="polite">
             <div class="result-grid__item">
                 <div class="result-grid__label">International</div>
-                <div class="result-grid__value result-grid__value--mono">@_phoneUtil.Format(_parsed, PhoneNumberFormat.INTERNATIONAL)</div>
+                <div class="result-grid__value result-grid__value--mono">@PhoneUtil.Format(Parsed, PhoneNumberFormat.INTERNATIONAL)</div>
             </div>
             <div class="result-grid__item">
                 <div class="result-grid__label">E.164</div>
-                <div class="result-grid__value result-grid__value--mono">@_phoneUtil.Format(_parsed, PhoneNumberFormat.E164)</div>
+                <div class="result-grid__value result-grid__value--mono">@PhoneUtil.Format(Parsed, PhoneNumberFormat.E164)</div>
             </div>
             <div class="result-grid__item">
                 <div class="result-grid__label">Valid</div>
                 <div class="result-grid__value">
-                    @if (_phoneUtil.IsValidNumber(_parsed))
+                    @if (PhoneUtil.IsValidNumber(Parsed))
                     {
                         <span class="badge badge--success">Valid</span>
                     }
@@ -91,15 +88,15 @@
             </div>
             <div class="result-grid__item">
                 <div class="result-grid__label">Number type</div>
-                <div class="result-grid__value"><span class="badge badge--info">@FormatType(_phoneUtil.GetNumberType(_parsed))</span></div>
+                <div class="result-grid__value"><span class="badge badge--info">@NumberTypeLabels.For(PhoneUtil.GetNumberType(Parsed))</span></div>
             </div>
             <div class="result-grid__item">
                 <div class="result-grid__label">Region</div>
-                <div class="result-grid__value">@(_phoneUtil.GetRegionCodeForNumber(_parsed) ?? "Unknown")</div>
+                <div class="result-grid__value">@(PhoneUtil.GetRegionCodeForNumber(Parsed) ?? "Unknown")</div>
             </div>
             <div class="result-grid__item">
                 <div class="result-grid__label">Country code</div>
-                <div class="result-grid__value result-grid__value--mono">+@_parsed.CountryCode</div>
+                <div class="result-grid__value result-grid__value--mono">+@Parsed.CountryCode</div>
             </div>
         </div>
     }
@@ -156,95 +153,70 @@
         <div class="card__subtitle">Add to your .NET project via NuGet.</div>
     </div>
     <div class="install-block">
-        <span class="install-block__prompt" aria-hidden="true">$</span>dotnet add package libphonenumber-csharp
+        <button class="install-block__copy @(_copied == CoreInstall ? "install-block__copy--done" : "")"
+                @onclick="() => Copy(CoreInstall)"
+                aria-label="@(_copied == CoreInstall ? "Command copied" : "Copy install command")">
+            @if (_copied == CoreInstall)
+            {
+                <CheckIcon />
+            }
+            else
+            {
+                <CopyIcon />
+            }
+        </button>
+        <span class="install-block__prompt" aria-hidden="true">$</span>@CoreInstall
     </div>
     <div class="install-block mt-1">
-        <span class="install-block__prompt" aria-hidden="true">$</span>dotnet add package libphonenumber-csharp.extensions
+        <button class="install-block__copy @(_copied == ExtensionsInstall ? "install-block__copy--done" : "")"
+                @onclick="() => Copy(ExtensionsInstall)"
+                aria-label="@(_copied == ExtensionsInstall ? "Command copied" : "Copy install command")">
+            @if (_copied == ExtensionsInstall)
+            {
+                <CheckIcon />
+            }
+            else
+            {
+                <CopyIcon />
+            }
+        </button>
+        <span class="install-block__prompt" aria-hidden="true">$</span>@ExtensionsInstall
     </div>
 </div>
 </div>
 
 @code {
-    private readonly PhoneNumberUtil _phoneUtil = PhoneNumberUtil.GetInstance();
-    private string _phoneInput = "+1 650 253 0000";
-    private string _selectedRegion = "US";
-    private PhoneNumber? _parsed;
-    private string? _parseError;
-    private List<RegionOption> _regions = new();
+    private const string CoreInstall = "dotnet add package libphonenumber-csharp";
+    private const string ExtensionsInstall = "dotnet add package libphonenumber-csharp.extensions";
+
+    // which command is currently showing its "copied" confirmation, if any
+    private string? _copied;
+    private int _copyClicks;
+    private static readonly TimeSpan ConfirmationTime = TimeSpan.FromMilliseconds(1500);
     private int _regionCount;
+
+    protected override string DefaultNumber => "+1 650 253 0000";
+    protected override string DefaultRegion => "US";
 
     protected override void OnInitialized()
     {
-        var supported = _phoneUtil.GetSupportedRegions();
-        _regionCount = supported.Count;
-        _regions = supported
-            .OrderBy(r => r)
-            .Select(r => new RegionOption(r, $"{r} (+{_phoneUtil.GetCountryCodeForRegion(r)})"))
-            .ToList();
-
-        var (n, r2) = UrlState.Read(Nav);
-        if (n != null) _phoneInput = n;
-        if (!string.IsNullOrEmpty(r2)) _selectedRegion = r2;
-
-        TryParse();
+        _regionCount = PhoneUtil.GetSupportedRegions().Count;
+        base.OnInitialized();
     }
 
-    // @oninput keeps the live results in sync on every keystroke, but does NOT touch the URL.
-    private void OnPhoneInput(ChangeEventArgs e)
+    // Mirrors MainLayout's CopyLink: hand the text to the clipboard helper in
+    // index.html, show a check for a moment, then fall back to the copy glyph.
+    private async Task Copy(string command)
     {
-        _phoneInput = e.Value?.ToString() ?? "";
-        TryParse();
+        // Take the token before awaiting, so it matches the order of the clicks themselves.
+        var click = ++_copyClicks;
+        await JS.InvokeVoidAsync("phoneDemo.copyText", command);
+        _copied = command;
+        StateHasChanged();
+        await Task.Delay(ConfirmationTime, Time);
+        // A later click restarted the confirmation; its own timer clears it.
+        if (click != _copyClicks) return;
+        _copied = null;
+        StateHasChanged();
     }
-
-    // @onchange fires when the field is committed (blur / Enter), so the URL is only
-    // rewritten once the user is done typing — never mid-keystroke.
-    private void OnPhoneCommit(ChangeEventArgs e)
-    {
-        _phoneInput = e.Value?.ToString() ?? "";
-        TryParse();
-        SyncUrl();
-    }
-
-    private void OnRegionChange(ChangeEventArgs e)
-    {
-        _selectedRegion = e.Value?.ToString() ?? "US";
-        TryParse();
-        SyncUrl();
-    }
-
-    private void SyncUrl()
-        => Nav.NavigateTo(UrlState.Build(Nav, _phoneInput, _selectedRegion), forceLoad: false, replace: true);
-
-    private void TryParse()
-    {
-        _parsed = null;
-        _parseError = null;
-        if (string.IsNullOrWhiteSpace(_phoneInput)) return;
-        try
-        {
-            _parsed = _phoneUtil.Parse(_phoneInput, _selectedRegion);
-        }
-        catch (NumberParseException ex)
-        {
-            _parseError = ex.Message;
-        }
-    }
-
-    private static string FormatType(PhoneNumberType type) => type switch
-    {
-        PhoneNumberType.FIXED_LINE => "Fixed Line",
-        PhoneNumberType.MOBILE => "Mobile",
-        PhoneNumberType.FIXED_LINE_OR_MOBILE => "Fixed/Mobile",
-        PhoneNumberType.TOLL_FREE => "Toll Free",
-        PhoneNumberType.PREMIUM_RATE => "Premium Rate",
-        PhoneNumberType.SHARED_COST => "Shared Cost",
-        PhoneNumberType.VOIP => "VoIP",
-        PhoneNumberType.PERSONAL_NUMBER => "Personal",
-        PhoneNumberType.PAGER => "Pager",
-        PhoneNumberType.UAN => "UAN",
-        PhoneNumberType.VOICEMAIL => "Voicemail",
-        _ => "Unknown"
-    };
-
-    private record RegionOption(string Code, string Display);
 }

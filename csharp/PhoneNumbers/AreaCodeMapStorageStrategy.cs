@@ -15,6 +15,7 @@
  */
 
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 
 namespace PhoneNumbers
@@ -25,6 +26,10 @@ namespace PhoneNumbers
     /// provided data.
     /// <!-- @author Philippe Liard -->
     /// </summary>
+    // Implementation detail: storage strategy for AreaCodeMap. Public only because the port
+    // mirrored Java's class layout, not because callers are meant to reach it; hidden from
+    // IntelliSense and from the generated API reference.
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public abstract class AreaCodeMapStorageStrategy
     {
         protected int NumOfEntries;

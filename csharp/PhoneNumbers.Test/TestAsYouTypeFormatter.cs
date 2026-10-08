@@ -104,6 +104,24 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
+        public void TestSpaceAfterNationalPrefixKeptWhileTyping()
+        {
+            // UZ's formatting rule puts a space after the national prefix. It must stay there while the
+            // digits typed so far do not yet complete the chosen pattern.
+            var formatter = phoneUtil.GetAsYouTypeFormatter(RegionCode.UZ);
+            Assert.Equal("8", formatter.InputDigit('8'));
+            Assert.Equal("86", formatter.InputDigit('6'));
+            Assert.Equal("866", formatter.InputDigit('6'));
+            Assert.Equal("8 66 2", formatter.InputDigit('2'));
+            Assert.Equal("8 66 23", formatter.InputDigit('3'));
+            Assert.Equal("8 66 234", formatter.InputDigit('4'));
+            Assert.Equal("8 66 234 5", formatter.InputDigit('5'));
+            Assert.Equal("8 66 234 56", formatter.InputDigit('6'));
+            Assert.Equal("8 66 234 56 7", formatter.InputDigit('7'));
+            Assert.Equal("8 66 234 56 78", formatter.InputDigit('8'));
+        }
+
+        [Fact]
         public void TestAYTFUS()
         {
             var formatter = phoneUtil.GetAsYouTypeFormatter("US");

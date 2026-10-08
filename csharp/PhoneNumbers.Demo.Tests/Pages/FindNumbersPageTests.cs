@@ -27,6 +27,17 @@ public class FindNumbersPageTests : BunitContext
     }
 
     [Fact]
+    public void number_like_text_that_does_not_parse_shows_the_empty_state_not_an_error()
+    {
+        var cut = Render<FindNumbers>();
+
+        cut.Find("#find-text").Input("Dial +999 12 or ++44 20 now.");
+
+        Assert.Empty(cut.FindAll("[role='alert']"));
+        cut.Find(".empty-state__message");
+    }
+
+    [Fact]
     public void finds_international_number_in_text()
     {
         var cut = Render<FindNumbers>();
@@ -113,5 +124,17 @@ public class FindNumbersPageTests : BunitContext
 
         Assert.Empty(cut.FindAll(".match-list__item"));
         Assert.Empty(cut.FindAll(".empty-state__message"));
+    }
+
+    [Fact]
+    public void header_links_find_numbers_in_the_api_reference()
+    {
+        var cut = Render<FindNumbers>();
+
+        var link = cut.Find("a[aria-label='PhoneNumberUtil.FindNumbers in the API reference']");
+
+        Assert.Equal(
+            "http://localhost/docs/api/PhoneNumbers.PhoneNumberUtil.html#PhoneNumbers_PhoneNumberUtil_FindNumbers_System_String_System_String_PhoneNumbers_PhoneNumberUtil_Leniency_System_Int64_",
+            link.GetAttribute("href"));
     }
 }

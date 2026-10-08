@@ -90,6 +90,35 @@ public class GeoTimezonePageTests : BunitContext
     }
 
     [Fact]
+    public void number_with_no_timezone_data_says_so_instead_of_showing_etc_unknown()
+    {
+        var cut = RenderAndWaitForLoad(this);
+
+        cut.Find("#geo-phone").Input("+800 1234 5678");
+
+        Assert.Contains("No timezone data available for this number", cut.Markup);
+        Assert.DoesNotContain("Etc/Unknown", cut.Markup);
+    }
+
+    [Fact]
+    public void switching_language_shows_the_description_in_that_language()
+    {
+        var cut = RenderAndWaitForLoad(this);
+        cut.Find("#geo-phone").Input("+82 2 2100 2114");
+        Assert.Contains("Seoul", DescriptionText(cut));
+
+        cut.Find("#geo-locale").Change("ko");
+
+        Assert.Contains("서울", DescriptionText(cut));
+        Assert.Equal("ko", cut.Find("#geo-locale option[selected]").GetAttribute("value"));
+    }
+
+    private static string DescriptionText(IRenderedComponent<GeoTimezone> cut) =>
+        cut.FindAll(".result-grid__item")
+            .First(i => i.QuerySelector(".result-grid__label")?.TextContent.Trim() == "Description")
+            .QuerySelector(".result-grid__value")!.TextContent;
+
+    [Fact]
     public void shows_carrier_section()
     {
         var cut = RenderAndWaitForLoad(this);
@@ -106,5 +135,17 @@ public class GeoTimezonePageTests : BunitContext
         var cardTitles = cut.FindAll(".card__title").Select(t => t.TextContent.Trim()).ToList();
         Assert.Contains("Geographic Location", cardTitles);
         Assert.Contains("Time Zones", cardTitles);
+    }
+
+    [Fact]
+    public void header_links_offline_geocoder_in_the_api_reference()
+    {
+        var cut = Render<GeoTimezone>();
+
+        var link = cut.Find("a[aria-label='PhoneNumberOfflineGeocoder in the API reference']");
+
+        Assert.Equal(
+            "http://localhost/docs/api/PhoneNumbers.PhoneNumberOfflineGeocoder.html",
+            link.GetAttribute("href"));
     }
 }

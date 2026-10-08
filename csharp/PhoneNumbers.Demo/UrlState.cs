@@ -8,8 +8,50 @@ namespace PhoneNumbers.Demo;
 /// </summary>
 public static class UrlState
 {
-    /// <summary>Reads the <c>n</c> and <c>r</c> query parameters from the current URL.</summary>
+    /// <summary>
+    /// Reads the <c>n</c> and <c>r</c> query parameters from the current URL. The region is
+    /// upper-cased and dropped (returned as <c>null</c>) unless it is a supported region, so a
+    /// hand-edited link can never leave a page parsing with a region its dropdown cannot show.
+    /// </summary>
     public static (string? Number, string? Region) Read(NavigationManager nav)
+        => Read(nav, LibraryRegions());
+
+    /// <summary>
+    /// <see cref="Read(NavigationManager)"/>, checking the region against
+    /// <paramref name="supportedRegions"/> instead of the library's metadata.
+    /// </summary>
+    public static (string? Number, string? Region) Read(NavigationManager nav, IReadOnlySet<string> supportedRegions)
+    {
+        var (number, region) = ReadRaw(nav);
+        return (number, NormalizeRegion(region, supportedRegions));
+    }
+
+    /// <summary>
+    /// Rewrites the current history entry when the link's <c>r</c> is not in the form
+    /// <see cref="Read(NavigationManager)"/> returns it (<c>?r=gb</c> becomes <c>?r=GB</c>, and an
+    /// unsupported region is dropped), so the address bar matches the region the page selected.
+    /// Does nothing for a link that is already in that form.
+    /// </summary>
+    public static void NormalizeUrl(NavigationManager nav)
+        => NormalizeUrl(nav, LibraryRegions());
+
+    /// <summary>
+    /// <see cref="NormalizeUrl(NavigationManager)"/>, checking the region against
+    /// <paramref name="supportedRegions"/> instead of the library's metadata.
+    /// </summary>
+    public static void NormalizeUrl(NavigationManager nav, IReadOnlySet<string> supportedRegions)
+    {
+        var (number, raw) = ReadRaw(nav);
+        if (raw is null)
+            return;
+        var region = NormalizeRegion(raw, supportedRegions);
+        if (region != raw)
+            nav.NavigateTo(Build(nav, number, region), forceLoad: false, replace: true);
+    }
+
+    private static IReadOnlySet<string> LibraryRegions() => PhoneNumberUtil.GetInstance().GetSupportedRegions();
+
+    private static (string? Number, string? Region) ReadRaw(NavigationManager nav)
     {
         var query = new Uri(nav.Uri).Query;
         if (string.IsNullOrEmpty(query))
@@ -31,6 +73,14 @@ public static class UrlState
         }
 
         return (number, region);
+    }
+
+    private static string? NormalizeRegion(string? region, IReadOnlySet<string> supportedRegions)
+    {
+        if (string.IsNullOrWhiteSpace(region))
+            return null;
+        var upper = region.Trim().ToUpperInvariant();
+        return supportedRegions.Contains(upper) ? upper : null;
     }
 
     /// <summary>

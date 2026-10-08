@@ -1,0 +1,32 @@
+@* The region dropdown every page shares: each supported region, sorted by code and shown with its
+   country calling code. Unmatched attributes (id, aria-*) are forwarded to the <select>. *@
+<select class="form__select" @attributes="AdditionalAttributes" @onchange="OnChange">
+    @foreach (var r in Options)
+    {
+        <option value="@r.Code" selected="@(r.Code == Value)">@r.Display</option>
+    }
+</select>
+
+@code {
+    // Built once: the supported regions and their calling codes never change at runtime.
+    private static readonly IReadOnlyList<RegionOption> Options = BuildOptions();
+
+    [Parameter] public string Value { get; set; } = "";
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private Task OnChange(ChangeEventArgs e) => ValueChanged.InvokeAsync(e.Value?.ToString() ?? Value);
+
+    private static IReadOnlyList<RegionOption> BuildOptions()
+    {
+        var util = PhoneNumberUtil.GetInstance();
+        return util.GetSupportedRegions()
+            .OrderBy(r => r, StringComparer.Ordinal)
+            .Select(r => new RegionOption(r, $"{r} (+{util.GetCountryCodeForRegion(r)})"))
+            .ToList();
+    }
+
+    private record RegionOption(string Code, string Display);
+}
