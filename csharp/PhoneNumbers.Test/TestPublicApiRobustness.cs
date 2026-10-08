@@ -55,6 +55,8 @@ namespace PhoneNumbers.Test
             "...",
             "+1 800 555 0100 ext. 1234",     // parses, with an extension
             "tel:+18005550100;ext=99",       // parses, RFC 3966 with an extension
+            "+39 02 1234 5678",              // parses, with an Italian leading zero
+            "+55 012 3121286979",            // parses, with a preferred domestic carrier code
             "tel:",
             "tel:;phone-context=",
             "tel:+1;ext=",
@@ -222,6 +224,8 @@ namespace PhoneNumbers.Test
             var failures = new List<string>();
             var sawExtension = false;
             var sawCountryCodeSource = false;
+            var sawLeadingZeros = false;
+            var sawCarrierCode = false;
             foreach (var input in HostileInputs)
             {
                 PhoneNumber number;
@@ -236,6 +240,8 @@ namespace PhoneNumbers.Test
 
                 sawExtension |= number.HasExtension;
                 sawCountryCodeSource |= number.HasCountryCodeSource;
+                sawLeadingZeros |= number.HasNumberOfLeadingZeros;
+                sawCarrierCode |= number.HasPreferredDomesticCarrierCode;
 
                 Record("ToString", Describe(input), failures, () =>
                 {
@@ -251,6 +257,8 @@ namespace PhoneNumbers.Test
             // first written: a ToString() mutated to throw on an extension still passed it.
             Assert.True(sawExtension, "no hostile input parsed into a number with an extension");
             Assert.True(sawCountryCodeSource, "no hostile input parsed into a number with a country code source");
+            Assert.True(sawLeadingZeros, "no hostile input parsed into a number with leading zeros");
+            Assert.True(sawCarrierCode, "no hostile input parsed into a number with a carrier code");
         }
 
         private static void AssertOverInputs(string what, Func<string, object> call, Type? allowed = null)

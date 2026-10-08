@@ -85,29 +85,19 @@ namespace PhoneNumbers.Test
         [Fact]
         public void ToStringIsCultureInvariant()
         {
-            CultureInfo swedish;
-            try
-            {
-                // sv-SE formats a negative number with U+2212 MINUS SIGN rather than U+002D, so a
-                // country code built negative shows whether the current culture leaked in. Skipped
-                // where the runtime has no culture data (globalization-invariant mode).
-                swedish = new CultureInfo("sv-SE");
-                if (swedish.NumberFormat.NegativeSign != "\u2212")
-                {
-                    return;
-                }
-            }
-            catch (CultureNotFoundException)
-            {
-                return;
-            }
+            // A culture whose negative sign is not "-" shows whether the current culture leaked into
+            // a negative country code. Cloned from the invariant culture so it exists on every
+            // runtime, including globalization-invariant mode, and the test can never pass vacuously.
+            var leaky = (CultureInfo)CultureInfo.InvariantCulture.Clone();
+            leaky.NumberFormat.NegativeSign = "\u2212";
 
             var number = PhoneNumber.CreateBuilder().SetCountryCode(-44).SetNationalNumber(1UL).Build();
             var original = CultureInfo.CurrentCulture;
             try
             {
-                CultureInfo.CurrentCulture = swedish;
+                CultureInfo.CurrentCulture = leaky;
 
+                Assert.Equal("\u2212" + "44", (-44).ToString(CultureInfo.CurrentCulture));
                 Assert.Equal("Country Code: -44 National Number: 1", number.ToString());
             }
             finally
@@ -166,8 +156,19 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
-        public void IParsableThrowsOnInvalidInput()
-            => Assert.Throws<NumberParseException>(() => ParseViaConstraint<PhoneNumber>("junk"));
+        public void IParsableThrowsFormatExceptionOnInvalidInput()
+        {
+            // IParsable<T>.Parse documents FormatException, which is what generic callers catch; the
+            // NumberParseException rides along so its ErrorType is still reachable.
+            var exception = Assert.Throws<FormatException>(() => ParseViaConstraint<PhoneNumber>("junk"));
+
+            var inner = Assert.IsType<NumberParseException>(exception.InnerException);
+            Assert.Equal(ErrorType.NOT_A_NUMBER, inner.ErrorType);
+        }
+
+        [Fact]
+        public void IParsableThrowsArgumentNullExceptionOnNull()
+            => Assert.Throws<ArgumentNullException>(() => ParseViaConstraint<PhoneNumber>(null!));
 
         [Theory]
         [InlineData("+442070313000", true)]
@@ -220,6 +221,23 @@ namespace PhoneNumbers.Test
             // Equal to a parsed instance: both go through Parse, so neither carries RawInput.
             Assert.Equal(PhoneUtil.Parse("+442070313000", null), number);
         }
+
+        [Fact]
+        public void TypeConverterWritesE164AndSoDropsTheExtension()
+        {
+            var converter = TypeDescriptor.GetConverter(typeof(PhoneNumber));
+
+            var number = (PhoneNumber?)converter.ConvertFrom("tel:+18005550100;ext=99");
+
+            Assert.NotNull(number);
+            Assert.Equal("99", number!.Extension);
+            // Documented: E.164 has no room for an extension, so this direction is lossy.
+            Assert.Equal("+18005550100", converter.ConvertTo(number, typeof(string)));
+        }
+
+        [Fact]
+        public void TypeConverterConvertsAnEmptyStringToNull()
+            => Assert.Null(TypeDescriptor.GetConverter(typeof(PhoneNumber)).ConvertFrom(""));
 
         [Fact]
         public void TypeConverterRefusesTypesItCannotConvert()
@@ -277,6 +295,26 @@ namespace PhoneNumbers.Test
                 () => configuration.GetSection("Sms").Get<SmsOptions>());
 
             Assert.IsType<FormatException>(exception.InnerException);
+        }
+
+        [Fact]
+        public void ConfigurationLeavesABlankValueUnset()
+        {
+            var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    ["Sms:From"] = "",
+                    ["Sms:Sender"] = "Acme",
+                })
+                .Build();
+
+            // A blank optional setting binds null, as it did before the TypeConverter, rather than
+            // failing startup.
+            var options = configuration.GetSection("Sms").Get<SmsOptions>();
+
+            Assert.NotNull(options);
+            Assert.Equal("Acme", options!.Sender);
+            Assert.Null(options.From);
         }
 
         [Theory]
@@ -357,6 +395,8 @@ namespace PhoneNumbers.Test
         private sealed class SmsOptions
         {
             public PhoneNumber? From { get; set; }
+
+            public string? Sender { get; set; }
         }
 #endif
     }

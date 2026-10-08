@@ -6,9 +6,15 @@ namespace PhoneNumbers.Extensions
 {
     /// <summary>
     /// Converts a <see cref="PhoneNumbers.PhoneNumber"/> to and from its E.164 string
-    /// representation. Not applied automatically — register it where needed, e.g.
-    /// <c>TypeDescriptor.AddAttributes(typeof(PhoneNumbers.PhoneNumber), new TypeConverterAttribute(typeof(PhoneNumberTypeConverter)));</c>
+    /// representation.
     /// </summary>
+    /// <remarks>
+    /// No longer needed: <see cref="PhoneNumbers.PhoneNumber"/> carries a built-in
+    /// <see cref="TypeConverter"/> from the core package, which <c>TypeDescriptor</c>-based binding
+    /// uses without any registration. Remove any
+    /// <c>TypeDescriptor.AddAttributes(typeof(PhoneNumbers.PhoneNumber), new TypeConverterAttribute(typeof(PhoneNumberTypeConverter)))</c>
+    /// call, which replaces the built-in converter with this one.
+    /// </remarks>
     public class PhoneNumberTypeConverter : TypeConverter
     {
         private static readonly PhoneNumberUtil Util = PhoneNumberUtil.GetInstance();

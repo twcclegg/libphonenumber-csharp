@@ -21,6 +21,19 @@ namespace PhoneNumbers
     /// shadow the richer, region-aware <c>PhoneNumber.TryParse</c> that package provides.
     /// </para>
     /// <para>
+    /// Because the type now converts from a string, frameworks that decide how to treat a type by
+    /// asking that question treat <see cref="PhoneNumber"/> as a simple value rather than an object:
+    /// </para>
+    /// <list type="bullet">
+    /// <item><description>ASP.NET Core MVC (<c>[ApiController]</c>) and minimal APIs infer a
+    /// <see cref="PhoneNumber"/> parameter from the route or query string, not the request body. An
+    /// endpoint that read one from a JSON body without an explicit attribute needs
+    /// <c>[FromBody]</c>.</description></item>
+    /// <item><description>Newtonsoft.Json reads and writes it as an E.164 string instead of an
+    /// object. JSON written by earlier versions in the object shape no longer deserializes.
+    /// System.Text.Json is unaffected.</description></item>
+    /// </list>
+    /// <para>
     /// Kept apart from the ported <c>Phonenumber.cs</c> so an upstream sync never has to reconcile
     /// it; the only change to that file is the <c>partial</c> keyword.
     /// </para>
@@ -95,14 +108,33 @@ namespace PhoneNumbers
 #if NET8_0_OR_GREATER
         /// <inheritdoc />
         /// <remarks>
-        /// Equivalent to <c>PhoneNumberUtil.GetInstance().Parse(s, null)</c>: with no region to fall back
+        /// <para>
+        /// Parses like <c>PhoneNumberUtil.GetInstance().Parse(s, null)</c>: with no region to fall back
         /// on, the input must carry its own country calling code — E.164 ("+442070313000") or an
         /// RFC 3966 URI ("tel:+44-20-7031-3000") — and a national-format number fails.
         /// <paramref name="provider"/> is ignored. For region-aware parsing use
         /// <see cref="PhoneNumberUtil.Parse(string, string)"/>.
+        /// </para>
+        /// <para>
+        /// Unlike <c>PhoneNumberUtil.Parse</c>, failures follow the <c>IParsable&lt;T&gt;</c> contract that
+        /// generic callers catch: <see cref="ArgumentNullException"/> for a null <paramref name="s"/>, and
+        /// <see cref="FormatException"/> for unparseable input, with the
+        /// <see cref="NumberParseException"/> (and its <see cref="NumberParseException.ErrorType"/>) as
+        /// the inner exception.
+        /// </para>
         /// </remarks>
         static PhoneNumber IParsable<PhoneNumber>.Parse(string s, IFormatProvider? provider)
-            => PhoneNumberUtil.GetInstance().Parse(s, null);
+        {
+            ArgumentNullException.ThrowIfNull(s);
+            try
+            {
+                return PhoneNumberUtil.GetInstance().Parse(s, null);
+            }
+            catch (NumberParseException ex)
+            {
+                throw new FormatException("The input is not a valid international phone number.", ex);
+            }
+        }
 
         /// <inheritdoc />
         /// <remarks>See the remarks on the <c>Parse</c> implementation for the accepted input.</remarks>
@@ -130,17 +162,27 @@ namespace PhoneNumbers
     }
 
     /// <summary>
-    /// Converts a <see cref="PhoneNumber"/> to and from its E.164 string form, so that
+    /// Converts a <see cref="PhoneNumber"/> from a string and to its E.164 string form, so that
     /// <c>TypeDescriptor</c>-based infrastructure — configuration binding
-    /// (<c>IOptions&lt;T&gt;</c>), property grids, older model binders — can round-trip one without
-    /// any registration by the consumer.
+    /// (<c>IOptions&lt;T&gt;</c>), property grids, MVC model binding, Newtonsoft.Json — can read and
+    /// write one without any registration by the consumer.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Internal on purpose: it is reached through the <see cref="TypeConverterAttribute"/> on
     /// <see cref="PhoneNumber"/>, so it adds no public API. Strings must carry their own country
     /// calling code (E.164 or an RFC 3966 <c>tel:</c> URI), matching the <c>IParsable&lt;T&gt;</c>
     /// implementation; an unconvertible string throws <see cref="FormatException"/>, which is what
-    /// <c>TypeDescriptor</c>-based binders expect.
+    /// <c>TypeDescriptor</c>-based binders expect. An empty string converts to <see langword="null"/>,
+    /// so a blank optional configuration value leaves the property unset rather than failing startup.
+    /// </para>
+    /// <para>
+    /// The string form is E.164, which holds only the country calling code and national number.
+    /// Converting to a string therefore drops <see cref="PhoneNumber.Extension"/>,
+    /// <see cref="PhoneNumber.PreferredDomesticCarrierCode"/>, <see cref="PhoneNumber.CountryCodeSource"/>
+    /// and <see cref="PhoneNumber.RawInput"/>: a number with an extension does not round-trip. Store
+    /// a <c>RFC3966</c>-formatted string yourself where the extension matters.
+    /// </para>
     /// </remarks>
     internal sealed class PhoneNumberTypeConverter : TypeConverter
     {
@@ -152,6 +194,13 @@ namespace PhoneNumbers
             if (value is not string stringValue)
             {
                 return base.ConvertFrom(context, culture, value);
+            }
+
+            // ConfigurationBinder only short-circuits "" for Nullable<T>; for a reference type it
+            // hands the empty string here, and a blank optional setting must not crash startup.
+            if (stringValue.Length == 0)
+            {
+                return null;
             }
 
             try
