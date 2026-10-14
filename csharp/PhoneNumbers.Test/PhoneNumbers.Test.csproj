@@ -50,28 +50,30 @@
     <EmbeddedResource Include="..\..\resources\ShortNumberMetadata.xml" />
     <EmbeddedResource Include="..\..\resources\PhoneNumberAlternateFormats.xml" />
     <EmbeddedResource Include="..\..\resources\PhoneNumberMetadataForTesting.xml" />
+    <!--
+      The consumer-facing half of the trimming feature. Embedded so TestTrimmedDataDiagnostics can
+      assert it agrees with the ILLink.Substitutions.xml inside PhoneNumbers.dll: the switch names
+      live in those two files and nothing else connects them, so a typo in either silently disables
+      the opt-out with no warning and no failing test.
+    -->
+    <EmbeddedResource Include="..\PhoneNumbers\buildTransitive\libphonenumber-csharp.targets"
+                      LogicalName="PhoneNumbers.Test.buildTransitive.targets" />
   </ItemGroup>
 
   <PropertyGroup>
     <!--
       No trailing separator (Windows shell would corrupt the path inside the Exec command — see
-      the matching note in PhoneNumbers.csproj). Trailing `/` is added explicitly on the glob.
+      the matching note in PhoneNumbers.csproj).
     -->
     <BinaryTestGeocodingDir>$(BaseIntermediateOutputPath)test-geocoding</BinaryTestGeocodingDir>
     <BinaryTestCarrierDir>$(BaseIntermediateOutputPath)test-carrier</BinaryTestCarrierDir>
     <TestResourcesGeocodingDir>$(MSBuildThisFileDirectory)..\..\resources/test/geocoding</TestResourcesGeocodingDir>
     <TestResourcesCarrierDir>$(MSBuildThisFileDirectory)..\..\resources/test/carrier</TestResourcesCarrierDir>
-    <MetadataBuilderProject>$(MSBuildThisFileDirectory)..\PhoneNumbers.MetadataBuilder\PhoneNumbers.MetadataBuilder.csproj</MetadataBuilderProject>
     <MetadataBuilderDll>$(MSBuildThisFileDirectory)..\PhoneNumbers.MetadataBuilder\bin\$(Configuration)\net10.0\PhoneNumbers.MetadataBuilder.dll</MetadataBuilderDll>
   </PropertyGroup>
 
-  <!--
-    See the matching note in PhoneNumbers.csproj: <MSBuild> task instead of `dotnet run` so
-    concurrent solution-level builds of PhoneNumbers + PhoneNumbers.Test don't race on
-    MetadataBuilder's own obj\.
-  -->
-  <!-- MetadataBuilder is built transitively via PhoneNumbers' ProjectReference. -->
-
+  <!-- MetadataBuilder is built transitively via PhoneNumbers' ProjectReference, and invoked as
+       a dll rather than via `dotnet run` — see the matching note in PhoneNumbers.csproj. -->
 
   <!--
     Top-level ItemGroup so the wildcard is resolved at MSBuild parse time — see matching note in
@@ -86,50 +88,39 @@
   </ItemGroup>
 
   <!--
-    Same generate-once / embed-per-TFM split as PhoneNumbers.csproj: outer cross-targeting build
-    runs the Exec, inner per-TFM builds skip via Inputs/Outputs gating, then EmbedTestGeocoding
-    adds the resulting items each TFM. Avoids the parallel-write race when three concurrent
-    inner builds try to populate the same obj/test-geocoding directory.
+    Same shape as PhoneNumbers.csproj: the target hooks AssignTargetPaths, so it runs per inner
+    per-TFM build and the Inputs/Outputs gate is what makes the later ones see fresh outputs and
+    skip. That is what keeps concurrent inner builds from both writing obj/test-geocoding.
   -->
+  <ItemGroup>
+    <_GeneratedTestDataOutput Include="$(BinaryTestGeocodingDir)/geocoding.pack" />
+    <_GeneratedTestDataOutput Include="$(BinaryTestCarrierDir)/carrier.pack" />
+  </ItemGroup>
+
   <Target Name="GenerateTestGeocodingBins"
           BeforeTargets="AssignTargetPaths"
-          Inputs="@(_TestGeocodingTextFile)"
-          Outputs="$(BinaryTestGeocodingDir)/en.1">
-    <MakeDir Directories="$(BinaryTestGeocodingDir)" />
-    <Exec Command="dotnet &quot;$(MetadataBuilderDll)&quot; geocoding &quot;$(TestResourcesGeocodingDir)&quot; &quot;$(BinaryTestGeocodingDir)&quot;" />
+          Inputs="@(_TestGeocodingTextFile);@(_TestCarrierTextFile)"
+          Outputs="@(_GeneratedTestDataOutput)">
+    <Exec Command="dotnet &quot;$(MetadataBuilderDll)&quot; geocoding &quot;$(TestResourcesGeocodingDir)&quot; &quot;$(BinaryTestGeocodingDir)/geocoding.pack&quot;" />
+    <Exec Command="dotnet &quot;$(MetadataBuilderDll)&quot; carrier &quot;$(TestResourcesCarrierDir)&quot; &quot;$(BinaryTestCarrierDir)/carrier.pack&quot;" />
+    <!-- Both packs share one gate but refresh independently; see the matching note in
+         PhoneNumbers.csproj for why the untouched one has to be touched anyway. -->
+    <Touch Files="@(_GeneratedTestDataOutput)" />
   </Target>
 
+  <!--
+    The fixture data is packed exactly like the shipped data, so PrefixFileReader takes the same
+    path here as in production - the alternative would leave the pack reader untested by every
+    geocoder and carrier test in the suite.
+  -->
   <Target Name="EmbedTestGeocoding"
           BeforeTargets="AssignTargetPaths"
           DependsOnTargets="GenerateTestGeocodingBins">
-    <!-- See PhoneNumbers.csproj: glob into a private item first, then Include="@(...)" with
-         qualified metadata to avoid a cross-product batching surprise. -->
     <ItemGroup>
-      <_TestGeocodingFile Include="$(BinaryTestGeocodingDir)/*" />
-    </ItemGroup>
-    <ItemGroup>
-      <EmbeddedResource Include="@(_TestGeocodingFile)"
-                        LogicalName="PhoneNumbers.Test.geocoding.%(_TestGeocodingFile.Filename)%(_TestGeocodingFile.Extension)" />
-    </ItemGroup>
-  </Target>
-
-  <Target Name="GenerateTestCarrierBins"
-          BeforeTargets="AssignTargetPaths"
-          Inputs="@(_TestCarrierTextFile)"
-          Outputs="$(BinaryTestCarrierDir)/en.1">
-    <MakeDir Directories="$(BinaryTestCarrierDir)" />
-    <Exec Command="dotnet &quot;$(MetadataBuilderDll)&quot; carrier &quot;$(TestResourcesCarrierDir)&quot; &quot;$(BinaryTestCarrierDir)&quot;" />
-  </Target>
-
-  <Target Name="EmbedTestCarrier"
-          BeforeTargets="AssignTargetPaths"
-          DependsOnTargets="GenerateTestCarrierBins">
-    <ItemGroup>
-      <_TestCarrierFile Include="$(BinaryTestCarrierDir)/*" />
-    </ItemGroup>
-    <ItemGroup>
-      <EmbeddedResource Include="@(_TestCarrierFile)"
-                        LogicalName="PhoneNumbers.Test.carrier.%(_TestCarrierFile.Filename)%(_TestCarrierFile.Extension)" />
+      <EmbeddedResource Include="$(BinaryTestGeocodingDir)/geocoding.pack"
+                        LogicalName="PhoneNumbers.Test.geocoding.pack" />
+      <EmbeddedResource Include="$(BinaryTestCarrierDir)/carrier.pack"
+                        LogicalName="PhoneNumbers.Test.carrier.pack" />
     </ItemGroup>
   </Target>
 

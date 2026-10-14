@@ -1,0 +1,78 @@
+<Project>
+  <!--
+    Maps the two opt-out properties onto the AppContext switches the library reads and that
+    ILLink.Substitutions.xml gates resource removal on. Shipped under buildTransitive/ so it
+    applies to a project that picks the package up transitively, not only to a direct reference.
+
+      PhoneNumbersIncludeGeocodingData    geocoding, carrier and timezone prefix maps (~2.1 MB)
+      PhoneNumbersIncludeLocaleNameData   the country-name table (~0.4 MB)
+
+    Both default to included, and both only do anything in a trimmed build (PublishTrimmed, or
+    PublishAot which implies it). Setting them in an untrimmed app changes nothing: no step removes
+    the embedded resources there, so the data is still present and the library never complains.
+
+    The Condition on each ItemGroup means a project that sets nothing contributes no
+    RuntimeHostConfigurationOption at all, leaving its runtimeconfig.json byte-identical to what it
+    is today. That is deliberate: CI packs twice and fails on any hash difference.
+  -->
+
+  <!--
+    Normalise each property to the literal "true"/"false" ILLink needs, and reject anything that is
+    not a boolean at all.
+
+    MSBuild condition operators coerce booleans, and MSBuild's idea of a boolean includes yes/no
+    and on/off. So "=='false'" matches a value of "no", and the naive validation
+    ("!='true' And !='false'") never fires for it. ILLink is stricter: it takes only the literal
+    strings, and anything else fails the publish with "IL1030: Invalid argument for the feature
+    option", which names neither the property nor this package. Comparing here (coercing, so
+    yes/no/on/off/True/FALSE are all accepted) and emitting $(_PhoneNumbers*Value) below (literal,
+    so ILLink is happy) covers both. A value MSBuild cannot read as a boolean leaves the normalised
+    property empty and is reported as PN1002 rather than silently dropping the data set.
+
+    One wrinkle worth the extra sentence in the message: this PropertyGroup is evaluated where
+    NuGet imports the file, so a property set later than that (Directory.Build.targets rather than
+    Directory.Build.props or the project itself) is invisible here and normalises to empty. PN1002
+    then reports a value that looks perfectly valid, which is why the text says where to set it.
+  -->
+  <PropertyGroup>
+    <_PhoneNumbersGeocodingValue Condition="'$(PhoneNumbersIncludeGeocodingData)' == 'true'">true</_PhoneNumbersGeocodingValue>
+    <_PhoneNumbersGeocodingValue Condition="'$(PhoneNumbersIncludeGeocodingData)' == 'false'">false</_PhoneNumbersGeocodingValue>
+    <_PhoneNumbersLocaleNamesValue Condition="'$(PhoneNumbersIncludeLocaleNameData)' == 'true'">true</_PhoneNumbersLocaleNamesValue>
+    <_PhoneNumbersLocaleNamesValue Condition="'$(PhoneNumbersIncludeLocaleNameData)' == 'false'">false</_PhoneNumbersLocaleNamesValue>
+  </PropertyGroup>
+
+  <Target Name="_PhoneNumbersValidateDataOptOutValues" BeforeTargets="PrepareForBuild">
+    <Error Code="PN1002"
+           Condition="'$(PhoneNumbersIncludeGeocodingData)' != '' And '$(_PhoneNumbersGeocodingValue)' == ''"
+           Text="PhoneNumbersIncludeGeocodingData must be a boolean (true or false), but was '$(PhoneNumbersIncludeGeocodingData)'. If that value looks valid it was set too late to be seen: set it in the project itself or in Directory.Build.props, not in Directory.Build.targets." />
+    <Error Code="PN1002"
+           Condition="'$(PhoneNumbersIncludeLocaleNameData)' != '' And '$(_PhoneNumbersLocaleNamesValue)' == ''"
+           Text="PhoneNumbersIncludeLocaleNameData must be a boolean (true or false), but was '$(PhoneNumbersIncludeLocaleNameData)'. If that value looks valid it was set too late to be seen: set it in the project itself or in Directory.Build.props, not in Directory.Build.targets." />
+  </Target>
+
+  <!--
+    Excluding the country names while keeping the geocoder is not a supported combination, and it
+    fails in a way that is easy to ship by accident: PhoneNumberOfflineGeocoder falls back to the
+    country name for any number it has no area-level description for, so a build in that state
+    geocodes a US, DE or GB number correctly and throws on an Andorran or San Marino one. Rejecting
+    it here turns a data-dependent runtime crash into a build error.
+  -->
+  <Target Name="_PhoneNumbersValidateDataOptOuts"
+          BeforeTargets="PrepareForBuild"
+          Condition="'$(_PhoneNumbersLocaleNamesValue)' == 'false' And '$(_PhoneNumbersGeocodingValue)' != 'false'">
+    <Error Code="PN1001"
+           Text="PhoneNumbersIncludeLocaleNameData=false requires PhoneNumbersIncludeGeocodingData=false. The offline geocoder falls back to country names for numbers it has no area description for, so removing the country-name table while keeping the geocoder throws at runtime for those numbers (Andorra and San Marino among them) while appearing to work for most. Set both to false to drop both data sets, or leave PhoneNumbersIncludeLocaleNameData unset to keep the country names." />
+  </Target>
+
+  <ItemGroup Condition="'$(_PhoneNumbersGeocodingValue)' != ''">
+    <RuntimeHostConfigurationOption Include="PhoneNumbers.IncludeGeocodingData"
+                                    Value="$(_PhoneNumbersGeocodingValue)"
+                                    Trim="true" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(_PhoneNumbersLocaleNamesValue)' != ''">
+    <RuntimeHostConfigurationOption Include="PhoneNumbers.IncludeLocaleNameData"
+                                    Value="$(_PhoneNumbersLocaleNamesValue)"
+                                    Trim="true" />
+  </ItemGroup>
+</Project>

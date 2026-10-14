@@ -89,9 +89,9 @@ namespace PhoneNumbers
     /// </summary>
     /// <remarks>
     /// Author: Shaopeng Jia. <para/>
-    /// Loads phone-prefix → location-string mappings from per-(language, country-code) binary
-    /// files generated at build time by <c>PhoneNumbers.MetadataBuilder</c>, via
-    /// <see cref="PrefixFileReader"/>.
+    /// Loads phone-prefix → location-string mappings through <see cref="PrefixFileReader"/>, from
+    /// an embedded resource pack built at build time by <c>PhoneNumbers.MetadataBuilder</c> with
+    /// one entry per (language, country-code).
     /// </remarks>
     public sealed class PhoneNumberOfflineGeocoder
     {
