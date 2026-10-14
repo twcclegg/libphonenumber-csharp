@@ -18,6 +18,7 @@ specific mistakes documented here.
 - [`PhoneNumbers.Extensions.PhoneNumber` and `PhoneNumbers.PhoneNumber` share a simple name](#phonenumbersextensionsphonenumber-and-phonenumbersphonenumber-share-a-simple-name)
 - [Enum members keep Java's `SCREAMING_SNAKE_CASE`, not .NET `PascalCase`](#enum-members-keep-javas-screaming_snake_case-not-net-pascalcase)
 - [`PhoneNumber` looks like a plain settable class but is a protobuf-style immutable message](#phonenumber-looks-like-a-plain-settable-class-but-is-a-protobuf-style-immutable-message)
+- [`PhoneNumber` implements .NET framework hooks Java has no equivalent of](#phonenumber-implements-net-framework-hooks-java-has-no-equivalent-of)
 - [`CharSequence` parameters become `string`, not a comparable abstraction](#charsequence-parameters-become-string-not-a-comparable-abstraction)
 - [Metadata and prefix maps are a custom binary format, not protocol buffers](#metadata-and-prefix-maps-are-a-custom-binary-format-not-protocol-buffers)
 
@@ -171,6 +172,33 @@ that C#'s auto-property syntax makes `PhoneNumber` *look* like an ordinary setta
 at a glance (Java has no equivalent syntax to be misled by), so the internal setters come
 as a surprise the first time you reach for an object initializer instead of `Parse` or
 `CreateBuilder()`.
+
+---
+
+## `PhoneNumber` implements .NET framework hooks Java has no equivalent of
+
+**Java:** `Phonenumber.PhoneNumber` overrides `toString()` and nothing else framework-facing.
+
+**C# (this port):** [`csharp/PhoneNumbers/PhoneNumber.Framework.cs`](../csharp/PhoneNumbers/PhoneNumber.Framework.cs)
+adds three things, kept out of the ported `Phonenumber.cs`:
+
+- `ToString()` — a port of Java's `toString()`
+  (`"Country Code: 44 National Number: 2070313000"`). It is diagnostic output, not a phone
+  number format; use `PhoneNumberUtil.Format`. It prints the number's digits, so a logged
+  `PhoneNumber` is personal data.
+- `IParsable<PhoneNumber>` on .NET 8 and later, implemented explicitly so it adds no named
+  `Parse`/`TryParse` member. It parses like `Parse(s, null)`, so input must carry its own country
+  calling code, and it throws `FormatException` rather than `NumberParseException`.
+- An internal `TypeConverter` (string ⇄ E.164), applied through `[TypeConverter]`, for
+  configuration binding.
+
+**Why:** ASP.NET Core parameter binding, `IConfiguration` binding and generic
+`T : IParsable<T>` code only look for these on the type itself, so the companion Extensions
+package cannot supply them. The consequence a consumer can trip over: frameworks that ask
+"does this type convert from a string?" now treat `PhoneNumber` as a simple value. MVC and
+minimal APIs bind a `PhoneNumber` parameter from the route or query string rather than the
+body (add `[FromBody]` to read it from JSON), and Newtonsoft.Json serializes it as an E.164
+string rather than an object. E.164 holds no extension, so that string form drops one.
 
 ---
 
