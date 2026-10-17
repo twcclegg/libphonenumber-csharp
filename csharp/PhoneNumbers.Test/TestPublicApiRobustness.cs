@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text;
 using Xunit;
 
 namespace PhoneNumbers.Test
@@ -197,6 +198,39 @@ namespace PhoneNumbers.Test
             }
 
             Assert.Empty(failures);
+        }
+
+        [Fact]
+        public void DigitNormalizationIgnoresNonDecimalNumericCharacters()
+        {
+            // Java's Character.digit(c, 10) accepts decimal digits, not numeric values such as
+            // Tamil hundred, fractions, Roman numerals, superscripts or circled numbers.
+            foreach (var numeric in new[] { '\u0bf1', '\u00bd', '\u2167', '\u00b2', '\u246b', '\u0f33' })
+            {
+                foreach (var padding in new[] { "", new string('1', 300) })
+                {
+                    var input = padding + numeric + "123";
+                    Assert.Equal(padding + "123", PhoneNumberUtil.NormalizeDigitsOnly(input));
+                    Assert.Equal(padding + "123", PhoneNumberUtil.Normalize(input));
+                    Assert.Equal(padding + "123",
+                        PhoneNumberUtil.NormalizeDigits(new StringBuilder(input), false).ToString());
+                    Assert.Equal(input,
+                        PhoneNumberUtil.NormalizeDigits(new StringBuilder(input), true).ToString());
+                }
+            }
+        }
+
+        [Fact]
+        public void DigitNormalizationPreservesUnicodeDecimalDigits()
+        {
+            const string digits = "\u0661\u0662\u0663\u096a\u096b\u096c\uff17\uff18\uff19";
+            foreach (var padding in new[] { "", new string('1', 300) })
+            {
+                Assert.Equal(padding + "123456789", PhoneNumberUtil.NormalizeDigitsOnly(padding + digits));
+                Assert.Equal(padding + "123456789", PhoneNumberUtil.Normalize(padding + digits));
+                Assert.Equal(padding + "123456789",
+                    PhoneNumberUtil.NormalizeDigits(new StringBuilder(padding + digits), true).ToString());
+            }
         }
 
         private static void AssertOverInputs(string what, Func<string, object> call, Type? allowed = null)
