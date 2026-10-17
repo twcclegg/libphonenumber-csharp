@@ -75,6 +75,23 @@ namespace PhoneNumbers.Test
         };
 
         [Fact]
+        public void NationalSignificantNumbersPreserveAllDigitsWithLeadingZeros()
+        {
+            foreach (var nationalNumber in new[] { 0UL, 12345678901UL, ulong.MaxValue })
+            {
+                foreach (var zeros in new[] { 0, 1, 10, 255 })
+                {
+                    var number = PhoneNumber.CreateBuilder().SetCountryCode(39)
+                        .SetNationalNumber(nationalNumber).SetNumberOfLeadingZeros(zeros).Build();
+                    var expected = new string('0', Math.Min(zeros, 10))
+                        + nationalNumber.ToString(CultureInfo.InvariantCulture);
+                    Assert.Equal(expected, PhoneUtil.GetNationalSignificantNumber(number));
+                    Assert.Equal("+39" + expected, PhoneUtil.Format(number, PhoneNumberFormat.E164));
+                }
+            }
+        }
+
+        [Fact]
         public void ParseFailsOnlyWithNumberParseException()
         {
             AssertOverInputs("Parse", input => PhoneUtil.Parse(input, "US"), typeof(NumberParseException));
