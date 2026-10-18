@@ -35,6 +35,8 @@ automatically every ~two weeks; the library compiles it to binaries at build tim
 - `lib/` — bash automation for the metadata sync, changelog and release. The sync runs daily and
   opens a `metadata-update/*` PR with auto-merge off for a maintainer to review and merge; a later
   run that finds it still open regenerates the branch and arms auto-merge as a backstop.
+- `lib/test/` — tests for that automation and for `PhoneNumbers.BenchmarkTools`, the two things
+  `dotnet test` does not reach. `bash lib/test/run-tests.sh`; see the `writing-tests` skill.
 - `docfx/` — DocFX config for the generated API reference site, deployed alongside the demo under
   `/docs/` in the same `deploy-demo.yml` run. Build it with `docfx/build.sh`, never `docfx`
   directly — the script copies `docs/*.md` in as articles and rewrites their repo-relative links.
@@ -63,6 +65,7 @@ dotnet build csharp --no-restore
 dotnet test csharp/PhoneNumbers.slnx -p:TargetFrameworks=net10.0   # what the PR check runs
 dotnet test csharp/PhoneNumbers.slnx                                # every TFM
 dotnet test csharp/PhoneNumbers.Test --filter "FullyQualifiedName~TestPhoneNumberUtil.TestParseNationalNumber"
+bash lib/test/run-tests.sh                                          # the lib/ and BenchmarkTools tests
 ```
 
 `dotnet build` runs the metadata pipeline itself; there is no separate generation step.

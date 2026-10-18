@@ -1,0 +1,45 @@
+# Tests for the CI tooling itself: the bash automation under lib/ and the benchmark comparison tool.
+# The dotnet test suite covers the library; nothing covered it, and a mistake in it shows up as a
+# broken release or a wrong PR comment rather than as a failing test.
+name: "run_ci_tooling_tests"
+
+on:
+  pull_request:
+    # Deliberately path-filtered to what the suite actually exercises, and deliberately not
+    # duplicated onto a push trigger: these tests are fast, hermetic and have no base commit to
+    # compare against, so a PR run is the whole value. GitHub Actions has no YAML anchors, so every
+    # extra trigger means another copy of this list to keep in step.
+    paths:
+      - 'lib/**'
+      - 'csharp/PhoneNumbers.BenchmarkTools/**'
+      - 'csharp/Directory.Build.props'
+      - 'csharp/Directory.Packages.props'
+      - 'global.json'
+      - 'CHANGELOG.md'
+      - '.github/workflows/run_ci_tooling_tests.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  run_ci_tooling_tests:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # Only PhoneNumbers.BenchmarkTools needs this; the lib/ tests are bash, jq and git. Without an
+      # SDK the suite skips the benchmark-tool cases instead of failing, which is how it runs on a
+      # contributor's machine - so this step is what makes CI the place they are actually checked.
+      - name: Setup .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v5
+        with:
+          dotnet-version: 10.x
+      - name: Run the CI tooling tests
+        run: bash lib/test/run-tests.sh

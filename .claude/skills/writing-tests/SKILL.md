@@ -51,6 +51,35 @@ example number or format changed upstream and the ported assertion is stale. Upd
 the new behaviour; never edit `resources/` to make it pass. If the failing test uses the synthetic
 metadata it cannot be the sync — look for a code change.
 
+## Tests for the CI tooling
+
+The bash automation under `lib/` and the benchmark comparison tool have their own suite, because
+`dotnet test` reaches neither: `bash lib/test/run-tests.sh`, with `--filter <pattern>` to narrow it
+and `--verbose` to see each test's output. A change to `lib/**` or to
+`csharp/PhoneNumbers.BenchmarkTools/` belongs with a test there, and `run_ci_tooling_tests.yml` runs
+the suite on any PR that touches them.
+
+- A test is a function named `test_*` in a `lib/test/test-*.sh` file; the runner calls it in its own
+  subshell with `set -e`, a fresh empty `$TEST_DIR` as the working directory, and `helpers.sh`
+  sourced. Assert with `assertStatus`, `assertEquals`, `assertOutputContains`, `assertFileContains`,
+  `assertOccurrences` and friends — `failTest` is the raw escape hatch, named that way because the
+  scripts under test define their own `fail`.
+- **Nothing in the suite touches the network.** The release scripts are driven through the version
+  overrides they already have (`UPSTREAM_TAG`, `DEPLOYED_VERSION`) and, past that, through
+  `stubNetwork`, which puts a fake `curl` and a fake `git` on `PATH` so a test can say what the
+  upstream diff contains and still have the `.java`/`.proto` gates run for real. `fakeRepositoryRoot`
+  builds the clean-checkout-on-main the sync insists on, so the real one is never touched. Functions
+  that only build a request body (`createRelease`, `dispatchPublish`, `armAutoMerge`) are tested by
+  overriding `ghApi` and asserting on the payload.
+- A test needing something the machine lacks skips rather than fails: `requireCommand dotnet` (the
+  whole of `test-benchmark-tools.sh` without an SDK), `requireCommand javac` (the sync script stops
+  with exit 3 before any gate on a real run without a jdk), `requireBashVersion 4` (the changelog
+  script uses `mapfile`). CI installs the SDK, which is why those cases are checked there.
+- The runner unsets `GITHUB_STEP_SUMMARY`, since most of these tests drive the scripts through their
+  failure paths and would otherwise write fake release errors into the real CI job summary; the two
+  tests that cover summary-writing set it themselves. It also refuses to run a file that declares a
+  `test_*` function it cannot call — a brace on the next line would otherwise skip it silently.
+
 ## Running
 
 ```bash
@@ -58,6 +87,7 @@ dotnet test csharp/PhoneNumbers.Test --filter "FullyQualifiedName~TestPhoneNumbe
 dotnet test csharp/PhoneNumbers.Test --filter "FullyQualifiedName~TestPublicApiRobustness"
 dotnet test csharp/PhoneNumbers.slnx -p:TargetFrameworks=net10.0     # the PR check
 dotnet test csharp/PhoneNumbers.slnx                                  # adds net8.0
+bash lib/test/run-tests.sh                                            # lib/ and BenchmarkTools
 ```
 
 Tests never run on `netstandard2.0`; a broken fallback in `PhoneNumberUtil.netstandard.cs` only
