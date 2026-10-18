@@ -23,13 +23,18 @@
 # extend - a human-written or pre-rebuild heading never has one, so it can never be mistaken for
 # a foldable run.
 #
+# A release that is not metadata-only is itemized from <range>, if one is given and this is run
+# inside the repository: one bullet per pull request merged into it, filed under a Keep a Changelog
+# heading by its conventional-commit prefix. Without a range it keeps the older behaviour of naming
+# the sync and pointing at the compare link.
+#
 # Usage: update-changelog.sh <changelog-file> <github-repo> <upstream-repo> <from-tag> <new-tag>
-#                             <metadata-only:true|false> [date:YYYY-MM-DD]
+#                             <metadata-only:true|false> [date:YYYY-MM-DD] [range]
 set -euo pipefail
 
 usage() {
     cat >&2 <<'EOF'
-Usage: update-changelog.sh <changelog-file> <github-repo> <upstream-repo> <from-tag> <new-tag> <metadata-only:true|false> [date:YYYY-MM-DD]
+Usage: update-changelog.sh <changelog-file> <github-repo> <upstream-repo> <from-tag> <new-tag> <metadata-only:true|false> [date:YYYY-MM-DD] [range]
 EOF
 }
 
@@ -46,6 +51,7 @@ FROM_TAG="$4"
 NEW_TAG="$5"
 METADATA_ONLY="$6"
 DATE="${7:-$(date -u +%F)}"
+RANGE="${8:-}"
 
 if [ "${METADATA_ONLY}" != "true" ] && [ "${METADATA_ONLY}" != "false" ]; then
     echo "metadata-only must be \"true\" or \"false\", got: ${METADATA_ONLY}" >&2
@@ -110,13 +116,119 @@ buildMetadataOnlyBlock() {
     printf '%s\n## [%s](%s) - %s\n\n%s\n' "${markerLine}" "${heading}" "${link}" "${dateRange}" "${body}"
 }
 
-# buildSubstantiveBlock <from> <tag> <date>
+# itemizeRange <range>
+# One bullet per pull request merged in the range, under Keep a Changelog headings, oldest first.
+# --first-parent walks main's own history, so the unit is the merge - the PR's number and branch
+# from the subject github writes, its title from the first line of the body - rather than every
+# commit that went into it; a commit pushed straight to main is one bullet of its own. The branch
+# name is what identifies the bots: this automation's own syncs are dropped (the entry's opening
+# sentence already names the sync) and dependabot's collapse onto one line. A sync pushed straight
+# to main, as they were before v9.0.38, has no branch name to go on and is recognised by its author
+# instead - SYNC_COMMIT_AUTHOR, which the caller has already resolved from the api.
+itemizeRange() {
+    git log --first-parent --reverse --format='%x1e%s%x1f%b%x1f%an' "$1" 2>/dev/null | awk '
+        BEGIN {
+            RS = "\036"
+            FS = "\037"
+            # The conventional-commit prefixes AGENTS.md mandates, and where each belongs. A
+            # prefix outside this list is left on the title: "Extensions: ..." is part of what the
+            # title says, not a label to strip.
+            n = split("feat:Added fix:Fixed perf:Performance docs:Docs refactor:Changed " \
+                      "style:Changed test:Changed ci:Changed build:Changed chore:Changed " \
+                      "internal:Changed revert:Changed", pairs, " ")
+            for (i = 1; i <= n; i++) {
+                split(pairs[i], kv, ":")
+                section[kv[1]] = kv[2]
+            }
+        }
+
+        NF {
+            # git separates commits with a newline, which lands on both ends of a record.
+            subject = $1
+            sub(/^\n/, "", subject)
+            author = $3
+            sub(/\n$/, "", author)
+            title = $2
+            sub(/\n.*/, "", title)
+
+            branch = ""
+            if (subject ~ /^Merge pull request #[0-9]+ from /) {
+                pr = subject
+                sub(/^Merge pull request #/, "", pr)
+                sub(/[^0-9].*/, "", pr)
+                branch = subject
+                sub(/^.* from [^\/]*\//, "", branch)
+            } else {
+                title = subject
+                pr = (title ~ /\(#[0-9]+\)$/) ? title : ""
+                sub(/.*\(#/, "", pr)
+                sub(/\).*/, "", pr)
+                sub(/ *\(#[0-9]+\)$/, "", title)
+            }
+            if (title == "") title = subject
+            if (branch ~ /^metadata-update\//) next
+            if (branch == "" && author != "" && author == ENVIRON["SYNC_COMMIT_AUTHOR"]) next
+
+            type = ""
+            scope = ""
+            if (match(title, /^[A-Za-z]+(\([^()]*\))?!?: /)) {
+                # Held because the scope match below overwrites RLENGTH.
+                prefixLength = RLENGTH
+                prefix = substr(title, 1, prefixLength - 2)
+                sub(/!$/, "", prefix)
+                if (match(prefix, /\([^()]*\)$/)) {
+                    scope = substr(prefix, RSTART + 1, RLENGTH - 2)
+                    type = tolower(substr(prefix, 1, RSTART - 1))
+                } else {
+                    type = tolower(prefix)
+                }
+                if (type in section) title = substr(title, prefixLength + 1)
+                else type = scope = ""
+            }
+
+            if (branch ~ /^dependabot\// || scope == "deps") {
+                dependencies = dependencies (dependencies ? ", " : "") "#" pr
+                dependencyCount++
+                next
+            }
+
+            # Sentence case only where that is unambiguously safe: a lowercase first word with no
+            # capital, dot or slash in it. `ByteBuffer`, dotnet test and net8.0 stay as written.
+            first = title
+            sub(/ .*$/, "", first)
+            if (title ~ /^[a-z]/ && first !~ /[A-Z.\/_]/) title = toupper(substr(title, 1, 1)) substr(title, 2)
+            if (scope != "") title = "(" toupper(substr(scope, 1, 1)) substr(scope, 2) ") " title
+            if (title !~ /[.!?]$/) title = title "."
+
+            where = (type in section) ? section[type] : "Changed"
+            bullets[where] = bullets[where] "- " title (pr ? " (#" pr ")" : "") "\n"
+        }
+
+        END {
+            n = split("Added Changed Performance Fixed Docs", order, " ")
+            for (i = 1; i <= n; i++) {
+                if (order[i] in bullets) printf "%s### %s\n%s", (printed++ ? "\n" : ""), order[i], bullets[order[i]]
+            }
+            if (dependencyCount) {
+                printf "%s### Dependencies\n- %d automated dependency update%s. (%s)\n", \
+                    (printed++ ? "\n" : ""), dependencyCount, (dependencyCount > 1 ? "s" : ""), dependencies
+            }
+        }'
+}
+
+# buildSubstantiveBlock <from> <tag> <date> [range]
 buildSubstantiveBlock() {
-    local from=$1 tag=$2 date=$3
-    local link body
+    local from=$1 tag=$2 date=$3 range=${4:-}
+    local link body items=""
     link=$(compareLink "${GITHUB_REPO}" "${from}" "${tag}")
-    body="Includes the metadata sync to upstream [libphonenumber ${tag}]($(upstreamReleaseLink "${UPSTREAM_REPO}" "${tag}")) plus other changes merged to \`main\` since the last release — see the compare link above for the full diff."
-    printf '## [%s](%s) - %s\n\n%s\n' "${tag}" "${link}" "${date}" "${body}"
+    [ -n "${range}" ] && items=$(itemizeRange "${range}")
+    if [ -n "${items}" ]; then
+        body="Metadata sync to upstream [libphonenumber ${tag}]($(upstreamReleaseLink "${UPSTREAM_REPO}" "${tag}")), plus the work below that merged to \`main\` since ${from}."
+        printf '## [%s](%s) - %s\n\n%s\n\n%s\n' "${tag}" "${link}" "${date}" "${body}" "${items}"
+    else
+        body="Includes the metadata sync to upstream [libphonenumber ${tag}]($(upstreamReleaseLink "${UPSTREAM_REPO}" "${tag}")) plus other changes merged to \`main\` since the last release — see the compare link above for the full diff."
+        printf '## [%s](%s) - %s\n\n%s\n' "${tag}" "${link}" "${date}" "${body}"
+    fi
 }
 
 if ${RUN_MATCHED}; then
@@ -135,7 +247,7 @@ else
     if [ "${METADATA_ONLY}" = "true" ]; then
         NEW_BLOCK=$(buildMetadataOnlyBlock "${FROM_TAG}" "${NEW_TAG}" "${DATE}" 1 "${NEW_TAG}" "${DATE}")
     else
-        NEW_BLOCK=$(buildSubstantiveBlock "${FROM_TAG}" "${NEW_TAG}" "${DATE}")
+        NEW_BLOCK=$(buildSubstantiveBlock "${FROM_TAG}" "${NEW_TAG}" "${DATE}" "${RANGE}")
     fi
     # Insert as a new block right after the marker, pushing whatever was there down.
     REPLACE_FROM=$((MARKER_INDEX + 1))
