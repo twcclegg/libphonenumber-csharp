@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using Xunit;
 
 namespace PhoneNumbers.Test
@@ -127,9 +128,9 @@ namespace PhoneNumbers.Test
         [Fact]
         public void FormattingPreservesLongExtensions()
         {
-            foreach (var length in new[] { 70, 80, 90, 100, 10_000 })
+            foreach (var extension in new[] { 70, 80, 90, 100, 10_000 }
+                         .Select(length => new string('1', length)))
             {
-                var extension = new string('1', length);
                 var number = PhoneUtil.Parse("+16502530000", RegionCode.US)
                     .ToBuilder().SetExtension(extension).Build();
                 Assert.Equal("+1 650-253-0000 ext. " + extension,
