@@ -205,6 +205,7 @@ namespace PhoneNumbers.Test
         {
             // Java's Character.digit(c, 10) accepts decimal digits, not numeric values such as
             // Tamil hundred, fractions, Roman numerals, superscripts or circled numbers.
+            var buffer = new StringBuilder();
             foreach (var numeric in new[] { '\u0bf1', '\u00bd', '\u2167', '\u00b2', '\u246b', '\u0f33' })
             {
                 foreach (var padding in new[] { "", new string('1', 300) })
@@ -212,10 +213,12 @@ namespace PhoneNumbers.Test
                     var input = padding + numeric + "123";
                     Assert.Equal(padding + "123", PhoneNumberUtil.NormalizeDigitsOnly(input));
                     Assert.Equal(padding + "123", PhoneNumberUtil.Normalize(input));
+                    buffer.Clear().Append(input);
                     Assert.Equal(padding + "123",
-                        PhoneNumberUtil.NormalizeDigits(new StringBuilder(input), false).ToString());
+                        PhoneNumberUtil.NormalizeDigits(buffer, false).ToString());
+                    buffer.Clear().Append(input);
                     Assert.Equal(input,
-                        PhoneNumberUtil.NormalizeDigits(new StringBuilder(input), true).ToString());
+                        PhoneNumberUtil.NormalizeDigits(buffer, true).ToString());
                 }
             }
         }
@@ -224,12 +227,14 @@ namespace PhoneNumbers.Test
         public void DigitNormalizationPreservesUnicodeDecimalDigits()
         {
             const string digits = "\u0661\u0662\u0663\u096a\u096b\u096c\uff17\uff18\uff19";
+            var buffer = new StringBuilder();
             foreach (var padding in new[] { "", new string('1', 300) })
             {
                 Assert.Equal(padding + "123456789", PhoneNumberUtil.NormalizeDigitsOnly(padding + digits));
                 Assert.Equal(padding + "123456789", PhoneNumberUtil.Normalize(padding + digits));
+                buffer.Clear().Append(padding).Append(digits);
                 Assert.Equal(padding + "123456789",
-                    PhoneNumberUtil.NormalizeDigits(new StringBuilder(padding + digits), true).ToString());
+                    PhoneNumberUtil.NormalizeDigits(buffer, true).ToString());
             }
         }
 
