@@ -738,14 +738,11 @@ namespace PhoneNumbers
                 }
                 else
                 {
-                    var digit = (int)char.GetNumericValue(c);
+                    // Match Java's Character.digit(c, 10), which excludes non-decimal numerics.
+                    var digit = CharUnicodeInfo.GetDecimalDigitValue(c);
                     if (digit != -1)
                     {
-                        var size = number.Length;
-                        number.Insert(pos, digit);
-                        size = number.Length - size;
-                        pos += size;
-                        i += size;
+                        number[pos++] = (char)('0' + digit);
                     }
                     else if (keepNonDigits)
                     {

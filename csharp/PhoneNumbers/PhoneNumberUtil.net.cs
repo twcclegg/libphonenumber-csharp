@@ -94,10 +94,8 @@ namespace PhoneNumbers
             Span<char> buffer = rented is null ? stackalloc char[number.Length] : rented;
             try
             {
-                // ArrayPool hands back an array at least as long as requested, so slice to the input
-                // length: the normalizers rely on running out of room to drop characters whose
-                // numeric value needs more digits than the character it came from, and extra
-                // capacity would silently change that output.
+                // Each accepted character produces at most one character. Keep the usable buffer
+                // bounded to the input length even when ArrayPool returns a larger array.
                 var result = buffer.Slice(0, number.Length);
                 var resultLength = 0;
 
@@ -610,10 +608,11 @@ namespace PhoneNumbers
                 }
                 else
                 {
-                    var digit = (int)char.GetNumericValue(c);
+                    // Match Java's Character.digit(c, 10), which excludes non-decimal numerics.
+                    var digit = CharUnicodeInfo.GetDecimalDigitValue(c);
                     if (digit != -1)
                     {
-                        AppendNumberToSpan(ref span, ref index, digit);
+                        span[index++] = (char)('0' + digit);
                     }
                     else if (keepNonDigits)
                     {
