@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using Xunit;
 
 namespace PhoneNumbers.Test
@@ -107,6 +108,60 @@ namespace PhoneNumbers.Test
                 input => PhoneNumberUtil.NormalizeDiallableCharsOnly(input));
             AssertOverInputs("ConvertAlphaCharactersInNumber",
                 input => PhoneNumberUtil.ConvertAlphaCharactersInNumber(input));
+        }
+
+        [Fact]
+        public void OutOfCountryFormattingAcceptsLongRawInput()
+        {
+            var rawInput = "+1" + new string(' ', 100) + "6502530000";
+            var number = PhoneUtil.ParseAndKeepRawInput(rawInput, RegionCode.US);
+            Assert.True(PhoneUtil.IsValidNumber(number));
+            Assert.Equal("00 1 6502530000",
+                PhoneUtil.FormatOutOfCountryKeepingAlphaChars(number, RegionCode.GB));
+
+            // Builders can supply raw input longer than the parser's input limit, too.
+            number = number.ToBuilder().SetRawInput("+1" + new string(' ', 10_000) + "6502530000").Build();
+            Assert.Equal("00 1 6502530000",
+                PhoneUtil.FormatOutOfCountryKeepingAlphaChars(number, RegionCode.GB));
+        }
+
+        [Fact]
+        public void FormattingPreservesLongExtensions()
+        {
+            foreach (var extension in new[] { 70, 80, 90, 100, 10_000 }
+                         .Select(length => new string('1', length)))
+            {
+                var number = PhoneUtil.Parse("+16502530000", RegionCode.US)
+                    .ToBuilder().SetExtension(extension).Build();
+                Assert.Equal("+1 650-253-0000 ext. " + extension,
+                    PhoneUtil.Format(number, PhoneNumberFormat.INTERNATIONAL));
+                Assert.Equal("(650) 253-0000 ext. " + extension,
+                    PhoneUtil.Format(number, PhoneNumberFormat.NATIONAL));
+                Assert.Equal("tel:+1-650-253-0000;ext=" + extension,
+                    PhoneUtil.Format(number, PhoneNumberFormat.RFC3966));
+                Assert.Equal("+16502530000", PhoneUtil.Format(number, PhoneNumberFormat.E164));
+                Assert.Equal("+1 6502530000 ext. " + extension,
+                    PhoneUtil.FormatByPattern(number, PhoneNumberFormat.INTERNATIONAL, new List<NumberFormat>()));
+                Assert.Equal("(650) 253-0000 ext. " + extension,
+                    PhoneUtil.FormatNationalNumberWithCarrierCode(number, ""));
+                Assert.Equal("00 1 650-253-0000 ext. " + extension,
+                    PhoneUtil.FormatOutOfCountryCallingNumber(number, RegionCode.GB));
+                Assert.Equal("1 (650) 253-0000 ext. " + extension,
+                    PhoneUtil.FormatOutOfCountryCallingNumber(number, RegionCode.US));
+            }
+        }
+
+        [Fact]
+        public void FormattingAcceptsLongCustomPatterns()
+        {
+            var number = PhoneUtil.Parse("+16502530000", RegionCode.US);
+            var padding = new string(' ', 100);
+            var formats = new List<NumberFormat>
+            {
+                NumberFormat.CreateBuilder().SetPattern("(\\d{10})").SetFormat(padding + "$1").Build()
+            };
+            Assert.Equal("+1 " + padding + "6502530000",
+                PhoneUtil.FormatByPattern(number, PhoneNumberFormat.INTERNATIONAL, formats));
         }
 
         [Fact]
