@@ -17,6 +17,10 @@ namespace PhoneNumbers
         /// </summary>
         private const int MaxStackallocChars = 256;
 
+        // A builder can supply any ulong (20 decimal digits), plus up to 10 leading zeros
+        // after the defensive cap. Parsed numbers alone do not exercise this upper bound.
+        private const int MaxNationalSignificantNumberLength = 30;
+
         /// <summary>Which normalization the shared buffer path should apply.</summary>
         private enum NormalizeMode
         {
@@ -249,7 +253,7 @@ namespace PhoneNumbers
         internal static string GetNationalSignificantNumberImpl(PhoneNumber number)
         {
             // If a leading zero(s) has been set, we prefix this now. Note this is not a national prefix.
-            Span<char> nationalSignificantNumber = stackalloc char[20];
+            Span<char> nationalSignificantNumber = stackalloc char[MaxNationalSignificantNumberLength];
             SetNationalSignificantNumberToSpan(ref nationalSignificantNumber, number, out var length);
             return new string(nationalSignificantNumber.Slice(0, length));
         }
@@ -735,7 +739,7 @@ namespace PhoneNumbers
 
         private void Format(ref Span<char> span, ref int index, PhoneNumber number, PhoneNumberFormat numberFormat)
         {
-            Span<char> nationalSignificantNumber = stackalloc char[20];
+            Span<char> nationalSignificantNumber = stackalloc char[MaxNationalSignificantNumberLength];
             SetNationalSignificantNumberToSpan(ref nationalSignificantNumber,
                 number,
                 out var nationalSignificantNumberLength);
