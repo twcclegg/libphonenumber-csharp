@@ -17,6 +17,10 @@ namespace PhoneNumbers
         /// </summary>
         private const int MaxStackallocChars = 256;
 
+        // A builder can supply any ulong (20 decimal digits), plus up to 10 leading zeros
+        // after the defensive cap. Parsed numbers alone do not exercise this upper bound.
+        private const int MaxNationalSignificantNumberLength = 30;
+
         /// <summary>Which normalization the shared buffer path should apply.</summary>
         private enum NormalizeMode
         {
@@ -247,7 +251,7 @@ namespace PhoneNumbers
         internal static string GetNationalSignificantNumberImpl(PhoneNumber number)
         {
             // If a leading zero(s) has been set, we prefix this now. Note this is not a national prefix.
-            Span<char> nationalSignificantNumber = stackalloc char[20];
+            Span<char> nationalSignificantNumber = stackalloc char[MaxNationalSignificantNumberLength];
             SetNationalSignificantNumberToSpan(ref nationalSignificantNumber, number, out var length);
             return new string(nationalSignificantNumber.Slice(0, length));
         }
@@ -467,7 +471,11 @@ namespace PhoneNumbers
             // To do this, first we normalize punctuation. We retain number grouping symbols such as " "
             // only.
 
-            Span<char> intermediateResult = stackalloc char[90];
+            // Normalization cannot expand this input. Keep the usual stack buffer, but use the
+            // heap for long raw input rather than imposing a limit the parser does not have.
+            Span<char> intermediateResult = rawInput.Length <= 90
+                ? stackalloc char[90]
+                : new char[rawInput.Length];
             var intermediateResultLength = 0;
 
             NormalizeHelper(ref intermediateResult,
@@ -484,7 +492,8 @@ namespace PhoneNumbers
             SetNationalSignificantNumberToSpan(ref nationalNumberSpan, number, out var nationalNumberLength);
             if (nationalNumberLength > 3)
             {
-                var firstNationalNumberDigit = intermediateResult.IndexOf(nationalNumberSpan.Slice(0, 3));
+                var firstNationalNumberDigit = intermediateResult.Slice(0, intermediateResultLength)
+                    .IndexOf(nationalNumberSpan.Slice(0, 3));
                 if (firstNationalNumberDigit != -1)
                 {
                     intermediateResultLength -= firstNationalNumberDigit;
@@ -715,13 +724,21 @@ namespace PhoneNumbers
 
         private static void AppendToSpan(ref Span<char> destination, ref int index, string valueToAppend)
         {
+            if (valueToAppend.Length > destination.Length - index)
+            {
+                // Extensions, carrier codes and custom formatting rules are caller-supplied and
+                // unbounded. Grow only when necessary so ordinary formatting stays on the stack.
+                var grown = new char[checked(index + valueToAppend.Length)];
+                destination.Slice(0, index).CopyTo(grown);
+                destination = grown;
+            }
             valueToAppend.AsSpan().CopyTo(destination[index..]);
             index += valueToAppend.Length;
         }
 
         private void Format(ref Span<char> span, ref int index, PhoneNumber number, PhoneNumberFormat numberFormat)
         {
-            Span<char> nationalSignificantNumber = stackalloc char[20];
+            Span<char> nationalSignificantNumber = stackalloc char[MaxNationalSignificantNumberLength];
             SetNationalSignificantNumberToSpan(ref nationalSignificantNumber,
                 number,
                 out var nationalSignificantNumberLength);
