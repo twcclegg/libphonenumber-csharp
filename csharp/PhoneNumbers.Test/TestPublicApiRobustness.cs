@@ -190,6 +190,60 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
+        public void FindNumbersExtractsNumbersSeparatedByPhonePunctuation()
+        {
+            var cases = new[]
+            {
+                ("6502530000/6502530001", "6502530000", "6502530001"),
+                ("650-253-0000//650-253-0001", "650-253-0000", "650-253-0001"),
+                ("(650) 253-0000 (650) 253-0001", "(650) 253-0000", "(650) 253-0001"),
+                ("6502530000 - 6502530001", "6502530000", "6502530001"),
+                ("6502530000\u20146502530001", "6502530000", "6502530001"),
+                ("6502530000\uff0d6502530001", "6502530000", "6502530001"),
+                ("6502530000.6502530001", "6502530000", "6502530001"),
+                ("6502530000\u00a06502530001", "6502530000", "6502530001"),
+            };
+            foreach (var (body, first, second) in cases)
+            {
+                var text = "Call " + body + " today";
+                foreach (var leniency in Enum.GetValues<PhoneNumberUtil.Leniency>())
+                {
+                    var matches = PhoneUtil.FindNumbers(text, RegionCode.US, leniency, long.MaxValue).ToArray();
+                    Assert.Equal(new[] { first, second }, matches.Select(match => match.RawString));
+                    Assert.Equal(new[] { 5, text.IndexOf(second, 5 + first.Length, StringComparison.Ordinal) },
+                        matches.Select(match => match.Start));
+                    Assert.Equal(new[] { 6502530000UL, 6502530001UL },
+                        matches.Select(match => match.Number.NationalNumber));
+                }
+            }
+        }
+
+        [Fact]
+        public void FindNumbersDoesNotTruncateWhitespaceGroupsIntoAnotherNumber()
+        {
+            Assert.Empty(PhoneUtil.FindNumbers("333 091 234", RegionCode.DE));
+        }
+
+        [Fact]
+        public void FindNumbersRespectsInnerCandidateRetryBudget()
+        {
+            // Successful extraction does not consume the invalid-candidate retry budget.
+            Assert.Equal(2, PhoneUtil.FindNumbers("6502530000/6502530001", RegionCode.US,
+                PhoneNumberUtil.Leniency.VALID, 1).Count());
+
+            const string text = "12345 12345 6502530000";
+            foreach (var maxTries in new[] { 0L, 1L, 2L })
+            {
+                Assert.Empty(PhoneUtil.FindNumbers(text, RegionCode.US,
+                    PhoneNumberUtil.Leniency.VALID, maxTries));
+            }
+            var match = Assert.Single(PhoneUtil.FindNumbers(text, RegionCode.US,
+                PhoneNumberUtil.Leniency.VALID, 3));
+            Assert.Equal("6502530000", match.RawString);
+            Assert.Equal(12, match.Start);
+        }
+
+        [Fact]
         public void FindNumbersNeverThrows()
         {
             AssertOverInputs("FindNumbers", input =>

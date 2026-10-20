@@ -105,18 +105,48 @@ namespace PhoneNumbers
         /// </summary>
         private static bool IsLeadClass(char c) => PhoneNumberUtil.IsPlusChar(c) || c is '(' or '[' or '\uFF08' or '\uFF3B';
 
-        /// <summary>
-        /// Matches white-space, which may indicate the end of a phone number and the start of something
-        /// else (such as a neighbouring zip-code). If white-space is found, continues to match all
-        /// characters that are not typically used to start a phone number.
-        /// </summary>
 #if NET7_0_OR_GREATER
-        [GeneratedRegex("\\p{Z}[^" + PhoneNumberUtil.PLUS_CHARS + openingParens + "\\d]*", InternalRegexOptions.Default)]
-        private static partial Regex GroupSeparator();
+        [GeneratedRegex(@"/+(.*)", InternalRegexOptions.Default)]
+        private static partial Regex InnerSlash();
+        [GeneratedRegex(@"(\([^(]*)", InternalRegexOptions.Default)]
+        private static partial Regex InnerOpeningParenthesis();
+        [GeneratedRegex(@"(?:\p{Z}-|-\p{Z})\p{Z}*(.+)", InternalRegexOptions.Default)]
+        private static partial Regex InnerSpacedHyphen();
+        [GeneratedRegex(@"[\u2012-\u2015\uFF0D]\p{Z}*(.+)", InternalRegexOptions.Default)]
+        private static partial Regex InnerWideHyphen();
+        [GeneratedRegex(@"\.+\p{Z}*([^.]+)", InternalRegexOptions.Default)]
+        private static partial Regex InnerFullStop();
+        [GeneratedRegex(@"\p{Z}+(\P{Z}+)", InternalRegexOptions.Default)]
+        private static partial Regex InnerWhitespace();
 #else
-        private static Regex GroupSeparator() => _groupSeparator;
-        private static readonly Regex _groupSeparator = new("\\p{Z}[^" + PhoneNumberUtil.PLUS_CHARS + openingParens + "\\d]*", InternalRegexOptions.Default);
+        private static Regex InnerSlash() => _innerSlash;
+        private static readonly Regex _innerSlash = new(@"/+(.*)", InternalRegexOptions.Default);
+        private static Regex InnerOpeningParenthesis() => _innerOpeningParenthesis;
+        private static readonly Regex _innerOpeningParenthesis = new(@"(\([^(]*)", InternalRegexOptions.Default);
+        private static Regex InnerSpacedHyphen() => _innerSpacedHyphen;
+        private static readonly Regex _innerSpacedHyphen = new(@"(?:\p{Z}-|-\p{Z})\p{Z}*(.+)", InternalRegexOptions.Default);
+        private static Regex InnerWideHyphen() => _innerWideHyphen;
+        private static readonly Regex _innerWideHyphen = new(@"[\u2012-\u2015\uFF0D]\p{Z}*(.+)", InternalRegexOptions.Default);
+        private static Regex InnerFullStop() => _innerFullStop;
+        private static readonly Regex _innerFullStop = new(@"\.+\p{Z}*([^.]+)", InternalRegexOptions.Default);
+        private static Regex InnerWhitespace() => _innerWhitespace;
+        private static readonly Regex _innerWhitespace = new(@"\p{Z}+(\P{Z}+)", InternalRegexOptions.Default);
 #endif
+
+        /// <summary>
+        /// Patterns used to extract numbers from a larger phone-number-like candidate, ordered by
+        /// specificity. Whitespace is last because it frequently occurs within a single number.
+        /// Each pattern captures the next group to try, and we also check the text before its first match.
+        /// </summary>
+        private static readonly Regex[] InnerMatches =
+        {
+            InnerSlash(),
+            InnerOpeningParenthesis(),
+            InnerSpacedHyphen(),
+            InnerWideHyphen(),
+            InnerFullStop(),
+            InnerWhitespace(),
+        };
 
         /* Phone number pattern allowing optional punctuation. */
 #if NET7_0_OR_GREATER
@@ -282,8 +312,8 @@ namespace PhoneNumbers
         /// <returns>the match found, null if none can be found</returns>
         private PhoneNumberMatch ExtractMatch(string candidate, int offset)
         {
-            // Skip a match that is more likely a publication page reference or a date.
-            if (PubPages().IsMatch(candidate) || SlashSeparatedDates().IsMatch(candidate))
+            // Skip a match that is more likely to be a date.
+            if (SlashSeparatedDates().IsMatch(candidate))
                 return null;
             // Skip potential time-stamps.
             if (TimeStamps().IsMatch(candidate))
@@ -312,46 +342,25 @@ namespace PhoneNumbers
         /// <returns>the match found, null if none can be found</returns>
         private PhoneNumberMatch ExtractInnerMatch(string candidate, int offset)
         {
-            // Try removing either the first or last "group" in the number and see if this gives a result.
-            // We consider white space to be a possible indications of the start or end of the phone number.
-            var groupMatcher = GroupSeparator().Match(candidate);
-            if (groupMatcher.Success)
+            foreach (var possibleInnerMatch in InnerMatches)
             {
-                // Try the first group by itself.
-                var firstGroupOnly = candidate.Substring(0, groupMatcher.Index);
-                firstGroupOnly = TrimAfterUnwantedChars(firstGroupOnly);
-                var match = ParseAndVerify(firstGroupOnly, offset);
-                if (match != null)
-                    return match;
-                maxTries--;
-
-                var withoutFirstGroupStart = groupMatcher.Index + groupMatcher.Length;
-                // Try the rest of the candidate without the first group.
-                var withoutFirstGroup = candidate.Substring(withoutFirstGroupStart);
-                withoutFirstGroup = TrimAfterUnwantedChars(withoutFirstGroup);
-                match = ParseAndVerify(withoutFirstGroup, offset + withoutFirstGroupStart);
-                if (match != null)
-                    return match;
-                maxTries--;
-
-                if (maxTries > 0)
+                var isFirstMatch = true;
+                for (var groupMatcher = possibleInnerMatch.Match(candidate);
+                     groupMatcher.Success && maxTries > 0;
+                     groupMatcher = groupMatcher.NextMatch())
                 {
-                    var lastGroupStart = withoutFirstGroupStart;
-                    while ((groupMatcher = groupMatcher.NextMatch()).Success)
+                    if (isFirstMatch)
                     {
-                        // Find the last group.
-                        lastGroupStart = groupMatcher.Index;
+                        // We should handle any group before this one too.
+                        var firstGroup = TrimAfterUnwantedChars(candidate.Substring(0, groupMatcher.Index));
+                        var firstMatch = ParseAndVerify(firstGroup, offset);
+                        if (firstMatch != null)
+                            return firstMatch;
+                        maxTries--;
+                        isFirstMatch = false;
                     }
-                    var withoutLastGroup = candidate.Substring(0, lastGroupStart);
-                    withoutLastGroup = TrimAfterUnwantedChars(withoutLastGroup);
-                    if (withoutLastGroup == firstGroupOnly)
-                    {
-                        // If there are only two groups, then the group "without the last group" is the same as
-                        // the first group. In these cases, we don't want to re-check the number group, so we exit
-                        // already.
-                        return null;
-                    }
-                    match = ParseAndVerify(withoutLastGroup, offset);
+                    var group = groupMatcher.Groups[1];
+                    var match = ParseAndVerify(TrimAfterUnwantedChars(group.Value), offset + group.Index);
                     if (match != null)
                         return match;
                     maxTries--;
@@ -375,7 +384,7 @@ namespace PhoneNumbers
             {
                 // Check the candidate doesn't contain any formatting which would indicate that it really
                 // isn't a phone number.
-                if (!MatchingBrackets().IsMatch(candidate))
+                if (!MatchingBrackets().IsMatch(candidate) || PubPages().IsMatch(candidate))
                     return null;
 
                 // If leniency is set to VALID or stricter, we also want to skip numbers that are surrounded

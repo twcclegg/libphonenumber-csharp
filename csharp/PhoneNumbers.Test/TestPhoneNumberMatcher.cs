@@ -984,11 +984,6 @@ namespace PhoneNumbers.Test
                 // With a second number later.
                 new NumberContext("Call ", " or +1800-123-4567!"),
                 new NumberContext("Call me on June 2 at", ""), // with a Month-Day date
-                // With publication pages.
-                new NumberContext(
-                    "As quoted by Alfonso 12-15 (2009), you may call me at ", ""),
-                new NumberContext(
-                    "As quoted by Alfonso et al. 12-15 (2009), you may call me at ", ""),
                 // With dates, written in the American style.
                 new NumberContext(
                     "As I said on 03/10/2011, you may call me at ", ""),
@@ -1011,6 +1006,10 @@ namespace PhoneNumbers.Test
 #endif
         {
             var contextPairs = new List<NumberContext> {
+            // Publication fragments can have a possible short-number length. Rejection of those
+            // fragments is only guaranteed when validating, as in the upstream Java extractor.
+            new NumberContext("As quoted by Alfonso 12-15 (2009), you may call me at ", ""),
+            new NumberContext("As quoted by Alfonso et al. 12-15 (2009), you may call me at ", ""),
             // With other small numbers.
             new NumberContext("It's only 9.99! Call ", " to buy"),
             // With a number Month/Day date.
