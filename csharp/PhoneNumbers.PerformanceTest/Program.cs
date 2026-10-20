@@ -11,6 +11,11 @@ namespace PhoneNumbers.PerformanceTest
             if (Array.Exists(args, a => string.Equals(a, "--retained-memory", StringComparison.Ordinal)))
                 return RetainedMemoryAudit.Run();
 
+            // Not a benchmark either: it counts what a cold start allocates, including the transient
+            // bytes RetainedMemoryAudit collects away. See ColdAllocationAudit.
+            if (Array.Exists(args, a => string.Equals(a, "--cold-allocations", StringComparison.Ordinal)))
+                return ColdAllocationAudit.Run();
+
             BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
             return 0;
         }

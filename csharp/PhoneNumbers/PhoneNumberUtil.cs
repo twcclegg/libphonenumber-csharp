@@ -1766,10 +1766,19 @@ namespace PhoneNumbers
         /// <returns>The type of the phone number.</returns>
         public PhoneNumberType GetNumberType(PhoneNumber number)
         {
-            var regionCode = GetRegionCodeForNumber(number);
-            if (!IsValidRegionCode(regionCode) && regionCode != REGION_CODE_FOR_NON_GEO_ENTITY)
+            if (number is null)
+                throw new ArgumentNullException(nameof(number));
+            // Inlined from GetRegionCodeForNumber, like IsValidNumber, so a calling code shared by
+            // several regions computes the national significant number once rather than twice.
+            countryCallingCodeToRegionCodeMap.TryGetValue(number.CountryCode, out var regions);
+            if (regions is null)
                 return PhoneNumberType.UNKNOWN;
             var nationalSignificantNumber = GetNationalSignificantNumber(number);
+            var regionCode = regions.Count == 1
+                ? regions[0]
+                : GetRegionCodeForNumberFromRegionList(number, regions, nationalSignificantNumber);
+            if (!IsValidRegionCode(regionCode) && regionCode != REGION_CODE_FOR_NON_GEO_ENTITY)
+                return PhoneNumberType.UNKNOWN;
             var metadata = GetMetadataForRegionOrCallingCode(number.CountryCode, regionCode);
             return GetNumberTypeHelper(nationalSignificantNumber, metadata);
         }
