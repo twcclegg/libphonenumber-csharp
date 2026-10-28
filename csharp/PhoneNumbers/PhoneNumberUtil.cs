@@ -209,7 +209,15 @@ namespace PhoneNumbers
             {
                 var lower = number[i] | 0x20;
                 if ((uint)(lower - 'a') <= 'z' - 'a' && ++alpha == 3)
+                {
+                    // Java's normalization pattern matches the whole input without DOTALL.
+                    for (var j = 0; j < number.Length; j++)
+                    {
+                        if (number[j] is '\n' or '\r' or '\u0085' or '\u2028' or '\u2029')
+                            return false;
+                    }
                     return true;
+                }
             }
             return false;
         }

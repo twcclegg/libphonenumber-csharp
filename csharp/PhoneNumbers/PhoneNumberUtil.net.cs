@@ -663,7 +663,8 @@ namespace PhoneNumbers
                 var lower = number[i] | 0x20;
                 if ((uint)(lower - 'a') <= 'z' - 'a' && ++alpha == 3)
                 {
-                    return true;
+                    // Java's normalization pattern matches the whole input without DOTALL.
+                    return number.AsSpan().IndexOfAny("\n\r\u0085\u2028\u2029") < 0;
                 }
             }
 

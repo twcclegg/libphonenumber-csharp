@@ -472,6 +472,30 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
+        public void TestNormaliseStripAlphaCharactersWithLineTerminators()
+        {
+            // Java's VALID_ALPHA_PHONE_PATTERN uses dot without DOTALL and matches the whole input.
+            foreach (var separator in new[] { "\n", "\r", "\r\n", "\u0085", "\u2028", "\u2029" })
+            {
+                foreach (var input in new[]
+                {
+                    separator + "1800FLOWERS",
+                    "1800F" + separator + "LOWERS",
+                    "1800FLOWERS" + separator,
+                })
+                {
+                    Assert.Equal("1800", PhoneNumberUtil.Normalize(input));
+                }
+            }
+
+            // Other whitespace is accepted by Java's dot and must not disable vanity conversion.
+            foreach (var separator in new[] { " ", "\t", "\v", "\f" })
+            {
+                Assert.Equal("18003569377", PhoneNumberUtil.Normalize("1800F" + separator + "LOWERS"));
+            }
+        }
+
+        [Fact]
         public void TestNormaliseOtherDigits()
         {
             var inputNumber = "\uFF125\u0665";
