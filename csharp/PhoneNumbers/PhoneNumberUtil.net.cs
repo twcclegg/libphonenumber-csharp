@@ -717,7 +717,7 @@ namespace PhoneNumbers
 
         private static void AppendNumberToSpan(ref Span<char> span, ref int index, int numberToAppend)
         {
-            checked((uint)numberToAppend).TryFormat(span[index..], out var charsWritten,
+            numberToAppend.TryFormat(span[index..], out var charsWritten,
                 default, CultureInfo.InvariantCulture);
             index += charsWritten;
         }
