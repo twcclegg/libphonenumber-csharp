@@ -1059,6 +1059,28 @@ namespace PhoneNumbers.Test
             Assert.Equal("+80012345678", phoneUtil.Format(InternationalTollFree, PhoneNumberFormat.E164));
         }
 
+        [Theory]
+        [InlineData(-1, "+-1123")]
+        [InlineData(-44, "+-44123")]
+        [InlineData(int.MinValue, "+-2147483648123")]
+        [InlineData(0, "+0123")]
+        [InlineData(int.MaxValue, "+2147483647123")]
+        public void TestFormatE164NumberWithInvalidCountryCode(int countryCode, string expected)
+        {
+            // Java's E164 early exit preserves even invalid country calling codes.
+            var number = new PhoneNumber.Builder().SetCountryCode(countryCode)
+                .SetNationalNumber(123).SetExtension("456").Build();
+            Assert.Equal(expected, phoneUtil.Format(number, PhoneNumberFormat.E164));
+
+            var formattedNumber = new StringBuilder("previous contents");
+            phoneUtil.Format(number, PhoneNumberFormat.E164, formattedNumber);
+            Assert.Equal(expected, formattedNumber.ToString());
+
+            Assert.Equal("123", phoneUtil.Format(number, PhoneNumberFormat.NATIONAL));
+            Assert.Equal("123", phoneUtil.Format(number, PhoneNumberFormat.INTERNATIONAL));
+            Assert.Equal("123", phoneUtil.Format(number, PhoneNumberFormat.RFC3966));
+        }
+
         [Fact]
         public void TestFormatAuShortCodeNumber()
         {
