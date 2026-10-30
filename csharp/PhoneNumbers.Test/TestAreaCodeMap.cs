@@ -15,6 +15,7 @@
  */
 
 using System.Collections.Generic;
+using System.Globalization;
 using Xunit;
 
 namespace PhoneNumbers.Test
@@ -126,6 +127,41 @@ namespace PhoneNumbers.Test
             Assert.Equal(
                 "121212345|New York\n121212346|New York\n148034434|Arizona\n148034435|Arizona\n",
                 mapStorage.ToString());
+        }
+
+        [Theory]
+        [InlineData("en-US")]
+        [InlineData("fr-FR")]
+        [InlineData("tr-TR")]
+        public void TestFlyweightStoragePreservesDistinctUnicodeDescriptions(string cultureName)
+        {
+            var originalCulture = CultureInfo.CurrentCulture;
+            try
+            {
+                CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo(cultureName);
+                // Java's TreeSet and binary search compare UTF-16 code units, so even
+                // linguistically equivalent names must retain their exact descriptions.
+                var descriptions = new[] { "Qu\u00e9bec", "Que\u0301bec", "Quebec", "Que\u00adbec" };
+                var sortedMap = new SortedDictionary<int, string>();
+                for (var i = 0; i < 16; i++)
+                    sortedMap[1200 + i] = descriptions[i % descriptions.Length];
+
+                var map = new AreaCodeMap();
+                map.ReadAreaCodeMap(sortedMap);
+                Assert.IsType<FlyweightMapStorage>(map.GetAreaCodeMapStorage());
+                for (var i = 0; i < 16; i++)
+                {
+                    Assert.Equal(descriptions[i % descriptions.Length],
+                        map.GetAreaCodeMapStorage().GetDescription(i));
+                    var number = new PhoneNumber.Builder().SetCountryCode(1)
+                        .SetNationalNumber((ulong)(200 + i) * 10000000).Build();
+                    Assert.Equal(descriptions[i % descriptions.Length], map.Lookup(number));
+                }
+            }
+            finally
+            {
+                CultureInfo.CurrentCulture = originalCulture;
+            }
         }
 
         [Fact]

@@ -105,7 +105,8 @@ namespace PhoneNumbers
             descIndexSizeInBytes = GetOptimalNumberOfBytesForValue(descriptionsSet.Count - 1);
             descriptionIndexes = new ByteBuffer(NumOfEntries * descIndexSizeInBytes);
             descriptionPool = descriptionsSet.ToArray();
-            Array.Sort(descriptionPool);
+            // Match Java's String ordering and keep linguistically equivalent names distinct.
+            Array.Sort(descriptionPool, StringComparer.Ordinal);
 
             // Map the phone number prefixes to the descriptions.
             var index = 0;
@@ -113,7 +114,7 @@ namespace PhoneNumbers
             {
                 var prefix = ReadWordFromBuffer(phoneNumberPrefixes, prefixSizeInBytes, i);
                 var description = areaCodeMap[prefix];
-                var positionInDescriptionPool = Array.BinarySearch(descriptionPool, description);
+                var positionInDescriptionPool = Array.BinarySearch(descriptionPool, description, StringComparer.Ordinal);
                 StoreWordInBuffer(descriptionIndexes, descIndexSizeInBytes, index,
                     positionInDescriptionPool);
                 index++;
