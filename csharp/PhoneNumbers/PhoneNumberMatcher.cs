@@ -106,17 +106,41 @@ namespace PhoneNumbers
         private static bool IsLeadClass(char c) => PhoneNumberUtil.IsPlusChar(c) || c is '(' or '[' or '\uFF08' or '\uFF3B';
 
         /// <summary>
-        /// Matches white-space, which may indicate the end of a phone number and the start of something
-        /// else (such as a neighbouring zip-code). If white-space is found, continues to match all
-        /// characters that are not typically used to start a phone number.
+        /// Patterns for extracting numbers from a larger phone-number-like candidate, ordered by
+        /// specificity. Try one separator type at a time; spaces also occur within phone numbers.
         /// </summary>
 #if NET7_0_OR_GREATER
-        [GeneratedRegex("\\p{Z}[^" + PhoneNumberUtil.PLUS_CHARS + openingParens + "\\d]*", InternalRegexOptions.Default)]
-        private static partial Regex GroupSeparator();
+        [GeneratedRegex(@"/+(.*)", InternalRegexOptions.Default)]
+        private static partial Regex SlashInnerMatch();
+        [GeneratedRegex(@"(\([^(]*)", InternalRegexOptions.Default)]
+        private static partial Regex BracketInnerMatch();
+        [GeneratedRegex(@"(?:\p{Z}-|-\p{Z})\p{Z}*(.+)", InternalRegexOptions.Default)]
+        private static partial Regex HyphenInnerMatch();
+        [GeneratedRegex(@"[\u2012-\u2015\uFF0D]\p{Z}*(.+)", InternalRegexOptions.Default)]
+        private static partial Regex WideHyphenInnerMatch();
+        [GeneratedRegex(@"\.+\p{Z}*([^.]+)", InternalRegexOptions.Default)]
+        private static partial Regex DotInnerMatch();
+        [GeneratedRegex(@"\p{Z}+(\P{Z}+)", InternalRegexOptions.Default)]
+        private static partial Regex SpaceInnerMatch();
 #else
-        private static Regex GroupSeparator() => _groupSeparator;
-        private static readonly Regex _groupSeparator = new("\\p{Z}[^" + PhoneNumberUtil.PLUS_CHARS + openingParens + "\\d]*", InternalRegexOptions.Default);
+        private static Regex SlashInnerMatch() => _slashInnerMatch;
+        private static Regex BracketInnerMatch() => _bracketInnerMatch;
+        private static Regex HyphenInnerMatch() => _hyphenInnerMatch;
+        private static Regex WideHyphenInnerMatch() => _wideHyphenInnerMatch;
+        private static Regex DotInnerMatch() => _dotInnerMatch;
+        private static Regex SpaceInnerMatch() => _spaceInnerMatch;
+        private static readonly Regex _slashInnerMatch = new(@"/+(.*)", InternalRegexOptions.Default);
+        private static readonly Regex _bracketInnerMatch = new(@"(\([^(]*)", InternalRegexOptions.Default);
+        private static readonly Regex _hyphenInnerMatch = new(@"(?:\p{Z}-|-\p{Z})\p{Z}*(.+)", InternalRegexOptions.Default);
+        private static readonly Regex _wideHyphenInnerMatch = new(@"[\u2012-\u2015\uFF0D]\p{Z}*(.+)", InternalRegexOptions.Default);
+        private static readonly Regex _dotInnerMatch = new(@"\.+\p{Z}*([^.]+)", InternalRegexOptions.Default);
+        private static readonly Regex _spaceInnerMatch = new(@"\p{Z}+(\P{Z}+)", InternalRegexOptions.Default);
 #endif
+        private static readonly Regex[] InnerMatches =
+        [
+            SlashInnerMatch(), BracketInnerMatch(), HyphenInnerMatch(),
+            WideHyphenInnerMatch(), DotInnerMatch(), SpaceInnerMatch()
+        ];
 
         /* Phone number pattern allowing optional punctuation. */
 #if NET7_0_OR_GREATER
@@ -312,46 +336,25 @@ namespace PhoneNumbers
         /// <returns>the match found, null if none can be found</returns>
         private PhoneNumberMatch ExtractInnerMatch(string candidate, int offset)
         {
-            // Try removing either the first or last "group" in the number and see if this gives a result.
-            // We consider white space to be a possible indications of the start or end of the phone number.
-            var groupMatcher = GroupSeparator().Match(candidate);
-            if (groupMatcher.Success)
+            foreach (var possibleInnerMatch in InnerMatches)
             {
-                // Try the first group by itself.
-                var firstGroupOnly = candidate.Substring(0, groupMatcher.Index);
-                firstGroupOnly = TrimAfterUnwantedChars(firstGroupOnly);
-                var match = ParseAndVerify(firstGroupOnly, offset);
-                if (match != null)
-                    return match;
-                maxTries--;
-
-                var withoutFirstGroupStart = groupMatcher.Index + groupMatcher.Length;
-                // Try the rest of the candidate without the first group.
-                var withoutFirstGroup = candidate.Substring(withoutFirstGroupStart);
-                withoutFirstGroup = TrimAfterUnwantedChars(withoutFirstGroup);
-                match = ParseAndVerify(withoutFirstGroup, offset + withoutFirstGroupStart);
-                if (match != null)
-                    return match;
-                maxTries--;
-
-                if (maxTries > 0)
+                var isFirstMatch = true;
+                for (var groupMatcher = possibleInnerMatch.Match(candidate);
+                     groupMatcher.Success && maxTries > 0; groupMatcher = groupMatcher.NextMatch())
                 {
-                    var lastGroupStart = withoutFirstGroupStart;
-                    while ((groupMatcher = groupMatcher.NextMatch()).Success)
+                    if (isFirstMatch)
                     {
-                        // Find the last group.
-                        lastGroupStart = groupMatcher.Index;
+                        // Check the text before the first separator as well as its captured group.
+                        var prefix = TrimAfterUnwantedChars(candidate.Substring(0, groupMatcher.Index));
+                        var prefixMatch = ParseAndVerify(prefix, offset);
+                        if (prefixMatch != null)
+                            return prefixMatch;
+                        maxTries--;
+                        isFirstMatch = false;
                     }
-                    var withoutLastGroup = candidate.Substring(0, lastGroupStart);
-                    withoutLastGroup = TrimAfterUnwantedChars(withoutLastGroup);
-                    if (withoutLastGroup == firstGroupOnly)
-                    {
-                        // If there are only two groups, then the group "without the last group" is the same as
-                        // the first group. In these cases, we don't want to re-check the number group, so we exit
-                        // already.
-                        return null;
-                    }
-                    match = ParseAndVerify(withoutLastGroup, offset);
+                    var group = groupMatcher.Groups[1];
+                    var raw = TrimAfterUnwantedChars(group.Value);
+                    var match = ParseAndVerify(raw, offset + group.Index);
                     if (match != null)
                         return match;
                     maxTries--;

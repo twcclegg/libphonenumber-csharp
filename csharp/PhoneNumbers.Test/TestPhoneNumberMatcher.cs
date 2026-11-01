@@ -473,6 +473,63 @@ namespace PhoneNumbers.Test
             Assert.True(HasNoMatches(phoneUtil.FindNumbers(text, region)));
         }
 
+        [Theory]
+        [InlineData("Call 650-253-4561/455-234-3451", "650-253-4561", "455-234-3451")]
+        [InlineData("Call (650) 253 4561 (455) 234 3451", "(650) 253 4561", "(455) 234 3451")]
+        [InlineData("Call 12345 - 650-253-4561", "650-253-4561", null)]
+        [InlineData("Call 650-253-4561\u2014455-234-3451", "650-253-4561", "455-234-3451")]
+        [InlineData("Call 650-253-4561.455-234-3451", "650-253-4561", "455-234-3451")]
+        [InlineData("Call 12345 6502534561 12345", "6502534561", null)]
+        [InlineData("Call 12345 / 650-253-4561 / 12345", "650-253-4561", null)]
+        [InlineData("Call 12345.650-253-4561.12345", "650-253-4561", null)]
+        [InlineData("Call 650-253-4561--455-234-3451", null, null)]
+        [InlineData("Call 650/253-4561", "650/253-4561", null)]
+        [InlineData("Call 12345 (650) 253 4561 12345", null, null)]
+        public void TestFindInnerMatches(string text, string? first, string? second)
+        {
+            // Mirrors Java's INNER_MATCHES examples and its bracket, surrounding-zipcode
+            // and adjacent-number tests. Try one separator type at a time, most specific first.
+            var expected = new[] { first, second }.Where(raw => raw != null).ToArray();
+            foreach (var leniency in Enum.GetValues<PhoneNumberUtil.Leniency>())
+            {
+                var matches = phoneUtil.FindNumbers(text, RegionCode.US, leniency, long.MaxValue).ToArray();
+                Assert.Equal(expected.Length, matches.Length);
+                var fromIndex = 0;
+                for (var i = 0; i < expected.Length; i++)
+                {
+                    var raw = expected[i]!;
+                    var start = text.IndexOf(raw, fromIndex, StringComparison.Ordinal);
+                    Assert.Equal(raw, matches[i].RawString);
+                    Assert.Equal(start, matches[i].Start);
+                    Assert.Equal(raw.Length, matches[i].Length);
+                    Assert.Equal(phoneUtil.Parse(raw, RegionCode.US), matches[i].Number);
+                    fromIndex = start + raw.Length;
+                }
+            }
+        }
+
+        [Theory]
+        [InlineData(0, false)]
+        [InlineData(1, true)]
+        [InlineData(2, true)]
+        public void TestFindInnerMatchesHonorsMaxTries(long maxTries, bool findsNumber)
+        {
+            // Java checks the first prefix and following group in the same iteration.
+            // A budget of one therefore still finds the number after the invalid prefix.
+            var matches = phoneUtil.FindNumbers("12345 6502534561 12345", RegionCode.US,
+                PhoneNumberUtil.Leniency.VALID, maxTries).ToArray();
+            if (findsNumber)
+            {
+                var match = Assert.Single(matches);
+                Assert.Equal("6502534561", match.RawString);
+                Assert.Equal(6, match.Start);
+            }
+            else
+            {
+                Assert.Empty(matches);
+            }
+        }
+
         /// <summary>
         /// Strings with number-like things that shouldn't be found under any level.
         /// </summary>
