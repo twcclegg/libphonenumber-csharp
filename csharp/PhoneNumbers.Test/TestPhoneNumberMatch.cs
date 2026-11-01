@@ -37,6 +37,18 @@ namespace PhoneNumbers.Test
             Assert.Equal("1 800 234 45 67", match1.RawString);
         }
 
+        [Theory]
+        [InlineData(0, "1 800 234 45 67", "PhoneNumberMatch [0,15) 1 800 234 45 67")]
+        [InlineData(10, "1 800 234 45 67", "PhoneNumberMatch [10,25) 1 800 234 45 67")]
+        [InlineData(10, "", "PhoneNumberMatch [10,10) ")]
+        [InlineData(10, "\U0001F4DE12", "PhoneNumberMatch [10,14) \U0001F4DE12")]
+        public void ToStringUsesExclusiveEndOffset(int start, string rawString, string expected)
+        {
+            var match = new PhoneNumberMatch(start, rawString, new PhoneNumber());
+
+            Assert.Equal(expected, match.ToString());
+        }
+
         /// <summary>
         /// Tests the value type semantics for matches with a null number.
         /// </summary>

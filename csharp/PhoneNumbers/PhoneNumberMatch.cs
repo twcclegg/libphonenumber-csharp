@@ -65,6 +65,6 @@ namespace PhoneNumbers
             return hash;
         }
 
-        public override string ToString() => $"PhoneNumberMatch [{Start},{Length}) {RawString}";
+        public override string ToString() => $"PhoneNumberMatch [{Start},{Start + Length}) {RawString}";
     }
 }
