@@ -104,6 +104,8 @@ namespace PhoneNumbers.Test
                 n => PhoneUtil.GetNumberType(n));
             AssertWithinBudget(nameof(PhoneNumberUtil.GetRegionCodeForNumber), Nsn,
                 n => PhoneUtil.GetRegionCodeForNumber(n));
+            AssertWithinBudget(nameof(PhoneNumberUtil.CanBeInternationallyDialled), Nsn,
+                n => PhoneUtil.CanBeInternationallyDialled(n));
         }
 
         [Fact]
