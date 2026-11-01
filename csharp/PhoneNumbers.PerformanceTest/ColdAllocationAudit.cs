@@ -29,7 +29,8 @@ namespace PhoneNumbers.PerformanceTest
         /// through every number in <see cref="RetainedMemoryAudit.Sample"/>, twice. Both are reported
         /// because they fail differently: (a) catches an eager initializer that loads more than the
         /// first region needs, (b) per-region load cost that one region cannot show. Calibrated to
-        /// discriminate rather than merely pass -- measured on net10.0, identical across 3 runs:
+        /// discriminate rather than merely pass -- measured on net10.0 x64, identical across 3 runs (CI
+        /// runs arm64; object layouts match, so expect the same figures within a few KB):
         /// <list type="table">
         /// <item><term>this build</term><description>219 KB / 2598 KB</description></item>
         /// <item><term>each metadata stream copied into a MemoryStream before reading</term><description>474 KB / 2916 KB</description></item>

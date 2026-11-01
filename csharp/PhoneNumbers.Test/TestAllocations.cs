@@ -7,12 +7,13 @@ namespace PhoneNumbers.Test
 {
     /// <summary>
     /// Pins how much the read-only paths allocate per call on a warm instance, for every region's
-    /// example number. The benchmark comparison on PRs only flags a case that moves by 20% or more,
+    /// example number and every non-geographical entity's. The benchmark comparison on PRs only flags a case that moves by 20% or more,
     /// so a path that should allocate nothing can start allocating a few bytes per call without any
     /// check noticing; these fail on the first byte.
     /// <para>
-    /// Budgets are measured, not guessed: each path is allowed exactly the string it returns (sized by
-    /// copying that string under the same counter) and nothing else. A failure lists every region over
+    /// Budgets are measured, not guessed: a path is allowed the strings it cannot avoid -- the one it
+    /// returns, or the national significant number it matches patterns against -- each sized by copying
+    /// that string under the same counter, and nothing else. A failure lists every region over
     /// budget and by how much.
     /// </para>
     /// <para>
@@ -25,10 +26,15 @@ namespace PhoneNumbers.Test
     {
         private static readonly PhoneNumberUtil PhoneUtil = PhoneNumberUtil.GetInstance();
 
+        // Non-geographical entities (+800, +882, ...) are included because they take their own branch
+        // through region lookup and typing, keyed on the 001 region code.
         private static readonly (string Region, PhoneNumber Number)[] ExampleNumbers =
             PhoneUtil.GetSupportedRegions()
                 .OrderBy(r => r, StringComparer.Ordinal)
                 .Select(r => (r, PhoneUtil.GetExampleNumber(r)))
+                .Concat(PhoneUtil.GetSupportedGlobalNetworkCallingCodes()
+                    .OrderBy(c => c)
+                    .Select(c => ("001", PhoneUtil.GetExampleNumberForNonGeoEntity(c))))
                 .Where(x => x.Item2 is not null)
                 .ToArray();
 
@@ -102,7 +108,9 @@ namespace PhoneNumbers.Test
                 n => PhoneUtil.IsValidNumber(n));
             AssertWithinBudget(nameof(PhoneNumberUtil.GetNumberType), Nsn,
                 n => PhoneUtil.GetNumberType(n));
-            AssertWithinBudget(nameof(PhoneNumberUtil.GetRegionCodeForNumber), Nsn,
+            // Only a calling code shared by several regions needs the number to tell them apart.
+            AssertWithinBudget(nameof(PhoneNumberUtil.GetRegionCodeForNumber),
+                n => PhoneUtil.GetRegionCodesForCountryCode(n.CountryCode).Count > 1 ? Nsn(n) : 0,
                 n => PhoneUtil.GetRegionCodeForNumber(n));
             AssertWithinBudget(nameof(PhoneNumberUtil.CanBeInternationallyDialled), Nsn,
                 n => PhoneUtil.CanBeInternationallyDialled(n));
