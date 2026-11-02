@@ -48,13 +48,14 @@ namespace PhoneNumbers
         /// Chen Li. VLDB J. 12(3): 211-227 (2003).</pre>
         ///
         /// The string "211-227 (2003)" is not a telephone number.
+        /// Java's default digit and whitespace classes are ASCII-only.
         /// </summary>
 #if NET7_0_OR_GREATER
-        [GeneratedRegex(@"\d{1,5}-+\d{1,5}\s{0,4}\(\d{1,4}", InternalRegexOptions.Default)]
+        [GeneratedRegex(@"[0-9]{1,5}-+[0-9]{1,5}[ \t\n\x0B\f\r]{0,4}\([0-9]{1,4}", InternalRegexOptions.Default)]
         private static partial Regex PubPages();
 #else
         private static Regex PubPages() => _pubPages;
-        private static readonly Regex _pubPages = new(@"\d{1,5}-+\d{1,5}\s{0,4}\(\d{1,4}", InternalRegexOptions.Default);
+        private static readonly Regex _pubPages = new(@"[0-9]{1,5}-+[0-9]{1,5}[ \t\n\x0B\f\r]{0,4}\([0-9]{1,4}", InternalRegexOptions.Default);
 #endif
 
         /// <summary>
