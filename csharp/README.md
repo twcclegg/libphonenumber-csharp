@@ -23,7 +23,8 @@ Original Java code is Copyright (C) 2009-2022 Google Inc.
 
 `PhoneNumbers.MetadataBuilder/`
   Build-time tool that converts the XML metadata and the geocoding, carrier and timezone
-  text files into the per-region binary files the library embeds.
+  text files into the binary resources the library embeds: one file per region for the phone
+  metadata, and one packed resource per data set for geocoding, carrier and locale.
 
 `PhoneNumbers.PerformanceTest/`
   BenchmarkDotNet harness.

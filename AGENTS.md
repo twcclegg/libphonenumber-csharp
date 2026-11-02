@@ -21,8 +21,9 @@ automatically every ~two weeks; the library compiles it to binaries at build tim
 - `csharp/PhoneNumbers.Test/` — xUnit tests ported from Java, `net8.0;net10.0`.
 - `csharp/PhoneNumbers.Extensions/` (+ `.Test/`) — NuGet `libphonenumber-csharp.extensions`:
   C#-idiomatic helpers with no Java counterpart.
-- `csharp/PhoneNumbers.MetadataBuilder/` — build-time tool that turns `resources/` into per-region
-  binaries; source-links a few library files so it cannot cycle with the main project.
+- `csharp/PhoneNumbers.MetadataBuilder/` — build-time tool that turns `resources/` into the embedded
+  binaries: one per region for the phone metadata, one packed resource per data set for geocoding,
+  carrier and locale. Source-links a few library files so it cannot cycle with the main project.
 - `csharp/PhoneNumbers.PerformanceTest/` — BenchmarkDotNet harness.
   `csharp/PhoneNumbers.BenchmarkTools/` — CI-only comparison tool (not in the solution).
 - `csharp/PhoneNumbers.Demo/` (+ `.Tests/`) — Blazor WASM demo on GitHub Pages; also proves the

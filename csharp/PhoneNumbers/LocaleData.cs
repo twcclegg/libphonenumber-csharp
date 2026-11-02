@@ -24,11 +24,18 @@ namespace PhoneNumbers
     /// ISO 639-1 language code (e.g. ja) to the country's name in that language.
     /// </summary>
     /// <remarks>
-    /// The data lives in per-country binary resources built from
-    /// <c>resources/locale/country_names.txt</c>. Reading <see cref="Data"/> materialises every
+    /// The data lives in a single embedded resource pack built from
+    /// <c>resources/locale/country_names.txt</c>, with one entry per country. Reading
+    /// <see cref="Data"/> materialises every
     /// country at once, so nothing inside this library uses it: the country-name lookup goes
     /// through <see cref="LocaleNames"/>, which reads one country. This type stays for callers
     /// outside the library that were using it before the data moved.
+    /// </remarks>
+    /// <remarks>
+    /// In a build that set <c>PhoneNumbersIncludeLocaleNameData=false</c> the data is gone, and
+    /// because <see cref="Data"/> is a static field initialiser the CLR wraps the resulting
+    /// <see cref="MissingMetadataException"/> in a <see cref="System.TypeInitializationException"/>;
+    /// check <c>InnerException</c>. <c>Locale.GetDisplayCountry</c> throws it unwrapped.
     /// </remarks>
     public class LocaleData
     {

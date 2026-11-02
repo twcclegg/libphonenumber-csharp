@@ -119,15 +119,13 @@ namespace PhoneNumbers
         private static PhoneNumberToTimeZonesMapper Create(string timezoneDataDirectory)
         {
             var asm = typeof(PhoneNumberToTimeZonesMapper).Assembly;
-            var allNames = asm.GetManifestResourceNames();
-            var prefix = asm.GetName().Name + "." + timezoneDataDirectory;
-            var names = allNames.Where(n => n.StartsWith(prefix, StringComparison.Ordinal)).ToList();
-            var mapFile = names.FirstOrDefault(s => s.EndsWith(TZMAP_BIN_FILENAME, StringComparison.Ordinal))
-                ?? throw new MissingMetadataException(
-                    $"Timezone data resource '{prefix}{TZMAP_BIN_FILENAME}' not found on assembly '{asm.GetName().Name}'.");
+            // Named exactly, not discovered by scanning the manifest. The exact name is what
+            // ILLink.Substitutions.xml removes, so computing it here keeps the two in step, and a
+            // null stream now means the build opted out of the geocoding data set this map ships
+            // with rather than meaning corrupt metadata.
+            var mapFile = asm.GetName().Name + "." + timezoneDataDirectory + TZMAP_BIN_FILENAME;
             using var raw = asm.GetManifestResourceStream(mapFile)
-                ?? throw new MissingMetadataException(
-                    $"Timezone data resource '{mapFile}' not found on assembly '{asm.GetName().Name}'.");
+                ?? throw TrimmedDataErrors.GeocodingDataTrimmed();
             using var fp = new GZipStream(raw, CompressionMode.Decompress);
             var prefixMap = BuildPrefixMapFromBin.ReadTimezoneMap(fp);
             // Rehydrate as IDictionary<long, string[]> to match the existing constructor contract.

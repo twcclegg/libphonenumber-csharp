@@ -20,7 +20,7 @@ import java.util.Locale;
 import java.util.HashMap;
 /*
  * Dumps country names per language from java.util.Locale as the pipe-delimited text that
- * PhoneNumbers.MetadataBuilder turns into per-country binary resources. Use it like:
+ * PhoneNumbers.MetadataBuilder packs into the embedded locale resource. Use it like:
  * $ javac DumpLocale.java && java DumpLocale > ../resources/locale/country_names.txt
  */
 

@@ -1,0 +1,26 @@
+<!--
+  Lets a trimmed build drop the data sets it does not use.
+
+  Four entries, and they are stable. Each data set is packed into a single embedded resource at
+  build time (see ResourcePack), so this file never has to enumerate the ~690 individual
+  region/language files, and it does not need regenerating when the fortnightly metadata sync
+  changes which of those files exist. That matters because a <resource> element matches an exact
+  name: a wildcard such as "PhoneNumbers.geocoding.*" is not expanded, it is reported as not found
+  (IL2040).
+
+  feature/featurevalue gate each removal on the matching AppContext switch, which
+  buildTransitive/libphonenumber-csharp.targets maps from an MSBuild property. A build that sets
+  nothing keeps every resource and behaves exactly as it does today.
+-->
+<linker>
+  <assembly fullname="PhoneNumbers">
+    <resource name="PhoneNumbers.geocoding.pack" action="remove"
+              feature="PhoneNumbers.IncludeGeocodingData" featurevalue="false" />
+    <resource name="PhoneNumbers.carrier.pack" action="remove"
+              feature="PhoneNumbers.IncludeGeocodingData" featurevalue="false" />
+    <resource name="PhoneNumbers.timezones.map_data.bin" action="remove"
+              feature="PhoneNumbers.IncludeGeocodingData" featurevalue="false" />
+    <resource name="PhoneNumbers.locale.pack" action="remove"
+              feature="PhoneNumbers.IncludeLocaleNameData" featurevalue="false" />
+  </assembly>
+</linker>
