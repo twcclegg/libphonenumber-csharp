@@ -473,6 +473,119 @@ namespace PhoneNumbers.Test
             Assert.True(HasNoMatches(phoneUtil.FindNumbers(text, region)));
         }
 
+        [Theory]
+        [InlineData("Call 650-253-4561/455-234-3451", "650-253-4561", "455-234-3451")]
+        [InlineData("Call (650) 253 4561 (455) 234 3451", "(650) 253 4561", "(455) 234 3451")]
+        [InlineData("Call 12345 - 650-253-4561", "650-253-4561", null)]
+        [InlineData("Call 650-253-4561\u2014455-234-3451", "650-253-4561", "455-234-3451")]
+        [InlineData("Call 650-253-4561\u2012455-234-3451", "650-253-4561", "455-234-3451")]
+        [InlineData("Call 650-253-4561\u2013455-234-3451", "650-253-4561", "455-234-3451")]
+        [InlineData("Call 650-253-4561\u2015455-234-3451", "650-253-4561", "455-234-3451")]
+        [InlineData("Call 650-253-4561\uFF0D455-234-3451", "650-253-4561", "455-234-3451")]
+        [InlineData("Call 650-253-4561\u00A0455-234-3451", "650-253-4561", "455-234-3451")]
+        [InlineData("Call 650-253-4561\u3000455-234-3451", "650-253-4561", "455-234-3451")]
+        [InlineData("Call 650-253-4561//455-234-3451", "650-253-4561", "455-234-3451")]
+        [InlineData("Call 650-253-4561///455-234-3451", "650-253-4561", "455-234-3451")]
+        [InlineData("Call 650-253-4561..455-234-3451", "650-253-4561", "455-234-3451")]
+        [InlineData("Call 650-253-4561... 455-234-3451", "650-253-4561", "455-234-3451")]
+        [InlineData("Call 650-253-4561 -455-234-3451", "650-253-4561", "455-234-3451")]
+        [InlineData("Call 650-253-4561- 455-234-3451", "650-253-4561", "455-234-3451")]
+        [InlineData("Call 650-253-4561\u2010455-234-3451", null, null)]
+        [InlineData("Call 650-253-4561\u2011455-234-3451", null, null)]
+        [InlineData("Call 650-253-4561.455-234-3451", "650-253-4561", "455-234-3451")]
+        [InlineData("Call 12345 6502534561 12345", "6502534561", null)]
+        [InlineData("Call 12345 / 650-253-4561 / 12345", "650-253-4561", null)]
+        [InlineData("Call 12345.650-253-4561.12345", "650-253-4561", null)]
+        [InlineData("Call 650-253-4561--455-234-3451", null, null)]
+        [InlineData("Call 650/253-4561", "650/253-4561", null)]
+        [InlineData("Call 12345 (650) 253 4561 12345", null, null)]
+        public void TestFindInnerMatches(string text, string? first, string? second)
+        {
+            // Mirrors Java's INNER_MATCHES examples and its bracket, surrounding-zipcode
+            // and adjacent-number tests. Try one separator type at a time, most specific first.
+            AssertInnerMatches(text, new[] { first, second }.OfType<string>().ToArray());
+        }
+
+        [Theory]
+        [InlineData("Call 12345 6502534561 / 4156667777", " 4156667777")]
+        [InlineData("Call 12345 6502534561 .4156667777", "4156667777")]
+        public void TestFindInnerMatchesPrefersSpecificSeparators(string text, string expected)
+        {
+            // Splitting on whitespace first would return 6502534561 instead. Java tries
+            // slash/dot first, preserving any leading space captured after the slash.
+            AssertInnerMatches(text, [expected]);
+        }
+
+        [Theory]
+        [InlineData("/")]
+        [InlineData(".")]
+        [InlineData(" ")]
+        [InlineData("\u2014")]
+        [InlineData(" - ")]
+        public void TestFindInnerMatchesFindsFourNumbers(string separator)
+        {
+            // Numbers from Java's testFourMatchesInARow, with additional separator types.
+            var expected = new[] { "415-666-7777", "800-443-1223", "212-443-1223", "650-443-1223" };
+            AssertInnerMatches("Call " + string.Join(separator, expected), expected);
+        }
+
+        [Theory]
+        [InlineData("Call 12 34 6502534561", 3)]
+        [InlineData("Call 12.34 6502534561", 3)]
+        [InlineData("Call 12 34; 6502534561", 4)]
+        public void TestFindInnerMatchesStopsWhenMaxTriesExhausted(string text, int minimumTries)
+        {
+            // Exhaustion within repeated groups, across separator patterns, and before a
+            // later candidate must stop the search. Thresholds verified against Java.
+            for (var maxTries = 0; maxTries <= minimumTries + 1; maxTries++)
+            {
+                var expected = maxTries >= minimumTries ? new[] { "6502534561" } : Array.Empty<string>();
+                AssertInnerMatches(text, expected, maxTries);
+            }
+        }
+
+        private void AssertInnerMatches(string text, string[] expected, long maxTries = long.MaxValue)
+        {
+            foreach (var leniency in Enum.GetValues<PhoneNumberUtil.Leniency>())
+            {
+                var matches = phoneUtil.FindNumbers(text, RegionCode.US, leniency, maxTries).ToArray();
+                Assert.Equal(expected.Length, matches.Length);
+                var fromIndex = 0;
+                for (var i = 0; i < expected.Length; i++)
+                {
+                    var raw = expected[i];
+                    var start = text.IndexOf(raw, fromIndex, StringComparison.Ordinal);
+                    Assert.Equal(raw, matches[i].RawString);
+                    Assert.Equal(start, matches[i].Start);
+                    Assert.Equal(raw.Length, matches[i].Length);
+                    Assert.Equal(phoneUtil.Parse(raw, RegionCode.US), matches[i].Number);
+                    fromIndex = start + raw.Length;
+                }
+            }
+        }
+
+        [Theory]
+        [InlineData(0, false)]
+        [InlineData(1, true)]
+        [InlineData(2, true)]
+        public void TestFindInnerMatchesHonorsMaxTries(long maxTries, bool findsNumber)
+        {
+            // Java checks the first prefix and following group in the same iteration.
+            // A budget of one therefore still finds the number after the invalid prefix.
+            var matches = phoneUtil.FindNumbers("12345 6502534561 12345", RegionCode.US,
+                PhoneNumberUtil.Leniency.VALID, maxTries).ToArray();
+            if (findsNumber)
+            {
+                var match = Assert.Single(matches);
+                Assert.Equal("6502534561", match.RawString);
+                Assert.Equal(6, match.Start);
+            }
+            else
+            {
+                Assert.Empty(matches);
+            }
+        }
+
         /// <summary>
         /// Strings with number-like things that shouldn't be found under any level.
         /// </summary>
