@@ -33,6 +33,146 @@ namespace PhoneNumbers.Test
             phoneUtil = TestMetadataTestCase.PhoneUtil;
         }
 
+        [Theory]
+        [InlineData(PhoneNumberUtil.Leniency.POSSIBLE)]
+        [InlineData(PhoneNumberUtil.Leniency.VALID)]
+        [InlineData(PhoneNumberUtil.Leniency.STRICT_GROUPING)]
+        [InlineData(PhoneNumberUtil.Leniency.EXACT_GROUPING)]
+        public void PublicationFilterAllowsInnerPhoneNumbers(PhoneNumberUtil.Leniency leniency)
+        {
+            // Java checks publication pages in parseAndVerify, so a rejected whole candidate
+            // can still contain phone numbers separated by an opening bracket.
+            const string text = "Call 650-253-4561 (455-234-3451";
+            foreach (var maxTries in new long[] { 1, 2, 3, 10, long.MaxValue })
+            {
+                var matches = phoneUtil.FindNumbers(text, RegionCode.US, leniency, maxTries).ToArray();
+
+                Assert.Equal(2, matches.Length);
+                Assert.Equal(new PhoneNumberMatch(5, "650-253-4561",
+                    phoneUtil.Parse("650-253-4561", RegionCode.US)), matches[0]);
+                Assert.Equal(new PhoneNumberMatch(18, "(455-234-3451",
+                    phoneUtil.Parse("455-234-3451", RegionCode.US)), matches[1]);
+            }
+
+            Assert.Empty(phoneUtil.FindNumbers(text, RegionCode.US, leniency, 0));
+            Assert.Empty(phoneUtil.FindNumbers("211-227 (2003)", RegionCode.US, leniency, long.MaxValue));
+            Assert.Empty(phoneUtil.FindNumbers("2012-01-02 08:00", RegionCode.US, leniency, long.MaxValue));
+            Assert.Empty(phoneUtil.FindNumbers("03/10/2011", RegionCode.US, leniency, long.MaxValue));
+        }
+
+        [Theory]
+        [InlineData(PhoneNumberUtil.Leniency.POSSIBLE)]
+        [InlineData(PhoneNumberUtil.Leniency.VALID)]
+        [InlineData(PhoneNumberUtil.Leniency.STRICT_GROUPING)]
+        [InlineData(PhoneNumberUtil.Leniency.EXACT_GROUPING)]
+        public void PublicationFragmentsFollowJavaRegionValidation(PhoneNumberUtil.Leniency leniency)
+        {
+            // With the synthetic German metadata, Java accepts these inner fragments.
+            // The publication filter rejects the whole candidate, not each fragment.
+            var matches = phoneUtil.FindNumbers("12-15 (2009)", RegionCode.DE, leniency, long.MaxValue).ToArray();
+            var expected = leniency == PhoneNumberUtil.Leniency.POSSIBLE
+                ? new[] { "12-15", "(2009" }
+                : new[] { "(2009" };
+
+            Assert.Equal(expected, matches.Select(match => match.RawString));
+            Assert.Equal(leniency == PhoneNumberUtil.Leniency.POSSIBLE ? new[] { 0, 6 } : new[] { 6 },
+                matches.Select(match => match.Start));
+        }
+
+        [Theory]
+        [InlineData("650-253\u00A0(45) 61")]
+        [InlineData("650-253\u3000(45) 61")]
+        [InlineData("\uFF16\uFF15\uFF10-253 (45) 61")]
+        [InlineData("650-\uFF12\uFF15\uFF13 (45) 61")]
+        [InlineData("650-253 (\uFF14\uFF15) 61")]
+        [InlineData("\u0666\u0665\u0660-253 (45) 61")]
+        [InlineData("650-\u0662\u0665\u0663 (45) 61")]
+        [InlineData("650-253 (\u0664\u0665) 61")]
+        public void PublicationFilterUsesJavaAsciiCharacterClasses(string raw)
+        {
+            // Java's publication pattern uses ASCII digits and whitespace even though
+            // phone-number parsing accepts these Unicode characters.
+            foreach (var leniency in Enum.GetValues<PhoneNumberUtil.Leniency>())
+            {
+                var matches = phoneUtil.FindNumbers("Call " + raw, RegionCode.US, leniency, long.MaxValue).ToArray();
+                if (leniency >= PhoneNumberUtil.Leniency.STRICT_GROUPING)
+                {
+                    // Splitting the last four digits as (45) 61 fails grouping validation.
+                    Assert.Empty(matches);
+                    continue;
+                }
+
+                var match = Assert.Single(matches);
+                Assert.Equal(raw, match.RawString);
+                Assert.Equal(5, match.Start);
+                Assert.Equal(raw.Length, match.Length);
+                Assert.Equal(phoneUtil.Parse("6502534561", RegionCode.US), match.Number);
+            }
+        }
+
+        [Theory]
+        [InlineData("Call 650-253(45) 61", null)]
+        [InlineData("Call 650-253 (45) 61", null)]
+        [InlineData("Call 650-253    (45) 61", null)]
+        [InlineData("Call 650-253 (45) 61/455-234-3451", "455-234-3451")]
+        [InlineData("Call 455-234-3451/650-253 (45) 61", "455-234-3451")]
+        public void PublicationFilterRejectsReferencesWithinCandidates(string text, string? expected)
+        {
+            // An otherwise valid digit sequence must not bypass publication filtering,
+            // either as the whole candidate or as an inner group.
+            AssertInnerMatches(text, expected == null ? [] : [expected]);
+        }
+
+        [Theory]
+        [InlineData("Call 650-253 (45) 61/455-234-3451", "455-234-3451", 1)]
+        [InlineData("Call 650-253 (45) 61.455-234-3451", "455-234-3451", 3)]
+        [InlineData("Call 650-253 (45) 61\u2014455-234-3451", "455-234-3451", 3)]
+        [InlineData("Call 650-253 (45) 61 - 455-234-3451", "455-234-3451", 3)]
+        [InlineData("Call 650-253 (45) 61 4552343451", "4552343451", 6)]
+        [InlineData("Call 650-253 (45) 61 (455) 234-3451", "(455) 234-3451", 3)]
+        [InlineData("Call 650-253 (45) 61; 455-234-3451", "455-234-3451", 7)]
+        public void PublicationFilterHonorsRetriesAfterRejectedReferences(
+            string text, string expected, int minimumTries)
+        {
+            // Thresholds executed against Java: rejected publication groups consume
+            // retries across all six inner separators and before a separate candidate.
+            for (var maxTries = 0; maxTries <= minimumTries + 1; maxTries++)
+                AssertInnerMatches(text, maxTries >= minimumTries ? [expected] : [], maxTries);
+        }
+
+        [Fact]
+        public void PublicationFilterRecoversNumbersWithoutWhitespace()
+        {
+            AssertInnerMatches("Call 650-253-4561(455-234-3451", ["650-253-4561", "(455-234-3451"]);
+        }
+
+        [Theory]
+        [InlineData(0, 0)]
+        [InlineData(1, 2)]
+        [InlineData(2, 3)]
+        public void PublicationFilterPreservesRetriesBetweenSuccessfulMatches(long maxTries, int expectedCount)
+        {
+            var expected = new[] { "650-253-4561", "(455-234-3451", "(415-666-7777" };
+            AssertInnerMatches("Call 650-253-4561 (455-234-3451 (415-666-7777",
+                expected.Take(expectedCount).ToArray(), maxTries);
+        }
+
+        [Theory]
+        [InlineData("2012-01-02 08:5x")]
+        [InlineData("2012-01-02 08:5/")]
+        public void TestFindMalformedTimestampSuffix(string text)
+        {
+            // Java only suppresses a timestamp when both seconds digits are valid.
+            // Otherwise the numeric prefix can still be a possible/valid phone number.
+            foreach (var leniency in new[] { PhoneNumberUtil.Leniency.POSSIBLE, PhoneNumberUtil.Leniency.VALID })
+            {
+                var match = Assert.Single(phoneUtil.FindNumbers(text, RegionCode.US, leniency, long.MaxValue));
+                Assert.Equal("2012-01-02 08", match.RawString);
+                Assert.Equal(0, match.Start);
+                Assert.Equal(phoneUtil.Parse("2012010208", RegionCode.US), match.Number);
+            }
+        }
+
         /** See {@link PhoneNumberUtilTest#testParseNationalNumber()}. */
         [Fact]
         public void TestFindNationalNumber()
@@ -54,7 +194,8 @@ namespace PhoneNumbers.Test
 
             DoTestFindInContext("64(0)64123456", "NZ");
             // Check that using a "/" is fine in a phone number.
-            DoTestFindInContext("123/45678", "DE");
+            // Note that real Polish numbers do not start with a 0.
+            DoTestFindInContext("0123/456789", RegionCode.PL);
             DoTestFindInContext("123-456-7890", "US");
         }
 

@@ -48,13 +48,14 @@ namespace PhoneNumbers
         /// Chen Li. VLDB J. 12(3): 211-227 (2003).</pre>
         ///
         /// The string "211-227 (2003)" is not a telephone number.
+        /// Java's default digit and whitespace classes are ASCII-only.
         /// </summary>
 #if NET7_0_OR_GREATER
-        [GeneratedRegex(@"\d{1,5}-+\d{1,5}\s{0,4}\(\d{1,4}", InternalRegexOptions.Default)]
+        [GeneratedRegex(@"[0-9]{1,5}-+[0-9]{1,5}[ \t\n\x0B\f\r]{0,4}\([0-9]{1,4}", InternalRegexOptions.Default)]
         private static partial Regex PubPages();
 #else
         private static Regex PubPages() => _pubPages;
-        private static readonly Regex _pubPages = new(@"\d{1,5}-+\d{1,5}\s{0,4}\(\d{1,4}", InternalRegexOptions.Default);
+        private static readonly Regex _pubPages = new(@"[0-9]{1,5}-+[0-9]{1,5}[ \t\n\x0B\f\r]{0,4}\([0-9]{1,4}", InternalRegexOptions.Default);
 #endif
 
         /// <summary>
@@ -306,8 +307,8 @@ namespace PhoneNumbers
         /// <returns>the match found, null if none can be found</returns>
         private PhoneNumberMatch ExtractMatch(string candidate, int offset)
         {
-            // Skip a match that is more likely a publication page reference or a date.
-            if (PubPages().IsMatch(candidate) || SlashSeparatedDates().IsMatch(candidate))
+            // Skip a match that is more likely to be a date.
+            if (SlashSeparatedDates().IsMatch(candidate))
                 return null;
             // Skip potential time-stamps.
             if (TimeStamps().IsMatch(candidate))
@@ -378,7 +379,7 @@ namespace PhoneNumbers
             {
                 // Check the candidate doesn't contain any formatting which would indicate that it really
                 // isn't a phone number.
-                if (!MatchingBrackets().IsMatch(candidate))
+                if (!MatchingBrackets().IsMatch(candidate) || PubPages().IsMatch(candidate))
                     return null;
 
                 // If leniency is set to VALID or stricter, we also want to skip numbers that are surrounded
