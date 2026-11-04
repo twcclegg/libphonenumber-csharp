@@ -140,6 +140,13 @@ jobs:
         run: dotnet run -c Release --framework net10.0 --no-build -- --retained-memory
         working-directory: ./csharp/PhoneNumbers.PerformanceTest
 
+      # Same shape as the retained-memory check, but counts transient bytes too: what a cold start
+      # allocates, which a full collection hides from the step above. Runs in its own process because
+      # it must start cold. See PhoneNumbers.PerformanceTest/ColdAllocationAudit.cs.
+      - name: Check cold-start allocations against their budget
+        run: dotnet run -c Release --framework net10.0 --no-build -- --cold-allocations
+        working-directory: ./csharp/PhoneNumbers.PerformanceTest
+
       # Bundle both sets of results so the follow-up workflow can post the comparison.
       - name: Stage benchmark artifact
         if: github.event_name == 'pull_request'
