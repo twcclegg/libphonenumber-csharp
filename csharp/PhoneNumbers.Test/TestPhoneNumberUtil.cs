@@ -715,6 +715,32 @@ namespace PhoneNumbers.Test
             phoneUtil.FormatOutOfCountryCallingNumber(arNumberWithExtn, RegionCode.AR));
         }
 
+        [Theory]
+        [InlineData("000-000-0000", RegionCode.US)]
+        [InlineData("000-000-0000", RegionCode.BS)]
+        [InlineData("000", RegionCode.US)]
+        [InlineData("+1 000-000-0000", RegionCode.BS)]
+        public void TestFormatOutOfCountryNanpaPreservesZeroNumberRawInput(
+            string rawInput, string regionCallingFrom)
+        {
+            // Java's NANPA branch calls format(NATIONAL), including its raw-input fallback.
+            var number = USSpoof.ToBuilder().SetRawInput(rawInput).SetExtension("123").Build();
+            Assert.Equal("1 " + rawInput,
+                phoneUtil.FormatOutOfCountryCallingNumber(number, regionCallingFrom));
+        }
+
+        [Theory]
+        [InlineData("000-000-0000", RegionCode.US)]
+        [InlineData("+1 000-000-0000", RegionCode.BS)]
+        public void TestFormatOutOfCountryNanpaPreservesParsedZeroNumberRawInput(
+            string rawInput, string regionCallingFrom)
+        {
+            var number = phoneUtil.ParseAndKeepRawInput(rawInput, RegionCode.US);
+            Assert.Equal(0UL, number.NationalNumber);
+            Assert.Equal("1 " + rawInput,
+                phoneUtil.FormatOutOfCountryCallingNumber(number, regionCallingFrom));
+        }
+
         [Fact]
         public void TestFormatOutOfCountryWithInvalidRegion()
         {

@@ -350,7 +350,15 @@ namespace PhoneNumbers
                     AppendNumberToSpan(ref innerResultSpan, ref innerResultLength, countryCallingCode);
                     innerResultSpan[innerResultLength++] = ' ';
 
-                    Format(ref innerResultSpan, ref innerResultLength, number, PhoneNumberFormat.NATIONAL);
+                    // Match Format(NATIONAL)'s raw-input fallback for all-zero numbers.
+                    if (number.NationalNumber == 0 && number.RawInput.Length > 0)
+                    {
+                        AppendToSpan(ref innerResultSpan, ref innerResultLength, number.RawInput);
+                    }
+                    else
+                    {
+                        Format(ref innerResultSpan, ref innerResultLength, number, PhoneNumberFormat.NATIONAL);
+                    }
 
                     return new string(innerResultSpan.Slice(0, innerResultLength));
                 }
