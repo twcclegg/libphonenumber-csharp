@@ -1093,6 +1093,20 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
+        public void TestFormatExplicitZeroCountryCode()
+        {
+            var number = PhoneNumber.CreateBuilder().SetCountryCode(0).SetNationalNumber(0).Build();
+            Assert.Equal("+00", phoneUtil.Format(number, PhoneNumberFormat.E164));
+
+            number = number.ToBuilder().SetRawInput("000")
+                .SetCountryCodeSource(PhoneNumber.Types.CountryCodeSource.FROM_DEFAULT_COUNTRY).Build();
+            Assert.Equal("+0000", phoneUtil.Format(number, PhoneNumberFormat.E164));
+
+            number = number.ToBuilder().ClearCountryCode().Build();
+            Assert.Equal("000", phoneUtil.Format(number, PhoneNumberFormat.E164));
+        }
+
+        [Fact]
         public void TestFormatNumberWithExtension()
         {
             var nzNumber = new PhoneNumber.Builder().MergeFrom(NZNumber).SetExtension("1234").Build();

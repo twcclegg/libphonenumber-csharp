@@ -24,9 +24,19 @@ namespace PhoneNumbers
 
         public PhoneNumber DefaultInstanceForType => DefaultInstance;
 
-        public bool HasCountryCode => CountryCode != 0;
+        public bool HasCountryCode => _hasCountryCode;
 
-        public int CountryCode { get; internal set; }
+        private bool _hasCountryCode;
+        private int _countryCode;
+        public int CountryCode
+        {
+            get => _countryCode;
+            internal set
+            {
+                _hasCountryCode = true;
+                _countryCode = value;
+            }
+        }
 
         public bool HasNationalNumber => NationalNumber != 0;
 
@@ -253,7 +263,8 @@ namespace PhoneNumbers
 
             public Builder ClearCountryCode()
             {
-                MessageBeingBuilt.CountryCode = 0;
+                MessageBeingBuilt._hasCountryCode = false;
+                MessageBeingBuilt._countryCode = 0;
                 return this;
             }
 

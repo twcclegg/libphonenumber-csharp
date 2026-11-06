@@ -21,6 +21,60 @@ namespace PhoneNumbers.Test
     public class TestPhonenumber
     {
         [Fact]
+        public void TestCountryCodePresenceForExplicitZero()
+        {
+            var builder = PhoneNumber.CreateBuilder();
+            Assert.False(builder.HasCountryCode);
+            Assert.False(PhoneNumber.DefaultInstance.HasCountryCode);
+
+            builder.CountryCode = 0;
+            Assert.True(builder.HasCountryCode);
+            var number = builder.SetNationalNumber(1).Build();
+            Assert.True(number.HasCountryCode);
+            Assert.True(number.IsInitialized);
+            Assert.Equal(0, number.CountryCode);
+            Assert.True(number.ToBuilder().Build().HasCountryCode);
+            Assert.True(PhoneNumber.CreateBuilder(number).Build().HasCountryCode);
+        }
+
+        [Fact]
+        public void TestCountryCodePresenceSurvivesMergeAndClone()
+        {
+            var zero = PhoneNumber.CreateBuilder().SetCountryCode(0).Build();
+            var builder = PhoneNumber.CreateBuilder().SetCountryCode(44).MergeFrom(zero);
+            Assert.Equal(0, builder.CountryCode);
+            Assert.True(builder.HasCountryCode);
+            Assert.True(builder.Clone().Build().HasCountryCode);
+
+            builder.MergeFrom(PhoneNumber.DefaultInstance);
+            Assert.True(builder.HasCountryCode);
+            Assert.Equal(0, builder.CountryCode);
+        }
+
+        [Fact]
+        public void TestCountryCodePresenceClearedIndependentlyOfValue()
+        {
+            var builder = PhoneNumber.CreateBuilder().SetCountryCode(0);
+            builder.ClearCountryCode();
+            Assert.False(builder.HasCountryCode);
+            Assert.Equal(0, builder.CountryCode);
+            var target = PhoneNumber.CreateBuilder().SetCountryCode(44).MergeFrom(builder.Build());
+            Assert.Equal(44, target.CountryCode);
+            Assert.True(target.HasCountryCode);
+            target.Clear();
+            Assert.False(target.HasCountryCode);
+            Assert.Equal(0, target.CountryCode);
+        }
+
+        [Fact]
+        public void TestCountryCodePresenceDoesNotAffectEquality()
+        {
+            var zero = PhoneNumber.CreateBuilder().SetCountryCode(0).Build();
+            Assert.Equal(PhoneNumber.DefaultInstance, zero);
+            Assert.Equal(PhoneNumber.DefaultInstance.GetHashCode(), zero.GetHashCode());
+        }
+
+        [Fact]
         public void TestEqualSimpleNumber()
         {
             var numberA = new PhoneNumber.Builder()

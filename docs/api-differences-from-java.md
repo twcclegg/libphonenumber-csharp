@@ -146,8 +146,10 @@ ordinary mutable class), but every setter is `internal`:
 
 ```csharp
 public int CountryCode { get; internal set; }
-public bool HasCountryCode => CountryCode != 0;
+public bool HasCountryCode => _hasCountryCode;
 ```
+
+`HasCountryCode` tracks whether the field was set, including an explicit zero, as in Java.
 
 That means an object initializer that looks perfectly reasonable to a C# developer —
 
