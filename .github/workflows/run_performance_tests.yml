@@ -46,14 +46,6 @@ jobs:
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 30
     env:
-      # The "Build both benchmark trees" step below runs two `dotnet build` invocations
-      # concurrently, and this is the only workflow that does - everywhere else, an earlier
-      # sequential `dotnet restore`/`build` step already completes the SDK's one-time setup
-      # (NuGet migrations, telemetry sentinel) before anything runs in parallel. Here, both
-      # concurrent invocations can race to perform that setup at once, racing on the same
-      # mkdir/mutex and failing with "The system cannot open the device or file specified" /
-      # EEXIST. Skipping first-time setup entirely removes the race instead of reordering
-      # around it.
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
       DOTNET_NOLOGO: true
     steps:
@@ -88,18 +80,34 @@ jobs:
           git worktree add /tmp/base-tree "${BASE_SHA}"
           echo "comparing against base ${BASE_SHA}" >> "${GITHUB_STEP_SUMMARY}"
 
-      # Compiling both trees at once overlaps two restores and two rounds of metadata generation.
+      # Restoring sequentially first is what makes the concurrent builds below safe. The first
+      # `dotnet` command on a fresh runner performs the SDK's one-time setup (NuGet migrations
+      # under a named "NuGet-Migrations" mutex backed by /run/user/<uid>/.dotnet/shm), and two
+      # invocations starting at once race to create that directory - one dies with "The system
+      # cannot open the device or file specified. : 'NuGet-Migrations'". The SDK 10 CLI runs
+      # that migration even with DOTNET_SKIP_FIRST_TIME_EXPERIENCE set, so the env var alone does
+      # not prevent it. Once one command has finished, the migration marker exists and later
+      # invocations skip it.
+      - name: Restore both benchmark trees
+        run: |
+          dotnet restore csharp/PhoneNumbers.PerformanceTest
+          if [ -d /tmp/base-tree ]
+          then
+            dotnet restore /tmp/base-tree/csharp/PhoneNumbers.PerformanceTest
+          fi
+
+      # Compiling both trees at once overlaps two rounds of metadata generation.
       # The MetadataBuilder mutex is keyed on the output directory, so the trees do not contend.
       # Only the builds overlap: running the benchmarks concurrently would have them competing for
       # the same cores and make both sets of numbers meaningless.
       - name: Build both benchmark trees
         run: |
           pids=""
-          dotnet build -c Release --framework net10.0 csharp/PhoneNumbers.PerformanceTest &
+          dotnet build -c Release --framework net10.0 --no-restore csharp/PhoneNumbers.PerformanceTest &
           pids="$!"
           if [ -d /tmp/base-tree ]
           then
-            dotnet build -c Release --framework net10.0 /tmp/base-tree/csharp/PhoneNumbers.PerformanceTest &
+            dotnet build -c Release --framework net10.0 --no-restore /tmp/base-tree/csharp/PhoneNumbers.PerformanceTest &
             pids="${pids} $!"
           fi
           failed=0
