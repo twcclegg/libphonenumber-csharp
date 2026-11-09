@@ -364,9 +364,10 @@ namespace PhoneNumbers
 
         // We append optionally the extension pattern to the end here, as a valid phone number may
         // have an extension prefix appended, followed by 1 or more digits.
+        // Java uses Matcher.matches(); require the true end of input rather than matching before a final LF.
         private const string ValidPhoneNumberPattern = "^(\\d{2}$|" +
             "[" + PLUS_CHARS + "]*([" + VALID_PUNCTUATION + STAR_SIGN + "]*\\d){3}[" +
-            VALID_PUNCTUATION + STAR_SIGN + VALID_ALPHA + "\\d]*($|" + ExtnPatternsForParsing + "))";
+            VALID_PUNCTUATION + STAR_SIGN + VALID_ALPHA + "\\d]*($|" + ExtnPatternsForParsing + "))\\z";
 #if NET7_0_OR_GREATER
         [GeneratedRegex(ValidPhoneNumberPattern, InternalRegexOptions.Default | RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture)]
         internal static partial Regex ValidPhoneNumber();
