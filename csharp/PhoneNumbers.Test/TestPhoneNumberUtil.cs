@@ -1893,6 +1893,56 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
+        public void TestIsViablePhoneNumberRequiresWholeInput()
+        {
+            // Java's Matcher.matches() requires the entire input, including any extension.
+            foreach (var number in new[] { "12", "123", "+6433316005", "1800FLOWERS", "123 ext. 4", "123;ext=4" })
+            {
+                Assert.True(PhoneNumberUtil.IsViablePhoneNumber(number));
+                foreach (var ending in new[] { "\n", "\r", "\r\n", "\u0085", "\u2028", "\u2029", "\0" })
+                    Assert.False(PhoneNumberUtil.IsViablePhoneNumber(number + ending), number + ending);
+            }
+        }
+
+        [Fact]
+        public void TestIsAlphaNumberRejectsTrailingLineFeed()
+        {
+            Assert.True(phoneUtil.IsAlphaNumber("1800FLOWERS"));
+            Assert.False(phoneUtil.IsAlphaNumber("1800FLOWERS\n"));
+            Assert.True(phoneUtil.IsAlphaNumber("1800FLOWERS ext. 123"));
+            Assert.False(phoneUtil.IsAlphaNumber("1800FLOWERS ext. 123\n"));
+        }
+
+        [Fact]
+        public void TestParseRejectsLineFeedBeforeRfc3966Parameters()
+        {
+            foreach (var number in new[]
+            {
+                "tel:033316005\n;phone-context=abc.nz",
+                "tel:033316005\n;phone-context=+64",
+                "tel:033316005 ext. 123\n;phone-context=abc.nz",
+                "tel:033316005;ext=123\n;phone-context=+64",
+                "+6433316005\n;isub=123",
+                "+6433316005 ext. 123\n;isub=123"
+            })
+            {
+                foreach (var region in new[] { RegionCode.NZ, RegionCode.ZZ })
+                {
+                    Assert.Equal(ErrorType.NOT_A_NUMBER,
+                        Assert.Throws<NumberParseException>(() => phoneUtil.Parse(number, region)).ErrorType);
+                    Assert.Equal(ErrorType.NOT_A_NUMBER,
+                        Assert.Throws<NumberParseException>(() => phoneUtil.ParseAndKeepRawInput(number, region)).ErrorType);
+                }
+            }
+
+            // Extraction still trims ordinary trailing punctuation before checking viability.
+            Assert.Equal(NZNumber, phoneUtil.Parse("+6433316005\n", RegionCode.NZ));
+            Assert.Equal(NZNumber, phoneUtil.Parse("tel:033316005;phone-context=+64", RegionCode.NZ));
+            Assert.Equal(Update(NZNumber).SetExtension("123").Build(),
+                phoneUtil.Parse("tel:033316005;ext=123;phone-context=+64", RegionCode.NZ));
+        }
+
+        [Fact]
         public void TestIsViablePhoneNumberNonAscii()
         {
             // Only one or two digits before possible punctuation followed by more digits.
