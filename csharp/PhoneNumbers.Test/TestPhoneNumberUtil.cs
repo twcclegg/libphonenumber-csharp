@@ -2747,6 +2747,71 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
+        public void TestParseWithPhoneContext()
+        {
+            // Ported from PhoneNumberUtilTest.testParseWithPhoneContext.
+            Assert.Equal(NZNumber, phoneUtil.Parse("tel:033316005;phone-context=+64", RegionCode.ZZ));
+            Assert.Equal(NZNumber, phoneUtil.Parse(
+                "tel:033316005;phone-context=+64;{this isn't part of phone-context anymore!}", RegionCode.ZZ));
+            Assert.Equal(new PhoneNumber.Builder().SetCountryCode(64).SetNationalNumber(3033316005L).Build(),
+                phoneUtil.Parse("tel:033316005;phone-context=+64-3", RegionCode.ZZ));
+            Assert.Equal(new PhoneNumber.Builder().SetCountryCode(55).SetNationalNumber(5033316005L).Build(),
+                phoneUtil.Parse("tel:033316005;phone-context=+(555)", RegionCode.ZZ));
+            Assert.Equal(new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(23033316005L).Build(),
+                phoneUtil.Parse("tel:033316005;phone-context=+-1-2.3()", RegionCode.ZZ));
+
+            foreach (var domain in new[] { "abc.nz", "www.PHONE-numb3r.com", "a", "3phone.J.", "a--z" })
+                Assert.Equal(NZNumber, phoneUtil.Parse("tel:033316005;phone-context=" + domain, RegionCode.NZ));
+
+            foreach (var context in new[] { "", "+", "64", "++64", "+abc", ".", "3phone", "a-.nz", "a{b}c" })
+                VerifyFailure("tel:033316005;phone-context=" + context, RegionCode.ZZ, ErrorType.NOT_A_NUMBER);
+        }
+
+        [Theory]
+        [InlineData("foo-bar.com")]
+        [InlineData("foo--bar.com")]
+        [InlineData("foo-bar-baz.com")]
+        [InlineData("a-bc.nz")]
+        [InlineData("a-b1.nz")]
+        [InlineData("1-23.nz")]
+        [InlineData("xn--bcher-kva.example")]
+        [InlineData("foo-bar.baz-quux.nz")]
+        [InlineData("foo-bar.nz.")]
+        [InlineData("foo-bar")]
+        [InlineData("foo-b.nz")]
+        [InlineData("foobar.nz")]
+        public void TestParseWithPhoneContextHyphenatedDomain(string domain)
+        {
+            var input = "tel:033316005;phone-context=" + domain;
+            Assert.Equal(NZNumber, phoneUtil.Parse(input, RegionCode.NZ));
+            var withRawInput = phoneUtil.ParseAndKeepRawInput(input, RegionCode.NZ);
+            Assert.Equal(input, withRawInput.RawInput);
+            Assert.Equal(NZNumber.CountryCode, withRawInput.CountryCode);
+            Assert.Equal(NZNumber.NationalNumber, withRawInput.NationalNumber);
+            Assert.Equal(NZNumber, phoneUtil.Parse(input + ";isub=123", RegionCode.NZ));
+            // A domain context supplies no country calling code.
+            VerifyFailure(input, RegionCode.ZZ, ErrorType.INVALID_COUNTRY_CODE);
+        }
+
+        [Theory]
+        [InlineData("-foo-bar.nz")]
+        [InlineData("foo-bar-.nz")]
+        [InlineData("foo-bar..nz")]
+        [InlineData("foo-bar.123")]
+        [InlineData("foo-bar.nz..")]
+        [InlineData("foo-!bar.nz")]
+        [InlineData("foo-bar.nz\n")]
+        [InlineData("abc.nz\n")]
+        [InlineData("foo-b.nz\n")]
+        public void TestParseWithPhoneContextInvalidHyphenatedDomain(string domain)
+        {
+            var input = "tel:033316005;phone-context=" + domain;
+            VerifyFailure(input, RegionCode.NZ, ErrorType.NOT_A_NUMBER);
+            var error = Assert.Throws<NumberParseException>(() => phoneUtil.ParseAndKeepRawInput(input, RegionCode.NZ));
+            Assert.Equal(ErrorType.NOT_A_NUMBER, error.ErrorType);
+        }
+
+        [Fact]
         public void TestCountryWithNoNumberDesc()
         {
             // Andorra is a country where we don't have PhoneNumberDesc info in the metadata.

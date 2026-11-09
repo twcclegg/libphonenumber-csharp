@@ -229,17 +229,17 @@ namespace PhoneNumbers
         private const string DEFAULT_EXTN_PREFIX = " ext. ";
 
         private const string ALPHANUM = VALID_ALPHA + "\\d";
-        private const string RFC3966_DOMAINLABEL = "(?>[" + ALPHANUM + "]+)(?>(-+[" + ALPHANUM + "])*)";
+        private const string RFC3966_DOMAINLABEL = "(?>[" + ALPHANUM + "]+)(?>(-*[" + ALPHANUM + "])*)";
         private const string RFC3966_TOPLABEL = "(?>[" + VALID_ALPHA + "]+)(?>(-*[" + ALPHANUM + "])*)";
 
         // Regular expression of valid global-number-digits or domainname for the phone-context parameter, following the syntax defined in RFC3966.
 #if NET7_0_OR_GREATER
-        [GeneratedRegex(@"^(\+[-.()]*\d[\d-.()]*$|(?>(" + RFC3966_DOMAINLABEL + "\\.(?!$))*)" + RFC3966_TOPLABEL + "\\.?$)", InternalRegexOptions.Default | RegexOptions.ExplicitCapture)]
+        [GeneratedRegex(@"^(\+[-.()]*\d[\d-.()]*\z|(?>(" + RFC3966_DOMAINLABEL + "\\.(?!\\z))*)" + RFC3966_TOPLABEL + "\\.?\\z)", InternalRegexOptions.Default | RegexOptions.ExplicitCapture)]
         private static partial Regex RFC3966_GLOBAL_NUMBER_DIGITS_OR_DOMAINNAME();
 #else
         // RFC3966_DOMAINLABEL is matched non-atomically on older platforms due to bugs in the regex engine.
         private static readonly Regex _RFC3966_GLOBAL_NUMBER_DIGITS_OR_DOMAINNAME
-            = new(@"^(\+[-.()]*\d[\d-.()]*$|(" + RFC3966_DOMAINLABEL + "\\.)*" + RFC3966_TOPLABEL + "\\.?$)", InternalRegexOptions.Default | RegexOptions.ExplicitCapture);
+            = new(@"^(\+[-.()]*\d[\d-.()]*\z|(" + RFC3966_DOMAINLABEL + "\\.)*" + RFC3966_TOPLABEL + "\\.?\\z)", InternalRegexOptions.Default | RegexOptions.ExplicitCapture);
         private static Regex RFC3966_GLOBAL_NUMBER_DIGITS_OR_DOMAINNAME() => _RFC3966_GLOBAL_NUMBER_DIGITS_OR_DOMAINNAME;
 #endif
 
