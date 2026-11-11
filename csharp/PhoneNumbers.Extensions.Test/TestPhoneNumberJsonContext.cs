@@ -35,7 +35,12 @@ namespace PhoneNumbers.Extensions.Test
             // The TypeInfoResolver must actually be able to produce a JsonTypeInfo for PhoneNumber
             // (i.e. PhoneNumberJsonContext really does cover it) rather than silently falling back
             // to reflection, which would defeat the point under trimming/AOT.
+#if NET11_0_OR_GREATER
+            // .NET 11 adds the generic overload, and CA2263 flags the Type-based one there.
+            var typeInfo = PhoneNumberJsonOptions.Default.GetTypeInfo<PhoneNumbers.PhoneNumber>();
+#else
             var typeInfo = PhoneNumberJsonOptions.Default.GetTypeInfo(typeof(PhoneNumbers.PhoneNumber));
+#endif
 
             Assert.NotNull(typeInfo);
             Assert.Same(PhoneNumberJsonContext.Default, PhoneNumberJsonOptions.Default.TypeInfoResolver);
