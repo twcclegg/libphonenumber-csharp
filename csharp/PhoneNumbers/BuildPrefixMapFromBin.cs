@@ -152,7 +152,7 @@ namespace PhoneNumbers
             var count = reader.ReadInt32();
             // Ordinal comparison to match the lookups this feeds, which pass language codes
             // through unchanged from the caller's Locale.
-            var names = new Dictionary<string, string>(count, StringComparer.Ordinal);
+            Dictionary<string, string> names = [with(count, StringComparer.Ordinal)];
             for (var i = 0; i < count; i++)
             {
                 var language = reader.ReadString();

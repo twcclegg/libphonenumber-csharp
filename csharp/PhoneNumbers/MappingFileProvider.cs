@@ -59,7 +59,7 @@ namespace PhoneNumbers
         {
             numOfEntries = availableDataFiles.Count;
             countryCallingCodes = new int[numOfEntries];
-            availableLanguages = new List<HashSet<string>>(numOfEntries);
+            availableLanguages = [with(capacity: numOfEntries)];
             var index = 0;
             foreach (var countryCallingCode in availableDataFiles.Keys)
             {
