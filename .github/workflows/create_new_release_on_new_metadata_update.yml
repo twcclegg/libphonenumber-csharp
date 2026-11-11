@@ -53,7 +53,9 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v5
         with:
-          dotnet-version: 10.x
+          dotnet-version: |
+            10.x
+            11.x
       # DumpLocale.java regenerates resources/locale/country_names.txt from java.util.Locale,
       # so the jdk is an input to the generated file rather than an incidental tool. Pinned
       # to temurin 25 to match the header of the committed file - changing it would rewrite

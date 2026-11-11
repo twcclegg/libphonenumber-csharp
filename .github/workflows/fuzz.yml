@@ -48,7 +48,9 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with:
-          dotnet-version: 10.x
+          dotnet-version: |
+            10.x
+            11.x
 
       # The bridge that lets libFuzzer drive a managed target. Built from source rather than taken
       # from the release page: the releases are x64 and these runners are arm64.

@@ -37,7 +37,9 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with:
-          dotnet-version: 10.x
+          dotnet-version: |
+            10.x
+            11.x
 
       # Fail closed on a non-release ref rather than publishing the csproj placeholder.
       - name: Resolve package version from tag

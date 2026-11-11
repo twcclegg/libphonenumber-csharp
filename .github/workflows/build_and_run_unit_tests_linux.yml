@@ -28,7 +28,9 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v5
         with:
-          dotnet-version: 10.x
+          dotnet-version: |
+            10.x
+            11.x
 
       # Central Package Management keeps every version in one file, so hashing it plus the project
       # files is enough to invalidate this when a dependency moves. Deliberately not added to
@@ -95,7 +97,7 @@ jobs:
           dotnet pack csharp/PhoneNumbers -c Release \
             -p:VersionPrefix="${PACK_VERSION}" -o packtest-repro
 
-          for tfm in netstandard2.0 net8.0 net10.0
+          for tfm in netstandard2.0 net8.0 net10.0 net11.0
           do
             asset="lib/${tfm}/PhoneNumbers.dll"
             first=$(unzip -p "packtest/libphonenumber-csharp.${PACK_VERSION}.nupkg" "${asset}" | sha256sum | cut -d' ' -f1)

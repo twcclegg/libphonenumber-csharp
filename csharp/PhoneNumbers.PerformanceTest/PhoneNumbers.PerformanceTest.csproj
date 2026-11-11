@@ -2,9 +2,10 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <!-- Host TFM only. The benchmark runtime matrix is driven by the [SimpleJob]
-         attributes on each benchmark class, which target net10.0. -->
-    <TargetFramework>net10.0</TargetFramework>
+    <!-- The [SimpleJob] attributes on each benchmark class target net10.0. net11.0 is here so the
+         two runtimes can be compared in-process (`dotnet run -f net11.0 ... --inProcess`):
+         BenchmarkDotNet 0.15.8 has no RuntimeMoniker for .NET 11 yet. -->
+    <TargetFrameworks>net10.0;net11.0</TargetFrameworks>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>

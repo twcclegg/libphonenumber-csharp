@@ -24,7 +24,9 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v5
         with:
-          dotnet-version: 10.x
+          dotnet-version: |
+            10.x
+            11.x
 
       # Central Package Management keeps every version in one file, so hashing it plus the project
       # files is enough to invalidate this when a dependency moves. Deliberately not added to
