@@ -24,12 +24,15 @@
 # a foldable run.
 #
 # Usage: update-changelog.sh <changelog-file> <github-repo> <upstream-repo> <from-tag> <new-tag>
-#                             <metadata-only:true|false> [date:YYYY-MM-DD]
+#                             <metadata-only:true|false> [date:YYYY-MM-DD] [release-notes-file]
+#
+# A release that is not metadata-only gets its own entry built from the notes GitHub generates for
+# the tag (release-notes-file), so it lists the same PRs as the GitHub Release.
 set -euo pipefail
 
 usage() {
     cat >&2 <<'EOF'
-Usage: update-changelog.sh <changelog-file> <github-repo> <upstream-repo> <from-tag> <new-tag> <metadata-only:true|false> [date:YYYY-MM-DD]
+Usage: update-changelog.sh <changelog-file> <github-repo> <upstream-repo> <from-tag> <new-tag> <metadata-only:true|false> [date:YYYY-MM-DD] [release-notes-file]
 EOF
 }
 
@@ -46,6 +49,7 @@ FROM_TAG="$4"
 NEW_TAG="$5"
 METADATA_ONLY="$6"
 DATE="${7:-$(date -u +%F)}"
+NOTES_FILE="${8:-}"
 
 if [ "${METADATA_ONLY}" != "true" ] && [ "${METADATA_ONLY}" != "false" ]; then
     echo "metadata-only must be \"true\" or \"false\", got: ${METADATA_ONLY}" >&2
@@ -111,13 +115,20 @@ buildMetadataOnlyBlock() {
 }
 
 # buildSubstantiveBlock <from> <tag> <date>
+# The release's own generated notes, verbatim apart from nesting their headings under the entry's
+# and dropping the trailing compare link, which the heading already carries.
 buildSubstantiveBlock() {
     local from=$1 tag=$2 date=$3
-    local link body
-    link=$(compareLink "${GITHUB_REPO}" "${from}" "${tag}")
-    body="Includes the metadata sync to upstream [libphonenumber ${tag}]($(upstreamReleaseLink "${UPSTREAM_REPO}" "${tag}")) plus other changes merged to \`main\` since the last release — see the compare link above for the full diff."
-    printf '## [%s](%s) - %s\n\n%s\n' "${tag}" "${link}" "${date}" "${body}"
+    printf '## [%s](%s) - %s\n\n' "${tag}" "$(compareLink "${GITHUB_REPO}" "${from}" "${tag}")" "${date}"
+    printf 'Metadata sync to upstream [libphonenumber %s](%s).\n\n' "${tag}" "$(upstreamReleaseLink "${UPSTREAM_REPO}" "${tag}")"
+    sed -e '/^\*\*Full Changelog\*\*/d' -e 's/^## /### /' "${NOTES_FILE}" | cat -s | sed -e :a -e '/^\n*$/{$d;N;ba' -e '}'
 }
+
+if [ "${METADATA_ONLY}" = "false" ] && [ ! -s "${NOTES_FILE}" ]; then
+    echo "a release-notes file is required when metadata-only is false" >&2
+    usage
+    exit 2
+fi
 
 if ${RUN_MATCHED}; then
     NEW_BLOCK=$(buildMetadataOnlyBlock "${RUN_FROM}" "${RUN_FIRST}" "${RUN_START_DATE}" "$((RUN_COUNT + 1))" "${NEW_TAG}" "${DATE}")

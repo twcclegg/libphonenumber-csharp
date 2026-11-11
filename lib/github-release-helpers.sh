@@ -111,6 +111,15 @@ createRelease() {
         | ghApi -X POST --data @- "https://api.github.com/repos/$1/releases" >/dev/null
 }
 
+# Prints the notes github would generate for a release of $2 (target $3) since tag $4 - the same
+# generator createRelease asks for, so the changelog can list exactly what the release page will.
+generateReleaseNotes() {
+    jq -n --arg tag "$2" --arg target "$3" --arg previous "$4" \
+        '{tag_name: $tag, target_commitish: $target, previous_tag_name: $previous}' \
+        | ghApi -X POST --data @- "https://api.github.com/repos/$1/releases/generate-notes" \
+        | jq -er '.body'
+}
+
 # github suppresses push events from GITHUB_TOKEN, so ask for the publish run directly.
 dispatchPublish() {
     jq -n --arg ref "$2" '{ref: $ref}' \

@@ -101,6 +101,10 @@ entry; any human commit since the last release — including one that only touch
 `CHANGELOG.md` — gives the release its own entry. So if you hand-edit `CHANGELOG.md`, expect the
 next release to start a new entry rather than extend the current run; that is intended.
 
+A release that does fold in human work gets a standalone entry built from the notes GitHub generates
+for the tag (the same generator the GitHub Release uses), so the entry lists the same PRs as the
+release page.
+
 ## Releases generally
 
 Releases are tag-driven: a `vX.Y.Z` tag fires `publish_nuget.yml`, which packs both packable
