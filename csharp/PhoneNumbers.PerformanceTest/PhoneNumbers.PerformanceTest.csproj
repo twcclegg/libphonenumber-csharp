@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <!-- The [SimpleJob] attributes on each benchmark class target net10.0. net11.0 is here so the
-         two runtimes can be compared in-process (`dotnet run -f net11.0 ... --inProcess`):
+         two runtimes can be compared in-process (dotnet run -f net11.0 with the inProcess option):
          BenchmarkDotNet 0.15.8 has no RuntimeMoniker for .NET 11 yet. -->
     <TargetFrameworks>net10.0;net11.0</TargetFrameworks>
     <ImplicitUsings>disable</ImplicitUsings>
