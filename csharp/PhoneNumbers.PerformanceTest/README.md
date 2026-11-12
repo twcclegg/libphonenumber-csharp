@@ -82,6 +82,19 @@ does not live there, so it under-reports that cost. Compiling the metadata patte
 `TestPhoneRegex.MetadataPatternsAreNeverCompiled` instead. Read a pass here as "nothing is retaining
 managed objects it should not", not as "memory is fine".
 
+### Cold-start allocations are not a benchmark either
+
+`dotnet run -c Release -- --cold-allocations` counts every managed byte a fresh process allocates
+from a cold library to its first parsed number, and through the same 20-region sample, and exits
+non-zero if either exceeds its budget. The `run_performance_tests` workflow runs it too.
+
+It closes the gap between the two checks above. MemoryDiagnoser never sees cold-start work, and the
+retained-memory audit collects transient garbage away before measuring. So a change that only
+churns, such as copying each metadata stream into a `MemoryStream` before reading it, passes the
+retained-memory audit while more than doubling the bytes allocated to reach the first number. This is
+the number a process that never garbage-collected would hold at the end, and it is the GC work a cold
+start costs short-lived callers. `ColdAllocationAudit.cs` records the calibration.
+
 ### Why metadata regexes are not compiled
 
 `RegexOptions.Compiled` costs roughly 1.5 ms of IL-emit per distinct pattern and saves about
