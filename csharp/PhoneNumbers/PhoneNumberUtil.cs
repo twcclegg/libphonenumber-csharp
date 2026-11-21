@@ -2908,11 +2908,14 @@ namespace PhoneNumbers
             }
             catch (NumberParseException e) when (e.ErrorType == ErrorType.INVALID_COUNTRY_CODE)
             {
-                if (IsPlusChar(nationalNumberString[0]))
+                var plusChars = 0;
+                while (plusChars < nationalNumberString.Length && IsPlusChar(nationalNumberString[plusChars]))
+                    plusChars++;
+                if (plusChars > 0)
                 {
-                    // Strip the plus-char, and try again.
+                    // Strip the plus-chars, and try again.
                     countryCode = MaybeExtractCountryCode(
-                        nationalNumberString.Substring(1),
+                        nationalNumberString.Substring(plusChars),
                         regionMetadata, normalizedNationalNumber,
                         keepRawInput, phoneNumber);
                     if (countryCode == 0)
