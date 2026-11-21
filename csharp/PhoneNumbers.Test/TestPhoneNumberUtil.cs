@@ -2280,6 +2280,10 @@ namespace PhoneNumbers.Test
             Assert.Equal(NZNumber, phoneUtil.Parse("+01164 3 331 6005", RegionCode.US));
             Assert.Equal(NZNumber, phoneUtil.Parse("+0064 3 331 6005", RegionCode.NZ));
             Assert.Equal(NZNumber, phoneUtil.Parse("+ 00 64 3 331 6005", RegionCode.NZ));
+            // The retry drops every leading plus sign, not only the first one, as upstream does.
+            Assert.Equal(NZNumber, phoneUtil.Parse("++01164 3 331 6005", RegionCode.US));
+            Assert.Equal(NZNumber, phoneUtil.Parse("++0064 3 331 6005", RegionCode.NZ));
+            Assert.Equal(NZNumber, phoneUtil.Parse("\uFF0B+0064 3 331 6005", RegionCode.NZ));
 
             Assert.Equal(USLocalNumber,
                 phoneUtil.Parse("tel:253-0000;phone-context=www.google.com", RegionCode.US));
