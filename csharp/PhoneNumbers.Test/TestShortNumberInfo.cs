@@ -416,6 +416,22 @@ namespace PhoneNumbers.Test
                     Parse("+4640404", RegionCode.SE), RegionCode.US));
         }
 
+        [Fact]
+        public void TestOutOfRangeNumberOfLeadingZeros()
+        {
+            // Ported from ShortNumberInfoTest.testOutOfRangeNumberOfLeadingZeros (upstream v9.0.44). Java's
+            // field is an unbounded int, so it tests -1 and Integer.MAX_VALUE; here the count is stored as a
+            // byte and the setter rejects anything outside 0..255, so neither value can reach ShortNumberInfo.
+            Assert.Throws<OverflowException>(() => new PhoneNumber.Builder().SetNumberOfLeadingZeros(-1));
+            Assert.Throws<OverflowException>(() => new PhoneNumber.Builder().SetNumberOfLeadingZeros(int.MaxValue));
+
+            // The largest count that can be stored is still capped at ten zeros, so the number is too long.
+            var huge = new PhoneNumber.Builder().SetCountryCode(33).SetNationalNumber(1010L)
+                .SetNumberOfLeadingZeros(byte.MaxValue).Build();
+            Assert.False(ShortInfo.IsPossibleShortNumber(huge));
+            Assert.False(ShortInfo.IsValidShortNumber(huge));
+        }
+
         private PhoneNumber Parse(String number, String regionCode)
         {
             try
