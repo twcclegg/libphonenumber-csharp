@@ -229,8 +229,10 @@ namespace PhoneNumbers
         private const string DEFAULT_EXTN_PREFIX = " ext. ";
 
         private const string ALPHANUM = VALID_ALPHA + "\\d";
-        private const string RFC3966_DOMAINLABEL = "(?>[" + ALPHANUM + "]+)(?>(-*[" + ALPHANUM + "])*)";
-        private const string RFC3966_TOPLABEL = "(?>[" + VALID_ALPHA + "]+)(?>(-*[" + ALPHANUM + "])*)";
+        // Each hyphen run must be followed by a whole alphanumeric run, as in upstream v9.0.44, so a label can
+        // be split only one way and a failing match cannot backtrack catastrophically (google/libphonenumber#4070).
+        private const string RFC3966_DOMAINLABEL = "(?>[" + ALPHANUM + "]+)(?>(-+[" + ALPHANUM + "]+)*)";
+        private const string RFC3966_TOPLABEL = "(?>[" + VALID_ALPHA + "][" + ALPHANUM + "]*)(?>(-+[" + ALPHANUM + "]+)*)";
 
         // Regular expression of valid global-number-digits or domainname for the phone-context parameter, following the syntax defined in RFC3966.
 #if NET7_0_OR_GREATER
@@ -2908,11 +2910,14 @@ namespace PhoneNumbers
             }
             catch (NumberParseException e) when (e.ErrorType == ErrorType.INVALID_COUNTRY_CODE)
             {
-                if (IsPlusChar(nationalNumberString[0]))
+                var plusChars = 0;
+                while (plusChars < nationalNumberString.Length && IsPlusChar(nationalNumberString[plusChars]))
+                    plusChars++;
+                if (plusChars > 0)
                 {
-                    // Strip the plus-char, and try again.
+                    // Strip the plus-chars, and try again.
                     countryCode = MaybeExtractCountryCode(
-                        nationalNumberString.Substring(1),
+                        nationalNumberString.Substring(plusChars),
                         regionMetadata, normalizedNationalNumber,
                         keepRawInput, phoneNumber);
                     if (countryCode == 0)
