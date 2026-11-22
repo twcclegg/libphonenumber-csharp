@@ -58,15 +58,44 @@ in the README for why staying current matters even for patch-looking bumps.
 
 ## [v9.0.44](https://github.com/twcclegg/libphonenumber-csharp/compare/v9.0.43...v9.0.44) - 2026-11-22
 
-Includes the metadata sync to upstream [libphonenumber v9.0.44](https://github.com/google/libphonenumber/releases/tag/v9.0.44) plus other changes merged to `main` since the last release — see the compare link above for the full diff.
+Metadata sync to upstream [libphonenumber v9.0.44](https://github.com/google/libphonenumber/releases/tag/v9.0.44).
+
+### What's Changed
+* fix: require whole-input phone number validation by @wmundev in https://github.com/twcclegg/libphonenumber-csharp/pull/522
+* fix: match Java phone-context domain validation by @wmundev in https://github.com/twcclegg/libphonenumber-csharp/pull/521
+* ci: skip VSTest's artifacts directory check in the coverage job by @twcclegg in https://github.com/twcclegg/libphonenumber-csharp/pull/527
+* fix: strip every leading plus sign before retrying country code extraction by @bardrop in https://github.com/twcclegg/libphonenumber-csharp/pull/526
+* fix: port upstream v9.0.44 RFC3966 domain-name and leading-zero changes by @twcclegg in https://github.com/twcclegg/libphonenumber-csharp/pull/524
+* feat: automatic upgrade to v9.0.44 by @libphonenumber-csharp-bot in https://github.com/twcclegg/libphonenumber-csharp/pull/528
+
+### New Contributors
+* @bardrop made their first contribution in https://github.com/twcclegg/libphonenumber-csharp/pull/526
 
 ## [v9.0.43](https://github.com/twcclegg/libphonenumber-csharp/compare/v9.0.42...v9.0.43) - 2026-11-06
 
-Includes the metadata sync to upstream [libphonenumber v9.0.43](https://github.com/google/libphonenumber/releases/tag/v9.0.43) plus other changes merged to `main` since the last release — see the compare link above for the full diff.
+Metadata sync to upstream [libphonenumber v9.0.43](https://github.com/google/libphonenumber/releases/tag/v9.0.43).
+
+### What's Changed
+* fix: preserve signed country codes in E164 formatting by @wmundev in https://github.com/twcclegg/libphonenumber-csharp/pull/508
+* fix: preserve exact Unicode prefix descriptions by @wmundev in https://github.com/twcclegg/libphonenumber-csharp/pull/509
+* fix: report exclusive end offsets in phone number matches by @wmundev in https://github.com/twcclegg/libphonenumber-csharp/pull/510
+* Bump the nuget_minor_patch_updates group with 3 updates by @dependabot[bot] in https://github.com/twcclegg/libphonenumber-csharp/pull/515
+* build(deps): bump actions/setup-java from 6.0.0 to 6.1.0 by @dependabot[bot] in https://github.com/twcclegg/libphonenumber-csharp/pull/514
+* build(deps): bump the codeql-action group with 3 updates by @dependabot[bot] in https://github.com/twcclegg/libphonenumber-csharp/pull/513
+* fix: recover inner phone number matches like Java by @wmundev in https://github.com/twcclegg/libphonenumber-csharp/pull/511
+* fix: validate publication pages per phone number candidate by @wmundev in https://github.com/twcclegg/libphonenumber-csharp/pull/516
+* ci: restore benchmark trees sequentially before the parallel build by @twcclegg in https://github.com/twcclegg/libphonenumber-csharp/pull/520
+* feat: automatic upgrade to v9.0.43 by @libphonenumber-csharp-bot in https://github.com/twcclegg/libphonenumber-csharp/pull/519
 
 ## [v9.0.42](https://github.com/twcclegg/libphonenumber-csharp/compare/v9.0.41...v9.0.42) - 2026-10-27
 
-Includes the metadata sync to upstream [libphonenumber v9.0.42](https://github.com/google/libphonenumber/releases/tag/v9.0.42) plus other changes merged to `main` since the last release — see the compare link above for the full diff.
+Metadata sync to upstream [libphonenumber v9.0.42](https://github.com/google/libphonenumber/releases/tag/v9.0.42).
+
+### What's Changed
+* fix: grow formatting buffers for unbounded caller input by @wmundev in https://github.com/twcclegg/libphonenumber-csharp/pull/503
+* fix: preserve all national digits after leading zeros by @wmundev in https://github.com/twcclegg/libphonenumber-csharp/pull/504
+* fix: normalize only Unicode decimal digits by @wmundev in https://github.com/twcclegg/libphonenumber-csharp/pull/505
+* feat: automatic upgrade to v9.0.42 by @libphonenumber-csharp-bot in https://github.com/twcclegg/libphonenumber-csharp/pull/506
 
 ## [v9.0.41](https://github.com/twcclegg/libphonenumber-csharp/compare/v9.0.40...v9.0.41) - 2026-10-08
 
