@@ -32,7 +32,7 @@ namespace PhoneNumbers.PerformanceTest
         // A spread of regions rather than one: retention that grows per pattern -- a promoted holder
         // that fails to release its superseded interpreted Regex, say -- is invisible at one region,
         // where it is a single object against the metadata's own footprint.
-        private static readonly (string Number, string Region)[] Sample =
+        internal static readonly (string Number, string Region)[] Sample =
         {
             ("+41441234567", "CH"), ("+16502530000", "US"), ("+442079460958", "GB"),
             ("+493083050", "DE"), ("+33142685300", "FR"), ("+81332245000", "JP"),

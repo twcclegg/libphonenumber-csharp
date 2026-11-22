@@ -59,7 +59,13 @@ is audited by a separate mode that CI also runs:
 
 ```bash
 dotnet run -c Release --framework net10.0 -- --retained-memory   # exits non-zero over budget
+dotnet run -c Release --framework net10.0 -- --cold-allocations  # transient bytes from cold, too
 ```
+
+Per-call allocation on warm read-only paths is pinned exactly, to the byte, by
+`PhoneNumbers.Test/TestAllocations.cs`: `IsPossibleNumber*` allocates nothing, and
+`Format(E164)` / `GetNationalSignificantNumber` allocate only their result. Validation is allowed one
+national-significant-number string. Making a path allocation-free? Tighten its budget there.
 
 `csharp/PhoneNumbers.PerformanceTest/README.md` explains what each benchmark exercises and why.
 
