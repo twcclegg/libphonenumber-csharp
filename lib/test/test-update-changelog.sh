@@ -28,7 +28,21 @@ olderEntry() {
     printf '## [v9.0.30](https://github.com/twcclegg/libphonenumber-csharp/compare/v9.0.29...v9.0.30) - 2026-01-01\n\nAn older release that must stay exactly as it is.'
 }
 
-updateChangelog() { # <from-tag> <new-tag> <metadata-only> [date]
+# Notes in the shape GitHub's generate-notes returns, for a release that is not metadata-only.
+NOTES="notes.md"
+writeNotes() {
+    printf '%s\n' \
+        "## What's Changed" \
+        "* fix: a real change by @someone in https://github.com/twcclegg/libphonenumber-csharp/pull/7" \
+        "" \
+        "## New Contributors" \
+        "* @someone made their first contribution in https://github.com/twcclegg/libphonenumber-csharp/pull/7" \
+        "" \
+        "**Full Changelog**: https://github.com/twcclegg/libphonenumber-csharp/compare/v9.0.30...v9.0.31" \
+        >"${NOTES}"
+}
+
+updateChangelog() { # <from-tag> <new-tag> <metadata-only> [date] [release-notes-file]
     # The script reads the changelog with mapfile, which is bash 4+; on macOS's stock bash 3.2 these
     # tests skip rather than fail. The argument-validation tests below stop before that line.
     requireBashVersion 4
@@ -127,15 +141,31 @@ test_extending_a_run_replaces_a_multi_line_body_whole() {
 
 test_a_substantive_release_gets_its_own_entry() {
     writeChangelog "$(olderEntry)"
-    updateChangelog v9.0.30 v9.0.31 false 2026-02-01
+    writeNotes
+    updateChangelog v9.0.30 v9.0.31 false 2026-02-01 "${NOTES}"
     assertStatus 0
 
     assertFileContains "${CHANGELOG}" \
         "## [v9.0.31](https://github.com/twcclegg/libphonenumber-csharp/compare/v9.0.30...v9.0.31) - 2026-02-01"
     assertFileContains "${CHANGELOG}" \
-        "Includes the metadata sync to upstream [libphonenumber v9.0.31](https://github.com/google/libphonenumber/releases/tag/v9.0.31)"
+        "Metadata sync to upstream [libphonenumber v9.0.31](https://github.com/google/libphonenumber/releases/tag/v9.0.31)."
+    # The generated notes, with their headings nested under the entry's and the compare link dropped:
+    # the entry's heading already links the same range.
+    assertFileContains "${CHANGELOG}" "### What's Changed"
+    assertFileContains "${CHANGELOG}" "* fix: a real change by @someone in https://github.com/twcclegg/libphonenumber-csharp/pull/7"
+    assertFileContains "${CHANGELOG}" "### New Contributors"
+    assertFileNotContains "${CHANGELOG}" "**Full Changelog**"
+    assertFileContains "${CHANGELOG}" "An older release that must stay exactly as it is."
     # No run marker: that is what stops a later metadata-only release folding into this entry.
     assertFileNotContains "${CHANGELOG}" "<!-- changelog-run"
+}
+
+test_a_substantive_release_requires_release_notes() {
+    writeChangelog "$(olderEntry)"
+    updateChangelog v9.0.30 v9.0.31 false 2026-02-01
+    assertStatus 2
+    assertOutputContains "a release-notes file is required when metadata-only is false"
+    assertFileNotContains "${CHANGELOG}" "## [v9.0.31]"
 }
 
 test_a_substantive_release_never_extends_the_run_above_it() {
@@ -146,13 +176,14 @@ test_a_substantive_release_never_extends_the_run_above_it() {
         "2 consecutive releases carrying no hand-written changes — metadata syncs plus automated dependency updates. Latest upstream sync: [libphonenumber v9.0.32](https://github.com/google/libphonenumber/releases/tag/v9.0.32)." \
         "" \
         "$(olderEntry)"
-    updateChangelog v9.0.32 v9.0.33 false 2026-03-01
+    writeNotes
+    updateChangelog v9.0.32 v9.0.33 false 2026-03-01 "${NOTES}"
     assertStatus 0
 
     assertFileContains "${CHANGELOG}" "<!-- changelog-run from=v9.0.30 first=v9.0.31 start-date=2026-02-01 count=2 -->" \
         "the existing run keeps its count: this release is not part of it"
     assertFileContains "${CHANGELOG}" "## [v9.0.33]"
-    assertFileContains "${CHANGELOG}" "Includes the metadata sync to upstream [libphonenumber v9.0.33]"
+    assertFileContains "${CHANGELOG}" "Metadata sync to upstream [libphonenumber v9.0.33]"
     assertOccurrences "${CHANGELOG}" "<!-- changelog-run" 1
 }
 
