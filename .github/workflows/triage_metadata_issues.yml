@@ -1,6 +1,6 @@
 name: Triage metadata issues
 
-# Uses the GitHub Copilot CLI to spot new issues that are actually reports
+# Uses Copilot inference (actions/ai-inference) to spot new issues that are actually reports
 # about upstream Google libphonenumber *metadata* (country dialing plans,
 # valid ranges, prefixes, formatting) rather than bugs in this C# port. Those
 # can't be fixed here - see CONTRIBUTING.md and the bug_report.md checklist -
@@ -27,8 +27,6 @@ concurrency:
 
 jobs:
   triage:
-    # x64, not the arm runner used elsewhere in this repo: the Copilot CLI's
-    # npm package does not reliably ship arm64 Linux binaries.
     runs-on: ubuntu-latest
     # Don't second-guess the maintainers' own issues (e.g. tracking/planning
     # issues like #375), only third-party bug reports.
@@ -71,12 +69,6 @@ jobs:
               .github/triage/metadata_examples.md \
               .github/triage/system_prompt_footer.md \
               > ${{ runner.temp }}/triage_system_prompt.md
-
-      - name: Install Copilot CLI
-        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
-        with:
-          node-version: 22
-      - run: npm install -g @github/copilot@1.0.80
 
       - name: Classify issue
         id: classify
