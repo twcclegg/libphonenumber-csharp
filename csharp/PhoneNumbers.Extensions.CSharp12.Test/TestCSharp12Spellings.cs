@@ -33,5 +33,26 @@ namespace PhoneNumbers.Test.CSharp12
             Assert.False(PhoneNumberParser.TryParseValid("1235557704", "US", out PhoneNumber? invalid));
             Assert.Null(invalid);
         }
+
+        [Fact]
+        public void FormattingHelpers_AsExtensionMethods()
+        {
+            var number = PhoneNumberUtil.GetInstance().Parse("+442070313000", null);
+
+            Assert.Equal("+442070313000", number.Format(PhoneNumberFormat.E164));
+            Assert.True(number.IsValidNumber());
+            Assert.Equal(PhoneNumberType.FIXED_LINE, number.GetNumberType());
+            Assert.Equal("GB", number.GetRegionCodeForNumber());
+        }
+
+        [Fact]
+        public void FormattingHelpers_AsStaticCalls()
+        {
+            // The plain static spelling, for callers that do not use extension-method syntax.
+            var number = PhoneNumberUtil.GetInstance().Parse("+442070313000", null);
+
+            Assert.Equal("020 7031 3000", PhoneNumberFormatting.Format(number, PhoneNumberFormat.NATIONAL));
+            Assert.True(PhoneNumberFormatting.IsValidNumber(number));
+        }
     }
 }
