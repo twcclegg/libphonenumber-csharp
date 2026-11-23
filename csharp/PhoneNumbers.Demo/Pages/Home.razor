@@ -67,16 +67,16 @@
         <div class="result-grid mt-2 reveal" aria-live="polite">
             <div class="result-grid__item">
                 <div class="result-grid__label">International</div>
-                <div class="result-grid__value result-grid__value--mono">@PhoneUtil.Format(Parsed, PhoneNumberFormat.INTERNATIONAL)</div>
+                <div class="result-grid__value result-grid__value--mono">@Parsed.Format(PhoneNumberFormat.INTERNATIONAL)</div>
             </div>
             <div class="result-grid__item">
                 <div class="result-grid__label">E.164</div>
-                <div class="result-grid__value result-grid__value--mono">@PhoneUtil.Format(Parsed, PhoneNumberFormat.E164)</div>
+                <div class="result-grid__value result-grid__value--mono">@Parsed.Format(PhoneNumberFormat.E164)</div>
             </div>
             <div class="result-grid__item">
                 <div class="result-grid__label">Valid</div>
                 <div class="result-grid__value">
-                    @if (PhoneUtil.IsValidNumber(Parsed))
+                    @if (Parsed.IsValidNumber())
                     {
                         <span class="badge badge--success">Valid</span>
                     }
@@ -88,11 +88,11 @@
             </div>
             <div class="result-grid__item">
                 <div class="result-grid__label">Number type</div>
-                <div class="result-grid__value"><span class="badge badge--info">@NumberTypeLabels.For(PhoneUtil.GetNumberType(Parsed))</span></div>
+                <div class="result-grid__value"><span class="badge badge--info">@NumberTypeLabels.For(Parsed.GetNumberType())</span></div>
             </div>
             <div class="result-grid__item">
                 <div class="result-grid__label">Region</div>
-                <div class="result-grid__value">@(PhoneUtil.GetRegionCodeForNumber(Parsed) ?? "Unknown")</div>
+                <div class="result-grid__value">@(Parsed.GetRegionCodeForNumber() ?? "Unknown")</div>
             </div>
             <div class="result-grid__item">
                 <div class="result-grid__label">Country code</div>

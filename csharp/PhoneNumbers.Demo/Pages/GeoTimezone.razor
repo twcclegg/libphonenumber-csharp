@@ -140,12 +140,12 @@ else if (Parsed != null)
 
             <div class="data-table__row">
                 <div class="data-table__key">Formatted</div>
-                <div class="data-table__value data-table__value--mono">@PhoneUtil.Format(Parsed, PhoneNumberFormat.INTERNATIONAL)</div>
+                <div class="data-table__value data-table__value--mono">@Parsed.Format(PhoneNumberFormat.INTERNATIONAL)</div>
             </div>
             <div class="data-table__row">
                 <div class="data-table__key">Valid</div>
                 <div class="data-table__value">
-                    @if (PhoneUtil.IsValidNumber(Parsed))
+                    @if (Parsed.IsValidNumber())
                     {
                         <span class="badge badge--success">Valid</span>
                     }
@@ -157,7 +157,7 @@ else if (Parsed != null)
             </div>
             <div class="data-table__row">
                 <div class="data-table__key">Number Type</div>
-                <div class="data-table__value"><span class="badge badge--info">@NumberTypeLabels.For(PhoneUtil.GetNumberType(Parsed))</span></div>
+                <div class="data-table__value"><span class="badge badge--info">@NumberTypeLabels.For(Parsed.GetNumberType())</span></div>
             </div>
             <div class="data-table__row">
                 <div class="data-table__key">Is Geographical</div>

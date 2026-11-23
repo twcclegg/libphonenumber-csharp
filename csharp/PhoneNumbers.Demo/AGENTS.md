@@ -1,8 +1,8 @@
 # AGENTS.md — PhoneNumbers.Demo
 
 Blazor WebAssembly demo for libphonenumber-csharp, deployed to GitHub Pages by `deploy-demo.yml`.
-Pure client-side: no server code, no heavyweight JS interop. It references the `PhoneNumbers`
-project directly, so it also proves the library works trimmed under WASM.
+Pure client-side: no server code, no heavyweight JS interop. It references the `PhoneNumbers` and
+`PhoneNumbers.Extensions` projects directly, so it also proves both work trimmed under WASM.
 
 The full styling, accessibility, testing and browser-verification procedure is the
 `changing-demo-ui` skill (`.claude/skills/changing-demo-ui/SKILL.md`). The rules below are the
@@ -36,5 +36,9 @@ drops the xunit runner assets, so `dotnet test` exits 0 having discovered zero t
   or `Components/`, mirroring the source tree), asserting on what the user sees — never on CSS,
   class names, or implementation details.
 - Use `PhoneNumberUtil.GetInstance()`; never construct a new instance. Wrap `Parse` in
-  `try/catch (NumberParseException)` and show the error inline with `.error-message`.
+  `try/catch (NumberParseException)` and show the error inline with `.error-message` (the pages
+  show the exception's message, which `TryParse` cannot give them).
+- On a parsed number, call the Extensions helpers (`number.Format(...)`, `IsValidNumber()`,
+  `GetNumberType()`, `GetRegionCodeForNumber()`) rather than the `PhoneNumberUtil` equivalents:
+  the demo is sample code, so it shows the recommended API.
 - Don't hand-edit `resources/` and don't add server-side dependencies.

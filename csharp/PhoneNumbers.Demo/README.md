@@ -74,6 +74,6 @@ PhoneNumbers.Demo/
 
 ## Notes
 
-- The project references `PhoneNumbers.csproj` directly (via `ProjectReference`) rather than the NuGet package, so any local changes to the library are immediately reflected in the demo without a publish step.
+- The project references `PhoneNumbers.csproj` and `PhoneNumbers.Extensions.csproj` directly (via `ProjectReference`) rather than the NuGet packages, so any local changes to either library are immediately reflected in the demo without a publish step. The pages format and validate through the Extensions helpers (`number.Format(...)`, `number.IsValidNumber()`).
 - The library embeds all phone number metadata as binary resources at build time; there are no runtime XML or zip files to deploy alongside the WASM output.
 - `<TreatWarningsAsErrors>` is **not** set in this project (it is set in the main library), so Razor warnings do not fail the demo build.
