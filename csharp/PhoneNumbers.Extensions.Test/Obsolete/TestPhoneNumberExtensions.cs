@@ -1,3 +1,6 @@
+// Guards the obsolete PhoneNumbers.Extensions API, which must keep working (and keep its old
+// behaviour) for code that has not migrated yet. Its replacement is tested outside Obsolete/.
+#pragma warning disable PNX0002
 using Xunit;
 
 namespace PhoneNumbers.Extensions.Test

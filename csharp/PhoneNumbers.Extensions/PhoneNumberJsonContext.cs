@@ -1,3 +1,5 @@
+using System;
+using System.ComponentModel;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
@@ -5,8 +7,9 @@ using System.Text.Json.Serialization.Metadata;
 namespace PhoneNumbers.Extensions
 {
     /// <summary>
-    /// Source-generated <see cref="JsonSerializerContext"/> for <see cref="PhoneNumbers.PhoneNumber"/>,
-    /// so consumers building trimmed or Native AOT apps do not need to hand-write one.
+    /// Obsolete: register <see cref="PhoneNumbers.Text.Json.PhoneNumberJsonConverter"/> on your own
+    /// source-generated context instead, with
+    /// <c>[JsonSourceGenerationOptions(Converters = new[] { typeof(PhoneNumberJsonConverter) })]</c>.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -42,6 +45,8 @@ namespace PhoneNumbers.Extensions
     /// bypasses <see cref="JsonSerializerOptions.Converters"/> entirely, hitting the recursion above.
     /// </para>
     /// </remarks>
+    [Obsolete(Obsoletions.JsonMessage, DiagnosticId = Obsoletions.JsonDiagId, UrlFormat = Obsoletions.UrlFormat)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
     [JsonSourceGenerationOptions]
     [JsonSerializable(typeof(PhoneNumbers.PhoneNumber))]
     public partial class PhoneNumberJsonContext : JsonSerializerContext

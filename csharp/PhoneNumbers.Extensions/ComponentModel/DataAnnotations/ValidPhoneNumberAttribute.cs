@@ -48,10 +48,14 @@ namespace PhoneNumbers.ComponentModel.DataAnnotations
 
         /// <inheritdoc />
         public override bool IsValid(object? value)
+            => IsValid(value, DefaultRegion);
+
+        // Shared with the obsolete PhoneNumbers.Extensions.PhoneNumberAttribute.
+        internal static bool IsValid(object? value, string? defaultRegion)
             => value switch
             {
                 null => true,
-                string text => PhoneNumberParser.TryParseValid(text, DefaultRegion, out _),
+                string text => PhoneNumberParser.TryParseValid(text, defaultRegion, out _),
                 PhoneNumber number => number.IsValidNumber(),
                 _ => false,
             };

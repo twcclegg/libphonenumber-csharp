@@ -5,6 +5,7 @@ using System.Globalization;
 namespace PhoneNumbers.Extensions
 {
     /// <summary>
+    /// Obsolete: <see cref="PhoneNumbers.PhoneNumber"/> has a built-in <see cref="TypeConverter"/>.
     /// Converts a <see cref="PhoneNumbers.PhoneNumber"/> to and from its E.164 string
     /// representation.
     /// </summary>
@@ -15,6 +16,8 @@ namespace PhoneNumbers.Extensions
     /// <c>TypeDescriptor.AddAttributes(typeof(PhoneNumbers.PhoneNumber), new TypeConverterAttribute(typeof(PhoneNumberTypeConverter)))</c>
     /// call, which replaces the built-in converter with this one.
     /// </remarks>
+    [Obsolete(Obsoletions.PhoneNumberTypeConverterMessage, DiagnosticId = Obsoletions.PhoneNumberTypeConverterDiagId, UrlFormat = Obsoletions.UrlFormat)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public class PhoneNumberTypeConverter : TypeConverter
     {
         private static readonly PhoneNumberUtil Util = PhoneNumberUtil.GetInstance();

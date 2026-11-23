@@ -1,3 +1,5 @@
+// ToE164 and IsValid below are the obsolete helpers this test sets the new ones against.
+#pragma warning disable PNX0002
 using PhoneNumbers.Extensions;
 using Xunit;
 
