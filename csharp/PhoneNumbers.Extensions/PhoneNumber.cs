@@ -1,13 +1,15 @@
-﻿namespace PhoneNumbers.Extensions
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace PhoneNumbers.Extensions
 {
     public static class PhoneNumber
     {
         private static readonly PhoneNumberUtil PhoneNumberUtil = PhoneNumberUtil.GetInstance();
 
-        public static bool TryParse(string input, out PhoneNumbers.PhoneNumber number)
+        public static bool TryParse(string? input, [NotNullWhen(true)] out PhoneNumbers.PhoneNumber? number)
             => TryParse(input, null, out number);
 
-        public static bool TryParse(string input, string region, out PhoneNumbers.PhoneNumber number)
+        public static bool TryParse(string? input, string? region, [NotNullWhen(true)] out PhoneNumbers.PhoneNumber? number)
         {
             try
             {
@@ -21,10 +23,10 @@
             }
         }
 
-        public static bool TryParseValid(string input, out PhoneNumbers.PhoneNumber number)
+        public static bool TryParseValid(string? input, [NotNullWhen(true)] out PhoneNumbers.PhoneNumber? number)
             => TryParseValid(input, null, out number);
 
-        public static bool TryParseValid(string input, string region, out PhoneNumbers.PhoneNumber number)
+        public static bool TryParseValid(string? input, string? region, [NotNullWhen(true)] out PhoneNumbers.PhoneNumber? number)
         {
             try
             {

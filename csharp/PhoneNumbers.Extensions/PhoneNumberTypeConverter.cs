@@ -19,10 +19,10 @@ namespace PhoneNumbers.Extensions
     {
         private static readonly PhoneNumberUtil Util = PhoneNumberUtil.GetInstance();
 
-        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
             => sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
 
-        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+        public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
         {
             if (value is not string stringValue)
             {
@@ -39,10 +39,10 @@ namespace PhoneNumbers.Extensions
             }
         }
 
-        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+        public override bool CanConvertTo(ITypeDescriptorContext? context, Type? destinationType)
             => destinationType == typeof(string) || base.CanConvertTo(context, destinationType);
 
-        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value,
+        public override object? ConvertTo(ITypeDescriptorContext? context, CultureInfo? culture, object? value,
             Type destinationType)
             => value is PhoneNumbers.PhoneNumber phoneNumber && destinationType == typeof(string)
                 ? Util.Format(phoneNumber, PhoneNumberFormat.E164)

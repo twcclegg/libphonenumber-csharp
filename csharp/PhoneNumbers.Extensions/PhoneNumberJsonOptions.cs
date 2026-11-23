@@ -41,7 +41,7 @@ namespace PhoneNumbers.Extensions
         /// own context can still contain a <see cref="PhoneNumbers.PhoneNumber"/> property. A
         /// <see cref="PhoneNumberConverter"/> is always appended to <see cref="JsonSerializerOptions.Converters"/>.
         /// </param>
-        public static JsonSerializerOptions Create(JsonSerializerOptions baseOptions = null)
+        public static JsonSerializerOptions Create(JsonSerializerOptions? baseOptions = null)
         {
             var options = baseOptions is null ? new JsonSerializerOptions() : new JsonSerializerOptions(baseOptions);
             options.TypeInfoResolver = options.TypeInfoResolver is { } existingResolver
@@ -85,7 +85,7 @@ namespace PhoneNumbers.Extensions
             "IL3050:RequiresDynamicCode",
             Justification = "Default always resolves PhoneNumber via PhoneNumberJsonContext + PhoneNumberConverter, never reflection.")]
 #endif
-        public static PhoneNumbers.PhoneNumber Deserialize(string json)
+        public static PhoneNumbers.PhoneNumber? Deserialize(string json)
             => JsonSerializer.Deserialize<PhoneNumbers.PhoneNumber>(json, Default);
     }
 }

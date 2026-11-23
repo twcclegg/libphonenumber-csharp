@@ -9,7 +9,7 @@ namespace PhoneNumbers.Extensions
     {
         private static readonly PhoneNumberUtil Util = PhoneNumberUtil.GetInstance();
 
-        public override PhoneNumbers.PhoneNumber Read(ref Utf8JsonReader reader, Type typeToConvert,
+        public override PhoneNumbers.PhoneNumber? Read(ref Utf8JsonReader reader, Type typeToConvert,
             JsonSerializerOptions options)
             => Util.ParseAndKeepRawInput(reader.GetString(), null);
 

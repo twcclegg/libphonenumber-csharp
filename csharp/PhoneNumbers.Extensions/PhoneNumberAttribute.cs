@@ -21,9 +21,9 @@ namespace PhoneNumbers.Extensions
         /// numbers already in E.164 format (leading "+"), or when the value is a
         /// <see cref="PhoneNumbers.PhoneNumber"/>.
         /// </summary>
-        public string Region { get; set; }
+        public string? Region { get; set; }
 
-        public override bool IsValid(object value)
+        public override bool IsValid(object? value)
             => value switch
             {
                 null => true,
