@@ -235,9 +235,23 @@ namespace PhoneNumbers.Test
             Assert.Equal("+18005550100", converter.ConvertTo(number, typeof(string)));
         }
 
+        [Theory]
+        [InlineData("")]
+        [InlineData(" ")]
+        [InlineData(" \t\r\n")]
+        public void TypeConverterConvertsABlankStringToNull(string blank)
+            => Assert.Null(TypeDescriptor.GetConverter(typeof(PhoneNumber)).ConvertFrom(blank));
+
         [Fact]
-        public void TypeConverterConvertsAnEmptyStringToNull()
-            => Assert.Null(TypeDescriptor.GetConverter(typeof(PhoneNumber)).ConvertFrom(""));
+        public void TypeConverterLeavesTheInputOutOfItsErrorMessage()
+        {
+            const string input = "+999 7700 900123";
+            var exception = Assert.Throws<FormatException>(
+                () => TypeDescriptor.GetConverter(typeof(PhoneNumber)).ConvertFrom(input));
+
+            Assert.DoesNotContain("7700", exception.Message, StringComparison.Ordinal);
+            Assert.IsType<NumberParseException>(exception.InnerException);
+        }
 
         [Fact]
         public void TypeConverterRefusesTypesItCannotConvert()
@@ -303,7 +317,7 @@ namespace PhoneNumbers.Test
             var configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string?>
                 {
-                    ["Sms:From"] = "",
+                    ["Sms:From"] = " ",
                     ["Sms:Sender"] = "Acme",
                 })
                 .Build();

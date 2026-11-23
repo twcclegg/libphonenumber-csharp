@@ -173,8 +173,10 @@ namespace PhoneNumbers
     /// <see cref="PhoneNumber"/>, so it adds no public API. Strings must carry their own country
     /// calling code (E.164 or an RFC 3966 <c>tel:</c> URI), matching the <c>IParsable&lt;T&gt;</c>
     /// implementation; an unconvertible string throws <see cref="FormatException"/>, which is what
-    /// <c>TypeDescriptor</c>-based binders expect. An empty string converts to <see langword="null"/>,
-    /// so a blank optional configuration value leaves the property unset rather than failing startup.
+    /// <c>TypeDescriptor</c>-based binders expect; its message leaves the input out, because a phone
+    /// number is personal data and binders log these exceptions. An empty or whitespace-only string
+    /// converts to <see langword="null"/>, so a blank optional configuration value leaves the property
+    /// unset rather than failing startup.
     /// </para>
     /// <para>
     /// The string form is E.164, which holds only the country calling code and national number.
@@ -197,8 +199,8 @@ namespace PhoneNumbers
             }
 
             // ConfigurationBinder only short-circuits "" for Nullable<T>; for a reference type it
-            // hands the empty string here, and a blank optional setting must not crash startup.
-            if (stringValue.Length == 0)
+            // hands the string here as is, and a blank optional setting must not crash startup.
+            if (string.IsNullOrWhiteSpace(stringValue))
             {
                 return null;
             }
@@ -209,7 +211,9 @@ namespace PhoneNumbers
             }
             catch (NumberParseException ex)
             {
-                throw new FormatException("'" + stringValue + "' is not a valid international phone number.", ex);
+                // The input stays out of the message: it is personal data, and configuration and
+                // model binders log this exception.
+                throw new FormatException("The input is not a valid international phone number.", ex);
             }
         }
 
