@@ -3,6 +3,8 @@
 # so it can mark the current one active and start the breadcrumb from it.
 - name: API Reference
   href: api/
+- name: Extensions
+  href: articles/extensions.md
 - name: Articles
   href: articles/api-differences-from-java.md
 - name: GitHub

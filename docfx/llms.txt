@@ -1,0 +1,46 @@
+# libphonenumber-csharp
+
+> C# port of Google's libphonenumber: parse, format and validate international phone numbers.
+> Two NuGet packages: libphonenumber-csharp (the port, mirrors Google's Java API) and
+> libphonenumber-csharp.extensions (C#-idiomatic helpers: TryParse, formatting extension methods,
+> System.Text.Json converter, DataAnnotations attribute). Both target netstandard2.0, net8.0 and
+> net10.0 and are trim/Native AOT compatible.
+
+## Correct usage
+
+- Import `using PhoneNumbers;` only. Do NOT import `PhoneNumbers.Extensions`: it is the obsolete
+  first version of the extensions package (warnings PNX0001-PNX0005), and its static class
+  `PhoneNumbers.Extensions.PhoneNumber` collides with the core type `PhoneNumbers.PhoneNumber`.
+- Core (no extensions package): `var util = PhoneNumberUtil.GetInstance();`
+  `PhoneNumber n = util.Parse("020 7031 3000", "GB");` (throws `NumberParseException`),
+  `util.Format(n, PhoneNumberFormat.E164)`, `util.IsValidNumber(n)`, `util.GetNumberType(n)`.
+  Enum members are SCREAMING_SNAKE_CASE as in Java: `PhoneNumberFormat.E164`,
+  `PhoneNumberType.FIXED_LINE`.
+- Non-throwing parse (extensions package): `if (PhoneNumber.TryParse(s, "GB", out PhoneNumber? n))`
+  on C# 14+; `PhoneNumberParser.TryParse(s, "GB", out PhoneNumber? n)` on C# 13 or earlier and VB.
+  `TryParseValid` additionally requires a valid number. The region is a two-letter CLDR code;
+  omit it (or pass null) to accept international format ("+44...") only.
+- Formatting (extensions package): `n.Format(PhoneNumberFormat.E164)`, `n.IsValidNumber()`,
+  `n.GetNumberType()`, `n.GetRegionCodeForNumber()`.
+- JSON (extensions package): `using PhoneNumbers.Text.Json;`
+  `new JsonSerializerOptions().AddPhoneNumberConverter()`. Native AOT: put
+  `[JsonSourceGenerationOptions(Converters = new[] { typeof(PhoneNumberJsonConverter) })]` on your
+  own JsonSerializerContext. Never serialize a PhoneNumber without the converter.
+- Validation attribute (extensions package): `using PhoneNumbers.ComponentModel.DataAnnotations;`
+  `[ValidPhoneNumber(DefaultRegion = "GB")]` on a string or PhoneNumber property.
+- ASP.NET Core route/query parameters of type PhoneNumber and IOptions<T> properties of type
+  PhoneNumber bind with no setup, in international format only. For national input bind a string
+  and call TryParse with the region.
+- Never write a custom TypeConverter for PhoneNumber or register `PhoneNumberTypeConverter`; the
+  core type has one built in.
+- `PhoneNumber.ToString()` is a debug dump ("Country Code: 44 National Number: 2070313000"), not a
+  format. Use Format.
+
+## Docs
+
+- [Extensions guide](https://twcclegg.github.io/libphonenumber-csharp/docs/articles/extensions.html)
+- [Migrating from PhoneNumbers.Extensions](https://twcclegg.github.io/libphonenumber-csharp/docs/articles/extensions-migration.html)
+- [Diagnostics PNX0001-PNX0005](https://twcclegg.github.io/libphonenumber-csharp/docs/articles/diagnostics.html)
+- [API differences from the Java library](https://twcclegg.github.io/libphonenumber-csharp/docs/articles/api-differences-from-java.html)
+- [API reference](https://twcclegg.github.io/libphonenumber-csharp/docs/api/PhoneNumbers.html)
+- [Source](https://github.com/twcclegg/libphonenumber-csharp)

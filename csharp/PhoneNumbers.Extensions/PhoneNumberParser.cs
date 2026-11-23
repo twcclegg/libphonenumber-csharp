@@ -16,8 +16,26 @@ namespace PhoneNumbers
     /// <see cref="NumberParseException"/>, these return <see langword="false"/> instead.
     /// </para>
     /// <para>
-    /// A successful parse says nothing about validity. Use <see cref="TryParseValid(string, string, out PhoneNumber)"/>,
-    /// or check <c>number.IsValidNumber()</c>, before trusting a number from user input.
+    /// A successful parse says nothing about validity. Use <c>TryParseValid</c>, or check
+    /// <c>number.IsValidNumber()</c>, before trusting a number from user input.
+    /// </para>
+    /// <para>
+    /// The members, declared in a C# 14 <c>extension(PhoneNumber)</c> block (which the generated API
+    /// reference does not list yet):
+    /// </para>
+    /// <list type="bullet">
+    /// <item><description><c>bool TryParse(string? s, out PhoneNumber? result)</c>: international
+    /// format only (E.164, <c>"+44 20 7031 3000"</c>, <c>"tel:+44-20-7031-3000"</c>).</description></item>
+    /// <item><description><c>bool TryParse(string? s, string? defaultRegion, out PhoneNumber? result)</c>:
+    /// also national format, interpreted in <c>defaultRegion</c> (e.g. <c>"GB"</c>).</description></item>
+    /// <item><description><c>bool TryParseValid(string? s, out PhoneNumber? result)</c> and
+    /// <c>bool TryParseValid(string? s, string? defaultRegion, out PhoneNumber? result)</c>: as above,
+    /// and <see langword="true"/> only for a valid number; <c>result</c> is <see langword="null"/>
+    /// otherwise.</description></item>
+    /// </list>
+    /// <para>
+    /// After a <see langword="true"/> return, <c>result</c> is not <see langword="null"/>
+    /// (<c>[NotNullWhen(true)]</c>).
     /// </para>
     /// </remarks>
     public static class PhoneNumberParser

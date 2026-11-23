@@ -1,2 +1,8 @@
+- name: Extensions guide
+  href: extensions.md
+- name: Migrating from PhoneNumbers.Extensions
+  href: extensions-migration.md
+- name: Diagnostics PNX0001-PNX0005
+  href: diagnostics.md
 - name: API differences from upstream Java
   href: api-differences-from-java.md

@@ -32,7 +32,23 @@ Available on NuGet as package [`libphonenumber-csharp`](https://www.nuget.org/pa
 
 Targets `netstandard2.0`, `net8.0` and `net10.0`.
 
-[`libphonenumber-csharp.extensions`](https://www.nuget.org/packages/libphonenumber-csharp.extensions) is an optional companion package with helpers that suit C# better than the ported Java API — `PhoneNumber.TryParse` and `PhoneNumber.TryParseValid` return a `bool` instead of throwing, and `PhoneNumberConverter` is a `System.Text.Json` converter for `PhoneNumber`.
+### The Extensions package
+
+[`libphonenumber-csharp.extensions`](https://www.nuget.org/packages/libphonenumber-csharp.extensions) is an optional companion package for the things C# developers expect and the Java API doesn't have: a non-throwing `TryParse`, formatting helpers on the number itself, a `System.Text.Json` converter (Native AOT friendly) and a DataAnnotations attribute.
+
+```csharp
+using PhoneNumbers;                       // the only import needed to parse, validate and format
+using PhoneNumbers.Text.Json;             // JSON converter
+using PhoneNumbers.ComponentModel.DataAnnotations; // [ValidPhoneNumber]
+
+if (PhoneNumber.TryParse(input, "GB", out PhoneNumber? number) && number.IsValidNumber())
+    Save(number.Format(PhoneNumberFormat.E164));
+
+var jsonOptions = new JsonSerializerOptions().AddPhoneNumberConverter();
+public record Contact(string Name, [property: ValidPhoneNumber(DefaultRegion = "GB")] string Phone);
+```
+
+`PhoneNumber.TryParse` needs C# 14; on earlier versions call `PhoneNumberParser.TryParse`. See the [Extensions guide](https://twcclegg.github.io/libphonenumber-csharp/docs/articles/extensions.html). Coming from the package's first version (`using PhoneNumbers.Extensions;`, warnings PNX0001–PNX0005)? See the [migration guide](https://twcclegg.github.io/libphonenumber-csharp/docs/articles/extensions-migration.html).
 
 ### Trimming and Native AOT
 

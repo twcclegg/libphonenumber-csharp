@@ -18,6 +18,8 @@
         <!-- Property-based tests: see TestPhoneNumberParserPrecheck. -->
         <PackageReference Include="FsCheck" />
         <PackageReference Include="FsCheck.Xunit" />
+        <!-- Recipes/: the documented Newtonsoft.Json converter, compiled and run. -->
+        <PackageReference Include="Newtonsoft.Json" />
         <PackageReference Include="xunit" />
         <PackageReference Include="xunit.runner.visualstudio">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
