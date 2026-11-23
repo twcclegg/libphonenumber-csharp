@@ -39,6 +39,11 @@
       <ProjectReference Include="..\PhoneNumbers\PhoneNumbers.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <!-- PhoneNumberParser.IsViableCandidate is tested directly against Parse. -->
+      <InternalsVisibleTo Include="PhoneNumbers.Extensions.Test" />
+    </ItemGroup>
+
     <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
       <PackageReference Include="System.Text.Json" />
       <PackageReference Include="System.ComponentModel.Annotations" />

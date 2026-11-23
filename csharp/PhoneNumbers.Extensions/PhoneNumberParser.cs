@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 namespace PhoneNumbers
@@ -22,6 +23,70 @@ namespace PhoneNumbers
     public static class PhoneNumberParser
     {
         private static readonly PhoneNumberUtil Util = PhoneNumberUtil.GetInstance();
+
+        // GetSupportedRegions returns a fresh copy per call; take one for the life of the process.
+        private static readonly HashSet<string> SupportedRegions = Util.GetSupportedRegions();
+
+        // PhoneNumberUtil.MAX_INPUT_STRING_LENGTH, which is internal to the core assembly.
+        private const int MaxInputLength = 250;
+
+        /// <summary>
+        /// Whether <see cref="PhoneNumberUtil.Parse(string, string)"/> could possibly accept
+        /// <paramref name="s"/>. A <see langword="false"/> is certain; a <see langword="true"/> only
+        /// means it is worth calling <c>Parse</c>.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// A failed parse otherwise costs a thrown and caught <see cref="NumberParseException"/>,
+        /// as much as a successful parse, so this rejects the input <c>Parse</c> is certain to refuse
+        /// without calling it. It only rejects on conditions that <c>Parse</c> checks against text
+        /// that is wholly made of characters from <paramref name="s"/>: its working copy is built from
+        /// substrings of the input (after stripping leading junk, or after rearranging an RFC 3966
+        /// <c>phone-context</c>), so a character missing from the input is missing from it too.
+        /// </para>
+        /// <list type="bullet">
+        /// <item><description><see langword="null"/> or longer than 250 characters: <c>Parse</c>
+        /// throws NOT_A_NUMBER or TOO_LONG before anything else.</description></item>
+        /// <item><description>Fewer than two decimal digits: <c>IsViablePhoneNumber</c> needs at
+        /// least two (<c>\d</c> in .NET regex is <see cref="char.IsDigit(char)"/>, any script).</description></item>
+        /// <item><description>No plus sign (<c>+</c> or fullwidth <c>U+FF0B</c>) when
+        /// <paramref name="defaultRegion"/> is not a supported region: <c>Parse</c> needs the number to
+        /// start with one to know its country, and throws INVALID_COUNTRY_CODE.</description></item>
+        /// </list>
+        /// <para>
+        /// The FsCheck properties in <c>TestPhoneNumberParserPrecheck</c> hold it to never rejecting
+        /// anything <c>Parse</c> accepts.
+        /// </para>
+        /// </remarks>
+        internal static bool IsViableCandidate([NotNullWhen(true)] string? s, string? defaultRegion)
+        {
+            if (s is null || s.Length < 2 || s.Length > MaxInputLength)
+            {
+                return false;
+            }
+
+            var needsPlus = defaultRegion is null || !SupportedRegions.Contains(defaultRegion);
+            var digits = 0;
+            var hasPlus = false;
+            foreach (var c in s)
+            {
+                if (char.IsDigit(c))
+                {
+                    digits++;
+                }
+                else if (c is '+' or '\uFF0B')
+                {
+                    hasPlus = true;
+                }
+
+                if (digits >= 2 && (hasPlus || !needsPlus))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
         // CA1034 reads an extension block as a public nested type, which it is only in metadata.
 #pragma warning disable CA1034
@@ -60,6 +125,12 @@ namespace PhoneNumbers
             /// <returns><see langword="true"/> if <paramref name="s"/> was parsed; otherwise <see langword="false"/>.</returns>
             public static bool TryParse(string? s, string? defaultRegion, [NotNullWhen(true)] out PhoneNumber? result)
             {
+                if (!IsViableCandidate(s, defaultRegion))
+                {
+                    result = null;
+                    return false;
+                }
+
                 try
                 {
                     result = Util.Parse(s, defaultRegion);

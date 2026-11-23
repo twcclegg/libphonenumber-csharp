@@ -1,13 +1,15 @@
 name: run_performance_tests
 
 # Benchmarking is the longest job in the repo, so it only runs when something it measures could have
-# moved. PhoneNumbers is listed because PerformanceTest is not in the solution: nothing else compiles
-# it, so without this a library change could break the benchmarks unnoticed.
+# moved. PhoneNumbers and PhoneNumbers.Extensions (ExtensionsTryParseBenchmark) are listed because
+# PerformanceTest is not in the solution: nothing else compiles it, so without this a library change
+# could break the benchmarks unnoticed.
 on:
   pull_request:
     branches: [ "main" ]
     paths:
       - 'csharp/PhoneNumbers/**'
+      - 'csharp/PhoneNumbers.Extensions/**'
       - 'csharp/PhoneNumbers.PerformanceTest/**'
       - 'csharp/Directory.Build.props'
       - 'csharp/Directory.Packages.props'
@@ -23,6 +25,7 @@ on:
     branches: [ "main" ]
     paths:
       - 'csharp/PhoneNumbers/**'
+      - 'csharp/PhoneNumbers.Extensions/**'
       - 'csharp/PhoneNumbers.PerformanceTest/**'
       - 'csharp/Directory.Build.props'
       - 'csharp/Directory.Packages.props'

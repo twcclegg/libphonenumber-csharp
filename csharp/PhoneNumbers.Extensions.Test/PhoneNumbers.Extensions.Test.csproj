@@ -15,6 +15,9 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <!-- Property-based tests: see TestPhoneNumberParserPrecheck. -->
+        <PackageReference Include="FsCheck" />
+        <PackageReference Include="FsCheck.Xunit" />
         <PackageReference Include="xunit" />
         <PackageReference Include="xunit.runner.visualstudio">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
