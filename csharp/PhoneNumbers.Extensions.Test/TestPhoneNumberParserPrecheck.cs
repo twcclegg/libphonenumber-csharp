@@ -254,31 +254,14 @@ namespace PhoneNumbers.Test.Extensions
         }
 
         private static PhoneNumber[] CreateExamples()
-        {
-            var examples = new List<PhoneNumber>();
-            foreach (var region in Regions)
-            {
-                foreach (var type in Enum.GetValues<PhoneNumberType>())
-                {
-                    var example = Util.GetExampleNumberForType(region, type);
-                    if (example != null)
-                    {
-                        examples.Add(example);
-                    }
-                }
-            }
-
-            foreach (var callingCode in Util.GetSupportedGlobalNetworkCallingCodes().OrderBy(c => c))
-            {
-                var example = Util.GetExampleNumberForNonGeoEntity(callingCode);
-                if (example != null)
-                {
-                    examples.Add(example);
-                }
-            }
-
-            return examples.ToArray();
-        }
+            => Regions
+                .SelectMany(region => Enum.GetValues<PhoneNumberType>()
+                    .Select(type => Util.GetExampleNumberForType(region, type)))
+                .Concat(Util.GetSupportedGlobalNetworkCallingCodes()
+                    .OrderBy(c => c)
+                    .Select(callingCode => Util.GetExampleNumberForNonGeoEntity(callingCode)))
+                .OfType<PhoneNumber>()
+                .ToArray();
 
         private static string Describe(string? value)
             => value is null ? "null" : "\"" + string.Concat(value.Select(c => c < 0x20 || c > 0x7E ? $"\\u{(int)c:X4}" : c.ToString())) + "\"";

@@ -44,14 +44,17 @@ namespace PhoneNumbers.AotTest
             var dictBack = JsonSerializer.Deserialize(dictJson, AotJsonContext.Default.DictionaryPhoneNumberString);
             Check(dictBack is not null && dictBack[phone] == "office", "dictionary key round trip: " + dictJson);
 
+            var rejected = false;
             try
             {
                 JsonSerializer.Deserialize("{\"Name\":\"x\",\"Phone\":\"junk\",\"Others\":[]}", AotJsonContext.Default.Contact);
-                Check(false, "invalid phone number rejected");
             }
             catch (JsonException)
             {
+                rejected = true;
             }
+
+            Check(rejected, "invalid phone number rejected");
 
             // Options built from the context, with the converter added by the extension method
             // rather than by the attribute: the other supported registration.

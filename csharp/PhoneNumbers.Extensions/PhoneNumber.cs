@@ -27,6 +27,9 @@ namespace PhoneNumbers.Extensions
         public static bool TryParseValid(string? input, [NotNullWhen(true)] out PhoneNumbers.PhoneNumber? number)
             => TryParseValid(input, null, out number);
 
+        /// <summary>
+        /// Obsolete: use <c>PhoneNumber.TryParseValid</c> (C# 14) or <see cref="PhoneNumberParser"/>.
+        /// </summary>
         /// <remarks>
         /// Unlike <see cref="PhoneNumberParser"/>'s <c>TryParseValid</c>, this sets
         /// <paramref name="number"/> to the parsed number when it parses but is not valid, as it

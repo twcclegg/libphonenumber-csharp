@@ -103,7 +103,7 @@ namespace PhoneNumbers.Test.Extensions
         [Fact]
         public void AddPhoneNumberConverter_Null_Throws()
         {
-            Assert.Throws<ArgumentNullException>(() => ((JsonSerializerOptions)null!).AddPhoneNumberConverter());
+            Assert.Throws<ArgumentNullException>(() => PhoneNumberJsonSerializerOptionsExtensions.AddPhoneNumberConverter(null!));
         }
 
         [Fact]
