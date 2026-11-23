@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- A Native AOT round trip of the Extensions JSON support, the way a consumer would wire it:
+         the converter registered on the app's own source-generated context, no reflection.
+         Building runs the trim and AOT analyzers over the calls (warnings are errors), and
+         build_and_run_unit_tests_linux.yml publishes it with PublishAot and runs the binary,
+         which exits non-zero if a value does not survive. Not a test project, so dotnet test
+         skips it; locally:
+           dotnet publish csharp/PhoneNumbers.Extensions.AotTest -c Release -p:AotRoundTrip=true -o aot-out
+           ./aot-out/PhoneNumbers.Extensions.AotTest
+         Native AOT on Linux needs clang and zlib1g-dev. PublishAot hangs off AotRoundTrip so an
+         ordinary solution build does not restore the ILCompiler package, and is not passed as
+         -p:PublishAot itself because a global property reaches the netstandard2.0 project
+         references too (NETSDK1207). The analyzers below are what PublishAot switches on at
+         build time. -->
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <PublishAot Condition="'$(AotRoundTrip)' == 'true'">true</PublishAot>
+        <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+        <EnableAotAnalyzer>true</EnableAotAnalyzer>
+        <EnableSingleFileAnalyzer>true</EnableSingleFileAnalyzer>
+        <InvariantGlobalization>true</InvariantGlobalization>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\PhoneNumbers.Extensions\PhoneNumbers.Extensions.csproj" />
+      <ProjectReference Include="..\PhoneNumbers\PhoneNumbers.csproj" />
+    </ItemGroup>
+
+</Project>

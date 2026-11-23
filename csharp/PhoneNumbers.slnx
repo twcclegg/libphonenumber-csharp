@@ -4,5 +4,6 @@
   <Project Path="PhoneNumbers.Extensions/PhoneNumbers.Extensions.csproj" />
   <Project Path="PhoneNumbers.Extensions.Test/PhoneNumbers.Extensions.Test.csproj" />
   <Project Path="PhoneNumbers.Extensions.CSharp12.Test/PhoneNumbers.Extensions.CSharp12.Test.csproj" />
+  <Project Path="PhoneNumbers.Extensions.AotTest/PhoneNumbers.Extensions.AotTest.csproj" />
   <Project Path="PhoneNumbers.MetadataBuilder/PhoneNumbers.MetadataBuilder.csproj" />
 </Solution>
