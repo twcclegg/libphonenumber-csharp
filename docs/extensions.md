@@ -155,8 +155,10 @@ string json = JsonSerializer.Serialize(contact, options);
 // {"Name":"Ada","Phone":"+442070313000","Mobile":null}
 ```
 
-- Works at any depth: properties, collections, and dictionary keys.
-- Writes E.164. System.Text.Json's default encoder escapes `+` as `+`; it is the same string
+- Works at any depth: properties, collections, and dictionary keys. Keys are E.164 too, so two
+  keys that differ only in what E.164 drops (an extension, say) are written as the same property
+  name, and reading that JSON back fails or keeps only one of them.
+- Writes E.164. System.Text.Json's default encoder escapes `+` as `\u002B`; it is the same string
   to any JSON reader.
 - Reads international format only, with the same parse as `TryParse(s, out ...)`. A number read
   from JSON is equal to the same text parsed by `PhoneNumberUtil.Parse`, configuration binding or
@@ -248,8 +250,9 @@ Newtonsoft.Json does not escape `+`, so its output reads `"+442070313000"`.
 
 ### Entity Framework Core
 
-Store the E.164 string in a column of at most 16 characters (`+` and up to 15 digits). For one
-property:
+Store the E.164 string in a column of at most 21 characters: `+`, a country calling code of up to
+three digits and up to 17 national digits, the longest `Parse` accepts. A *valid* number fits in 16
+(`+` and up to 15 digits), but this converter stores whatever parsed. For one property:
 
 ```csharp
 modelBuilder.Entity<Contact>()
@@ -257,7 +260,7 @@ modelBuilder.Entity<Contact>()
     .HasConversion(
         number => number.Format(PhoneNumberFormat.E164),
         text => PhoneNumberUtil.GetInstance().Parse(text, null))
-    .HasMaxLength(16);
+    .HasMaxLength(21);
 ```
 
 For every `PhoneNumber` property in the model:
@@ -275,7 +278,7 @@ public sealed class PhoneNumberToE164Converter : ValueConverter<PhoneNumber, str
 protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     => configurationBuilder.Properties<PhoneNumber>()
         .HaveConversion<PhoneNumberToE164Converter>()
-        .HaveMaxLength(16);
+        .HaveMaxLength(21);
 ```
 
 Equality queries such as `Where(c => c.Phone == number)` compare the stored strings. As with JSON,
