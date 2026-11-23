@@ -20,7 +20,10 @@ automatically every ~two weeks; the library compiles it to binaries at build tim
 - `csharp/PhoneNumbers/` — main library (NuGet `libphonenumber-csharp`), `netstandard2.0;net8.0;net10.0`.
 - `csharp/PhoneNumbers.Test/` — xUnit tests ported from Java, `net8.0;net10.0`.
 - `csharp/PhoneNumbers.Extensions/` (+ `.Test/`) — NuGet `libphonenumber-csharp.extensions`:
-  C#-idiomatic helpers with no Java counterpart.
+  C#-idiomatic helpers with no Java counterpart. `.CSharp12.Test/` compiles its pre-C# 14
+  spellings; `.AotTest/` is a console app CI publishes with Native AOT and runs. Its conventions
+  (never reuse a core type name, namespace rules, `PNX` ids, `LangVersion 14`) are in the
+  `changing-public-api` skill.
 - `csharp/PhoneNumbers.MetadataBuilder/` — build-time tool that turns `resources/` into per-region
   binaries; source-links a few library files so it cannot cycle with the main project.
 - `csharp/PhoneNumbers.PerformanceTest/` — BenchmarkDotNet harness.
@@ -124,7 +127,8 @@ dotnet test csharp/PhoneNumbers.Test --filter "FullyQualifiedName~TestPhoneNumbe
 - Parsing and formatting are allocation-light on purpose: spans and slices over substrings and
   `Match` objects; lookup tables built once into frozen collections. Measure hot-path changes with
   the benchmark harness rather than reasoning about them.
-- Nullable reference types are on everywhere except `netstandard2.0`; annotate new code regardless.
+- Nullable reference types are on everywhere except the core library's `netstandard2.0` build;
+  annotate new code regardless.
 - CI is GitHub Actions. The default runner is `ubuntu-24.04-arm`; a handful of jobs run x64 on
   `ubuntu-latest`; there are no Windows or macOS runners. PRs run
   `build_and_run_unit_tests_linux.yml` (net10.0, plus the reproducibility check),

@@ -27,24 +27,62 @@ member or a helper in `PhoneNumbers.Extensions` usually serves.
 - **`csharp/PhoneNumbers/`** (`libphonenumber-csharp`) — anything with a counterpart in the Java
   library. Keep the Java name and shape; see the `porting-upstream-changes` skill.
 - **`csharp/PhoneNumbers.Extensions/`** (`libphonenumber-csharp.extensions`) — C#-idiomatic helpers
-  with *no* Java counterpart: the `TryParse`-style `PhoneNumber` static class, the
-  `System.Text.Json` converter and source-generated context, `PhoneNumberAttribute`,
-  `PhoneNumberTypeConverter`. Putting these in the core package makes every future upstream sync a
-  diff to reconcile, so new non-ported conveniences belong here.
+  with *no* Java counterpart: `PhoneNumber.TryParse` (`PhoneNumberParser`), `number.Format(...)` and
+  friends (`PhoneNumberFormatting`), the `System.Text.Json` converter, `ValidPhoneNumberAttribute`.
+  Putting these in the core package makes every future upstream sync a diff to reconcile, so new
+  non-ported conveniences belong here. Follow the Extensions conventions below.
+
+## Extensions conventions
+
+Set by #475; the old `PhoneNumbers.Extensions` namespace is what breaking them looked like.
+
+- **Never reuse a core type's name** for an Extensions type, not even with different casing (VB
+  is case-insensitive). The old static class `PhoneNumbers.Extensions.PhoneNumber` made every file
+  importing both namespaces fail with CS0104. Member names matter too: a new extension method with
+  the same name and receiver as an old one is CS0121 in files importing both, which is why the new
+  helpers are `Format`/`IsValidNumber`, not `ToE164`/`IsValid`.
+- **Namespaces.** Helpers that operate on core types go in `PhoneNumbers`, so `using PhoneNumbers;`
+  is the only import a consumer needs. Framework integrations go in a namespace mirroring the BCL
+  one they extend: `PhoneNumbers.Text.Json`, `PhoneNumbers.ComponentModel.DataAnnotations`.
+  Never add anything to `PhoneNumbers.Extensions`; it is obsolete.
+- **Static members on core types** (`PhoneNumber.TryParse`) are C# 14 `extension(PhoneNumber)` blocks
+  inside a class with its own name (`PhoneNumberParser`). The compiler also emits each member as a
+  plain static on that class, which is the spelling C# 13 and earlier and VB use. Instance-style
+  helpers are classic `this` extension methods, so C# 7.3 and VB get the same spelling as C# 14.
+  `PhoneNumbers.Extensions.CSharp12.Test` compiles every fallback spelling under `LangVersion 12`;
+  add new API to it. DocFX (2.81) does not list extension-block members, so document their
+  signatures in the containing class's remarks.
+- **`LangVersion` is pinned to 14** in the Extensions csproj, and `Nullable` is on for every target
+  including netstandard2.0, where `Polyfills/` supplies the attributes. Annotate everything.
+- **Obsoleting** uses a `PNX` diagnostic id per replaceable thing: add the id, message and
+  `UrlFormat` to `Obsoletions.cs`, a section with an explicit `<a id="PNXnnnn"></a>` anchor to
+  `docs/diagnostics.md` (DocFX lower-cases generated heading ids; `UrlFormat` substitutes the id
+  verbatim), and `[EditorBrowsable(Never)]`, which also drops the type from the docs site. The
+  `UrlFormat` page is compiled into consumers' warnings, so it never moves. PNX0001–PNX0005 are
+  taken; the next is PNX0006. On netstandard2.0 the internal `System.ObsoleteAttribute` polyfill
+  carries the id (the compiler matches the attribute by name), hence `NoWarn CS0436` there.
+- **Don't break consumers of obsolete API**: forward to the new implementation only where the
+  behaviour is identical; otherwise keep the old body. Their tests live in
+  `PhoneNumbers.Extensions.Test/Obsolete/` behind per-file `#pragma warning disable PNX000n`.
 
 ## The constraints
 
 Both projects target `netstandard2.0;net8.0;net10.0`.
 
-- **TFM parity is mandatory.** A member that exists on `net10.0` but not `netstandard2.0` fails
-  package validation. If the implementation needs a modern BCL API, ship the same signature on every
-  target with a fallback implementation — for `PhoneNumberUtil` that means the modern half in
+- **TFM parity is mandatory, and only half of it is checked.** Package validation fails a member
+  that exists on `netstandard2.0` but is missing from `net8.0`/`net10.0` (CP0002, because a
+  consumer moving up a TFM would lose it). It does **not** catch the reverse: a member present on
+  `net10.0` but missing from `netstandard2.0` packs cleanly (verified twice). Check that direction
+  yourself. If the implementation needs a modern BCL API, ship the same signature on every target
+  with a fallback implementation — for `PhoneNumberUtil` that means the modern half in
   `PhoneNumberUtil.net.cs` and the netstandard2.0 half in `PhoneNumberUtil.netstandard.cs`.
 - **Trim and AOT.** `IsAotCompatible` is set on the modern TFMs and warnings are errors, so no
-  reflection or dynamic code may be reachable from anything public. The JSON support in Extensions
-  goes through a source-generated `JsonSerializerContext` for this reason.
-- **Nullable reference types** are enabled on every target but `netstandard2.0`. Annotate regardless
-  — an unannotated new API is inconsistent with everything around it.
+  reflection or dynamic code may be reachable from anything public. The JSON converter is used
+  through the consumer's own source-generated context; `PhoneNumbers.Extensions.AotTest` publishes
+  that setup with Native AOT in CI and runs it.
+- **Nullable reference types** are enabled on every target but `netstandard2.0` in the core library,
+  and on every target in Extensions. Annotate regardless — an unannotated new API is inconsistent
+  with everything around it.
 - **Breaking changes.** Each pack is compared against `PackageValidationBaselineVersion` in the
   csproj (a real nuget.org release — restore downloads it). If a break is genuinely intended, that
   is a maintainer decision about the next version — raise it rather than suppressing the diagnostic
@@ -59,7 +97,7 @@ Both projects target `netstandard2.0;net8.0;net10.0`.
 ## Verify
 
 ```bash
-dotnet build csharp --no-restore                     # catches TFM parity, trim/AOT, validation
+dotnet build csharp --no-restore                     # trim/AOT, validation (one direction of TFM parity)
 dotnet test csharp/PhoneNumbers.slnx -p:TargetFrameworks=net10.0
 dotnet pack -c Release csharp/PhoneNumbers           # publish_nuget.yml adds -p:VersionPrefix=<tag minus "v">
 dotnet pack -c Release csharp/PhoneNumbers.Extensions
