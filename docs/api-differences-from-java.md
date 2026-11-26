@@ -59,7 +59,9 @@ number API. Passing a `CultureInfo` will not compile; use one of the static pres
 **Why:** `java.util.Locale` has no direct BCL equivalent with the same two-part
 language/country shape, so the port ported the small pieces of `java.util.Locale` actually
 used (language + country, and `getDisplayCountry`) into a dedicated type instead of
-reshaping the API around `CultureInfo`. One known gap: `java.util.Locale.getScript()` has
+reshaping the API around `CultureInfo`. Its constructor normalises the codes like
+`java.util.Locale` on JDK 17 and later: the language is lowercased and the old codes `iw`, `in`
+and `ji` become `he`, `id` and `yi`, and the country is uppercased. One known gap: `java.util.Locale.getScript()` has
 no equivalent here, so callers cannot express a script subtag — see the comment in
 [`PhoneNumberToCarrierMapper.cs`](../csharp/PhoneNumbers/PhoneNumberToCarrierMapper.cs)
 (`GetNameForValidNumber`), which always passes an empty script to the underlying prefix
