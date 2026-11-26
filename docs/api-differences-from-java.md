@@ -18,6 +18,7 @@ specific mistakes documented here.
 - [`PhoneNumbers.Extensions.PhoneNumber` and `PhoneNumbers.PhoneNumber` share a simple name](#phonenumbersextensionsphonenumber-and-phonenumbersphonenumber-share-a-simple-name)
 - [Enum members keep Java's `SCREAMING_SNAKE_CASE`, not .NET `PascalCase`](#enum-members-keep-javas-screaming_snake_case-not-net-pascalcase)
 - [`PhoneNumber` looks like a plain settable class but is a protobuf-style immutable message](#phonenumber-looks-like-a-plain-settable-class-but-is-a-protobuf-style-immutable-message)
+- [Leading zeros are one count, not Java's flag plus count](#leading-zeros-are-one-count-not-javas-flag-plus-count)
 - [`CharSequence` parameters become `string`, not a comparable abstraction](#charsequence-parameters-become-string-not-a-comparable-abstraction)
 - [Metadata and prefix maps are a custom binary format, not protocol buffers](#metadata-and-prefix-maps-are-a-custom-binary-format-not-protocol-buffers)
 
@@ -171,6 +172,51 @@ that C#'s auto-property syntax makes `PhoneNumber` *look* like an ordinary setta
 at a glance (Java has no equivalent syntax to be misled by), so the internal setters come
 as a surprise the first time you reach for an object initializer instead of `Parse` or
 `CreateBuilder()`.
+
+---
+
+## Leading zeros are one count, not Java's flag plus count
+
+**Java:** `PhoneNumber` keeps two fields for a national number that starts with `0`:
+`italian_leading_zero` (a flag) and `number_of_leading_zeros` (a count that defaults to `1`).
+`PhoneNumberUtil.setItalianLeadingZerosForPhoneNumber` sets the flag for any leading zero, but
+sets the count only when there are two or more zeros. So for a parsed number:
+
+| National number | `isItalianLeadingZero()` | `hasNumberOfLeadingZeros()` | `getNumberOfLeadingZeros()` |
+|---|---|---|---|
+| no leading zero | `false` | `false` | `1` (the default) |
+| one leading zero | `true` | `false` | `1` (the default) |
+| two or more leading zeros | `true` | `true` | the count |
+
+**C# (this port):** [`csharp/PhoneNumbers/Phonenumber.cs`](../csharp/PhoneNumbers/Phonenumber.cs)
+keeps one count. `0` means no leading zero.
+
+| National number | `HasNumberOfLeadingZeros` | `NumberOfLeadingZeros` |
+|---|---|---|
+| no leading zero | `false` | `0` |
+| one leading zero | `true` | `1` |
+| two or more leading zeros | `true` | the count |
+
+`HasItalianLeadingZero` and `ItalianLeadingZero` are still there, but they are obsolete and
+return `HasNumberOfLeadingZeros`. On the builder, `SetItalianLeadingZero(true)` writes a count of
+`1` and `SetItalianLeadingZero(false)` writes `0`.
+
+When you port Java code, translate these calls:
+
+| Java | C# |
+|---|---|
+| `number.isItalianLeadingZero()` | `number.HasNumberOfLeadingZeros` |
+| `number.hasNumberOfLeadingZeros()` | `number.NumberOfLeadingZeros > 1` (for a parsed number) |
+| `number.getNumberOfLeadingZeros()` | `Math.Max(number.NumberOfLeadingZeros, 1)` |
+
+The trap: `HasNumberOfLeadingZeros` has the same name as Java's `hasNumberOfLeadingZeros()` but
+the meaning of Java's `isItalianLeadingZero()`. For a number with one leading zero, such as an
+Italian landline (`+39 02 1234 5678`), C# gives `true` and Java gives `false`.
+
+**Why:** the two Java fields carry one piece of information. The port stores it in one byte
+(`_numberOfLeadingZeros`). For a parsed number, formatting, matching and validation give the same
+results as Java; only the field accessors differ. A number built by hand with a count but no flag
+cannot be expressed in C#.
 
 ---
 
