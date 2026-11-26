@@ -34,14 +34,19 @@ namespace PhoneNumbers.Test
         }
 
         [Theory]
-        // Phone-metadata regions that are not ISO countries, so they have no localised name at all.
-        // These used to throw KeyNotFoundException out of the geocoder.
-        [InlineData("AC")]
-        [InlineData("XK")]
-        public void GetDisplayCountry_WhenCountryHasNoLocalisedName_ShouldReturnAnEmptyDisplayCountry(
-            string regionCode)
+        // Phone-metadata regions that are not ISO countries. java.util.Locale still names them, and
+        // these are the names the Java geocoder gives.
+        [InlineData("AC", "en", "Ascension Island")]
+        [InlineData("AC", "de", "Ascension")]
+        [InlineData("AC", "zh", "\u963F\u68EE\u677E\u5C9B")]
+        [InlineData("TA", "en", "Tristan da Cunha")]
+        [InlineData("TA", "zh", "\u7279\u91CC\u65AF\u5766-\u8FBE\u5E93\u5C3C\u4E9A\u7FA4\u5C9B")]
+        [InlineData("XK", "en", "Kosovo")]
+        [InlineData("XK", "zh", "\u79D1\u7D22\u6C83")]
+        public void GetDisplayCountry_WhenRegionIsNotAnIsoCountry_ShouldReturnTheJavaLocaleName(
+            string regionCode, string language, string expected)
         {
-            Assert.Equal(string.Empty, new Locale("en", regionCode).GetDisplayCountry("en"));
+            Assert.Equal(expected, new Locale(language, regionCode).GetDisplayCountry(language));
         }
 
         [Fact]

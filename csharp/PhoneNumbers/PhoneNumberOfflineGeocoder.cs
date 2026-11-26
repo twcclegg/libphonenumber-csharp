@@ -68,10 +68,9 @@ namespace PhoneNumbers
 
         private static string GetCountryName(string country, string language)
         {
-            // Not every phone-metadata region is an ISO country, so some have no entry at all: AC
-            // (calling code 247) and XK are both reachable here via GetRegionDisplayName. Returning
-            // null lets the caller run its language fallback and end up with an empty description,
-            // which is what GetDescriptionForNumber documents for a region it cannot name.
+            // A region with no entry at all (an unknown code) returns null, so the caller runs its
+            // language fallback and ends up with an empty description, which is what
+            // GetDescriptionForNumber documents for a region it cannot name.
             var names = LocaleNames.ForCountry(country);
             if (names == null)
                 return null;

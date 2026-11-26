@@ -12,8 +12,11 @@ namespace PhoneNumbers.Test
     /// </summary>
     public class TestLocaleData
     {
-        /// <summary>Counts as of the move; a wholesale loss of data would not be subtle.</summary>
-        private const int ExpectedCountries = 249;
+        /// <summary>
+        /// The 249 ISO 3166-1 countries plus AC, TA and XK; a wholesale loss of data would not be
+        /// subtle.
+        /// </summary>
+        private const int ExpectedCountries = 252;
 
         [Fact]
         public void EveryCountryIsEmbedded()
@@ -47,8 +50,6 @@ namespace PhoneNumbers.Test
         [Fact]
         public void UnknownCountriesReturnNull()
         {
-            Assert.Null(LocaleNames.ForCountry("AC"));
-            Assert.Null(LocaleNames.ForCountry("XK"));
             Assert.Null(LocaleNames.ForCountry("ZZ"));
             Assert.Null(LocaleNames.ForCountry(""));
         }
@@ -118,9 +119,9 @@ namespace PhoneNumbers.Test
 
         /// <summary>A region with no entry falls through to the empty description.</summary>
         [Fact]
-        public void DisplayCountryIsEmptyForANonIsoRegion()
+        public void DisplayCountryIsEmptyForAnUnknownRegion()
         {
-            Assert.Equal("", new Locale("en", "XK").GetDisplayCountry("en"));
+            Assert.Equal("", new Locale("en", "ZZ").GetDisplayCountry("en"));
         }
     }
 }
