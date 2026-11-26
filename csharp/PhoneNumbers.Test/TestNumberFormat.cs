@@ -18,10 +18,10 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
-        public void TestEqualWithSetNumberOfLeadingZerosSetToDefault()
+        public void TestEqualWithItalianLeadingZeroSetToDefault()
         {
             var numberA = new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(6502530000L)
-                .SetNumberOfLeadingZeros(0).Build();
+                .SetItalianLeadingZero(false).Build();
             var numberB = new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(6502530000L).Build();
 
             Assert.Equal(numberA, numberB);
@@ -41,10 +41,10 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
-        public void TestEqualWithSetNumberOfLeadingZerosSetTo1()
+        public void TestNonEqualWithItalianLeadingZeroSetToTrue()
         {
             var numberA = new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(6502530000L)
-                .SetNumberOfLeadingZeros(1).Build();
+                .SetItalianLeadingZero(true).Build();
             var numberB = new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(6502530000L).Build();
 
             Assert.NotEqual(numberA, numberB);

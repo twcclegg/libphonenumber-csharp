@@ -419,15 +419,14 @@ namespace PhoneNumbers.Test
         [Fact]
         public void TestOutOfRangeNumberOfLeadingZeros()
         {
-            // Ported from ShortNumberInfoTest.testOutOfRangeNumberOfLeadingZeros (upstream v9.0.44). Java's
-            // field is an unbounded int, so it tests -1 and Integer.MAX_VALUE; here the count is stored as a
-            // byte and the setter rejects anything outside 0..255, so neither value can reach ShortNumberInfo.
-            Assert.Throws<OverflowException>(() => new PhoneNumber.Builder().SetNumberOfLeadingZeros(-1));
-            Assert.Throws<OverflowException>(() => new PhoneNumber.Builder().SetNumberOfLeadingZeros(int.MaxValue));
+            // The field has no bounds in the proto, so these values can come straight from the input.
+            var negative = new PhoneNumber.Builder().SetCountryCode(33).SetNationalNumber(1010L)
+                .SetItalianLeadingZero(true).SetNumberOfLeadingZeros(-1).Build();
+            Assert.True(ShortInfo.IsPossibleShortNumber(negative));
+            Assert.True(ShortInfo.IsValidShortNumber(negative));
 
-            // The largest count that can be stored is still capped at ten zeros, so the number is too long.
             var huge = new PhoneNumber.Builder().SetCountryCode(33).SetNationalNumber(1010L)
-                .SetNumberOfLeadingZeros(byte.MaxValue).Build();
+                .SetItalianLeadingZero(true).SetNumberOfLeadingZeros(int.MaxValue).Build();
             Assert.False(ShortInfo.IsPossibleShortNumber(huge));
             Assert.False(ShortInfo.IsValidShortNumber(huge));
         }

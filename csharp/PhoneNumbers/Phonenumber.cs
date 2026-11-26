@@ -1,7 +1,6 @@
 ﻿#nullable disable
 using System;
 using System.CodeDom.Compiler;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
@@ -36,20 +35,56 @@ namespace PhoneNumbers
 
         public string Extension { get; internal set; } = "";
 
-        [Obsolete("Use " + nameof(HasNumberOfLeadingZeros)), EditorBrowsable(EditorBrowsableState.Never)]
-        public bool HasItalianLeadingZero => HasNumberOfLeadingZeros;
+        // Like Java's PhoneNumber, the flag and the count are two fields, each with its own
+        // has-bit. The count defaults to 1, and the parser only sets it for two or more zeros.
+        private bool _hasItalianLeadingZero;
+        private bool _italianLeadingZero;
+        private bool _hasNumberOfLeadingZeros;
+        private int _numberOfLeadingZeros = 1;
 
-        [Obsolete("Use " + nameof(HasNumberOfLeadingZeros)), EditorBrowsable(EditorBrowsableState.Never)]
-        public bool ItalianLeadingZero => HasNumberOfLeadingZeros;
+        public bool HasItalianLeadingZero => _hasItalianLeadingZero;
 
-        public bool HasNumberOfLeadingZeros => _numberOfLeadingZeros != 0;
+        public bool ItalianLeadingZero
+        {
+            get => _italianLeadingZero;
+            internal set
+            {
+                _hasItalianLeadingZero = true;
+                _italianLeadingZero = value;
+            }
+        }
 
-        internal byte _numberOfLeadingZeros;
+        internal void ClearItalianLeadingZero()
+        {
+            _hasItalianLeadingZero = false;
+            _italianLeadingZero = false;
+        }
+
+        public bool HasNumberOfLeadingZeros => _hasNumberOfLeadingZeros;
+
         public int NumberOfLeadingZeros
         {
             get => _numberOfLeadingZeros;
-            internal set => _numberOfLeadingZeros = checked((byte)value);
+            internal set
+            {
+                _hasNumberOfLeadingZeros = true;
+                _numberOfLeadingZeros = value;
+            }
         }
+
+        internal void ClearNumberOfLeadingZeros()
+        {
+            _hasNumberOfLeadingZeros = false;
+            _numberOfLeadingZeros = 1;
+        }
+
+        /// <summary>
+        /// The number of zeros to write before the national number: the count when the Italian
+        /// leading zero is set and the count is positive, capped at 10 so that bad input cannot make
+        /// a huge string; otherwise 0. Java's getNationalSignificantNumber applies the same rule.
+        /// </summary>
+        internal int LeadingZerosToWrite =>
+            _italianLeadingZero && _numberOfLeadingZeros > 0 ? Math.Min(_numberOfLeadingZeros, 10) : 0;
 
         public bool HasRawInput => RawInput?.Length > 0;
 
@@ -160,17 +195,12 @@ namespace PhoneNumbers
                 set => SetExtension(value);
             }
 
-            [Obsolete("Use " + nameof(HasNumberOfLeadingZeros)), EditorBrowsable(EditorBrowsableState.Never)]
             public bool HasItalianLeadingZero => MessageBeingBuilt.HasItalianLeadingZero;
 
-            [Obsolete("Use " + nameof(NumberOfLeadingZeros)), EditorBrowsable(EditorBrowsableState.Never)]
             public bool ItalianLeadingZero
             {
                 get => MessageBeingBuilt.ItalianLeadingZero;
-                // Goes straight to the replacement rather than through the equally-obsolete
-                // SetItalianLeadingZero: that method is nothing but
-                // SetNumberOfLeadingZeros(value ? 1 : 0), so this is the same write.
-                set => SetNumberOfLeadingZeros(value ? 1 : 0);
+                set => SetItalianLeadingZero(value);
             }
 
             public bool HasNumberOfLeadingZeros => MessageBeingBuilt.HasNumberOfLeadingZeros;
@@ -237,6 +267,7 @@ namespace PhoneNumbers
                 if (other.HasCountryCode) CountryCode = other.CountryCode;
                 if (other.HasNationalNumber) NationalNumber = other.NationalNumber;
                 if (other.HasExtension) Extension = other.Extension;
+                if (other.HasItalianLeadingZero) ItalianLeadingZero = other.ItalianLeadingZero;
                 if (other.HasNumberOfLeadingZeros) NumberOfLeadingZeros = other.NumberOfLeadingZeros;
                 if (other.HasRawInput) RawInput = other.RawInput;
                 if (other.HasCountryCodeSource) CountryCodeSource = other.CountryCodeSource;
@@ -282,17 +313,15 @@ namespace PhoneNumbers
                 return this;
             }
 
-            [Obsolete("Use " + nameof(SetNumberOfLeadingZeros)), EditorBrowsable(EditorBrowsableState.Never)]
             public Builder SetItalianLeadingZero(bool value)
             {
-                MessageBeingBuilt.NumberOfLeadingZeros = value ? 1 : 0;
+                MessageBeingBuilt.ItalianLeadingZero = value;
                 return this;
             }
 
-            [Obsolete("Use " + nameof(ClearNumberOfLeadingZeros)), EditorBrowsable(EditorBrowsableState.Never)]
             public Builder ClearItalianLeadingZero()
             {
-                MessageBeingBuilt.NumberOfLeadingZeros = 0;
+                MessageBeingBuilt.ClearItalianLeadingZero();
                 return this;
             }
 
@@ -304,7 +333,7 @@ namespace PhoneNumbers
 
             public Builder ClearNumberOfLeadingZeros()
             {
-                MessageBeingBuilt.NumberOfLeadingZeros = 0;
+                MessageBeingBuilt.ClearNumberOfLeadingZeros();
                 return this;
             }
 
@@ -353,7 +382,8 @@ namespace PhoneNumbers
             hash ^= CountryCode;
             hash ^= NationalNumber.GetHashCode();
             if (HasExtension) hash ^= Extension.GetHashCode();
-            hash ^= _numberOfLeadingZeros;
+            hash ^= _italianLeadingZero ? 1231 : 1237;
+            hash ^= _numberOfLeadingZeros << 8;
             if (HasRawInput) hash ^= RawInput.GetHashCode();
             hash ^= _countryCodeSource;
             if (_preferredDomesticCarrierCode != null) hash ^= _preferredDomesticCarrierCode.GetHashCode();
@@ -370,6 +400,9 @@ namespace PhoneNumbers
             if (CountryCode != other.CountryCode) return false;
             if (NationalNumber != other.NationalNumber) return false;
             if (Extension != other.Extension) return false;
+            // As in Java, values are compared, not has-bits: an unset field equals one set to its
+            // default.
+            if (_italianLeadingZero != other._italianLeadingZero) return false;
             if (_numberOfLeadingZeros != other._numberOfLeadingZeros) return false;
             if (RawInput != other.RawInput) return false;
             if (_countryCodeSource != other._countryCodeSource) return false;

@@ -50,7 +50,7 @@ namespace PhoneNumbers.Test
         public void TestNonEqualWithItalianLeadingZeroSetToTrue()
         {
             var numberA = new PhoneNumber.Builder()
-                .SetCountryCode(1).SetNationalNumber(6502530000L).SetNumberOfLeadingZeros(1).Build();
+                .SetCountryCode(1).SetNationalNumber(6502530000L).SetItalianLeadingZero(true).Build();
 
             var numberB = new PhoneNumber.Builder()
                 .SetCountryCode(1).SetNationalNumber(6502530000L).Build();
@@ -60,20 +60,65 @@ namespace PhoneNumbers.Test
         }
 
         [Fact]
-        public void TestItalianLeadingZeroSetterWritesNumberOfLeadingZeros()
+        public void TestEqualWithItalianLeadingZeroSetToDefault()
         {
-            // Exercises the obsolete ItalianLeadingZero property setter itself, not
-            // SetNumberOfLeadingZeros directly, since that setter is what delegates to
-            // SetNumberOfLeadingZeros(value ? 1 : 0) under the hood.
-#pragma warning disable CS0618 // intentionally exercising the obsolete setter
-            var builder = new PhoneNumber.Builder()
-                .SetCountryCode(1).SetNationalNumber(6502530000L);
+            var numberA = new PhoneNumber.Builder()
+                .SetCountryCode(1).SetNationalNumber(6502530000L).SetItalianLeadingZero(false).Build();
+
+            var numberB = new PhoneNumber.Builder()
+                .SetCountryCode(1).SetNationalNumber(6502530000L).Build();
+
+            // These should still be equal, since the default value for this field is false.
+            Assert.Equal(numberA, numberB);
+            Assert.Equal(numberA.GetHashCode(), numberB.GetHashCode());
+        }
+
+        [Fact]
+        public void TestLeadingZeroFieldsHaveJavaDefaults()
+        {
+            // Java's PhoneNumber: italian_leading_zero defaults to false, number_of_leading_zeros to
+            // 1, and each has its own has-bit.
+            var number = new PhoneNumber.Builder().SetCountryCode(1).SetNationalNumber(6502530000L).Build();
+            Assert.False(number.HasItalianLeadingZero);
+            Assert.False(number.ItalianLeadingZero);
+            Assert.False(number.HasNumberOfLeadingZeros);
+            Assert.Equal(1, number.NumberOfLeadingZeros);
+        }
+
+        [Fact]
+        public void TestItalianLeadingZeroAndNumberOfLeadingZerosAreSeparateFields()
+        {
+            var builder = new PhoneNumber.Builder().SetCountryCode(39).SetNationalNumber(236618300L);
             builder.ItalianLeadingZero = true;
+            Assert.True(builder.HasItalianLeadingZero);
+            Assert.False(builder.HasNumberOfLeadingZeros);
             Assert.Equal(1, builder.NumberOfLeadingZeros);
 
-            builder.ItalianLeadingZero = false;
-            Assert.Equal(0, builder.NumberOfLeadingZeros);
-#pragma warning restore CS0618
+            builder.NumberOfLeadingZeros = 2;
+            Assert.True(builder.ItalianLeadingZero);
+            Assert.True(builder.HasNumberOfLeadingZeros);
+
+            builder.ClearNumberOfLeadingZeros();
+            Assert.False(builder.HasNumberOfLeadingZeros);
+            Assert.Equal(1, builder.NumberOfLeadingZeros);
+            Assert.True(builder.ItalianLeadingZero);
+
+            builder.ClearItalianLeadingZero();
+            Assert.False(builder.HasItalianLeadingZero);
+            Assert.False(builder.ItalianLeadingZero);
+        }
+
+        [Fact]
+        public void TestMergeFromCopiesBothLeadingZeroFields()
+        {
+            var source = new PhoneNumber.Builder().SetCountryCode(39).SetNationalNumber(1L)
+                .SetItalianLeadingZero(true).SetNumberOfLeadingZeros(3).Build();
+            var copy = new PhoneNumber.Builder().MergeFrom(source).Build();
+            Assert.True(copy.HasItalianLeadingZero);
+            Assert.True(copy.ItalianLeadingZero);
+            Assert.True(copy.HasNumberOfLeadingZeros);
+            Assert.Equal(3, copy.NumberOfLeadingZeros);
+            Assert.Equal(source, copy);
         }
 
         [Fact]
