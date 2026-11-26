@@ -1,10 +1,199 @@
 # Country names by language, generated from java.util.Locale by lib/DumpLocale.java.
-# Format: <ISO 3166-1 country>|<ISO 639-1 language>|<name>
+# Format: <region code>|<ISO 639-1 language>|<name>
+# Region codes are the ISO 3166-1 codes from Locale.getISOCountries(), plus AC, TA and XK.
 # A name of *xx means 'the name for language xx in this country', stored once.
 #
 # Auto-generated file, do not edit by hand. Generation info:
 # java.version=25.0.5
 # java.vendor=Eclipse Adoptium
+AC|aa|AC
+AC|ab|*aa
+AC|ae|*aa
+AC|af|Ascensioneiland
+AC|ak|Asɛnhyin
+AC|am|አሴንሽን ደሴት
+AC|an|*aa
+AC|ar|جزيرة أسينشيون
+AC|as|এচেনচিয়ন দ্বীপ
+AC|av|*aa
+AC|ay|*aa
+AC|az|Askenson adası
+AC|ba|*aa
+AC|be|Востраў Узнясення
+AC|bg|остров Възнесение
+AC|bh|*aa
+AC|bi|*aa
+AC|bm|*aa
+AC|bn|অ্যাসেনশন দ্বীপপুঞ্জ
+AC|bo|*aa
+AC|br|Enez Ascension
+AC|bs|Ostrvo Ascension
+AC|ca|Illa de l’Ascensió
+AC|ce|Айъадаларан гӀайре
+AC|ch|*aa
+AC|co|*aa
+AC|cr|*aa
+AC|cs|Ascension
+AC|cu|*aa
+AC|cv|Вознесени утравӗ
+AC|cy|Ynys Ascension
+AC|da|Ascensionøen
+AC|de|*cs
+AC|dv|*aa
+AC|dz|ཨེ་སེན་ཤུན་ཚོ་གླིང༌
+AC|ee|Ascension ƒudomekpo nutome
+AC|el|Νήσος Ασενσιόν
+AC|en|Ascension Island
+AC|eo|*aa
+AC|es|Isla de la Ascensión
+AC|et|Ascensioni saar
+AC|eu|Ascension uhartea
+AC|fa|جزایر آسنسیون
+AC|ff|*aa
+AC|fi|Ascension-saari
+AC|fj|*aa
+AC|fo|*cs
+AC|fr|Île de l’Ascension
+AC|fy|*cs
+AC|ga|Oileán na Deascabhála
+AC|gd|Eilean na Deasgabhalach
+AC|gl|Illa de Ascensión
+AC|gn|*aa
+AC|gu|એસેન્શન આઇલેન્ડ
+AC|gv|*aa
+AC|ha|Tsibirin Ascension
+AC|he|האי אסנשן
+AC|hi|असेंशन द्वीप
+AC|ho|*aa
+AC|hr|Otok Uzašašća
+AC|ht|*fr
+AC|hu|Ascension-sziget
+AC|hy|Համբարձման կղզի
+AC|hz|*aa
+AC|ia|Insula del Ascension
+AC|id|Pulau Ascension
+AC|ie|*aa
+AC|ig|*en
+AC|ii|*aa
+AC|ik|*aa
+AC|in|*id
+AC|io|*aa
+AC|is|Ascension-eyja
+AC|it|Isola Ascensione
+AC|iu|*aa
+AC|iw|*he
+AC|ja|アセンション島
+AC|ji|*aa
+AC|jv|Pulo Ascension
+AC|ka|ამაღლების კუნძული
+AC|kg|*aa
+AC|ki|*aa
+AC|kj|*aa
+AC|kk|Әскенжін аралы
+AC|kl|*aa
+AC|km|កោះ​អាសេនសិន
+AC|kn|ಅಸೆನ್ಶನ್ ದ್ವೀಪ
+AC|ko|어센션섬
+AC|kr|*aa
+AC|ks|ایسنشن جزیرٕ
+AC|ku|Girava Ascensionê
+AC|kv|*aa
+AC|kw|*aa
+AC|ky|Вознесение аралы
+AC|la|*aa
+AC|lb|*cs
+AC|lg|*aa
+AC|li|*aa
+AC|ln|*aa
+AC|lo|ເກາະອາເຊນຊັນ
+AC|lt|Dangun Žengimo sala
+AC|lu|*aa
+AC|lv|Debesbraukšanas sala
+AC|mg|*aa
+AC|mh|*aa
+AC|mi|Te Moutere Aupikinga
+AC|mk|Остров Асенсион
+AC|ml|അസൻഷൻ ദ്വീപ്
+AC|mn|Асенсион арал
+AC|mo|Insula Ascension
+AC|mr|अ‍ॅसेन्शियन बेट
+AC|ms|*id
+AC|mt|*en
+AC|my|အဆန်းရှင်းကျွန်း
+AC|na|*aa
+AC|nb|*cs
+AC|nd|*aa
+AC|ne|असेन्सन टापु
+AC|ng|*aa
+AC|nl|*cs
+AC|nn|*cs
+AC|no|*cs
+AC|nr|*aa
+AC|nv|*aa
+AC|ny|*aa
+AC|oc|*aa
+AC|oj|*aa
+AC|om|Odola Asenshiin
+AC|or|ଆସେନସିଅନ୍‌ ଦ୍ୱୀପ
+AC|os|*aa
+AC|pa|ਅਸੈਂਸ਼ਨ ਟਾਪੂ
+AC|pi|*aa
+AC|pl|Wyspa Wniebowstąpienia
+AC|ps|اسينشان ټاپو
+AC|pt|Ilha de Ascensão
+AC|qu|Islas Ascensión
+AC|rm|Insla d’Ascensiun
+AC|rn|*aa
+AC|ro|*mo
+AC|ru|о-в Вознесения
+AC|rw|*aa
+AC|sa|*aa
+AC|sc|Ìsula de s’Ascensione
+AC|sd|طلوع ٻيٽ
+AC|se|*cs
+AC|sg|*aa
+AC|si|ඇසෙන්ෂන් දිවයින
+AC|sk|*cs
+AC|sl|Otok Ascension
+AC|sm|*aa
+AC|sn|*aa
+AC|so|Jasiiradda Asensiyoon
+AC|sq|Ishulli Asenshion
+AC|sr|Острво Асенсион
+AC|ss|*aa
+AC|st|*aa
+AC|su|*aa
+AC|sv|*cs
+AC|sw|Kisiwa cha Ascension
+AC|ta|அஷன்ஷியன் தீவு
+AC|te|అసెన్షన్ దీవి
+AC|tg|Асунсон
+AC|th|เกาะแอสเซนชัน
+AC|ti|ደሴት ኣሰንስዮን
+AC|tk|Beýgeliş adasy
+AC|tl|Acsencion island
+AC|tn|*aa
+AC|to|Motu ʻAsenisini
+AC|tr|Ascension Adası
+AC|ts|*aa
+AC|tt|Вознесение утравы
+AC|tw|*aa
+AC|ty|*aa
+AC|ug|ئاسسېنسىيون ئارىلى
+AC|uk|Острів Вознесіння
+AC|ur|اسینشن آئلینڈ
+AC|uz|Me’roj oroli
+AC|ve|*aa
+AC|vi|Đảo Ascension
+AC|vo|*aa
+AC|wa|*aa
+AC|wo|Ile Ascension
+AC|xh|E-Ascension Island
+AC|yi|*aa
+AC|yo|Erékùsù Ascension
+AC|za|*aa
+AC|zh|阿森松岛
+AC|zu|i-Ascension Island
 AD|aa|Andorra
 AD|ab|*aa
 AD|ae|*aa
@@ -40049,6 +40238,194 @@ SZ|yo|Saṣiland
 SZ|za|*aa
 SZ|zh|斯威士兰
 SZ|zu|i-Swaziland
+TA|aa|TA
+TA|ab|*aa
+TA|ae|*aa
+TA|af|Tristan da Cunha
+TA|ak|Tristan da Kuna
+TA|am|ትሪስታን ዳ ኩንሃ
+TA|an|*aa
+TA|ar|تريستان دا كونا
+TA|as|ত্ৰিস্তান দ্যা কুনহা
+TA|av|*aa
+TA|ay|*aa
+TA|az|Tristan da Kunya
+TA|ba|*aa
+TA|be|Трыстан-да-Кунья
+TA|bg|Тристан да Куня
+TA|bh|*aa
+TA|bi|*aa
+TA|bm|*aa
+TA|bn|ট্রিস্টান ডা কুনহা
+TA|bo|*aa
+TA|br|*af
+TA|bs|*af
+TA|ca|*af
+TA|ce|Тристан-да- Кунья
+TA|ch|*aa
+TA|co|*aa
+TA|cr|*aa
+TA|cs|*af
+TA|cu|*aa
+TA|cv|Тристан-да-Кунья
+TA|cy|*af
+TA|da|*af
+TA|de|*af
+TA|dv|*aa
+TA|dz|ཏྲིས་ཏན་ད་ཀུན་ཧ
+TA|ee|Tristan da Kunha nutome
+TA|el|Τριστάν ντα Κούνια
+TA|en|*af
+TA|eo|*aa
+TA|es|Tristán de Acuña
+TA|et|*af
+TA|eu|*af
+TA|fa|تریستان دا کونا
+TA|ff|*aa
+TA|fi|*af
+TA|fj|*aa
+TA|fo|*af
+TA|fr|*af
+TA|fy|*af
+TA|ga|*af
+TA|gd|*af
+TA|gl|Tristán da Cunha
+TA|gn|*aa
+TA|gu|ત્રિસ્તાન દા કુન્હા
+TA|gv|*aa
+TA|ha|Tritan da Kunha
+TA|he|טריסטן דה קונה
+TA|hi|ट्रिस्टन दा कुना
+TA|ho|*aa
+TA|hr|*af
+TA|ht|*af
+TA|hu|*af
+TA|hy|Տրիստան դա Կունյա
+TA|hz|*aa
+TA|ia|*af
+TA|id|*af
+TA|ie|*aa
+TA|ig|*af
+TA|ii|*aa
+TA|ik|*aa
+TA|in|*af
+TA|io|*aa
+TA|is|*af
+TA|it|*af
+TA|iu|*aa
+TA|iw|*he
+TA|ja|トリスタン・ダ・クーニャ
+TA|ji|*aa
+TA|jv|*af
+TA|ka|ტრისტან-და-კუნია
+TA|kg|*aa
+TA|ki|*aa
+TA|kj|*aa
+TA|kk|*cv
+TA|kl|*aa
+TA|km|ទ្រីស្តង់​ដា​ចូនហា
+TA|kn|ಟ್ರಿಸ್ತನ್ ಡಾ ಕುನ್ಹಾ
+TA|ko|트리스탄다쿠나
+TA|kr|*aa
+TA|ks|ٹریسٹن ڈا کنہا
+TA|ku|*af
+TA|kv|*aa
+TA|kw|*aa
+TA|ky|*cv
+TA|la|*aa
+TA|lb|*af
+TA|lg|*aa
+TA|li|*aa
+TA|ln|*aa
+TA|lo|ທຣິສຕັນ ດາ ກັນຮາ
+TA|lt|Tristano da Kunjos
+TA|lu|*aa
+TA|lv|Tristana da Kuņjas salu teritorijas
+TA|mg|*aa
+TA|mh|*aa
+TA|mi|Tiritana da Kunia
+TA|mk|Тристан да Куња
+TA|ml|ട്രിസ്റ്റൻ ഡ കൂന
+TA|mn|Тристан да Кунъя
+TA|mo|*af
+TA|mr|ट्रिस्टन दा कुन्हा
+TA|ms|*af
+TA|mt|*af
+TA|my|ထရစ္စတန် ဒါ ကွန်ဟာ
+TA|na|*aa
+TA|nb|*af
+TA|nd|*aa
+TA|ne|ट्रिस्टान डा कुन्हा
+TA|ng|*aa
+TA|nl|*af
+TA|nn|*af
+TA|no|*af
+TA|nr|*aa
+TA|nv|*aa
+TA|ny|*aa
+TA|oc|*aa
+TA|oj|*aa
+TA|om|Tiristaan da Kanhaa
+TA|or|ଟ୍ରାଇଷ୍ଟନ୍‌ ଦା କୁନ୍‌ଚା
+TA|os|*aa
+TA|pa|ਟ੍ਰਿਸਟਾਨ ਦਾ ਕੁੰਹਾ
+TA|pi|*aa
+TA|pl|*af
+TA|ps|تریستان دا کنها
+TA|pt|Tristão da Cunha
+TA|qu|*es
+TA|rm|*af
+TA|rn|*aa
+TA|ro|*af
+TA|ru|*cv
+TA|rw|*aa
+TA|sa|*aa
+TA|sc|*af
+TA|sd|ٽرسٽن دا ڪوها
+TA|se|*af
+TA|sg|*aa
+TA|si|ට්‍රිස්ටන් ද කුන්හා
+TA|sk|*af
+TA|sl|*af
+TA|sm|*aa
+TA|sn|*aa
+TA|so|Tiristan da Kunha
+TA|sq|Tristan-da-Kuna
+TA|sr|*mk
+TA|ss|*aa
+TA|st|*aa
+TA|su|*aa
+TA|sv|*af
+TA|sw|*af
+TA|ta|டிரிஸ்டன் டா குன்ஹா
+TA|te|ట్రిస్టన్ డ కన్హా
+TA|tg|Тристан-да-Куня
+TA|th|ทริสตันดาคูนา
+TA|ti|ትሪስታን ዳ ኩንያ
+TA|tk|Tristan-da-Kunýa
+TA|tl|Tristan de Cunha
+TA|tn|*aa
+TA|to|Tulisitani ta Kunuha
+TA|tr|*af
+TA|ts|*aa
+TA|tt|*cv
+TA|tw|*aa
+TA|ty|*aa
+TA|ug|ترىستان داكۇنھا
+TA|uk|Трістан-да-Кунья
+TA|ur|ٹرسٹن ڈا کیونہا
+TA|uz|Tristan-da-Kunya
+TA|ve|*aa
+TA|vi|*af
+TA|vo|*aa
+TA|wa|*aa
+TA|wo|*af
+TA|xh|ETristan da Cunha
+TA|yi|*aa
+TA|yo|Tristan da Kunha
+TA|za|*aa
+TA|zh|特里斯坦-达库尼亚群岛
+TA|zu|i-Tristan da Cunha
 TC|aa|Turks & Caicos Islands
 TC|ab|*aa
 TC|ae|*aa
@@ -45877,6 +46254,194 @@ WS|yo|Samọ
 WS|za|*aa
 WS|zh|萨摩亚
 WS|zu|i-Samoa
+XK|aa|XK
+XK|ab|*aa
+XK|ae|*aa
+XK|af|Kosovo
+XK|ak|*af
+XK|am|ኮሶቮ
+XK|an|*aa
+XK|ar|كوسوفو
+XK|as|কচ’ভ’
+XK|av|*aa
+XK|ay|*aa
+XK|az|*af
+XK|ba|*aa
+XK|be|Косава
+XK|bg|Косово
+XK|bh|*aa
+XK|bi|*aa
+XK|bm|*aa
+XK|bn|কসোভো
+XK|bo|*aa
+XK|br|*af
+XK|bs|*af
+XK|ca|*af
+XK|ce|*bg
+XK|ch|*aa
+XK|co|*aa
+XK|cr|*aa
+XK|cs|*af
+XK|cu|*aa
+XK|cv|*bg
+XK|cy|*af
+XK|da|*af
+XK|de|*af
+XK|dv|*aa
+XK|dz|*aa
+XK|ee|*aa
+XK|el|Κοσσυφοπέδιο
+XK|en|*af
+XK|eo|*aa
+XK|es|*af
+XK|et|*af
+XK|eu|*af
+XK|fa|کوزوو
+XK|ff|*aa
+XK|fi|*af
+XK|fj|*aa
+XK|fo|*af
+XK|fr|*af
+XK|fy|*af
+XK|ga|an Chosaiv
+XK|gd|A’ Chosobho
+XK|gl|*af
+XK|gn|*aa
+XK|gu|કોસોવો
+XK|gv|*aa
+XK|ha|Kasar Kosovo
+XK|he|קוסובו
+XK|hi|कोसोवो
+XK|ho|*aa
+XK|hr|*af
+XK|ht|*af
+XK|hu|Koszovó
+XK|hy|Կոսովո
+XK|hz|*aa
+XK|ia|*af
+XK|id|*af
+XK|ie|*af
+XK|ig|*af
+XK|ii|*aa
+XK|ik|*aa
+XK|in|*af
+XK|io|*aa
+XK|is|Kósóvó
+XK|it|*af
+XK|iu|*aa
+XK|iw|*he
+XK|ja|コソボ
+XK|ji|קאסאווא
+XK|jv|*af
+XK|ka|კოსოვო
+XK|kg|*aa
+XK|ki|*aa
+XK|kj|*aa
+XK|kk|*bg
+XK|kl|*aa
+XK|km|កូសូវ៉ូ
+XK|kn|ಕೊಸೊವೊ
+XK|ko|코소보
+XK|kr|*aa
+XK|ks|کوسوو
+XK|ku|Kosova
+XK|kv|*aa
+XK|kw|*aa
+XK|ky|*bg
+XK|la|*aa
+XK|lb|*af
+XK|lg|*aa
+XK|li|*aa
+XK|ln|*aa
+XK|lo|ໂຄໂຊໂວ
+XK|lt|Kosovas
+XK|lu|*aa
+XK|lv|*ku
+XK|mg|*aa
+XK|mh|*aa
+XK|mi|Kōhoro
+XK|mk|*bg
+XK|ml|കൊസോവൊ
+XK|mn|*bg
+XK|mo|*af
+XK|mr|कोसोव्हो
+XK|ms|*af
+XK|mt|il-Kosovo
+XK|my|ကိုဆိုဗို
+XK|na|*aa
+XK|nb|*af
+XK|nd|*aa
+XK|ne|कोसोभो
+XK|ng|*aa
+XK|nl|*af
+XK|nn|*af
+XK|no|*af
+XK|nr|*aa
+XK|nv|*aa
+XK|ny|*aa
+XK|oc|*aa
+XK|oj|*aa
+XK|om|Kosoovoo
+XK|or|କୋସୋଭୋ
+XK|os|*aa
+XK|pa|ਕੋਸੋਵੋ
+XK|pi|*aa
+XK|pl|Kosowo
+XK|ps|*ks
+XK|pt|*af
+XK|qu|*af
+XK|rm|Cosovo
+XK|rn|*aa
+XK|ro|*af
+XK|ru|*bg
+XK|rw|*aa
+XK|sa|*aa
+XK|sc|Kòssovo
+XK|sd|ڪوسووو
+XK|se|*af
+XK|sg|*aa
+XK|si|කොසෝවෝ
+XK|sk|*af
+XK|sl|*af
+XK|sm|*aa
+XK|sn|*aa
+XK|so|Koosofo
+XK|sq|Kosovë
+XK|sr|*bg
+XK|ss|*aa
+XK|st|*aa
+XK|su|*aa
+XK|sv|*af
+XK|sw|*af
+XK|ta|கொசோவோ
+XK|te|కొసోవో
+XK|tg|*bg
+XK|th|โคโซโว
+XK|ti|*am
+XK|tk|*pl
+XK|tl|*af
+XK|tn|*aa
+XK|to|Kōsovo
+XK|tr|*ku
+XK|ts|*aa
+XK|tt|*bg
+XK|tw|*aa
+XK|ty|*aa
+XK|ug|كوسوۋو
+XK|uk|*bg
+XK|ur|کوسووو
+XK|uz|*af
+XK|ve|*aa
+XK|vi|*af
+XK|vo|*aa
+XK|wa|*aa
+XK|wo|*pl
+XK|xh|EKosovo
+XK|yi|*ji
+XK|yo|Kòsófò
+XK|za|*aa
+XK|zh|科索沃
+XK|zu|i-Kosovo
 YE|aa|Yemen
 YE|ab|*aa
 YE|ae|*aa

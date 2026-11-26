@@ -12,8 +12,11 @@ namespace PhoneNumbers.Test
     /// </summary>
     public class TestLocaleData
     {
-        /// <summary>Counts as of the move; a wholesale loss of data would not be subtle.</summary>
-        private const int ExpectedCountries = 249;
+        /// <summary>
+        /// The 249 ISO 3166-1 countries plus AC, TA and XK; a wholesale loss of data would not be
+        /// subtle.
+        /// </summary>
+        private const int ExpectedCountries = 252;
 
         [Fact]
         public void EveryCountryIsEmbedded()
@@ -40,17 +43,28 @@ namespace PhoneNumbers.Test
             Assert.Equal("iZimbabwe", LocaleNames.ForCountry("ZW")["zu"]);
         }
 
-        /// <summary>
-        /// Regions that are not ISO countries reach this lookup through the geocoder's fallback -
-        /// AC and XK both do - and must come back empty rather than throwing.
-        /// </summary>
+        /// <summary>A code with no entry must come back null rather than throwing.</summary>
         [Fact]
         public void UnknownCountriesReturnNull()
         {
-            Assert.Null(LocaleNames.ForCountry("AC"));
-            Assert.Null(LocaleNames.ForCountry("XK"));
             Assert.Null(LocaleNames.ForCountry("ZZ"));
             Assert.Null(LocaleNames.ForCountry(""));
+        }
+
+        /// <summary>
+        /// The geocoder names a number by its region when it has no prefix data, so every region
+        /// the library supports needs names, including the non-ISO ones (AC, TA, XK).
+        /// </summary>
+        [Fact]
+        public void EverySupportedRegionHasAName()
+        {
+            var missing = PhoneNumberUtil.GetInstance().GetSupportedRegions()
+                .Where(region => LocaleNames.ForCountry(region) == null
+                    || new Locale("", region).GetDisplayCountry("en").Length == 0)
+                .OrderBy(region => region)
+                .ToList();
+
+            Assert.Empty(missing);
         }
 
         [Fact]
@@ -118,9 +132,9 @@ namespace PhoneNumbers.Test
 
         /// <summary>A region with no entry falls through to the empty description.</summary>
         [Fact]
-        public void DisplayCountryIsEmptyForANonIsoRegion()
+        public void DisplayCountryIsEmptyForAnUnknownRegion()
         {
-            Assert.Equal("", new Locale("en", "XK").GetDisplayCountry("en"));
+            Assert.Equal("", new Locale("en", "ZZ").GetDisplayCountry("en"));
         }
     }
 }
