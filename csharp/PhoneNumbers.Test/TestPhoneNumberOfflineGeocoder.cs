@@ -59,6 +59,59 @@ namespace PhoneNumbers.Test
         {
             Assert.Equal("United States", new Locale("unknown-language", "US").GetDisplayCountry("unknown-language"));
         }
+
+        [Theory]
+        // Expected values are what new java.util.Locale(language, country).getLanguage() and
+        // getCountry() return on JDK 17 and later.
+        [InlineData("iw", "IL", "he", "IL")]
+        [InlineData("IW", "", "he", "")]
+        [InlineData("in", "ID", "id", "ID")]
+        [InlineData("ji", "", "yi", "")]
+        [InlineData("he", "il", "he", "IL")]
+        [InlineData("EN", "gb", "en", "GB")]
+        [InlineData("En-US", "", "en-us", "")]
+        [InlineData("", "", "", "")]
+        public void Constructor_ShouldNormaliseLikeJavaLocale(
+            string language, string country, string expectedLanguage, string expectedCountry)
+        {
+            var locale = new Locale(language, country);
+
+            Assert.Equal(expectedLanguage, locale.Language);
+            Assert.Equal(expectedCountry, locale.Country);
+        }
+
+        [Fact]
+        public void Constructor_ShouldKeepNull()
+        {
+            var locale = new Locale(null, null);
+
+            Assert.Null(locale.Language);
+            Assert.Null(locale.Country);
+        }
+    }
+
+    /// <summary>
+    /// GetDescriptionForNumber with the real geocoding data, for the old ISO 639 language codes.
+    /// Java's Locale turns <c>iw</c> into <c>he</c> and <c>in</c> into <c>id</c>, so the geocoder
+    /// looks for <c>972_he</c> (there is none, so the English name) and <c>62_id</c> (Indonesian).
+    /// Expected values come from the Java libphonenumber 9.0.44 jars (geocoder 3.44) on JDK 17+.
+    /// </summary>
+    public class TestGeocoderOldLanguageCodes
+    {
+        [Theory]
+        [InlineData("+972 2 123 4567", "iw", "Jerusalem")]
+        [InlineData("+972 2 123 4567", "he", "Jerusalem")]
+        [InlineData("+62 21 1234 5678", "in", "Jabodetabek")]
+        [InlineData("+62 21 1234 5678", "id", "Jabodetabek")]
+        [InlineData("+62 21 1234 5678", "IN", "Jabodetabek")]
+        public void GetDescriptionForNumber_WithAnOldLanguageCode_ShouldMatchJava(
+            string number, string language, string expected)
+        {
+            var phoneNumber = PhoneNumberUtil.GetInstance().Parse(number, "ZZ");
+
+            Assert.Equal(expected,
+                PhoneNumberOfflineGeocoder.GetInstance().GetDescriptionForNumber(phoneNumber, new Locale(language, "")));
+        }
     }
 
     /// <summary>

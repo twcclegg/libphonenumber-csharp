@@ -34,10 +34,43 @@ namespace PhoneNumbers
         public readonly string Language;
         public readonly string Country;
 
+        /// <summary>
+        /// Creates a locale. Like <c>java.util.Locale</c> on JDK 17 and later, the language is
+        /// lowercased and the old ISO 639 codes are replaced by the current ones (<c>iw</c> becomes
+        /// <c>he</c>, <c>in</c> becomes <c>id</c> and <c>ji</c> becomes <c>yi</c>), and the country is
+        /// uppercased. Only ASCII letters change case, as in Java.
+        /// </summary>
         public Locale(string language, string countryCode)
         {
-            Language = language;
-            Country = countryCode;
+            Language = ConvertOldIsoCode(ToAsciiCase(language, upper: false));
+            Country = ToAsciiCase(countryCode, upper: true);
+        }
+
+        private static string ConvertOldIsoCode(string language) => language switch
+        {
+            "iw" => "he",
+            "in" => "id",
+            "ji" => "yi",
+            _ => language,
+        };
+
+        private static string ToAsciiCase(string value, bool upper)
+        {
+            if (value == null)
+                return null;
+            char[] chars = null;
+            for (var i = 0; i < value.Length; i++)
+            {
+                var c = value[i];
+                var changed = upper
+                    ? (c >= 'a' && c <= 'z' ? (char)(c - ('a' - 'A')) : c)
+                    : (c >= 'A' && c <= 'Z' ? (char)(c + ('a' - 'A')) : c);
+                if (changed == c)
+                    continue;
+                chars ??= value.ToCharArray();
+                chars[i] = changed;
+            }
+            return chars == null ? value : new string(chars);
         }
 
         public string GetDisplayCountry(string language)
