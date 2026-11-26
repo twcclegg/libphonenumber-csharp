@@ -812,7 +812,7 @@ namespace PhoneNumbers
             // zero, we assume it is a closed dialling plan with no area codes.
             // Note:this is our general assumption, but there are exceptions which are tracked in
             // COUNTRIES_WITHOUT_NATIONAL_PREFIX_WITH_AREA_CODES.
-            if (!metadata.HasNationalPrefix && !number.HasNumberOfLeadingZeros &&
+            if (!metadata.HasNationalPrefix && !number.ItalianLeadingZero &&
                     !IsCountryWithoutNationalPrefixWithAreaCodes(countryCallingCode))
                 return 0;
 
@@ -1531,8 +1531,8 @@ namespace PhoneNumbers
 
         internal static int GetNationalSignificantNumberLength(PhoneNumber number)
         {
-            // Kept in step with the cap applied by GetNationalSignificantNumberImpl.
-            var len = Math.Min(number.NumberOfLeadingZeros, 10);
+            // Kept in step with GetNationalSignificantNumberImpl.
+            var len = number.LeadingZerosToWrite;
             var n = number.NationalNumber;
             do len++; while ((n /= 10) != 0);
             return len;
@@ -2838,6 +2838,7 @@ namespace PhoneNumbers
         {
             if (nationalNumber.Length <= 1 || nationalNumber[0] != '0') return;
 
+            phoneNumber.ItalianLeadingZero = true;
             var numberOfLeadingZeros = 1;
             //Note that if the national number is all "0"s, the last "0" is not counted as a leading zero.
             while (numberOfLeadingZeros < nationalNumber.Length - 1
@@ -2845,7 +2846,9 @@ namespace PhoneNumbers
             {
                 numberOfLeadingZeros++;
             }
-            phoneNumber.NumberOfLeadingZeros = numberOfLeadingZeros;
+            // As in Java, the count is only set when it differs from its default of 1.
+            if (numberOfLeadingZeros != 1)
+                phoneNumber.NumberOfLeadingZeros = numberOfLeadingZeros;
         }
 
         /// <summary>
@@ -3124,6 +3127,10 @@ namespace PhoneNumbers
             secondNumber.RawInput = "";
             secondNumber.CountryCodeSource = 0;
             secondNumber.PreferredDomesticCarrierCode = null;
+            // Java's copyCoreFieldsOnly keeps the number of leading zeros only when the Italian
+            // leading zero is set; otherwise the count is left at its default.
+            if (!firstNumber.ItalianLeadingZero) firstNumber.ClearNumberOfLeadingZeros();
+            if (!secondNumber.ItalianLeadingZero) secondNumber.ClearNumberOfLeadingZeros();
 
             var firstNumberCountryCode = firstNumber.CountryCode;
             var secondNumberCountryCode = secondNumber.CountryCode;

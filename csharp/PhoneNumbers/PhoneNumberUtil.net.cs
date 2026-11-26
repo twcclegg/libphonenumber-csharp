@@ -704,8 +704,9 @@ namespace PhoneNumbers
             PhoneNumber number,
             out int nationalSignificantNumberLength)
         {
-            // Defensively cap the number of leading zeros to avoid OOM from malicious input.
-            var numberOfLeadingZeros = Math.Min(number.NumberOfLeadingZeros, 10);
+            // Leading zeros only count with the Italian leading zero set, capped to avoid OOM from
+            // malicious input.
+            var numberOfLeadingZeros = number.LeadingZerosToWrite;
             nationalSignificantNumberLength = 0;
             for (var i = 0; i < numberOfLeadingZeros; i++)
                 nationalNumber[nationalSignificantNumberLength++] = '0';

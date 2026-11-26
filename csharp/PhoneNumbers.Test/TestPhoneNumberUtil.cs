@@ -69,7 +69,7 @@ namespace PhoneNumbers.Test
             new PhoneNumber.Builder().SetCountryCode(39).SetNationalNumber(345678901L).Build();
         private static readonly PhoneNumber ITNumber =
             new PhoneNumber.Builder().SetCountryCode(39).SetNationalNumber(236618300L).
-            SetNumberOfLeadingZeros(1).Build();
+            SetItalianLeadingZero(true).Build();
         private static readonly PhoneNumber JPStarNumber =
             new PhoneNumber.Builder().SetCountryCode(81).SetNationalNumber(2345).Build();
         // Numbers to test the formatting rules from Mexico.
@@ -404,9 +404,14 @@ namespace PhoneNumbers.Test
             var number = new PhoneNumber.Builder()
                 .SetCountryCode(1)
                 .SetNationalNumber(650)
+                .SetItalianLeadingZero(true)
                 .SetNumberOfLeadingZeros(2)
                 .Build();
             Assert.Equal("00650", phoneUtil.GetNationalSignificantNumber(number));
+
+            // Set a bad value; we shouldn't crash, we shouldn't output any leading zeros at all.
+            number = Update(number).SetNumberOfLeadingZeros(-3).Build();
+            Assert.Equal("650", phoneUtil.GetNationalSignificantNumber(number));
         }
 
         [Fact]
@@ -975,6 +980,7 @@ namespace PhoneNumbers.Test
             var auNumber = new PhoneNumber.Builder()
                 .SetCountryCode(61)
                 .SetNationalNumber(0L)
+                .SetItalianLeadingZero(true)
                 .SetNumberOfLeadingZeros(2)
                 .Build();
             Assert.Equal("000", phoneUtil.FormatNumberForMobileDialing(auNumber, RegionCode.AU, false));
@@ -1396,6 +1402,14 @@ namespace PhoneNumbers.Test
             Assert.False(phoneUtil.IsValidNumber(USLocalNumber));
 
             var invalidNumber = new PhoneNumber.Builder()
+                .SetCountryCode(39).SetNationalNumber(23661830000L).SetItalianLeadingZero(true).Build();
+            Assert.False(phoneUtil.IsValidNumber(invalidNumber));
+
+            invalidNumber = new PhoneNumber.Builder()
+                .SetCountryCode(44).SetNationalNumber(791234567L).Build();
+            Assert.False(phoneUtil.IsValidNumber(invalidNumber));
+
+            invalidNumber = new PhoneNumber.Builder()
                 .SetCountryCode(49).SetNationalNumber(1234L).Build();
             Assert.False(phoneUtil.IsValidNumber(invalidNumber));
 
@@ -1833,9 +1847,9 @@ namespace PhoneNumbers.Test
 
             // IT number 022 3456 7890, but entered with 3 extra digits at the end.
             tooLongNumber = new PhoneNumber.Builder()
-                .SetCountryCode(39).SetNationalNumber(2234567890123L).SetNumberOfLeadingZeros(1);
+                .SetCountryCode(39).SetNationalNumber(2234567890123L).SetItalianLeadingZero(true);
             validNumber = new PhoneNumber.Builder()
-                .SetCountryCode(39).SetNationalNumber(2234567890L).SetNumberOfLeadingZeros(1);
+                .SetCountryCode(39).SetNationalNumber(2234567890L).SetItalianLeadingZero(true);
             Assert.True(phoneUtil.TruncateTooLongNumber(tooLongNumber));
             AreEqual(validNumber, tooLongNumber);
 
@@ -2316,7 +2330,7 @@ namespace PhoneNumbers.Test
             // it's not interpreted as national prefix if the remaining number length is local-only in
             // terms of length. Example: In GB, length 6-7 are only possible local-only.
             shortNumber = new PhoneNumber.Builder().SetCountryCode(44).SetNationalNumber(123456)
-            .SetNumberOfLeadingZeros(1).Build();
+            .SetItalianLeadingZero(true).Build();
             Assert.Equal(shortNumber, phoneUtil.Parse("0123456", RegionCode.GB));
         }
 
@@ -2721,7 +2735,7 @@ namespace PhoneNumbers.Test
             var oneZero = new PhoneNumber.Builder()
                 .SetCountryCode(61)
                 .SetNationalNumber(11L)
-                .SetNumberOfLeadingZeros(1)
+                .SetItalianLeadingZero(true)
                 .Build();
             Assert.Equal(oneZero, phoneUtil.Parse("011", RegionCode.AU));
 
@@ -2729,6 +2743,7 @@ namespace PhoneNumbers.Test
             var twoZeros = new PhoneNumber.Builder()
                 .SetCountryCode(61)
                 .SetNationalNumber(1)
+                .SetItalianLeadingZero(true)
                 .SetNumberOfLeadingZeros(2)
                 .Build();
             Assert.Equal(twoZeros, phoneUtil.Parse("001", RegionCode.AU));
@@ -2737,6 +2752,7 @@ namespace PhoneNumbers.Test
             var stillTwoZeros = new PhoneNumber.Builder()
                 .SetCountryCode(61)
                 .SetNationalNumber(0L)
+                .SetItalianLeadingZero(true)
                 .SetNumberOfLeadingZeros(2)
                 .Build();
             Assert.Equal(stillTwoZeros, phoneUtil.Parse("000", RegionCode.AU));
@@ -2745,9 +2761,33 @@ namespace PhoneNumbers.Test
             var threeZeros = new PhoneNumber.Builder()
                 .SetCountryCode(61)
                 .SetNationalNumber(0L)
+                .SetItalianLeadingZero(true)
                 .SetNumberOfLeadingZeros(3)
                 .Build();
             Assert.Equal(threeZeros, phoneUtil.Parse("0000", RegionCode.AU));
+        }
+
+        [Fact]
+        public void TestParseSetsLeadingZeroFieldsLikeJava()
+        {
+            // Java's setItalianLeadingZerosForPhoneNumber sets the flag for any leading zero, but sets
+            // the count only when it is not the default of 1.
+            var oneZero = phoneUtil.Parse("+39 02 3661 8300", RegionCode.ZZ);
+            Assert.True(oneZero.HasItalianLeadingZero);
+            Assert.True(oneZero.ItalianLeadingZero);
+            Assert.False(oneZero.HasNumberOfLeadingZeros);
+            Assert.Equal(1, oneZero.NumberOfLeadingZeros);
+
+            var twoZeros = phoneUtil.Parse("001", RegionCode.AU);
+            Assert.True(twoZeros.ItalianLeadingZero);
+            Assert.True(twoZeros.HasNumberOfLeadingZeros);
+            Assert.Equal(2, twoZeros.NumberOfLeadingZeros);
+
+            var noZero = phoneUtil.Parse("+1 650 253 0000", RegionCode.ZZ);
+            Assert.False(noZero.HasItalianLeadingZero);
+            Assert.False(noZero.ItalianLeadingZero);
+            Assert.False(noZero.HasNumberOfLeadingZeros);
+            Assert.Equal(1, noZero.NumberOfLeadingZeros);
         }
 
         [Fact]
@@ -2932,14 +2972,47 @@ namespace PhoneNumbers.Test
         public void TestIsNumberMatchShortMatchIfDiffNumLeadingZeros()
         {
             var nzNumberOne = new PhoneNumber.Builder()
-                .SetCountryCode(64).SetNationalNumber(33316005L).SetNumberOfLeadingZeros(1).Build();
+                .SetCountryCode(64).SetNationalNumber(33316005L).SetItalianLeadingZero(true).Build();
             var nzNumberTwo = new PhoneNumber.Builder()
-                .SetCountryCode(64).SetNationalNumber(33316005L).SetNumberOfLeadingZeros(2).Build();
+                .SetCountryCode(64).SetNationalNumber(33316005L).SetItalianLeadingZero(true)
+                .SetNumberOfLeadingZeros(2).Build();
             Assert.Equal(PhoneNumberUtil.MatchType.SHORT_NSN_MATCH, phoneUtil.IsNumberMatch(nzNumberOne, nzNumberTwo));
 
-            nzNumberOne = Update(nzNumberOne).ClearNumberOfLeadingZeros().Build();
-            nzNumberTwo = Update(nzNumberTwo).SetNumberOfLeadingZeros(1).Build();
+            nzNumberOne = Update(nzNumberOne).SetItalianLeadingZero(false).SetNumberOfLeadingZeros(1).Build();
+            nzNumberTwo = Update(nzNumberTwo).SetItalianLeadingZero(true).SetNumberOfLeadingZeros(1).Build();
+            // Since one doesn't have the "italian_leading_zero" set to true, we ignore the number of
+            // leading zeros present (1 is in any case the default value).
             Assert.Equal(PhoneNumberUtil.MatchType.SHORT_NSN_MATCH, phoneUtil.IsNumberMatch(nzNumberOne, nzNumberTwo));
+        }
+
+        [Fact]
+        public void TestIsNumberMatchAcceptsProtoDefaultsAsMatch()
+        {
+            var nzNumberOne = new PhoneNumber.Builder()
+                .SetCountryCode(64).SetNationalNumber(33316005L).SetItalianLeadingZero(true).Build();
+            // The default for number_of_leading_zeros is 1, so it shouldn't normally be set, however if it
+            // is it should be considered equivalent.
+            var nzNumberTwo = new PhoneNumber.Builder()
+                .SetCountryCode(64).SetNationalNumber(33316005L).SetItalianLeadingZero(true)
+                .SetNumberOfLeadingZeros(1).Build();
+            Assert.Equal(PhoneNumberUtil.MatchType.EXACT_MATCH, phoneUtil.IsNumberMatch(nzNumberOne, nzNumberTwo));
+        }
+
+        [Fact]
+        public void TestIsNumberMatchMatchesDiffLeadingZerosIfItalianLeadingZeroFalse()
+        {
+            var nzNumberOne = new PhoneNumber.Builder()
+                .SetCountryCode(64).SetNationalNumber(33316005L).Build();
+            // The default for number_of_leading_zeros is 1, so it shouldn't normally be set, however if it
+            // is it should be considered equivalent.
+            var nzNumberTwo = new PhoneNumber.Builder()
+                .SetCountryCode(64).SetNationalNumber(33316005L).SetNumberOfLeadingZeros(1).Build();
+            Assert.Equal(PhoneNumberUtil.MatchType.EXACT_MATCH, phoneUtil.IsNumberMatch(nzNumberOne, nzNumberTwo));
+
+            // Even if it is set to ten, it is still equivalent because in both cases
+            // italian_leading_zero is not true.
+            nzNumberTwo = Update(nzNumberTwo).SetNumberOfLeadingZeros(10).Build();
+            Assert.Equal(PhoneNumberUtil.MatchType.EXACT_MATCH, phoneUtil.IsNumberMatch(nzNumberOne, nzNumberTwo));
         }
 
         [Fact]
@@ -3053,13 +3126,13 @@ namespace PhoneNumbers.Test
                 phoneUtil.IsNumberMatch("+64 3 331-6005", "3 331 6005#1234"));
             // One has Italian leading zero, one does not.
             var italianNumberOne = new PhoneNumber.Builder()
-                .SetCountryCode(39).SetNationalNumber(1234L).SetNumberOfLeadingZeros(1).Build();
+                .SetCountryCode(39).SetNationalNumber(1234L).SetItalianLeadingZero(true).Build();
             var italianNumberTwo = new PhoneNumber.Builder()
                 .SetCountryCode(39).SetNationalNumber(1234L).Build();
             Assert.Equal(PhoneNumberUtil.MatchType.SHORT_NSN_MATCH,
                 phoneUtil.IsNumberMatch(italianNumberOne, italianNumberTwo));
             // One has an extension, the other has an extension of "".
-            italianNumberOne = Update(italianNumberOne).SetExtension("1234").ClearNumberOfLeadingZeros().Build();
+            italianNumberOne = Update(italianNumberOne).SetExtension("1234").ClearItalianLeadingZero().Build();
             italianNumberTwo = Update(italianNumberTwo).SetExtension("").Build();
             Assert.Equal(PhoneNumberUtil.MatchType.SHORT_NSN_MATCH,
                 phoneUtil.IsNumberMatch(italianNumberOne, italianNumberTwo));

@@ -123,7 +123,7 @@ else if (Parsed != null)
             </div>
             <div class="data-table__row">
                 <div class="data-table__key">Leading Zeros</div>
-                <div class="data-table__value">@(Parsed.HasNumberOfLeadingZeros ? Parsed.NumberOfLeadingZeros.ToString() : "0")</div>
+                <div class="data-table__value">@(Parsed.ItalianLeadingZero ? Parsed.NumberOfLeadingZeros.ToString() : "0")</div>
             </div>
 
             @if (_isValid && _regionCode != null)

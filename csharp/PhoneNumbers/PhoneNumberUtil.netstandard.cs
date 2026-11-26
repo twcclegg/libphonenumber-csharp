@@ -108,11 +108,12 @@ namespace PhoneNumbers
         {
             // If a leading zero(s) has been set, we prefix this now. Note this is not a national prefix.
             // Defensively cap the number of leading zeros to avoid OOM from malicious input.
-            if (!number.HasNumberOfLeadingZeros)
+            var numberOfLeadingZeros = number.LeadingZerosToWrite;
+            if (numberOfLeadingZeros == 0)
                 return number.NationalNumber.ToString(CultureInfo.InvariantCulture);
 
             var nationalNumber = new StringBuilder();
-            nationalNumber.Append('0', Math.Min(number.NumberOfLeadingZeros, 10));
+            nationalNumber.Append('0', numberOfLeadingZeros);
             nationalNumber.Append(number.NationalNumber);
             return nationalNumber.ToString();
         }

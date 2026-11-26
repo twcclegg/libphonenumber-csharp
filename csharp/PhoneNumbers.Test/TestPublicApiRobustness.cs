@@ -81,11 +81,11 @@ namespace PhoneNumbers.Test
         {
             foreach (var nationalNumber in new[] { 0UL, 12345678901UL, ulong.MaxValue })
             {
-                foreach (var zeros in new[] { 0, 1, 10, 255 })
+                foreach (var zeros in new[] { -1, 0, 1, 10, 255, int.MaxValue })
                 {
-                    var number = PhoneNumber.CreateBuilder().SetCountryCode(39)
-                        .SetNationalNumber(nationalNumber).SetNumberOfLeadingZeros(zeros).Build();
-                    var expected = new string('0', Math.Min(zeros, 10))
+                    var number = PhoneNumber.CreateBuilder().SetCountryCode(39).SetNationalNumber(nationalNumber)
+                        .SetItalianLeadingZero(true).SetNumberOfLeadingZeros(zeros).Build();
+                    var expected = new string('0', Math.Max(0, Math.Min(zeros, 10)))
                         + nationalNumber.ToString(CultureInfo.InvariantCulture);
                     Assert.Equal(expected, PhoneUtil.GetNationalSignificantNumber(number));
                     Assert.Equal("+39" + expected, PhoneUtil.Format(number, PhoneNumberFormat.E164));
