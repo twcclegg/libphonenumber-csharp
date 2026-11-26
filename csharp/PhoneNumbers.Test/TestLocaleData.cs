@@ -43,15 +43,28 @@ namespace PhoneNumbers.Test
             Assert.Equal("iZimbabwe", LocaleNames.ForCountry("ZW")["zu"]);
         }
 
-        /// <summary>
-        /// Regions that are not ISO countries reach this lookup through the geocoder's fallback -
-        /// AC and XK both do - and must come back empty rather than throwing.
-        /// </summary>
+        /// <summary>A code with no entry must come back null rather than throwing.</summary>
         [Fact]
         public void UnknownCountriesReturnNull()
         {
             Assert.Null(LocaleNames.ForCountry("ZZ"));
             Assert.Null(LocaleNames.ForCountry(""));
+        }
+
+        /// <summary>
+        /// The geocoder names a number by its region when it has no prefix data, so every region
+        /// the library supports needs names, including the non-ISO ones (AC, TA, XK).
+        /// </summary>
+        [Fact]
+        public void EverySupportedRegionHasAName()
+        {
+            var missing = PhoneNumberUtil.GetInstance().GetSupportedRegions()
+                .Where(region => LocaleNames.ForCountry(region) == null
+                    || new Locale("", region).GetDisplayCountry("en").Length == 0)
+                .OrderBy(region => region)
+                .ToList();
+
+            Assert.Empty(missing);
         }
 
         [Fact]

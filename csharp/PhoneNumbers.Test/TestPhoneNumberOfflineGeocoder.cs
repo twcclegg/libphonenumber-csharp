@@ -34,15 +34,20 @@ namespace PhoneNumbers.Test
         }
 
         [Theory]
-        // Phone-metadata regions that are not ISO countries. java.util.Locale still names them, and
-        // these are the names the Java geocoder gives.
+        // Phone-metadata regions that are not ISO countries. Expected values are what
+        // java.util.Locale.getDisplayCountry returns on JDK 25.0.5 (Temurin), the JDK that generated
+        // resources/locale/country_names.txt. For a language with no name (kl here) Java returns the
+        // region code itself, and so must we.
         [InlineData("AC", "en", "Ascension Island")]
         [InlineData("AC", "de", "Ascension")]
         [InlineData("AC", "zh", "\u963F\u68EE\u677E\u5C9B")]
+        [InlineData("AC", "kl", "AC")]
         [InlineData("TA", "en", "Tristan da Cunha")]
         [InlineData("TA", "zh", "\u7279\u91CC\u65AF\u5766-\u8FBE\u5E93\u5C3C\u4E9A\u7FA4\u5C9B")]
+        [InlineData("TA", "kl", "TA")]
         [InlineData("XK", "en", "Kosovo")]
         [InlineData("XK", "zh", "\u79D1\u7D22\u6C83")]
+        [InlineData("XK", "kl", "XK")]
         public void GetDisplayCountry_WhenRegionIsNotAnIsoCountry_ShouldReturnTheJavaLocaleName(
             string regionCode, string language, string expected)
         {
@@ -53,6 +58,36 @@ namespace PhoneNumbers.Test
         public void GetDisplayCountry_WhenUnknownLanguage_ShouldReturnADefaultDisplayCountry()
         {
             Assert.Equal("United States", new Locale("unknown-language", "US").GetDisplayCountry("unknown-language"));
+        }
+    }
+
+    /// <summary>
+    /// GetDescriptionForNumber with the real geocoding data, for numbers in regions that are not ISO
+    /// 3166-1 countries. These have no prefix data in most languages, so the description is the
+    /// region name. Expected values come from the Java libphonenumber 9.0.44 jars (libphonenumber,
+    /// geocoder 3.44, prefixmapper 3.44) on JDK 25.0.5 (Temurin):
+    /// <c>PhoneNumberOfflineGeocoder.getInstance().getDescriptionForNumber(n, new Locale(lang))</c>.
+    /// </summary>
+    public class TestGeocoderNonIsoRegions
+    {
+        [Theory]
+        [InlineData("+247 542011", "en", "Ascension Island")]
+        [InlineData("+247 542011", "de", "Ascension")]
+        [InlineData("+247 542011", "zh", "\u963F\u68EE\u677E\u5C9B")]
+        [InlineData("+247 542011", "kl", "AC")]
+        [InlineData("+383 43 201 234", "en", "Kosovo")]
+        [InlineData("+383 43 201 234", "de", "Kosovo")]
+        [InlineData("+383 43 201 234", "zh", "\u79D1\u7D22\u6C83")]
+        [InlineData("+383 43 201 234", "kl", "XK")]
+        [InlineData("+290 8999", "en", "Tristan da Cunha")]
+        [InlineData("+290 8999", "zh", "\u7279\u91CC\u65AF\u5766-\u8FBE\u5E93\u5C3C\u4E9A\u7FA4\u5C9B")]
+        public void GetDescriptionForNumber_WhenRegionIsNotAnIsoCountry_ShouldMatchJava(
+            string number, string language, string expected)
+        {
+            var phoneNumber = PhoneNumberUtil.GetInstance().Parse(number, "ZZ");
+
+            Assert.Equal(expected,
+                PhoneNumberOfflineGeocoder.GetInstance().GetDescriptionForNumber(phoneNumber, new Locale(language, "")));
         }
     }
 

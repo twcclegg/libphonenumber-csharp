@@ -51,7 +51,8 @@ class DumpLocale {
 
   private static void printProlog() {
     out.println("# Country names by language, generated from java.util.Locale by lib/DumpLocale.java.");
-    out.println("# Format: <ISO 3166-1 country>|<ISO 639-1 language>|<name>");
+    out.println("# Format: <region code>|<ISO 639-1 language>|<name>");
+    out.println("# Region codes are the ISO 3166-1 codes from Locale.getISOCountries(), plus AC, TA and XK.");
     out.println("# A name of *xx means 'the name for language xx in this country', stored once.");
     out.println("#");
     out.println("# Auto-generated file, do not edit by hand. Generation info:");
@@ -78,9 +79,9 @@ class DumpLocale {
       for (String lang: all_langs) {
         Locale lang_locale = new Locale(lang);
         String country_in_lang = country_locale.getDisplayCountry(lang_locale);
-        // For a code it has no name for in this language, Locale gives back the code itself.
-        if ((country_in_lang != null) && (country_in_lang.length() != 0)
-            && !country_in_lang.equals(country)) {
+        // For a code it has no name for in this language, Locale gives back the code itself
+        // (for example "AC" in kl). Keep it: the Java geocoder returns that code too.
+        if ((country_in_lang != null) && (country_in_lang.length() != 0)) {
           String previous_lang = name_to_lang.get(country_in_lang);
           out.print(country);
           out.print("|");
