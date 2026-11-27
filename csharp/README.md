@@ -54,5 +54,6 @@ Known Issues
 See [`docs/api-differences-from-java.md`](../docs/api-differences-from-java.md) for a fuller,
 example-driven reference of API-shape differences from upstream Java — including gotchas like
 `PhoneNumberOfflineGeocoder`/`PhoneNumberToCarrierMapper` taking this library's own `Locale`
-type rather than `System.Globalization.CultureInfo`, and the `PhoneNumbers.Extensions.PhoneNumber`
-helper class sharing a simple name with `PhoneNumbers.PhoneNumber` (the data type).
+type rather than `System.Globalization.CultureInfo`, and the history of the obsolete
+`PhoneNumbers.Extensions.PhoneNumber` helper class, which shared a simple name with
+`PhoneNumbers.PhoneNumber` (the data type).

@@ -163,7 +163,7 @@ else if (Parsed != null)
                 {
                     <div class="data-table__row">
                         <div class="data-table__key">Example Number</div>
-                        <div class="data-table__value data-table__value--mono">@PhoneUtil.Format(_exampleNumber, PhoneNumberFormat.INTERNATIONAL)</div>
+                        <div class="data-table__value data-table__value--mono">@_exampleNumber.Format(PhoneNumberFormat.INTERNATIONAL)</div>
                     </div>
                 }
 
@@ -171,7 +171,7 @@ else if (Parsed != null)
                 {
                     <div class="data-table__row">
                         <div class="data-table__key">Example Mobile</div>
-                        <div class="data-table__value data-table__value--mono">@PhoneUtil.Format(_exampleMobile, PhoneNumberFormat.INTERNATIONAL)</div>
+                        <div class="data-table__value data-table__value--mono">@_exampleMobile.Format(PhoneNumberFormat.INTERNATIONAL)</div>
                     </div>
                 }
             </div>
@@ -215,11 +215,11 @@ else
         _exampleMobile = null;
         if (number == null) return;
 
-        _isValid = PhoneUtil.IsValidNumber(number);
+        _isValid = number.IsValidNumber();
         _isPossible = PhoneUtil.IsPossibleNumber(number);
         _possibleReason = PhoneUtil.IsPossibleNumberWithReason(number);
-        _numberType = PhoneUtil.GetNumberType(number);
-        _regionCode = PhoneUtil.GetRegionCodeForNumber(number);
+        _numberType = number.GetNumberType();
+        _regionCode = number.GetRegionCodeForNumber();
 
         if (_regionCode != null)
         {

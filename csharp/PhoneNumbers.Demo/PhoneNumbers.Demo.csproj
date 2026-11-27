@@ -19,8 +19,11 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" PrivateAssets="all" />
   </ItemGroup>
 
+  <!-- The pages call the Extensions helpers (number.Format(...), IsValidNumber(), ...), so the
+       trimmed WASM publish also proves the Extensions package survives trimming. -->
   <ItemGroup>
     <ProjectReference Include="..\PhoneNumbers\PhoneNumbers.csproj" />
+    <ProjectReference Include="..\PhoneNumbers.Extensions\PhoneNumbers.Extensions.csproj" />
   </ItemGroup>
 
   <!-- The brand marks live at the repo root because the docfx site publishes the same three

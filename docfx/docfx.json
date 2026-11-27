@@ -39,6 +39,10 @@
         "src": "../assets/brand",
         "files": [ "*.svg" ],
         "dest": "images"
+      },
+      {
+        "//": "Usage summary for AI assistants, served at docs/llms.txt; linked from the migration guide.",
+        "files": [ "llms.txt" ]
       }
     ],
     "output": "_site",

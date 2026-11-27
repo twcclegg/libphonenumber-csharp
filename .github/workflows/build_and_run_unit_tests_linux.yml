@@ -111,3 +111,16 @@ jobs:
           done
           echo "reproducible: every assembly identical across a clean rebuild"
 
+      # The Extensions JSON support published with Native AOT and run: the analyzers only prove the
+      # calls are annotated safe, this proves a PhoneNumber really round-trips with no reflection.
+      # Last, because publishing rebuilds the library projects the steps above pack with --no-build.
+      # Native AOT on Linux links with clang against zlib; install both rather than rely on the
+      # arm64 runner image carrying them. AotRoundTrip switches PublishAot on in that project alone
+      # (see its csproj for why not -p:PublishAot).
+      - name: Native AOT round trip of the Extensions JSON converter
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends clang zlib1g-dev
+          dotnet publish csharp/PhoneNumbers.Extensions.AotTest -c Release \
+            -p:AotRoundTrip=true -p:VersionPrefix="${PACK_VERSION}" -o aot-out
+          ./aot-out/PhoneNumbers.Extensions.AotTest

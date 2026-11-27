@@ -53,19 +53,19 @@ else if (Parsed != null)
             <div class="format-list">
                 <div class="format-list__item">
                     <div class="format-list__name">E.164</div>
-                    <div class="format-list__value">@PhoneUtil.Format(Parsed, PhoneNumberFormat.E164)</div>
+                    <div class="format-list__value">@Parsed.Format(PhoneNumberFormat.E164)</div>
                 </div>
                 <div class="format-list__item">
                     <div class="format-list__name">International</div>
-                    <div class="format-list__value">@PhoneUtil.Format(Parsed, PhoneNumberFormat.INTERNATIONAL)</div>
+                    <div class="format-list__value">@Parsed.Format(PhoneNumberFormat.INTERNATIONAL)</div>
                 </div>
                 <div class="format-list__item">
                     <div class="format-list__name">National</div>
-                    <div class="format-list__value">@PhoneUtil.Format(Parsed, PhoneNumberFormat.NATIONAL)</div>
+                    <div class="format-list__value">@Parsed.Format(PhoneNumberFormat.NATIONAL)</div>
                 </div>
                 <div class="format-list__item">
                     <div class="format-list__name">RFC 3966</div>
-                    <div class="format-list__value">@PhoneUtil.Format(Parsed, PhoneNumberFormat.RFC3966)</div>
+                    <div class="format-list__value">@Parsed.Format(PhoneNumberFormat.RFC3966)</div>
                 </div>
             </div>
         </div>

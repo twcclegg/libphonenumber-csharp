@@ -1,3 +1,5 @@
+using System;
+using System.ComponentModel;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
@@ -5,13 +7,20 @@ using System.Text.Json.Serialization.Metadata;
 namespace PhoneNumbers.Extensions
 {
     /// <summary>
+    /// Obsolete: use <c>new JsonSerializerOptions().AddPhoneNumberConverter()</c> from namespace
+    /// <c>PhoneNumbers.Text.Json</c>, which works for any DTO rather than only a bare
+    /// <see cref="PhoneNumbers.PhoneNumber"/>.
+    /// </summary>
+    /// <remarks>
     /// Ready-made <see cref="JsonSerializerOptions"/> for serializing <see cref="PhoneNumbers.PhoneNumber"/>
     /// under Native AOT / trimming, where the reflection-based default resolver is unavailable.
     /// Combines <see cref="PhoneNumberJsonContext"/> (source-generated type metadata) with
     /// <see cref="PhoneNumberConverter"/> (the actual read/write logic) so callers cannot wire the two
     /// together incorrectly — see the remarks on <see cref="PhoneNumberJsonContext"/> for why doing it
     /// by hand is easy to get wrong.
-    /// </summary>
+    /// </remarks>
+    [Obsolete(Obsoletions.JsonMessage, DiagnosticId = Obsoletions.JsonDiagId, UrlFormat = Obsoletions.UrlFormat)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public static class PhoneNumberJsonOptions
     {
         /// <summary>
@@ -41,7 +50,7 @@ namespace PhoneNumbers.Extensions
         /// own context can still contain a <see cref="PhoneNumbers.PhoneNumber"/> property. A
         /// <see cref="PhoneNumberConverter"/> is always appended to <see cref="JsonSerializerOptions.Converters"/>.
         /// </param>
-        public static JsonSerializerOptions Create(JsonSerializerOptions baseOptions = null)
+        public static JsonSerializerOptions Create(JsonSerializerOptions? baseOptions = null)
         {
             var options = baseOptions is null ? new JsonSerializerOptions() : new JsonSerializerOptions(baseOptions);
             options.TypeInfoResolver = options.TypeInfoResolver is { } existingResolver
@@ -85,7 +94,7 @@ namespace PhoneNumbers.Extensions
             "IL3050:RequiresDynamicCode",
             Justification = "Default always resolves PhoneNumber via PhoneNumberJsonContext + PhoneNumberConverter, never reflection.")]
 #endif
-        public static PhoneNumbers.PhoneNumber Deserialize(string json)
+        public static PhoneNumbers.PhoneNumber? Deserialize(string json)
             => JsonSerializer.Deserialize<PhoneNumbers.PhoneNumber>(json, Default);
     }
 }

@@ -1,16 +1,24 @@
+using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using PhoneNumbers.ComponentModel.DataAnnotations;
 
 namespace PhoneNumbers.Extensions
 {
     /// <summary>
+    /// Obsolete: use <see cref="ValidPhoneNumberAttribute"/>, whose <c>DefaultRegion</c> replaces
+    /// <see cref="Region"/>.
+    /// </summary>
+    /// <remarks>
     /// Validates that a property, field, or parameter is a valid phone number, using the same
     /// validity check as <see cref="PhoneNumberUtil.IsValidNumber"/> rather than a loose format
     /// regex. Accepts a <see cref="string"/> (parsed via <see cref="Region"/>) or an already-parsed
     /// <see cref="PhoneNumbers.PhoneNumber"/>.
-    /// </summary>
+    /// </remarks>
+    [Obsolete(Obsoletions.PhoneNumberAttributeMessage, DiagnosticId = Obsoletions.PhoneNumberAttributeDiagId, UrlFormat = Obsoletions.UrlFormat)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public sealed class PhoneNumberAttribute : ValidationAttribute
     {
-        private static readonly PhoneNumberUtil PhoneNumberUtil = PhoneNumberUtil.GetInstance();
 
         public PhoneNumberAttribute() : base("The field {0} is not a valid phone number.")
         {
@@ -21,15 +29,9 @@ namespace PhoneNumbers.Extensions
         /// numbers already in E.164 format (leading "+"), or when the value is a
         /// <see cref="PhoneNumbers.PhoneNumber"/>.
         /// </summary>
-        public string Region { get; set; }
+        public string? Region { get; set; }
 
-        public override bool IsValid(object value)
-            => value switch
-            {
-                null => true,
-                string stringValue => PhoneNumber.TryParseValid(stringValue, Region, out _),
-                PhoneNumbers.PhoneNumber phoneNumber => PhoneNumberUtil.IsValidNumber(phoneNumber),
-                _ => false,
-            };
+        public override bool IsValid(object? value)
+            => ValidPhoneNumberAttribute.IsValid(value, Region);
     }
 }

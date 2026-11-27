@@ -5,18 +5,27 @@ using System.Globalization;
 namespace PhoneNumbers.Extensions
 {
     /// <summary>
+    /// Obsolete: <see cref="PhoneNumbers.PhoneNumber"/> has a built-in <see cref="TypeConverter"/>.
     /// Converts a <see cref="PhoneNumbers.PhoneNumber"/> to and from its E.164 string
-    /// representation. Not applied automatically — register it where needed, e.g.
-    /// <c>TypeDescriptor.AddAttributes(typeof(PhoneNumbers.PhoneNumber), new TypeConverterAttribute(typeof(PhoneNumberTypeConverter)));</c>
+    /// representation.
     /// </summary>
+    /// <remarks>
+    /// No longer needed: <see cref="PhoneNumbers.PhoneNumber"/> carries a built-in
+    /// <see cref="TypeConverter"/> from the core package, which <c>TypeDescriptor</c>-based binding
+    /// uses without any registration. Remove any
+    /// <c>TypeDescriptor.AddAttributes(typeof(PhoneNumbers.PhoneNumber), new TypeConverterAttribute(typeof(PhoneNumberTypeConverter)))</c>
+    /// call, which replaces the built-in converter with this one.
+    /// </remarks>
+    [Obsolete(Obsoletions.PhoneNumberTypeConverterMessage, DiagnosticId = Obsoletions.PhoneNumberTypeConverterDiagId, UrlFormat = Obsoletions.UrlFormat)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public class PhoneNumberTypeConverter : TypeConverter
     {
         private static readonly PhoneNumberUtil Util = PhoneNumberUtil.GetInstance();
 
-        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
             => sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
 
-        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+        public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
         {
             if (value is not string stringValue)
             {
@@ -33,10 +42,10 @@ namespace PhoneNumbers.Extensions
             }
         }
 
-        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+        public override bool CanConvertTo(ITypeDescriptorContext? context, Type? destinationType)
             => destinationType == typeof(string) || base.CanConvertTo(context, destinationType);
 
-        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value,
+        public override object? ConvertTo(ITypeDescriptorContext? context, CultureInfo? culture, object? value,
             Type destinationType)
             => value is PhoneNumbers.PhoneNumber phoneNumber && destinationType == typeof(string)
                 ? Util.Format(phoneNumber, PhoneNumberFormat.E164)

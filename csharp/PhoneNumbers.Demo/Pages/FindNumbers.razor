@@ -62,16 +62,16 @@
                         Position @match.Start &ndash; @(match.Start + match.Length)
                     </div>
                     <div class="match-list__details">
-                        <span class="badge badge--info">@_phoneUtil.Format(match.Number, PhoneNumberFormat.E164)</span>
-                        <span class="badge badge--neutral">@NumberTypeLabels.For(_phoneUtil.GetNumberType(match.Number))</span>
+                        <span class="badge badge--info">@match.Number.Format(PhoneNumberFormat.E164)</span>
+                        <span class="badge badge--neutral">@NumberTypeLabels.For(match.Number.GetNumberType())</span>
                         @{
-                            var region = _phoneUtil.GetRegionCodeForNumber(match.Number);
+                            var region = match.Number.GetRegionCodeForNumber();
                         }
                         @if (region != null)
                         {
                             <span class="badge badge--accent">@region</span>
                         }
-                        @if (_phoneUtil.IsValidNumber(match.Number))
+                        @if (match.Number.IsValidNumber())
                         {
                             <span class="badge badge--success">Valid</span>
                         }

@@ -37,6 +37,10 @@ Other available benchmarks:
   with phone numbers embedded between filler sentences.
 - `*ParsingHelpersBenchmark*` — `PhoneNumberUtil.ExtractPossibleNumber` measured separately
   for clean inputs (no leading junk) and inputs that force the strip path.
+- `*ExtensionsTryParseBenchmark*` — `PhoneNumberParser.TryParse` from the Extensions package,
+  split by outcome: valid numbers, and failures the up-front check rejects (empty input, free
+  text, a national number with no region) against one that still pays for a thrown
+  `NumberParseException`.
 - `*PhoneNumberOfflineGeocoderBenchmark*` — `PhoneNumberOfflineGeocoder.GetDescriptionForNumber`
   end-to-end, plus `Locale.GetDisplayCountry` on its own to isolate the country-name table that
   backs the fallback path when a number has no finer-grained area description.
