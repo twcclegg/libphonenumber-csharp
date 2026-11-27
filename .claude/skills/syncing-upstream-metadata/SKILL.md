@@ -17,6 +17,11 @@ never stalled because nobody looked. Once the PR merges, by hand or by auto-merg
 `finalize_metadata_release.yml` runs `lib/finalize-metadata-release.sh` to tag the merge commit,
 cut the GitHub release, and dispatch the NuGet publish.
 
+`bash lib/test/run-tests.sh` covers the parts of this that can be checked without a release: the
+option parsing, every gate that decides whether a release happens, the `.java`/`.proto` checks (driven
+through a fake `curl`, so the upstream diff is whatever the test says), the release payload, and the
+changelog fold in all its shapes. Run it after touching any of these scripts.
+
 `README.md` § "Metadata updates" is the user-facing description; this skill is the working detail.
 The reasoning behind the review-then-backstop flow, the changelog fold, the commit identity and the
 checkout depth is in
