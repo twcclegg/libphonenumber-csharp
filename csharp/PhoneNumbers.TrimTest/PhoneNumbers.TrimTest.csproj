@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    CI-only, and deliberately not in PhoneNumbers.slnx (same arrangement as PhoneNumbers.Fuzz and
+    PhoneNumbers.BenchmarkTools). Exists so `verify_trimming.sh` can publish it twice and prove the
+    data-set opt-out really removes the embedded resources.
+
+    Nothing else can prove that. The library's own build does not trim, so the unit tests can only
+    check that the two halves of the feature agree on names; if ILLink silently stopped applying the
+    substitutions, every test would still pass and consumers would keep shipping 2.4 MB they asked
+    to drop.
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>full</TrimMode>
+    <!-- A trim warning here is a real defect in the library's annotations, not noise. -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PhoneNumbers\PhoneNumbers.csproj" />
+  </ItemGroup>
+
+  <!-- What the NuGet package injects for a consumer; imported directly since this references the
+       project rather than the package. -->
+  <Import Project="..\PhoneNumbers\buildTransitive\libphonenumber-csharp.targets" />
+
+</Project>

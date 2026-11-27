@@ -16,6 +16,8 @@ prove nothing. Decide that first.
 | Guarding a real number / region / crash | Real shipped metadata via `GetInstance()` | `TestPublicApiRobustness.cs` (curated inputs) or `TestPhoneNumberProperties.cs` (FsCheck) |
 | Asserting every region's example numbers still parse | Real | `TestExampleNumbers.cs` |
 | Testing a reader/writer of the binary format | Real | `TestBuildMetadataFromBin.cs`, `TestBuildPrefixMapFromBin.cs` |
+| Testing the `ResourcePack` container itself | None | `TestResourcePack.cs` |
+| Testing the trimmed-data opt-out or its build-time couplings | Real | `TestTrimmedDataDiagnostics.cs` |
 
 **Synthetic metadata** classes carry `[Collection("TestMetadataTestCase")]` and take
 `TestMetadataTestCase.PhoneUtil` — hand-built fake regions whose rules exist to exercise code

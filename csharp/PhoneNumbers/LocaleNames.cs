@@ -18,15 +18,15 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.Compression;
 using System.Reflection;
-using System.Linq;
 
 namespace PhoneNumbers
 {
     /// <summary>
-    /// Country names by language, read one country at a time from the per-country binary files
-    /// generated at build time by <c>PhoneNumbers.MetadataBuilder</c> from
+    /// Country names by language, read one country at a time out of the embedded resource pack
+    /// that <c>PhoneNumbers.MetadataBuilder</c> builds from
     /// <c>resources/locale/country_names.txt</c>.
     /// </summary>
     /// <remarks>
@@ -36,9 +36,16 @@ namespace PhoneNumbers
     /// </remarks>
     internal static class LocaleNames
     {
-        private const string ResourcePrefix = "PhoneNumbers.locale.";
+        private const string PackResourceName = "PhoneNumbers.locale.pack";
 
         private static readonly Assembly Assembly = typeof(LocaleNames).GetTypeInfo().Assembly;
+
+        /// <summary>
+        /// The whole data set, one embedded resource, read on first use. Null when the build opted
+        /// out of the locale data and the trimmer removed it.
+        /// </summary>
+        private static readonly Lazy<ResourcePack> Pack =
+            new Lazy<ResourcePack>(() => ResourcePack.FromAssembly(Assembly, PackResourceName), true);
 
         /// <summary>
         /// Countries with no entry cache a null, so a miss costs one dictionary lookup rather than
@@ -60,7 +67,8 @@ namespace PhoneNumbers
 
         private static Dictionary<string, string> Load(string country)
         {
-            using var raw = Assembly.GetManifestResourceStream(ResourcePrefix + country);
+            var pack = Pack.Value ?? throw TrimmedDataErrors.LocaleDataTrimmed();
+            using var raw = pack.OpenEntry(country);
             if (raw is null)
                 return null;
 
@@ -72,13 +80,13 @@ namespace PhoneNumbers
         /// Every country that has an entry. Only <see cref="LocaleData"/> needs this; the lookup
         /// path never enumerates.
         /// </summary>
-        internal static IEnumerable<string> SupportedCountries()
-        {
-            foreach (var name in Assembly.GetManifestResourceNames()
-                .Where(name => name.StartsWith(ResourcePrefix, StringComparison.Ordinal)))
-            {
-                yield return name.Substring(ResourcePrefix.Length);
-            }
-        }
+        /// <remarks>
+        /// Not an iterator, so the trimmed-data throw happens at the call rather than at the first
+        /// MoveNext and a caller that never enumerates still sees it. This does not change what
+        /// <see cref="LocaleData"/> surfaces: its data is a static field initialiser, so the CLR
+        /// wraps the exception in a TypeInitializationException either way.
+        /// </remarks>
+        internal static IEnumerable<string> SupportedCountries() =>
+            (Pack.Value ?? throw TrimmedDataErrors.LocaleDataTrimmed()).Names;
     }
 }

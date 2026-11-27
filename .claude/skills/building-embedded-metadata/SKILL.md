@@ -1,14 +1,15 @@
 ---
 name: building-embedded-metadata
-description: Understand or change how resources/ becomes the binary metadata embedded in the assembly — the PhoneNumbers.MetadataBuilder tool, the MSBuild Generate*/Embed targets in PhoneNumbers.csproj, and the loaders that read the result. Use when metadata seems stale or missing after a local edit, when a build fails or races in those targets (CS2012, parallel writes to obj, MissingMetadataException), or when adding a new kind of embedded data.
+description: Understand or change how resources/ becomes the binary metadata embedded in the assembly — the PhoneNumbers.MetadataBuilder tool, the MSBuild GenerateBinaryMetadata/EmbedBinaryMetadata targets in PhoneNumbers.csproj, the ResourcePack container, and the loaders that read the result. Use when metadata seems stale or missing after a local edit, when a build fails or races in those targets (CS2012, parallel writes to obj, MissingMetadataException), when changing which data sets a trimmed build can drop, or when adding a new kind of embedded data.
 ---
 
 # Building the embedded metadata
 
 Nothing under `resources/` ships as-is and nothing is read from disk at run time.
-`PhoneNumbers.MetadataBuilder` converts the XML and text files into per-region binaries during
-`dotnet build`, writing each one through a `GZipStream` (`CompressionLevel.SmallestSize`) as it
-goes; `PhoneNumbers.csproj` then embeds those already-compressed files into the assembly. At run
+`PhoneNumbers.MetadataBuilder` converts the XML and text files during `dotnet build`, gzipping as it
+goes (`CompressionLevel.SmallestSize`); `PhoneNumbers.csproj` then embeds the result. The phone
+metadata stays one already-compressed file per region. The geocoding, carrier and locale data is
+instead packed into one `ResourcePack` per data set, each entry still individually gzipped. At run
 time `MetadataSource` + `EmbeddedResourceMetadataLoader` pull a region's binary out of the
 assembly's resources and decompress it on first use.
 
@@ -20,18 +21,45 @@ already broke CI.
 
 | Target | Produces | From |
 | --- | --- | --- |
-| `GenerateBinaryMetadata` | `PhoneNumberMetadata_*`, `ShortNumberMetadata_*`, `PhoneNumberAlternateFormats_*` | the three XML files in `resources/` |
-| `GenerateGeocodingBins` | per-language, per-prefix bins | `resources/geocoding/**/*.txt` |
-| `GenerateCarrierBins` | carrier prefix maps | `resources/carrier/**/*.txt` |
-| `GenerateLocaleBins` | per-country display names | `resources/locale/country_names.txt` |
-| `GenerateTimezoneBin` | `map_data.bin` | `resources/timezones/map_data.txt` |
-| `EmbedBinaryMetadata` | `EmbeddedResource` items with explicit `LogicalName`s | all of the above |
+| `GenerateBinaryMetadata` | everything below, in one `dotnet PhoneNumbers.MetadataBuilder.dll all` call | all of `resources/` |
+| `EmbedBinaryMetadata` | `EmbeddedResource` items with explicit `LogicalName`s | the generated files |
 | `CleanBinaryMetadata` | (deletes the generated bins on `dotnet clean`) | — |
 
-Each `Generate*` target invokes the built `PhoneNumbers.MetadataBuilder.dll` with a subcommand
-(`phone`, `short`, `alternate`, `geocoding`, `carrier`, `locale`, `timezones`). Logical names are
-`PhoneNumbers.metadata.<file>`, `PhoneNumbers.geocoding.<file>`, `PhoneNumbers.carrier.<file>`,
-`PhoneNumbers.locale.<file>` and `PhoneNumbers.timezones.map_data.bin`.
+One target and one process, not the five targets and seven invocations this used to be. The tool
+still accepts the individual subcommands (`phone`, `short`, `alternate`, `geocoding`, `carrier`,
+`locale`, `timezones`) — `PhoneNumbers.Test.csproj` uses `geocoding` and `carrier` for its own
+fixture data — and `all` is a thin loop over them.
+
+Five embedded resource shapes come out:
+
+| Logical name | Contents |
+| --- | --- |
+| `PhoneNumbers.metadata.<file>` | one resource per region (~540 of them) |
+| `PhoneNumbers.geocoding.pack` | every geocoding prefix map, one `ResourcePack` |
+| `PhoneNumbers.carrier.pack` | every carrier prefix map, one `ResourcePack` |
+| `PhoneNumbers.locale.pack` | every country's display names, one `ResourcePack` |
+| `PhoneNumbers.timezones.map_data.bin` | the time zone prefix map |
+
+**Why the last four are single resources.** A trimmed build can drop them via
+`ILLink.Substitutions.xml`, and a `<resource>` element there matches an exact name with no wildcard
+support — `PhoneNumbers.geocoding.*` is reported as not found (IL2040), not expanded. One resource
+per file would mean a ~690-entry substitutions file regenerated on every metadata sync. Packed, the
+substitutions file is four fixed lines that never change. `ResourcePack.cs` is the container, source-
+linked into MetadataBuilder for the writer; entries stay individually gzipped so a caller still
+decompresses only the one map it asked for.
+
+**A pack holds its directory, never its payloads.** `ResourcePack.OpenEntry` reopens the resource
+stream
+and reads the one entry asked for. Materialising all entries at load instead is the obvious
+simplification and it costs 1.9 MB of permanently retained memory for any process that geocodes
+(measured: 1511 KB to 3430 KB), because an embedded resource stream is a view over the already-mapped
+assembly image and copying out of it moves the whole data set onto the GC heap. The repo's
+`--retained-memory` audit does not cover the geocoder, so nothing in CI would have caught it.
+`TestResourcePack.cs` asserts every name in the substitutions file is a real
+resource; `TestTrimmedDataDiagnostics.cs` asserts the converse (every removable resource has an
+entry) and that the switch names in the substitutions file match the ones
+`buildTransitive/libphonenumber-csharp.targets` emits. Without those, a rename or a typo would
+silently stop the trimming from working with no warning and no failing test.
 
 ## The four rules that keep it working
 
@@ -42,24 +70,41 @@ Each `Generate*` target invokes the built `PhoneNumbers.MetadataBuilder.dll` wit
 2. **Don't add an `<MSBuild>` call on MetadataBuilder.** The `ProjectReference` already schedules it.
    Doing both creates two parallel builds of the same project in the cross-targeting flow, racing on
    apphost generation.
-3. **Keep the `Inputs`/`Outputs` gates.** Generation runs once on the outer cross-targeting build;
-   the gates are what make the per-TFM inner builds see fresh outputs and skip. Remove them and three
-   concurrent invocations write the same bin file at once — that is the failure that broke CI.
+3. **Keep the `Inputs`/`Outputs` gate, and the `<Touch>` after it.** The target hooks
+   `AssignTargetPaths`, so on a cross-targeting build it runs once per inner per-TFM build; the gate
+   is what makes the second and third see fresh outputs and skip. Remove it and three concurrent
+   invocations write the same file at once — the failure that broke CI. The `<Touch>` matters just
+   as much: the tool re-checks freshness per data set, so without it an edit to one source leaves
+   the other outputs' timestamps behind the newest input and the gate never skips again.
 4. **Collect wildcards in a top-level `ItemGroup`, not inside the target.** `Inputs` is evaluated
    before the target body runs, so an item group defined in the body is empty at gate-check time and
    the target reports up-to-date forever.
 
-Note the `Outputs` are *sentinel* files (e.g. `PhoneNumberMetadata_US`, geocoding `en.1`), not the
-full output set — MetadataBuilder is all-or-nothing per subcommand, so once the sentinel is current
-every sibling is too.
+The per-region metadata `Outputs` are still *sentinel* files (`PhoneNumberMetadata_US` and friends)
+standing in for ~540 siblings, because MetadataBuilder is all-or-nothing per subcommand. The four
+data-set outputs are named exactly, since each is now a single file.
+
+**The target ends with `<Touch Files="@(_GeneratedDataOutput)" />`, and that is load-bearing.**
+MSBuild skips a target only when every output is newer than every input, but the tool re-checks
+freshness per data set and leaves an unchanged pack's timestamp alone. Without the Touch, editing
+one source (a sync that changes `PhoneNumberMetadata.xml` but not `locale/country_names.txt`) leaves
+the oldest output permanently older than the newest input: the gate never skips again, every build
+relaunches the tool once per inner TFM, and the gate stops keeping concurrent inner builds out of
+the same obj directory — leaving only the tool's mutex between them and the parallel-write race.
+
+The tool creates its own output directories. The targets no longer `<MakeDir>` first, and a data set
+that relies on the caller having done so fails only on a clean build.
 
 ## Symptoms and causes
 
 - **Stale results after editing `resources/` locally** — an `Inputs`/`Outputs` gate decided the
   target was up to date. Delete `csharp/PhoneNumbers/obj` and rebuild. (Also: local edits to
   `resources/` are overwritten by the next upstream sync; see `syncing-upstream-metadata`.)
-- **`MissingMetadataException` at run time** — the binary was not embedded, or the `LogicalName`
-  no longer matches what the loader asks for. Check the `EmbedBinaryMetadata` item metadata against
+- **`MissingMetadataException` at run time** — first check whether the build set
+  `PhoneNumbersIncludeGeocodingData=false` or `PhoneNumbersIncludeLocaleNameData=false`, which
+  removes the data deliberately and is now the most likely cause; the message says which. Otherwise
+    the binary was not embedded, or the `LogicalName` no longer matches what the loader asks for.
+  Check the `EmbedBinaryMetadata` item metadata against
   `MetadataManager` / `EmbeddedResourceMetadataLoader`, and inspect the assembly's manifest
   resource names rather than assuming.
 - **CS2012 on `refint/PhoneNumbers.MetadataBuilder.dll`** — something reintroduced a second
@@ -79,7 +124,11 @@ mismatch surfaces as garbage data or an exception on first metadata load, not as
 `PhoneNumberUtil(Stream)` constructor that consumers use to load custom XML. Don't delete it as
 dead code, and remember it is public surface — see `changing-public-api`.
 
-Adding a new kind of embedded data means: a MetadataBuilder subcommand, a `Generate*` target with
-correct `Inputs`/`Outputs`, an `EmbedBinaryMetadata` entry with a stable `LogicalName`, a
-`CleanBinaryMetadata` entry, and a loader. Verify with a clean build (`dotnet build csharp` after
+Adding a new kind of embedded data means: a MetadataBuilder subcommand, a step in `BuildAll`, an
+`Inputs`/`Outputs` entry on `GenerateBinaryMetadata`, an `EmbedBinaryMetadata` entry with a stable
+`LogicalName`, a `CleanBinaryMetadata` entry, and a loader. If it should be droppable from a trimmed
+build, it also needs to be a single `ResourcePack`, an `ILLink.Substitutions.xml` entry gated on a
+feature switch, a property in `buildTransitive/libphonenumber-csharp.targets`, and a guard that
+throws rather than returning empty when the data is absent — see `PhoneNumbersFeatures`. Verify with
+a clean build (`dotnet build csharp` after
 deleting `obj`) plus a run of the full test suite, since embedding faults only appear at load time.
